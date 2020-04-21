@@ -15,6 +15,21 @@ meta:
 
 ## 网站
 
+## [虚幻引擎官网](/code/baidu/) `unreal`
+> 虚幻引擎官网
+- 网址：https://www.unrealengine.com/zh-CN/
+
+## [白鹭引擎官网](/code/baidu/) `egret`
+> 白鹭引擎官网
+- 网址：https://www.egret.com/
+
+## [菜鸟教程](/code/baidu/) `runoob`
+> 编程学习网站
+- 网址：https://www.runoob.com/
+
+## [Egret白鹭H5开发-围住神经猫](/code/baidu/) `掘金`
+> 今年9月份跳槽从Android转向前端H5网页和H5小游戏开发，一开始自己学习用Canvas做了拼图、贪吃蛇大作战等小游戏，在公司边学习边用phaser写了个手势识别的小游戏，现在公司想尝试转型Egret白鹭引擎来开发H5，碰巧最近有个类似围住神经猫的H5小游戏项目，所以我就拿围住神经猫来学习学习练练手。
+- 网址：https://juejin.im/post/5bda63125188257f8c45dd48
 
 ## [github 多人如何一起开发?](/code/baidu/) `知乎`
 > 想在github上建立一个项目，供几个同学业余时间开发，想知道如何建立开发模型，几个人如何都能check in代码
