@@ -1,26 +1,17 @@
 ---
 # 标签文字
-title: Blogging Like a Hacker,
+title: 理财,
 # 语言
-lang: en-US
+lang: zh-CN
 # 侧边栏
 sidebar: false
 # 头信息
 meta:
-  - name: description
-    content: hello
-  - name: keywords
-    content: super duper SEO
+  - name: 理财
+    content: 理财
 ---
 
-## code
+## 理财
 
-- [Composer](/code/composer/)
-- [cpp](/code/cpp/)
-- [java](/code/java/)
-- [javascript](/code/javascript/)
-- [laravel](/code/laravel/)
-- [leetcode](/code/leetcode/)
-- [php](/code/php/)
-- [yii](/code/yii/)
-- [vim](/code/vim/)
+## [《海龟交易法则》笔记](/financing/《海龟交易法则》笔记/) 
+> 主要讲述的是海龟所用的交易系统是一个完整的交易系统。这是我们取得成功的一个主要因素。我们的系统使我们更容易地进行一致性的、成功的交易，因为它没有给交易员的判断力留下重要的决策任务。
