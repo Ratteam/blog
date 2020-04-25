@@ -53,4 +53,4 @@ yarn
 yarn docs:dev
 
 > 推送项目到网站
-./deploy.sh
+bash deploy.sh

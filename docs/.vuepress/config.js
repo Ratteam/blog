@@ -8,10 +8,6 @@ module.exports = {
   title: "ratfrog的博客",
   description: 'Just playing around',
   themeConfig: {
-    // algolia: {
-    //   apiKey: '<API_KEY>',
-    //   indexName: '<INDEX_NAME>'
-    // },
     smoothScroll: true,
     lastUpdated: '上次更新时间',
     nav: [
