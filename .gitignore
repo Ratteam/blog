@@ -1,4 +1,5 @@
 node_modules
-docs\.vuepress\dist
+
+docs
+
 config\secret.js
-deploy.sh
