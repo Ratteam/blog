@@ -1,6 +1,17 @@
-## Oracle的日期时间范围查询
+## Mysql 查询今日的数据、近七天的数据、近30天的数据，以此类推
+```
+查询近七天的数据
+SELECT * FROM test_date where DATE_SUB(CURDATE(), INTERVAL 6 DAY) <= create_date
+查询近30天的数据：
+SELECT * FROM test_date where DATE_SUB(CURDATE(), INTERVAL 29 DAY) <= create_date;
+查询今天的数据：
+SELECT * FROM test_date where DATE_SUB(CURDATE(), INTERVAL 0 DAY) <= create_date
+```
+DATE_SUB() 函数从日期减去指定的时间间隔。
 
-AND A.CREATETIME between to_date('2020-04-10','yyyy-MM-dd') AND to_date('2020-04-13','yyyy-MM-dd');  
+DATE_SUB(date,INTERVAL expr type)，6表示截取的天数，最后的DAY表示按天来进行截取。
+
+CURDATE()表示当前的系统时间（日期），另有CURTIME（）表示当前的系统时间（时分秒）。
 
 ## mysql查找数据库中是否已经存在某张表
 select count(*) from information_schema.TABLES t where t.TABLE_SCHEMA ="数据库名" and t.TABLE_NAME ="数据库表名";
