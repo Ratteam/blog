@@ -1,8 +1,8 @@
 ---
 # 标签文字
-title: Blogging Like a Hacker,
+title: The rest of my life.
 # 语言
-lang: en-US
+lang: zh-CN
 # 侧边栏
 sidebar: false
 # 头信息
@@ -13,7 +13,7 @@ meta:
     content: super duper SEO
 ---
 
-## 网站
+# 网站
 ## [VirtusLearningHub](/code/baidu/) `VirtusLearningHub`
 > 今天与我们的课程，成为游戏开发者
 - 网址：https://www.virtushub.com/

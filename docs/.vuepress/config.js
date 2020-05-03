@@ -45,6 +45,7 @@ module.exports = {
       { text: '应用', link: '/app/' },
       { text: '支持/打赏', link: '/more/' },
       { text: '最新文章', link: '/all/' },
+      { text: '时间轴', link: '/timeline/' },
       { text: '留言板', link: '/message/' }
     ],
     sidebar: 'auto'

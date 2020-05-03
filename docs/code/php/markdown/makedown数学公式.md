@@ -659,7 +659,7 @@ $$
 \end{array}
 $$
 
-此外， `\enclose` 命令还可以产生包围的边框和圆等，参见 [MathML Menclose Documentation](https://developer.mozilla.org/en-US/docs/Web/MathML/Element/menclose) 以查看更多效果。
+此外， `\enclose` 命令还可以产生包围的边框和圆等，参见 [MathML Menclose Documentation](https://developer.mozilla.org/zh-CN/docs/Web/MathML/Element/menclose) 以查看更多效果。
 
 
 #二、矩阵使用参考

@@ -1,8 +1,8 @@
 ---
 # 标签文字
-title: Blogging Like a Hacker,
+title: The rest of my life.
 # 语言
-lang: en-US
+lang: zh-CN
 # 侧边栏
 sidebar: false
 # 头信息

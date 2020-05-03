@@ -4,7 +4,7 @@ title: 最新文章
 # 语言
 lang: en-CN
 # 侧边栏
-# sidebar: false
+sidebar: false
 # 头信息
 meta:
   - name: 最新文章 
