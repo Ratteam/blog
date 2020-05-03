@@ -1,3 +1,74 @@
+## java服务安装cenos7+apache-tomcat-7.0.85+jdk1.7.0_80
+
+1.将jdk，apache解压到/user/local/下面
+
+    tar -xf apache-tomcat-7.0.85.tar
+    tar -xf jdk1.7.0_80.tar
+
+2.修改/etc/profile
+
+    vim /etc/profile
+    export JAVA_HOME=/usr/local/jdk1.7.0_80/
+    export JRE_HOME=/usr/local/jdk1.7.0_80/jre
+    export PATH=$PATH:/usr/local/jdk1.7.0_80/bin
+    export CLASSPATH=./:/usr/local/jdk1.7.0_80/lib
+    source /etc/profile
+
+source /etc/profile 立即生效
+
+3.将curlraw.war放到apache下的webapps目录下
+
+4.启动tomcat
+
+/usr/local/apache-tomcat-7.0.85/bin/startup.sh
+
+5.停止tomcat
+
+/usr/local/apache-tomcat-7.0.85/bin/shutdown.sh
+
+6.修改webapp/curlraw/data_config.txt里的数据库配置为
+
+webapps/curlraw/WEB-INF/classes/data_config.txt
+
+修改一下tomcat端口号，进入tomcat的conf目录下，修改server.xml文件，通过vi命令打开文件后直接输入/8080检索到端口号的位置，进入编辑模式后修改端口号为8081
+
+注意查看端口是否和其他服务冲突
+
+7重启tomcat
+
+curl localhost:8081/curlraw/hello/testUploadCorp
+
+## php使用curl对接row+json+java的接口
+
+curl会出现一直不响应的情况。
+
+后来改成curl访问我方java服务
+
+我方java再传给对方java，将拿到的返回值给php
+
+完成操作。
+
+## .tar包解压
+
+tar -xf all.tar
+
+## Linux下安装PHP的mcrypt扩展
+```
+cd /data/nginx+php/php-5.5.12/ext/mcrypt
+
+/usr/local/php/bin/phpize
+
+./configure --with-php-config=/usr/local/php/bin/php-config
+
+make && make install
+
+vim /etc/php.ini
+
+extension = /usr/local/php/lib/php/extensions/no-debug-zts-20131226/mcrypt.so
+
+/usr/local/php/sbin/php-fpm -c /etc/php.ini
+```
+
 ## Git无法检测到文件名大小写的更改
 
 在当前项目中，早先创建并已经push到远程的文件及文件夹，将名称大小写更改后，git无法检测出更改。
