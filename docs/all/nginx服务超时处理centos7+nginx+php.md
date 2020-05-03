@@ -57,3 +57,9 @@ send_timeout 25;
 include vhosts/*.conf;
 
 }
+
+该问题未最终找到最优方案：
+参考：https://www.cnblogs.com/fx-blog/p/7463590.html
+参考：https://www.cnblogs.com/xiaozong/p/5071259.html
+参考：https://www.cnblogs.com/erhangboke/p/11676885.html
+参考：https://www.jb51.net/article/57709.htm
