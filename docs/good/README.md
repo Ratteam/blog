@@ -1,6 +1,6 @@
 ---
 # 标签文字
-title: The rest of my life.
+title: 修仙
 # 语言
 lang: zh-CN
 # 侧边栏
@@ -13,14 +13,15 @@ meta:
     content: super duper SEO
 ---
 
-## code
+# 修仙 
+## [新型冠状病毒肺炎](/good/新型冠状病毒肺炎/)  `修仙` 
+> 新闻
 
-- [Composer](/code/composer/)
-- [cpp](/code/cpp/)
-- [java](/code/java/)
-- [javascript](/code/javascript/)
-- [laravel](/code/laravel/)
-- [leetcode](/code/leetcode/)
-- [php](/code/php/)
-- [yii](/code/yii/)
-- [vim](/code/vim/)
+## [员工拒绝加班被判赔偿公司1万8](/good/员工拒绝加班被判赔偿公司1万8/)  `修仙` 
+> 新闻
+
+## [中华人民共和国劳动法](/good/中华人民共和国劳动法/)  `修仙` 
+> 劳动法
+
+## [中华人民共和国刑法](/good/中华人民共和国刑法/)  `修仙` 
+> 刑法

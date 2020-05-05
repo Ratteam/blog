@@ -14,6 +14,10 @@ meta:
 ---
 
 # 网站
+## [快捷键大全](/code/baidu/) `快捷键大全`
+> 热门软件的快捷键。
+- 网址：http://mykeys.sinaapp.com/index.php
+
 ## [VirtusLearningHub](/code/baidu/) `VirtusLearningHub`
 > 今天与我们的课程，成为游戏开发者
 - 网址：https://www.virtushub.com/

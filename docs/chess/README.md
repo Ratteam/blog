@@ -1,6 +1,6 @@
 ---
 # 标签文字
-title: The rest of my life.
+title: 弈棋
 # 语言
 lang: zh-CN
 # 侧边栏
@@ -13,14 +13,6 @@ meta:
     content: super duper SEO
 ---
 
-## code
-
-- [Composer](/code/composer/)
-- [cpp](/code/cpp/)
-- [java](/code/java/)
-- [javascript](/code/javascript/)
-- [laravel](/code/laravel/)
-- [leetcode](/code/leetcode/)
-- [php](/code/php/)
-- [yii](/code/yii/)
-- [vim](/code/vim/)
+# 弈棋
+## [围棋入门指南](/chess/围棋入门指南/)  `弈棋` 
+> 围棋入门指南
