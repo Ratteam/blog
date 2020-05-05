@@ -14,6 +14,10 @@ meta:
 ---
 
 # 网站
+## [nervecat](/nervecat/) `nervecat`
+> html5围住神经猫游戏
+- 网址：https://ratfrog.github.io/nervecat/index.html
+
 ## [快捷键大全](/code/baidu/) `快捷键大全`
 > 热门软件的快捷键。
 - 网址：http://mykeys.sinaapp.com/index.php

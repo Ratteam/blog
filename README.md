@@ -54,3 +54,10 @@ yarn docs:dev
 
 > 推送项目到网站
 bash deploy.sh
+
+**发布游戏**
+
+发布html5
+发布html5后吧bin-release/web目录下相应版本的项目复制到服务器下就可以了
+
+发布app
