@@ -14,7 +14,7 @@ meta:
 ---
 
 # 网站
-## [nervecat](/nervecat/) `nervecat`
+## [nervecat](/nervecat/index.html) `nervecat`
 > html5围住神经猫游戏
 - 网址：https://ratfrog.github.io/nervecat/index.html
 
