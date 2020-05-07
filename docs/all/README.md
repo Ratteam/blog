@@ -14,6 +14,18 @@ meta:
 ---
 
 # 最新文章
+## [android教程](/chess/android教程/)  `android` 
+> android教程
+
+## [cad快捷键使用指南](/chess/cad快捷键使用指南/)  `cad` 
+> cad快捷键使用指南
+
+## [cad使用指南](/chess/cad使用指南/)  `cad` 
+> cad使用指南
+
+## [ps快捷键使用指南](/chess/ps快捷键使用指南/)  `ps` 
+> ps快捷键使用指南
+
 ## [围棋入门指南](/chess/围棋入门指南/)  `弈棋` 
 > 围棋入门指南
 
