@@ -14,6 +14,10 @@ meta:
 ---
 
 # 网站
+## [趣词](/nervecat/index.html) `趣词`
+> 趣词，了解单词的有趣信息
+- 网址：https://www.quword.com/
+
 ## [nervecat](/nervecat/index.html) `nervecat`
 > html5围住神经猫游戏
 - 网址：https://ratfrog.github.io/nervecat/index.html
