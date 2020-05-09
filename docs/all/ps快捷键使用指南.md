@@ -1,3 +1,7 @@
+---
+# 侧边栏
+sidebar: false
+---
 快捷键大全
 首页
 
@@ -10,7 +14,7 @@ PhotoShop
 强大的图像处理软件，简称PS
 
 数据参考：https://helpx.adobe.com/cn/photoshop/using/tools.html
-
+```
 1	Ctrl+N	新建
 2	Ctrl+O	打开
 3	Alt+Ctrl+O	打开为
@@ -336,3 +340,4 @@ PhotoShop
  快捷键大全 http://mykeys.sinaapp.com/
 关注微博(Ankiang)
   加入快捷键交流QQ群(530154123)
+```

@@ -13,14 +13,4 @@ meta:
     content: super duper SEO
 ---
 
-## code
-
-- [Composer](/code/composer/)
-- [cpp](/code/cpp/)
-- [java](/code/java/)
-- [javascript](/code/javascript/)
-- [laravel](/code/laravel/)
-- [leetcode](/code/leetcode/)
-- [php](/code/php/)
-- [yii](/code/yii/)
-- [vim](/code/vim/)
+## 运动

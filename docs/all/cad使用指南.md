@@ -1,4 +1,7 @@
+# cad使用指南
+
 ## 安装CAD提示并行配置不正确，使用命令行sxstrace.exe工具
+
 开始 - 运行（输入services.msc）- 确定或回车，打开：服务（本地）；
 
 在服务（本地）窗口找到：Windows Modules Installer服务，查看是否被禁用；
