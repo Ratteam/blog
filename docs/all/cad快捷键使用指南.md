@@ -1,10 +1,13 @@
 # CAD快捷键命令大全
 ## 符号键（CTRL开头）
+```
 CTRL+1 PROPCLOSEOROPEN 对象特性管理器
 CTRL+2或4 ADCENTER 设计中心
 CTRL+3 CTOOLPALETTES 工具选项板
 CTRL+8或QC QuickCalc 快速计算器
+```
 ## 控制键
+```
 CTRL+A AI_SELALL 全部选择
 CTRL+C或CO/CP COPYCLIP或COpy 复制
 CTRL+D或F6 COORDINATE 坐标
@@ -22,13 +25,17 @@ CTRL+X CUTCLIP 剪切
 CTRL+Y REDO 重做
 CTRL+Z U 放弃
 CTRL+[ Cancels
+```
 ## 组合键
+```
 CTRL+SHIFT+A或G Group 切换组
 CTRL+SHIFT+C copybase 使用基点将对象复制到
 CTRL+SHIFT+S saveas 另存为
 CTRL+SHIFT+V pasteblock 将
 CTRL+ENTER 要保存修改并退出多行文字编辑器
+```
 ## 功能键
+```
 F1 HELP 帮助
 F2 PMTHIST 文本窗口
 F3或CTRL+F OSNAP 对象捕捉
@@ -58,7 +65,9 @@ R Redraw 更新显示
 S Stretch 拉伸
 W Wblock 写块
 Z Zoom 缩放
+```
 ## 前两个字母 　
+```
 AL ALign 对齐
 AP APpload 加载应用程序
 AR ARray 阵列
@@ -176,7 +185,9 @@ DJL DimJogLine 折弯线性
 IAD ImageADjust 图像调整
 IAT ImageATtach 附着图像
 ICL ImageCLip 图像剪裁
+```
 ## 无规律的个别 　
+```
 X eXplode 分解
 H或BH bHatch 图案填充
 I ddInsert或INSERT 插入块
@@ -203,8 +214,9 @@ CLIP xCLIP 外部参照剪裁
 RMAT MATERIALS 材质
 EDITGB BACKGROUND
 RENDERFULL FULLRENDER 完全渲
-
+```
 ## 其他
-
+```
 ENTER，SPACE	重复上一个命令
 F 倒角
+```

@@ -1,5 +1,4 @@
 ## Android 教程
-参考：https://www.runoob.com/android/android-hello-world-example.html
 
 Android是一个开源的，基于Linux的移动设备操作系统，主要使用于移动设备，如智能手机和平板电脑。Android是由谷歌及其他公司带领的开放手机联盟开发的。
 
@@ -1822,24 +1821,26 @@ Android意图是一个要执行的操作的抽象描述。它可以通过 startA
 意图本身（一个 Intent 对象）是一个被动的数据结构，保存着要执行操作的抽象描述。
 
 例如，你有一个活动，需要打开邮件客户端并通过 Android 设备来发送邮件。为了这个目的，你的活动需要发送一个带有合适选择器的 ACTION_SEND 到 Android 意图处理者。指定的选择器给定合适的界面来让用户决定如何发送他的邮件数据。
-```
 
+```
 Intent email = new Intent(Intent.ACTION_SEND, Uri.parse("mailto:"));
 email.putExtra(Intent.EXTRA_EMAIL, recipients);
 email.putExtra(Intent.EXTRA_SUBJECT, subject.getText().toString());
 email.putExtra(Intent.EXTRA_TEXT, body.getText().toString());
 startActivity(Intent.createChooser(email, "Choose an email client from..."));
 ```
+
 上面的语法调用 startActivity 方法来开启邮件活动，代码运行结果看起来像这样：
 
 例如，你有一个活动，需要在 Android 设备上通过浏览器打开一个URL。为了这个目的，你的活动发送 ACTION_WEB_SEARCH 意图到 Android 意图处理器来在浏览器中打开给定的 URL 。意图处理器通过解析一系列活动，并选择最适合你的意图的一个活动，在这个例子中，是 Web 浏览器活动。意图处理器传递你的网页地址到 Web 浏览器，并打开 Web 浏览器活动。
-```
 
+```
 String q = "https://www.runoob.com";
 Intent intent = new Intent(Intent.ACTION_WEB_SEARCH );
 intent.putExtra(SearchManager.QUERY, q);
 startActivity(intent);
 ```
+
 上面的例子将在Android搜索引擎上查找"www.runoob.com"，并在一个活动上给出关键词的结果。
 
 对于每一个组件-活动，服务，广播接收器都有独立的机制来传递意图。
@@ -1927,11 +1928,12 @@ read1.setAction(android.content.Intent.ACTION_VIEW);
 read1.setData(ContactsContract.Contacts.CONTENT_URI);
 startActivity(read1);
 ```
+
 上面的代码将给出如下结果：
 
 目标组件接收到意图，可以使用getExtras()方法来获取由源组件发送的附加数据。例如：
-```
 
+```
 // 在代码中的合适位置获取包对象
 Bundle extras = getIntent().getExtras();
 
@@ -1939,6 +1941,7 @@ Bundle extras = getIntent().getExtras();
 String value1 = extras.getString("Key1");
 String value2 = extras.getString("Key2");
 ```
+
 实例
 下面的实例演示使用 Android 意图来启动各种 Android 内置应用程序的功能。
 
@@ -1948,8 +1951,8 @@ String value2 = extras.getString("Key2");
 3	修改res/layout/activity_main.xml布局文件，在线性布局中添加3个按钮。
 4	启动Android模拟器来运行应用程序，并验证应用程序所做改变的结果。
 以下是src/com.runoob.intentfilter/MainActivity.java文件的内容：
-```
 
+```
 package com.runoob.intentfilter;
 
 import android.content.Intent;
@@ -2012,9 +2015,10 @@ public class MainActivity extends ActionBarActivity {
     }
 }
 ```
-下面是res/layout/activity_main.xml文件的内容：
-```
 
+下面是res/layout/activity_main.xml文件的内容：
+
+```
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -2083,6 +2087,7 @@ public class MainActivity extends ActionBarActivity {
         android:layout_alignEnd="@+id/textView2" />
 </RelativeLayout>
 ```
+
 下面是res/values/strings/xml的内容，定义了两个新的常量。
 
 ```
@@ -2092,6 +2097,7 @@ public class MainActivity extends ActionBarActivity {
    <string name="action_settings">Settings</string>
 </resources>
 ```
+
 下面是默认的AndroidManifest.xml的内容：
 
 ```
@@ -2125,6 +2131,7 @@ public class MainActivity extends ActionBarActivity {
     </application>
 </manifest>
 ```
+
 让我们运行刚刚修改的 Intent filter 应用程序。我假设你已经在安装环境时创建了 AVD。打开你的项目中的活动文件，点击工具栏中的图片图标来在 Android Studio 中运行应用程序。Android Studio 在 AVD 上安装应用程序并启动它。如果一切顺利，将在模拟器窗口上显示如下：
 
 现在点击"启动浏览器"按钮，这将根据配置启动一个浏览器，并且显示https://www.runoob.com如下：
@@ -2132,7 +2139,7 @@ public class MainActivity extends ActionBarActivity {
 类似的方式，你可以点击"启动电话"按钮来打开电话界面，这将允许你拨打已经给定的电话号码。
 
 **意图过滤器**
-你已经看到如何使用意图来调用另外的活动。 Android 操作系统使用过滤器来指定一系列活动、服务和广播接收器处理意图，需要借助于意图所指定的动作、类别、数据模式。在 manifest 文件中使用 <intent-filter> 元素在活动，服务和广播接收器中列出对应的动作，类别和数据类型。
+你已经看到如何使用意图来调用另外的活动。 Android 操作系统使用过滤器来指定一系列活动、服务和广播接收器处理意图，需要借助于意图所指定的动作、类别、数据模式。在 manifest 文件中使用 `<intent-filter>`  元素在活动，服务和广播接收器中列出对应的动作，类别和数据类型。
 
 下面的实例展示AndroidManifest.xml文件的一部分，指定一个活动com.runoob.intentfilter.CustomActivity可以通过设置的动作，类别及数据来调用：
 
@@ -2149,6 +2156,7 @@ public class MainActivity extends ActionBarActivity {
 
 </activity>
 ```
+
 当活动被上面的过滤器所定义，其他活动就可以通过下面的方式来调用这个活动。使用 android.intent.action.VIEW，使用 com.runoob.intentfilter.LAUNCH 动作，并提供android.intent.category.DEFAULT类别。
 
 元素指定要被调用的活动所期望的数据类型。上面的实例中，自定义活动期望的数据由"http://"开头。
@@ -2157,8 +2165,8 @@ public class MainActivity extends ActionBarActivity {
 
 在调用活动之前，有一系列的 Android 检查测试：
 
-过滤器 <intent-filter> 需要列出一个或者多个的动作，不能为空；过滤器至少包含一个 元素，否则将阻塞所有的意图。如果多个动作被提到，Android 在调用活动前尝试匹配其中提到的一个动作。
-过滤器 <intent-filter> 可能列出0个，1个或者多个类别。如果没有类别被提到，Android 通过这个测试，如果有多个类别被提及，意图通过类型测试，每个意图对象的分类必须匹配过滤器中的一个分类。
+过滤器 `<intent-filter>` 需要列出一个或者多个的动作，不能为空；过滤器至少包含一个 元素，否则将阻塞所有的意图。如果多个动作被提到，Android 在调用活动前尝试匹配其中提到的一个动作。
+过滤器 `<intent-filter>` 可能列出0个，1个或者多个类别。如果没有类别被提到，Android 通过这个测试，如果有多个类别被提及，意图通过类型测试，每个意图对象的分类必须匹配过滤器中的一个分类。
 每个 元素可以指定一个 URI 和一个数据类型(元媒体类型)。这里有独立的属性，如 URI 中的每个部分：模式，主机，端口和路径。意图包含有 URI 和类型，只有它的类型匹配了过滤器中列出的某个类型，则通过数据类型部分的测试。
 实例
 下面的实例是上面实例的一些修改。这里我们将看到如果一个意图调用定义的两个活动，Android 如何来解决冲突；如何使用过滤器来调用自定义活动；如果没有为意图定义合适的活动，则会出现异常。
@@ -2169,7 +2177,7 @@ public class MainActivity extends ActionBarActivity {
 3	添加 src/com.runoob.intentfilter/CustomActivity.java 文件来包含一个活动，可以被不同的意图调用。
 4	修改 res/layout/activity_main.xml 文件在线性布局中添加三个按钮。
 5	添加 res/lauout/custom_view.xml 布局文件，添加简单地 来显示通过 intent 传递的数据。
-6	修改 AndroidManifest.xml 文件，添加 <intent-filter> 定义意图的规则来调用自定义活动。
+6	修改 AndroidManifest.xml 文件，添加 `<intent-filter>` 定义意图的规则来调用自定义活动。
 7	启动 Android 模拟器来运行应用程序，并验证应用程序所做改变的结果。
 以下是src/com.runoob.intentfilter/MainActivity.java的内容：
 
@@ -2248,6 +2256,7 @@ public class MainActivity extends ActionBarActivity {
     }
 }
 ```
+
 下面是src/com.runoob.intentfilter/CustomActivity.java的内容：
 
 ```
@@ -2269,6 +2278,7 @@ public class CustomActivity extends Activity {
     }
 }
 ```
+
 下面是res/layout/activity_main.xml 的内容：
 
 ```
@@ -2352,6 +2362,7 @@ public class CustomActivity extends Activity {
 
 </RelativeLayout>
 ```
+
 下面是res/layout/custom_view.xml文件的内容：
 
 ```
@@ -2367,6 +2378,7 @@ public class CustomActivity extends Activity {
 
 </LinearLayout>
 ```
+
 下面是res/values/strings.xml文件的内容：
 
 ```
@@ -2420,6 +2432,7 @@ public class CustomActivity extends Activity {
     </application>
 </manifest>
 ```
+
 让我们运行刚刚修改的 Intent filter 应用程序。我假设你已经在安装环境时创建了 AVD 。打开你的项目中的活动文件，点击工具栏中的图片图标来在 Android Studio 中运行应用程序。 Android Studio 在 AVD 上安装应用程序并启动它。如果一切顺利，将在模拟器窗口上显示如下：
 
 点击第一个按钮"使用View动作启动浏览器"。这里我们定义我们自定义的活动包含"android.intent.action.VIEW"，并且 Android 系统已经定义了默认的活动来对应VIEW动作来启动Web浏览器，因此 Android 显示下面的选项来选择你想要启动的活动：
