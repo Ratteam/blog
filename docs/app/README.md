@@ -12,6 +12,18 @@ meta:
 ---
 
 # 应用
+## [Aseprite](/code/Aseprite/) `windows` `Aseprite-1.2.8`
+> Aseprite是一款用来制作像素风格动画的软件，这款软件与RPG Maker搭配使用非常合适。功能方面和同类软件基本类似，比如有基本的笔刷，洋葱皮，动画帧编辑器等，推荐给相关设计人员使用。
+- 官网：https://www.aseprite.org/
+- 百度云链接：https://pan.baidu.com/s/1ymCebhONumYcjohj3mqTKQ 
+- 提取码：ymk7 
+
+## [Piskel](/code/Piskel/) `windows` `Piskel-0.14.0`
+> 一款国外的像素绘画软件,没有汉化但词汇量很少,用来画小尺寸的物品或者图标的贴图很舒服,可以导出GIF PNG
+- 官网：https://www.piskelapp.com/ 
+- 百度云链接：https://pan.baidu.com/s/1ftUjL9qkHzppQ89V2RRtaQ 
+- 提取码：hpbp 
+
 ## [金庸群侠传手机版](/code/金庸群侠传手机版/) `windows`
 > 《金庸群侠传X》是由汉家松鼠工作室制作的一款半即时半回合制战棋单机游戏，于2013年发行。
 - 官网：https://typora.io/
