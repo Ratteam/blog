@@ -14,6 +14,10 @@ meta:
 ---
 
 # 网站
+## [ps官方文档](/nervecat/index.html) `ps官方文档`
+> ps官方文档
+- 网址：https://helpx.adobe.com/cn/support/photoshop-china.html?promoid=5NHJ8FD2&mv=other
+
 ## [趣词](/nervecat/index.html) `趣词`
 > 趣词，了解单词的有趣信息
 - 网址：https://www.quword.com/
