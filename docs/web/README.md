@@ -16,6 +16,10 @@ meta:
 # 网站
 ## [ps官方文档](/nervecat/index.html) `ps官方文档`
 > ps官方文档
+- 网址：https://32comic.com/Pixel_Art_Converter/
+
+## [ps官方文档](/nervecat/index.html) `ps官方文档`
+> ps官方文档
 - 网址：https://helpx.adobe.com/cn/support/photoshop-china.html?promoid=5NHJ8FD2&mv=other
 
 ## [趣词](/nervecat/index.html) `趣词`

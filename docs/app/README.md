@@ -12,6 +12,12 @@ meta:
 ---
 
 # 应用
+## [FontForge](/code/FontForge/) `windows` `字体制作软件`
+> 自制字体使用免费开源的FontForge
+- 官网：https://fontforge.org/en-US/
+- 百度云链接：https://pan.baidu.com/s/19w2eGddhLCnnys7AxhYbjw 
+- 提取码：om6d
+
 ## [Aseprite](/code/Aseprite/) `windows` `Aseprite-1.2.8`
 > Aseprite是一款用来制作像素风格动画的软件，这款软件与RPG Maker搭配使用非常合适。功能方面和同类软件基本类似，比如有基本的笔刷，洋葱皮，动画帧编辑器等，推荐给相关设计人员使用。
 - 官网：https://www.aseprite.org/

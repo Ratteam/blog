@@ -1,3 +1,45 @@
+
+## php错误级别的设置方法
+```
+define('DEBUG',true); // 在开发时,声明一个DEBUG模式 
+if(defined('DEBUG')) { //检测到处于开发模式 
+　　error_reporting(E_ALL); 
+} else { 
+　　error_reporting(0); 
+}
+```
+## 过滤XSS潜在危险行为,过滤部分SQL注入
+```
+/**
+ * 过滤XSS潜在危险行为,过滤部分SQL注入
+ * 过滤字符串左右空格
+ * @author gaowei<jeakry88@sina.com>
+ * @param $mixed 要处理的原始字符串信息,字符串或字符串数组
+ */
+function match_xss_special($mixed) {
+  $ra = Array('/([\x00-\x08,\x0b-\x0c,\x0e-\x19])/', '/script/', '/javascript/', '/vbscript/', '/expression/', '/applet/', '/meta/', '/xml/', '/blink/', '/link/', '/style/', '/embed/', '/object/', '/frame/', '/layer/', '/title/', '/bgsound/', '/base/', '/onload/', '/onunload/', '/onchange/', '/onsubmit/', '/onreset/', '/onselect/', '/onblur/', '/onfocus/', '/onabort/', '/onkeydown/', '/onkeypress/', '/onkeyup/', '/onclick/', '/ondblclick/', '/onmousedown/', '/onmousemove/', '/onmouseout/', '/onmouseover/', '/onmouseup/', '/onunload/');
+  if (is_array($mixed)) {
+    foreach ($mixed as $key => $value) {
+      $mixed[$key] = match_xss_special($mixed[$key]);
+    }
+  } else if (is_string($mixed)) {
+    //不对magic_quotes_gpc转义过的字符使用addslashes(),避免双重转义。
+    if (!get_magic_quotes_gpc()) {
+      //给单引号（'）、双引号（"）、反斜线（\）与 NUL（NULL 字符）加上反斜线转义
+      //$mixed = addslashes($mixed);
+    }
+    $mixed=trim($mixed);
+    //$mixed = str_replace(array('&', '<', '>'), array('&amp;', '&lt;', '&gt;'), $mixed);
+    //删除非打印字符，粗暴式过滤xss可疑字符串
+    //$mixed = preg_replace($ra, '', $mixed);
+    //去除 HTML 和 PHP 标记并转换为 HTML 实体
+    //$mixed = htmlentities(strip_tags($mixed));
+    //$mixed = htmlspecialchars(trim($mixed), ENT_QUOTES);
+  }
+  return $mixed;
+}
+```
+
 ## java服务安装cenos7+apache-tomcat-7.0.85+jdk1.7.0_80
 
 1.将jdk，apache解压到/user/local/下面
