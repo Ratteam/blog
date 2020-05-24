@@ -1,3 +1,13 @@
+## 处理两种类型的图片地址
+```
+							// 处理两种类型的图片地址
+							if(data.photourl.substr(0, 7).toLowerCase() == "http://" || data.photourl.substr(0, 8).toLowerCase() == "https://") {
+								this.imageUrl = data.photourl
+							} else {
+								this.imageUrl = baseapi + data.photourl
+							}
+```
+
 ## vue.esm.js?915d:628 [Vue warn]: Property or method "dataList" is not defined on the
 
 ```

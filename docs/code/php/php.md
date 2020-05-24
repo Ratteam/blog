@@ -1,3 +1,91 @@
+## 设置php不报错
+```
+define('DEBUG',false); // 在开发时,声明一个DEBUG模式 
+if(defined('DEBUG')) { //检测到处于开发模式 
+　　error_reporting(E_ALL); 
+} else { 
+　　error_reporting(0); 
+}
+```
+
+## 设置php报错等级为不报错
+```
+// 设置php报错等级为不报错
+error_reporting(0); 
+```
+## PHP Notice: undefined index: header
+```
+119行改为以下配置
+header = isset(POST['header'])?$POST['header']:'';
+```
+
+## PHP Warning:  date(): It is not safe to rely on the system's timezone settings.
+在php.ini里找到date.timezone这行，把值改成PRC，如date.timezone = PRC。
+
+如果没有这一行直接加上就好。最后重启WEB服务器与PHP即可。
+```
+// 设置时间格式
+date_default_timezone_set("PRC");
+```
+
+## PHP Notice: curl_setopt(): CURLOPT_SSL_VERIFYHOST with value 1 is deprecated and will be removed as of libcurl 7.28.1. It is recommended to use value 2 instead in
+```
+1已被弃用，改为2即可
+31行改为以下配置
+// 对认证证书来源的检查
+curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
+```
+## Yii 更新数据时报错：列名必须是一个字符串或者数组
+建表语句缺少主键
+```
+ALTER TABLE GUARANTEE ADD CHECK ("ID" IS NOT NULL);
+
+ALTER TABLE GUARANTEE ADD PRIMARY KEY ("ID");
+```
+参考：https://www.zhangweijie.net/post/2013/10/31/1223.html
+
+
+## 最完整的php验证手机号码
+感觉网上的手机号码验证都不是很严格，自已写了一个,目前支持：
+
+移动：134、135、136、137、138、139、150、151、152、157、158、159、182、183、184、187、188、178(4G)、147(上网卡)；
+
+联通：130、131、132、155、156、185、186、176(4G)、145(上网卡)；
+
+电信：133、153、180、181、189 、177(4G)；
+
+卫星通信：1349
+
+虚拟运营商：170
+```
+    /**
+    * 验证手机号是否正确
+    * @author honfei
+    * @param number $mobile
+    */
+    function isMobile($mobile) {
+        if (!is_numeric($mobile)) {
+            return false;
+        }
+        return preg_match('#^13[\d]{9}$|^14[5,7]{1}\d{8}$|^15[^4]{1}\d{8}$|^17[0,6,7,8]{1}\d{8}$|^18[\d]{9}$#', $mobile) ? true : false;
+    }
+```
+
+## Oracle数据库插入CLOB字段时，提示ORA-01704：字符串文字太长
+```
+DECLARE  
+  clobValue 表名.字段名%TYPE;  
+BEGIN  
+  clobValue := 'XXX'; --字段内容  
+  UPDATE 表名 T SET T.字段名 = clobValue WHERE 条件;  
+  COMMIT;  
+END;  
+/  
+```
+参考：https://blog.csdn.net/Leolu007/article/details/81027704?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.nonecase
+
+##　tomcat自动关闭
+发现是有两个版本的tomcat在互相影响，一个重启，另一个将不能访问
 
 ## php错误级别的设置方法
 ```
