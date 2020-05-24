@@ -40,13 +40,14 @@ module.exports = {
           },
         ]
       },
-      { text: '关于我', link: '/about/' },
       { text: '网站', link: '/web/' },
       { text: '应用', link: '/app/' },
-      { text: '支持/打赏', link: '/more/' },
       { text: '最新文章', link: '/all/' },
+      { text: '支持打赏', link: '/more/' },
+      { text: '关于我', link: '/about/' },
       { text: '时间轴', link: '/timeline/' },
-      { text: '留言板', link: '/message/' }
+      { text: '公告板', link: '/bbs/' },
+      { text: '留言板', link: '/message/' },
     ],
     sidebar: 'auto'
   }
