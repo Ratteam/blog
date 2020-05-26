@@ -1,3 +1,475 @@
+
+## sqldeveloper的安装及其使用教程
+https://www.cnblogs.com/jepson6669/p/9429763.html
+## SQLyog详细使用教程
+http://www.pianshen.com/article/8428130368/
+
+## ie11导出pdf中文乱码
+```
+        $user_agent = $_SERVER['HTTP_USER_AGENT'];
+        $flag1 = substr_count($user_agent,"msie");
+        $flag2 = substr_count($user_agent,"like Gecko");
+        if ($flag1 || $flag2){
+            $WorkerName= urlencode($WorkerName);
+        }
+```
+完整导出代码
+```
+        /**
+         * 描述: 电子合同pdf
+         * 作者：jyc
+         * 创建时间:2018-11-02
+         * 修改时间:
+         * 最后修改人:
+         */
+        public function actionExport_pdf()
+        {
+            Yii::import('lib.tcpdf.TCPDF', true);
+            //实例化
+            $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
+            // 设置文档信息
+            //$pdf->SetCreator('Helloweba');
+            //$pdf->SetAuthor('yueguangguang');
+    
+            $pdf->SetSubject('TCPDF Tutorial');
+            $pdf->SetKeywords('TCPDF, PDF, PHP');
+            $pdf->setPrintHeader(false);
+            $pdf->setPrintFooter(false);
+    
+            //        // 设置页眉和页脚信息
+            //        $pdf->SetHeaderData('logo.png', 30, 'Helloweba.com', '致力于WEB前端技术在中国的应用',
+            //            array(0,64,255), array(0,64,128));
+            //        $pdf->setFooterData(array(0,64,0), array(0,64,128));
+            //
+            //        // 设置页眉和页脚字体
+            //        $pdf->setHeaderFont(Array('stsongstdlight', '', '10'));
+            //        $pdf->setFooterFont(Array('helvetica', '', '8'));
+    
+            // 设置默认等宽字体
+            $pdf->SetDefaultMonospacedFont('courier');
+    
+            // 设置间距
+            //$pdf->SetMargins(15, 0, 15);
+            $pdf->SetHeaderMargin(5);
+            $pdf->SetFooterMargin(0);
+    
+            // 设置分页
+            //$pdf->SetAutoPageBreak(true, 25);
+            //$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+            // set image scale factor
+            $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+    
+            // set default font subsetting mode
+            $pdf->setFontSubsetting(true);
+            $pdf->Ln(4);
+            //设置字体
+            //$pdf->SetFont('stsongstdlight', '', 10);
+            $pdf->SetFont('msyh', '', 10);
+            $pdf->SetMargins(10, 0, 10);
+            $pdf->AddPage();
+            $id =  $_GET['id'];
+            $contract_detail = Contract::get_detail($id);
+            $pay_calculation_way_type = SysDictionary::pay_calculation_way();
+            $work_type = SysDictionary::_findAllByTypeCode();
+            $contract_detail['pay_calculation_way_text'] = $pay_calculation_way_type[ $contract_detail['PayCalculationWay']];
+            //如果是八大员就显示施工总包
+            if ($contract_detail['IsEightofficers'] ==1) {
+                $contract_detail['LaborCompanyName'] = $contract_detail['ContractorName'];
+            }
+            $pdf->SetTitle($contract_detail['WorkerName'].'的电子合同');
+            $year = explode('-', $contract_detail['StartTime']);
+            //array(substr( $contract_detail['StartTime'],0,4),substr($contract_detail['StartTime'],5,2),substr($contract_detail['StartTime'],8,2));
+            $html="<div style=\"width:100%; margin: 0 auto;\">";
+            $html.="<h5 style=\"text-align:center;font-size: 26px\">建筑业简易劳动合同</h5>";
+            $html.="<table  style=\"width:100%;font-size: 12px\">";
+            $html.="<tr><td>";
+            $html.="甲方： {$contract_detail['LaborCompanyName']}";
+            $html.="</td>";
+            $html.="<td style=\"text-align: right\">";
+            $html.="乙方： {$contract_detail['WorkerName']} （{$contract_detail['IDnumber']}）";
+            $html.="</td></tr>";
+            $html.="</table>";
+            $html.="<p style=\"font-size: 12px;line-height:1.6\">".
+            "<span style=\"font-weight: bolder;font-size: 14px\">根据《劳动法》、《劳动合同法》及有关规定，甲乙双方遵循平等自愿、协商一致的原则签订本合同。</span><br/>".
+            "<span style=\"font-weight: bolder;font-size: 14px\">一、合同类别、期限 </span><br/>".
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;以完成一定工作（任务），自 {$year[0]}年{$year[1]}月{$year[2]}日起至工作（任务）完成时终止。<br/>".
+            "<span style=\"font-weight: bolder;font-size: 14px\">二、工作岗位、地点、内容、时间</span><br/>".
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;甲方招用乙方在{$contract_detail['ProjectName']}项目从事&nbsp;&nbsp;{$work_type[$contract_detail['WorkClasses']]} 工作。乙方的工作地点为{$contract_detail['Address']}。经双方协商一致，可以变更工作岗位（工种）和工作地点。甲方保证乙方每周至少休息一天。甲方因施工建设需要，征得乙方同意后，可安排乙方加班。延长工时、休息日加班无法安排补休、法定节假日加班的，甲方按《劳动法》第四十四条规定支付加班工资。<br/>".
+            "<span style=\"font-weight: bolder;font-size: 14px\">三、工资支付</span><br/>".
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;乙方工资为{$contract_detail['Wage']}{$contract_detail['pay_calculation_way_text']}。甲方按月结算工资，并在下一个月的{$contract_detail['PayDate']} 日前向乙方支付工资。<br/>".
+            "<span style=\"font-weight: bolder;font-size: 14px\">四、工伤保险 </span><br/>".
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;双方按国家规定参加工伤保险。甲方为乙办理有关工伤保险手续，并承担相应的工伤保险义务。<br/>".
+            "<span style=\"font-weight: bolder;font-size: 14px\">五、劳动保护和劳动条件</span><br/>".
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;甲方应当在乙方上岗前进行安全生产培训，乙方从事国家规定的特殊工种，应当经过培训并取得相应的职业资格证书方可上岗。甲方根据生产岗位的需要，按照国家劳动安全卫生的有关规定为乙配备必要的安全防护设施，发放必要的劳动保护用品。甲方依法建立安全生产制度。乙方严格遵守甲方依法制定的各项规章制度，不违章作业，防止劳动过程中的事故，减少职业危害。乙方有权拒绝甲方的违章指挥。<br/>".
+            "<span style=\"font-weight: bolder;font-size: 14px\">六、解除和终止</span><br/>".
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本劳动合同的解除或终止，依《劳动合同法》规定执行。<br/>".
+            "<span style=\"font-weight: bolder;font-size: 14px\">七、劳动争议处理</span><br/>".
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;甲乙双方发生劳动争议，可以协商解决，也可以依照《劳动争议调解仲裁法》的规定通过申请调解、仲裁和提起诉讼解决。<br/>".
+            "<span style=\"font-weight: bolder;font-size: 14px\">八、其他约定</span>{$contract_detail['Remark']}<br/>".
+            "<span style=\"font-weight: bolder;font-size: 14px\">九、其他</span><br/>".
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本劳动合同一式二份，甲乙双方各执一份。<br/>".
+            "</p>";
+            $html.="<table  style=\"width:100%;font-size: 14px\">";
+            $html.="<tr><td>";
+            $html.="甲方（公章）";
+            $html.="</td>";
+            $html.="<td style=\"text-align: right\">";
+            $html.="乙方（签字或盖章）";
+            $html.="</td></tr>";
+            $html.="</table>";
+            $html.="<table  style=\"width:100%;font-size: 14px\">";
+            $html.="<tr><td><br/><br/>";
+            $html.="法定代表人或委托代理人<br/>（签字或盖章）";
+            $html.="</td>";
+            $html.="<td style=\"text-align: right\"><br/><br/>";
+            $html.="签订日期:&nbsp;&nbsp;&nbsp;&nbsp;年&nbsp;&nbsp;&nbsp;&nbsp;月&nbsp;&nbsp;&nbsp;&nbsp;日";
+            $html.="</td></tr>";
+            $html.="</table>";
+            $html.="<br/><br/><br/>";
+            // 判断文件是否损坏
+            $pic_url = "./uploads/worker/front_{$contract_detail['AvatarEncryption']}.jpeg";
+            $data = @file_get_contents($pic_url);
+            $pic_status = @imagecreatefromstring($data);
+            if( $pic_status != false ){
+                $imgFlag = 1;
+                // echo '图片状态正常！！';
+            }else{
+                $imgFlag = 0;
+                // echo '图片已损坏！！';
+            }
+            if($imgFlag == 1){
+                $html.="<table  style=\"width:100%;font-size: 14px\">";
+                $html.="<tr><td>";
+                $html.="<img src=\"/uploads/worker/front_{$contract_detail['AvatarEncryption']}.jpeg\"  style=\"width:280px;height:160px;\"/>";
+                if (is_file(sprintf("%s/uploads/worker/front_%s.jpeg", WWWPATH, $contract_detail['AvatarEncryption']))===false) {
+                    $html.="<p style=\"text-align: center\">身份证复印件正面粘贴</p>";
+                }
+                $html.="</td>";
+                $html.="<td style=\"text-align: right\">";
+                $html.="<img src=\"/uploads/worker/back_{$contract_detail['AvatarEncryption']}.jpeg\"  style=\"width:280px;height:160px;\"/>";
+                if (is_file(sprintf("%s/uploads/worker/back_%s.jpeg", WWWPATH, $contract_detail['AvatarEncryption']))===false) {
+                    $html.="<p style=\"text-align: center\">身份证复印件反面粘贴</p>";
+                }
+                $html.="</td></tr>";
+                $html.="</table>";
+            }
+            $html.="</div>";
+            $pdf->writeHTML($html, true, false, false, false, 'L');
+            //输出PDF
+            $dirname =IdCardPictureHandler::get_path().date('Ymd/');
+            if(!is_dir($dirname)){
+                mkdir($dirname,0777,true);
+            }
+            $name = $contract_detail['WorkerName'].$contract_detail['IDnumber'];
+            $WorkerName = self::convertEncoding($name);
+            $data = $pdf->Output('t.pdf', 'S');
+            $fileName = $dirname."{$WorkerName}.pdf";
+            $user_agent = $_SERVER['HTTP_USER_AGENT'];
+            $flag1 = substr_count($user_agent,"msie");
+            $flag2 = substr_count($user_agent,"like Gecko");
+            if ($flag1 || $flag2){
+                $WorkerName= urlencode($WorkerName);
+            }
+            file_put_contents($fileName,$data);
+            $dist = IdCardPictureHandler::get_path().$name.'.pdf';
+            Contract::model()->updateAll(array('ContractUrl'=>substr($dist,1)),'Id=:staff',array(':staff'=>$id));
+            $pdf->Output("{$WorkerName}.pdf", 'I');
+        }
+```
+
+## MySQL varchar 最大长度，text 类型占用空间剖析
+MySQL 表中行的最大大小为 65,534（实际行存储从第二个字节开始）字节。每个 BLOB 和 TEXT 列只占其中的 5 至 9 个字节。
+
+varchar 最长是 64k，但是注意 这里的 64k 是整个 row 的长度，要考虑到其它的 column，还有如果存在 not null 的时候也会占用一位，对不同的字符集，有效长度还不一样，比如 utf8，最多 21,845，还要除去别的 column，但是 varchar 在一般情况下存储都够用了。
+
+如果遇到了大文本，考虑使用 text，最大能到 4G。效率来说基本是 char>varchar>text，但是如果使用的是 Innodb 引擎的话，推荐使用 varchar 代替 char。char 和 varchar 可以有默认值，text 不能指定默认值。
+
+
+## 秒的单位
+
+秒的单位都有毫秒，微秒，纳秒，皮秒，飞秒，阿秒，仄秒，幺秒。
+
+1ms (毫秒) 1毫秒=0.001秒=10*3秒(millisecond)
+
+1μs (微秒) 1微秒=0.000001=10*6秒(microsecond)
+
+1ns (纳秒) 1纳秒=0.000000001秒=10*9秒(nanosecond)
+
+1ps (皮秒) 1皮秒=0.000000000001秒=10*12秒
+
+1fs (飞秒) 1飞秒=0.00000000000001秒=10*15秒
+
+1as (阿秒) 1阿秒=0.00000000000000001秒=10*18秒
+
+1zm (仄秒) 1仄秒=0.00000000000000000001秒=10*21秒
+
+1ym (幺秒) 1幺秒=0.00000000000000000000001秒=10*24秒
+
+10后面的数字是指数（3、6、9、12、*15）
+
+## php-fpm推荐配置
+
+ vim /usr/local/php/etc/php-fpm.conf
+```
+源
+
+pm.max_children = 5
+
+pm.start_servers = 2
+
+pm.min_spare_servers = 1
+
+pm.max_spare_servers = 3
+
+;pm.process_idle_timeout = 10s
+
+;pm.max_requests = 500
+
+目标
+
+pm.max_children = 500
+
+pm.start_servers = 20
+
+pm.min_spare_servers = 10
+
+pm.max_spare_servers = 30
+
+;m.process_idle_timeout = 10s
+
+;m.max_requests = 500
+```
+
+
+## 兼容本地图片和网络图片转base64
+```
+                // 兼容本地图片和网络图片转base64
+                // 有多张图片做截取
+                if(substr_count($item['MachineUrl'], ',')){
+                    $base64=explode(',', $item['MachineUrl']);
+                    $images = $base64[0];//照片
+                }else{
+                    $images=$item['MachineUrl'];// 单照片
+                }
+                // 判断是本地图片，还是网络图片
+                if(filter_var($images, FILTER_VALIDATE_URL)){
+                    $images = $this->onlineimgtobase64($images);
+                }else{
+                    $images = fileToBase64('.'.$images);
+                }
+            }
+```
+
+## 通过外网把网络图片转成base64
+```
+/** 通过外网把uploads/tvscreen图片转成base64
+* @param string $img 图片地址
+* @return string
+*/
+public function onlineimgtobase64($img='')
+{
+    $url = 'http://52.82.105.19:81/Img.php';
+    if(Yii::app()->params['Isstatus'] == 1){
+        $url=sprintf($url."?img=%s", $img);
+        $re = curl_requst($url,"GET");
+        return $re;
+    }
+}
+```
+
+## PHP自带方法验证邮箱、URL、IP是否合法的函数
+```
+var_dump(filter_var('bob@example.com', FILTER_VALIDATE_EMAIL));
+var_dump(filter_var('http://example.com', FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED));
+```
+
+## 解决java compiler level does not match the version of the installed java project facet
+因工作的关系，Eclipse开发的Java项目拷来拷去，有时候会报一个很奇怪的错误。明明源码一模一样，为什么项目复制到另一台机器上，就会报“java compiler level does not match the version of the installed java project facet”错误呢？
+
+其实要解决也很简单，在资源管理器下，找到项目所在的目录，在.settings子目录里面，用文本编辑器打开org.eclipse.wst.common.project.facet.core.xml配置文件
+
+修改version，让它与项目的编译器版本设置保持一致即可。
+
+要查看项目的编译器版本设置，在Eclipse环境中，鼠标右键选择项目，点击Properties，选择Java Compiler，可以在窗口右边看到编译器版本
+
+## 执行shell脚本报错：不是有效的标识符ad
+执行shell脚本一直报错
+
+原因是在Windows上用notepad++写的脚本，不是Unix格式的
+
+转为Unix格式即可
+
+建议：直接在Linux环境下编写脚本便不会有格式问题
+
+## java打包war包
+
+右击项目——Export——WAR file
+
+即可打包
+
+## ie11正确卸载与重新安装
+
+去掉勾选——重启即可卸载
+
+勾选中——重启即可安装
+
+
+## php 请求url并且获取返回值
+```
+// $conf = parse_ini_file(dirname(__FILE__) . '/configure.ini');
+// if (!$conf) {
+//     exit("Fatal: failed to read configure.ini file\n");
+// }
+// $javaMacUrl = trim($conf['java_mac_url']);
+// $localMac = trim($conf['local_mac']);
+// $opts = array('http'=>array('header' => "User-Agent:MyAgent/1.0\r\n"));
+// $context = stream_context_create($opts);
+// $javaMac = file_get_contents($javaMacUrl, false,$context);
+// if($localMac!=$javaMac){
+//     header("Content-type: text/html; charset=utf-8");
+//     exit("程序出错了!");
+// }
+```
+
+
+## 用php扩展加密php代码
+扩展地址：
+https://github.com/liexusong/php-beast
+
+在linux中安装beast扩展
+```
+wget https://github.com/liexusong/php-beast/archive/master.zip
+unzip master.zip
+cd php-beast-master
+/usr/local/php/bin/phpize
+./configure --with-php-config=/usr/local/php/bin/php-config
+make && make install
+编译好之后修改php.ini配置文件, 加入配置项: extension=beast.so, 重启php-fpm
+```
+
+更换base扩展源码秘钥
+更换base扩展AES加密源码秘钥后，加密后的文件有变化
+```
+使用AES加密并更换key值为E2r201800xianweb
+
+    	0x45, 0x32, 0x72, 0x32, 0x30, 0x31, 0x38, 0x30,
+            0x30, 0x78, 0x69, 0x61, 0x6E, 0x77, 0x65, 0x62,
+    	0x45	E
+    	0x32	2
+    	0x72	r
+    	0x32	2
+    	0x30	0
+    	0x31	1
+    	0x38	8
+    	0x30	0
+    	0x30	0
+    	0x78	x
+    	0x69	i
+    	0x61	a
+    	0x6E	n
+    	0x77	w
+    	0x65	e
+    	0x62	b
+```
+设置base扩展mac地址绑定
+可绑定多个mac地址
+绑定mac地址后该扩展php-fpm就无法启动了
+
+更改aes加密秘钥和mac地址后
+将index.php和protected文件夹内文件加密
+可以访问，暂时没有发现问题。
+
+## mac地址是什么？
+mac地址就相当于你这个人的身份证号，是全球唯一的，而且mac地址是物理层的，应用于数据链路层的，当一个数据报文要发送时，先添加源目ip地址，再添加源目mac地址，对端收到后，会拆解数据报文，先拆mac地址，然后查看数据报文的目的ip是不是自己，如果是，就会把数据报文自己留下来，如果不是，就会查自己的路由表，看有没有目的ip在里面，有的话，再次把已经拆解的数据报文再次添加上mac地址，继续往下传
+
+
+## 用内网配源，安装lnmp服务
+准备base文件
+
+准备nginx服务指向base文件
+
+/usr/local/nginx/vhosts
+```
+    server {
+            listen       7097;
+            server_name_in_redirect  off;
+            charset utf-8;
+    
+            access_log  www.access.log  main;
+            error_log  logs/www.error.log;
+            set  $wwwroot /home/data/installfile/base;
+            root $wwwroot;
+            index index.html index.htm index.php;
+            location / {
+    	root /home/data/installfile/base;
+    	index index.html index.html;
+    	autoindex on;
+    	autoindex_exact_size off;
+    	autoindex_localtime on;
+    }
+            #error_page  404              /404.html;
+            # redirect server error pages to the static page /50x.html
+            #
+            error_page   500 502 503 504  /50x.html;
+            location = /50x.html {
+                    root   html;
+            }
+    
+            # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+            #
+            #location ~ \.php$ {
+            #    proxy_pass   http://127.0.0.1;
+            #}
+    
+            # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+            #
+            location ~ \.php?.*$ {
+                    root           $wwwroot;
+                    fastcgi_pass   127.0.0.1:9000;
+                    fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+                    fastcgi_connect_timeout 240;
+                    fastcgi_send_timeout 240;
+                    fastcgi_read_timeout 240;
+                    fastcgi_buffer_size 64k;
+                    fastcgi_buffers 4 64k;
+                    fastcgi_busy_buffers_size 128k;
+                    fastcgi_temp_file_write_size 128k;
+                    include        fastcgi_params;
+            }
+    
+            location ~* \.(gif|jpg|jpeg|png|bmp|swf|otf|svg|eot|ttf|woff)$
+            {
+                      root                  $wwwroot;
+                      expires               30d;
+            }
+    
+            location ~* \.(js|css)?$
+            {
+                      root                  $wwwroot;
+                      expires               1d;
+            }
+    
+            #include common.conf;
+    
+            # deny access to .htaccess files, if Apache's document root
+            # concurs with nginx's one
+            #
+            location ~ /\.ht {
+                deny  all;
+            }
+    }
+```
+在另一台服务器更改/etc/yum.repos.d/centos.repo
+```
+    [centos]
+    name=centos
+    baseurl=http://10.0.21.193:7097
+    gpgcheck=0
+    enabled=1
+```
+yum clean all
+
+
 ## 设置php不报错
 ```
 define('DEBUG',false); // 在开发时,声明一个DEBUG模式 
