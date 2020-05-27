@@ -1,12 +1,13 @@
-php-fpm配置文件详解
-第一部分：FPM 配置
+# php-fpm配置文件详解
+
+## 第一部分：FPM 配置
 -p　: 命令行中动态修改--prefix 　
 
- ;include=etc/fpm.d/*.conf　　#用于包含一个或多个文件，如果glob(3)存在(glob()函数返回匹配指定模式的文件名或目录)
-第二部分：全局配置
- 由标志[global]开始：
+;include=etc/fpm.d/*.conf　　#用于包含一个或多个文件，如果glob(3)存在(glob()函数返回匹配指定模式的文件名或目录)
 
-复制代码
+## 第二部分：全局配置
+由标志[global]开始：
+```
 ;pid = run/php-fpm.pid　　　　　   设置pid文件的位置，默认目录路径 /usr/local/php/var
 ;error_log = log/php-fpm.log　　  记录错误日志的文件，默认目录路径 /usr/local/php/var
 ;syslog.facility = daemon　　　　  用于指定什么类型的程序日志消息。
@@ -28,17 +29,20 @@ php-fpm配置文件详解
 　　; - port       (Solaris >= 10)
 ;daemonize = yes　　　　　　　　　　 将fpm转至后台运行，如果设置为"no"，那么fpm会运行在前台
 ;systemd_interval = 10
-复制代码
-第三部分：进程池的定义
-         通过监听不同的端口和不用管理选择可以定义多个不同的子进程池，进程池被用于记录和统计，对于fpm能够处理进程池数目的多少并没有限制
+```
+## 第三部分：进程池的定义
+通过监听不同的端口和不用管理选择可以定义多个不同的子进程池，进程池被用于记录和统计，对于fpm能够处理进程池数目的多少并没有限制
 
-          其中$pool变量可以在任何指令中使用，他将会替代相应的进程池名字。例如：这里的[www]
+其中$pool变量可以在任何指令中使用，他将会替代相应的进程池名字。例如：这里的[www]
 
-   [root@test ～]# ps -ef | grep php-fpm
-    root      3028     1  0 20:33 ?        00:00:00 php-fpm: master process (/usr/local/php/etc/php-fpm.conf)
-    nobody    3029  3028  0 20:33 ?        00:00:00 php-fpm: pool www          
-    nobody    3030  3028  0 20:33 ?        00:00:00 php-fpm: pool www
-复制代码
+```
+[root@test ～]# ps -ef | grep php-fpm
+root      3028     1  0 20:33 ?        00:00:00 php-fpm: master process (/usr/local/php/etc/php-fpm.conf)
+nobody    3029  3028  0 20:33 ?        00:00:00 php-fpm: pool www          
+nobody    3030  3028  0 20:33 ?        00:00:00 php-fpm: pool www
+```
+
+```
 [www]
 ; It only applies on the following directives:
 ; - 'access.log'
@@ -176,14 +180,14 @@ pm.max_spare_servers = 3
 ;php_admin_value[error_log] = /var/log/fpm-php.www.log
 ;php_admin_flag[log_errors] = on
 ;php_admin_value[memory_limit] = 32M
-复制代码
+```
  
 
 总结：
-      在php-fpm的配置文件中，有两个指令非常重要，就是"pm.max_children" 和 "request_terminate_timeout"
+在php-fpm的配置文件中，有两个指令非常重要，就是"pm.max_children" 和 "request_terminate_timeout"
 
-     　 "pm.max_children" 确定了php-fpm的处理能力，原则上时越多越好，但这个是在内存足够打的前提下，每开启一个php-fpm进程要占用近30M左右的内存
+"pm.max_children" 确定了php-fpm的处理能力，原则上时越多越好，但这个是在内存足够打的前提下，每开启一个php-fpm进程要占用近30M左右的内存
 
-　      如果请求访问较多，那么可能会出现502，504错误。对于502错误来说，属于繁忙进程而造成的，对于504来说，就是客户发送的请求在限定的时间内没有得到相应，过多的请求导致“504  Gateway  Time-out”。这里也有可能是服务器带宽问题。
+如果请求访问较多，那么可能会出现502，504错误。对于502错误来说，属于繁忙进程而造成的，对于504来说，就是客户发送的请求在限定的时间内没有得到相应，过多的请求导致“504  Gateway  Time-out”。这里也有可能是服务器带宽问题。
 
-       另外一个需要注意的指令"request_terminate_timeout"，它决定php-fpm进程的连接/发送和读取的时间，如果设置过小很容易出现"502 Bad Gateway" 和 “504  Gateway  Time-out”，默认为0，就是说没有启用，不加限制，但是这种设置前提是你的php-fpm足够健康，这个需要根据实际情况加以限定。
+另外一个需要注意的指令"request_terminate_timeout"，它决定php-fpm进程的连接/发送和读取的时间，如果设置过小很容易出现"502 Bad Gateway" 和 “504  Gateway  Time-out”，默认为0，就是说没有启用，不加限制，但是这种设置前提是你的php-fpm足够健康，这个需要根据实际情况加以限定。
