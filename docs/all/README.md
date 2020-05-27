@@ -14,11 +14,17 @@ meta:
 ---
 
 # 最新文章
+## [sqlyog使用指南](/all/sqlyog使用指南/)  `修仙` 
+> sqlyog使用指南
+
+## [sqldeveloper使用指南](/all/sqldeveloper使用指南/)  `修仙` 
+> sqldeveloper使用指南
+
+## [php-fpm配置文件详解](/all/php-fpm配置文件详解/)  `修仙` 
+> php-fpm配置文件详解
+
 ## [单片机使用指南](/all/单片机使用指南/)  `修仙` 
 > 单片机使用指南 
-
-## [pixkel使用指南](/all/pixkel使用指南/)  `修仙` 
-> pixkel使用指南 
 
 ## [查克拉游戏](/good/查克拉游戏/)  `修仙` 
 > 查克拉游戏 
