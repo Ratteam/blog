@@ -1,8 +1,1110 @@
 
-## sqldeveloper的安装及其使用教程
-https://www.cnblogs.com/jepson6669/p/9429763.html
-## SQLyog详细使用教程
-http://www.pianshen.com/article/8428130368/
+
+## java获取客户端url
+```
+        String requestUrl = getRequest().getServerName();
+    	String checkUrl = prop.get("CheckUrl");//CheckUrl
+    	boolean checkUrlFlag = checkUrl.equals(requestUrl);
+    	if(!checkUrlFlag) {
+    		renderText("error:url验证失败");
+    		return;
+    	}
+```
+
+String requestUrl = getRequest().getServerName();
+
+String getServerName()：获取服务器名，localhost；
+
+String getServerPort()：获取服务器端口号，8080；
+
+String getContextPath()：获取项目名，/Example；
+
+String getServletPath()：获取Servlet路径，/AServlet；
+
+String getQueryString()：获取参数部分，即问号后面的部分：username=zhangsan
+
+String getRequestURI()：获取请求URI，等于项目名+Servlet路径：/Example/AServlet
+
+String getRequestURL()：获取请求URL，等于不包含参数的整个请求路径：http://localhost:8080/Example/AServlet
+
+String request.getRemoteAddr()：获取服务器的IP，如localhost对应ip为127.0.0.1
+
+
+## Java获取当前时间的年月日方法
+```
+package com.ob;  
+  
+import java.text.ParseException;  
+import java.text.SimpleDateFormat;  
+import java.util.Calendar;  
+import java.util.Date;  
+  
+public class DateTest {  
+  
+    public static void main(String[] args) throws ParseException {  
+        Calendar now = Calendar.getInstance();  
+        System.out.println("年: " + now.get(Calendar.YEAR));  
+        System.out.println("月: " + (now.get(Calendar.MONTH) + 1) + "");  
+        System.out.println("日: " + now.get(Calendar.DAY_OF_MONTH));  
+        System.out.println("时: " + now.get(Calendar.HOUR_OF_DAY));  
+        System.out.println("分: " + now.get(Calendar.MINUTE));  
+        System.out.println("秒: " + now.get(Calendar.SECOND));  
+        System.out.println("当前时间毫秒数：" + now.getTimeInMillis());  
+        System.out.println(now.getTime());  
+  
+        Date d = new Date();  
+        System.out.println(d);  
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+        String dateNowStr = sdf.format(d);  
+        System.out.println("格式化后的日期：" + dateNowStr);  
+          
+        String str = "2012-1-13 17:26:33";  //要跟上面sdf定义的格式一样  
+        Date today = sdf.parse(str);  
+        System.out.println("字符串转成日期：" + today);  
+    }  
+}  
+```
+
+## Java中比较两个字符串是否相等的问题
+==比较的是两个字符串的地址是否为相等（同一个地址），equals()方法比较的是两个字符串对象的内容是否相同（当然，若两个字符串引用同一个地址，使用equals()比较也返回true）。
+
+## java 报错java.security.InvalidKeyException: Illegal key size。
+
+在项目使用加解密时，发生了异常？由于在同事电脑上运行正常，所以很奇怪。run 运行时也没有异常，就是null。
+
+debug测试发现，在解密和加密时发生了异常。java.security.InvalidKeyException: Illegal key size
+
+而run没有异常抛出时因为代码里catch异常后，没有向外抛出。导致看不到异常，这是一个不好的习惯。
+
+搜索后发现是由于jdk限制策略，导致只能128位key进行加解密，而256位加解密则抛出异常。
+
+加解密使用的jdk里的如下两个jar包。
+
+jdk 1.8处理：去以下地址下载，解压后替换原来的jar。
+
+https://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html
+
+再次运行则正常了。
+
+
+## java 错误: 编码GBK的不可映射字符
+解决办法：
+
+1.使用javac -encoding UTF-8 test.java  编译通过：
+
+2.修改文件encoding编码为 ANSI，编译通过：
+
+## java jar包下载的网站
+https://mvnrepository.com/
+
+## java HelloWorld时报错:"找不到或无法加载主类"问题的解决办法
+javac HelloWorld.java
+java HelloWorld
+
+注意:
+不要带.class
+检查第一行是否有package e2r.cn;
+
+## java执行单文件、javac编译单文件、多文件引入jar包、-cp解决无法加载主类问题
+注意：路径在linux中用：隔开  在windows中用；隔开，对于.class文件来说，只需要指明包的路径即可；但是对于jar文件来说，必须要指定全路径即路径+文件名的格式，不能只指定一个路径
+windows环境
+javac -cp Desktop\test\lib\pinyin4j-2.5.0.jar Desktop\test\src\A.java
+java -cp Desktop\test\lib\pinyin4j-2.5.0.jar;Desktop\test\src A 不可不可以
+
+javac -encoding UTF-8 -cp /test/lib/sigar.jar /test/src/GetComputerInfo.java
+java -cp /test/lib/sigar.jar;/test/src/GetComputerInfo
+
+linux环境
+javac -cp /test/lib/sigar.jar /test/src/GetComputerInfo.java
+java -cp /test/lib/sigar.jar:/test/src GetComputerInfo
+
+## java获取linux和windos服务器信息和验证器
+获取
+```
+package e2r.cn;
+import org.apache.commons.codec.binary.Base64;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Security;
+import java.security.spec.AlgorithmParameterSpec;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.lang.management.ManagementFactory;
+
+import com.jfinal.core.Controller;
+import com.jfinal.kit.Prop;
+import com.jfinal.kit.PropKit;
+import com.sun.management.OperatingSystemMXBean;
+
+import com.jfinal.core.Controller;
+
+public class GetAesPcInfoController extends Controller{
+	private static Prop prop = PropKit.use("config.properties");//加载配置文件
+    private static final String CHARSET_NAME = "UTF-8";
+    private static final String AES_NAME = "AES";
+    private static final String ALGORITHM = "AES/CBC/PKCS7Padding";
+	static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+    /**
+               * 加密
+     * @param content
+     * @param key
+     * @return
+     */
+    public static String encrypt(String content, String key) {
+        byte[] result = null;
+        try {
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(CHARSET_NAME), AES_NAME);
+            AlgorithmParameterSpec paramSpec = new IvParameterSpec(subBytes(key.getBytes(CHARSET_NAME)));
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, paramSpec);
+            result = cipher.doFinal(content.getBytes(CHARSET_NAME));
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return Base64.encodeBase64String(result);
+    }
+
+    /**
+               * 解密
+     * @param content
+     * @param key
+     * @return
+     */
+    public static String decrypt(String content, String key) {
+        try {
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(CHARSET_NAME), AES_NAME);
+            AlgorithmParameterSpec paramSpec = new IvParameterSpec(subBytes(key.getBytes(CHARSET_NAME)));
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, paramSpec);
+            return new String(cipher.doFinal(Base64.decodeBase64(content)), CHARSET_NAME);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+                * 从一个byte[]数组中截取一部分
+     * @param src
+     * @return
+     */
+    public static byte[] subBytes(byte[] src) {
+        if (src.length < 16) {
+            throw new RuntimeException("无法从Key中获取偏移量!");
+        }
+        byte[] bs = new byte[16];
+        for (int i = 0; i < 16; i++) {
+            bs[i] = src[i];
+        }
+        return bs;
+    }
+    public static Desk getDisk_linux() {
+        Desk desk = new Desk();
+        try {
+            Runtime rt = Runtime.getRuntime();
+            Process p = rt.exec("df -hl");// df -hl 查看硬盘空间
+            BufferedReader in = null;
+            try {
+                in = new BufferedReader(new InputStreamReader(
+                        p.getInputStream()));
+                String str = null;
+                String[] strArray = null;
+                int line = 0;
+                while ((str = in.readLine()) != null) {
+                    line++;
+                    if (line != 2) {
+                        continue;
+                    }
+                    int m = 0;
+                    strArray = str.split(" ");
+                    for (String para : strArray) {
+                        if (para.trim().length() == 0)
+                            continue;
+                        ++m;
+                        if (para.endsWith("G") || para.endsWith("Gi")) {
+                            // 目前的服务器
+                            if (m == 2) {
+                                desk.setTotal(para);
+                            }
+                            if (m == 3) {
+                                desk.setUsed(para);
+                            }
+                        }
+                        if (para.endsWith("%")) {
+                            if (m == 5) {
+                                desk.setUse_rate(para);
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                in.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return desk;
+    }
+ 
+    public static class Desk {
+        private String total;
+        private String used;
+        private String use_rate;
+         
+        public String toString(){
+            return total;
+        }
+ 
+        public String getTotal() {
+            return total;
+        }
+ 
+        public void setTotal(String total) {
+            this.total = total;
+        }
+ 
+        public String getUsed() {
+            return used;
+        }
+ 
+        public void setUsed(String used) {
+            this.used = used;
+        }
+ 
+        public String getUse_rate() {
+            return use_rate;
+        }
+ 
+        public void setUse_rate(String use_rate) {
+            this.use_rate = use_rate;
+        }
+ 
+    }
+	/**
+	 * TODO 获取文件系统使用率
+	 * 
+	 * @return
+	 */
+	private static double getDisk_windows() {
+		double total = 0;
+		for (char c = 'A'; c <= 'Z'; c++) {
+			String dirName = c + ":/";
+			File win = new File(dirName);
+			if (win.exists()) {
+				total = win.getTotalSpace() / 1024.0 / 1024.0 / 1024.0;
+				// 保留一位小数
+				total = Double.valueOf(String.valueOf(total).substring(0, String.valueOf(total).indexOf(".") + 2));	
+				break;
+			}
+		}
+		return total;
+	}
+ 
+	/**
+	 * TODO 获取内存使用率
+	 * 
+	 * @return
+	 */
+	private static long getMemory_windows() {
+		OperatingSystemMXBean osmxb = (com.sun.management.OperatingSystemMXBean) ManagementFactory
+				.getOperatingSystemMXBean();
+		// 物理内存（内存条）
+		long physicalMemorySize = osmxb.getTotalPhysicalMemorySize();
+		return physicalMemorySize;
+	}
+ 
+	/**
+	 * 获取CPU_SN linux
+	 * 
+	 * @return
+	 */
+	public static String getCPU_linux() throws InterruptedException {
+		String result = "";
+		String CPU_ID_CMD = "dmidecode";
+		BufferedReader bufferedReader = null;
+		Process p = null;
+		try {
+			p = Runtime.getRuntime().exec(new String[] { "sh", "-c", CPU_ID_CMD });// 管道
+			bufferedReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line = null;
+			int index = -1;
+			while ((line = bufferedReader.readLine()) != null) {
+				// 寻找标示字符串[hwaddr]
+				index = line.toLowerCase().indexOf("uuid");
+				if (index >= 0) {// 找到了
+					// 取出MAC并去除2边空格
+					result = line.substring(index + "uuid".length() + 1).trim();
+					break;
+				}
+			}
+ 
+		} catch (IOException e) {
+		}
+		return result.trim();
+	}
+	/**
+     * 获取客户端IP
+     * 
+     * @return
+     */
+    public static String getIP_linux() throws IOException {
+        return InetAddress.getLocalHost().getHostAddress().toString();
+    }
+	private static String getIP_windows() throws IOException {
+		 	String ip = null;
+	        InetAddress addr;
+	        addr = InetAddress.getLocalHost();
+	        ip = addr.getHostAddress();
+	        return ip;
+	}
+	public static String getCPU_windows() {
+		Process process;
+		String serial = null;
+		try {
+			process = Runtime.getRuntime().exec(
+					new String[] { "wmic", "cpu", "get", "ProcessorId" });
+			process.getOutputStream().close();
+			Scanner sc = new Scanner(process.getInputStream());
+			String property = sc.next();
+			serial = sc.next();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return serial;
+	}
+
+        /*
+                          * 获取Linux的mac
+         */
+        public static String getMAC_linux() {
+		
+		String mac = null;
+		BufferedReader bufferedReader = null;
+		Process process = null;
+		try {
+			// linux下的命令，一般取eth0作为本地主网卡
+			process = Runtime.getRuntime().exec("ifconfig");
+			// 显示信息中包含有MAC信息
+			bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line = null;
+			while ((line = bufferedReader.readLine()) != null) 
+			 {
+				 Pattern pat = Pattern.compile("\\b\\w+:\\w+:\\w+:\\w+:\\w+:\\w+\\b");
+				 Matcher mat= pat.matcher(line);
+				 if(mat.find())
+				 {
+					 mac=mat.group(0);
+				 }
+			 }
+ 
+		} catch (IOException e) {
+		} finally {
+			try {
+				if (bufferedReader != null) {
+					bufferedReader.close();
+				}
+			} catch (IOException e1) {
+			}
+			bufferedReader = null;
+			process = null;
+		}
+		return mac;
+	}
+    	/**
+    	 * 获取widnows网卡的MAC.
+    	 */
+    	public static String getMAC_windows() {
+        {  
+        	StringBuffer sb = new StringBuffer("");
+            try   
+            {  
+        		InetAddress ia = InetAddress.getLocalHost();
+        		// TODO Auto-generated method stubַ
+        		byte[] mac = NetworkInterface.getByInetAddress(ia).getHardwareAddress();
+        		
+        		for(int i=0; i<mac.length; i++) {
+        			if(i!=0) {
+        				sb.append("-");
+        			}
+        			int temp = mac[i]&0xff;
+        			String str = Integer.toHexString(temp);
+        			if(str.length()==1) {
+        				sb.append("0"+str);
+        			}else {
+        				sb.append(str);
+        			}
+        		}             
+            } catch (Exception e) {  
+                e.printStackTrace();  
+            } 
+              
+            return sb.toString().toUpperCase();  
+        }
+    }
+	/**
+     * Purpose:采集内存使用率
+     * @param args
+     * @return float,内存使用率,小于1
+     */
+    public static float getMemory_linux() {
+        long totalMem = 0;
+        Process pro = null;
+        Runtime r = Runtime.getRuntime();
+        try {
+            String command = "cat /proc/meminfo";
+            pro = r.exec(command);
+            BufferedReader in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            String line = null;
+            while((line=in.readLine()) != null){ 
+                String[] memInfo = line.split("\\s+");
+                if(memInfo[0].startsWith("MemTotal")){
+                    totalMem = Long.parseLong(memInfo[1]);
+                    break;
+                }               
+            }
+            in.close();
+            pro.destroy();
+        } catch (IOException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+        }    
+        return totalMem;
+    }
+    public void index() throws Exception {
+		String Key = prop.get("Key");//key
+    	String msg = null;
+    	String os = null;
+    	os = System.getProperty("os.name").toUpperCase();
+		if("LINUX".equals(os)) {
+			msg = (
+			"OS:" + os+"&"+
+			"CPU_SN:" + getCPU_linux()+"&"+
+			"IP:" + getIP_linux()+"&"+
+			"MAC:" + getMAC_linux()+"&"+
+			"DISK_SIZE:" + getDisk_linux()+"&"+
+			"MEMORY_SIZE:" + getMemory_linux());
+		}else {
+			msg = ("OS:" + os+"&"+
+			"CPU_SN:" + getCPU_windows()+"&"+
+			"IP:" + getIP_windows()+"&"+
+			"MAC:" + getMAC_windows()+"&"+
+			"DISK_SIZE:" + getDisk_windows()+"G"+"&"+
+			"MEMORY_SIZE:" + getMemory_windows());
+		}
+        String mystr = msg;
+        String secret = Key;
+        String encode = encrypt(mystr, secret);
+//        renderText(msg);
+        renderText(encode);
+    }
+}
+
+```
+验证
+```
+package e2r.cn;
+import org.apache.commons.codec.binary.Base64;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Security;
+import java.security.spec.AlgorithmParameterSpec;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Date;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.lang.management.ManagementFactory;
+
+import com.jfinal.core.Controller;
+import com.jfinal.kit.Prop;
+import com.jfinal.kit.PropKit;
+import com.sun.management.OperatingSystemMXBean;
+
+import com.jfinal.core.Controller;
+import com.jfinal.kit.Prop;
+import com.jfinal.kit.PropKit;
+import com.jfinal.plugin.activerecord.Page;
+import com.jfinal.plugin.activerecord.Record;
+
+public class CheckAesPcInfoController extends Controller{
+	private static Prop prop = PropKit.use("config.properties");//加载配置文件
+    private static final String CHARSET_NAME = "UTF-8";
+    private static final String AES_NAME = "AES";
+    private static final String ALGORITHM = "AES/CBC/PKCS7Padding";
+	static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+    /**
+     * 加密
+     * @param content
+     * @param key
+     * @return
+     */
+    public static String encrypt(String content, String key) {
+        byte[] result = null;
+        try {
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(CHARSET_NAME), AES_NAME);
+            AlgorithmParameterSpec paramSpec = new IvParameterSpec(subBytes(key.getBytes(CHARSET_NAME)));
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, paramSpec);
+            result = cipher.doFinal(content.getBytes(CHARSET_NAME));
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return Base64.encodeBase64String(result);
+    }
+
+    /**
+     * 解密
+     * @param content
+     * @param key
+     * @return
+     */
+    public static String decrypt(String content, String key) {
+        try {
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(CHARSET_NAME), AES_NAME);
+            AlgorithmParameterSpec paramSpec = new IvParameterSpec(subBytes(key.getBytes(CHARSET_NAME)));
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, paramSpec);
+            return new String(cipher.doFinal(Base64.decodeBase64(content)), CHARSET_NAME);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+                * 从一个byte[]数组中截取一部分
+     * @param src
+     * @return
+     */
+    public static byte[] subBytes(byte[] src) {
+        if (src.length < 16) {
+            throw new RuntimeException("无法从Key中获取偏移量!");
+        }
+        byte[] bs = new byte[16];
+        for (int i = 0; i < 16; i++) {
+            bs[i] = src[i];
+        }
+        return bs;
+    }
+    public static Desk getDisk_linux() {
+        Desk desk = new Desk();
+        try {
+            Runtime rt = Runtime.getRuntime();
+            Process p = rt.exec("df -hl");// df -hl 查看硬盘空间
+            BufferedReader in = null;
+            try {
+                in = new BufferedReader(new InputStreamReader(
+                        p.getInputStream()));
+                String str = null;
+                String[] strArray = null;
+                int line = 0;
+                while ((str = in.readLine()) != null) {
+                    line++;
+                    if (line != 2) {
+                        continue;
+                    }
+                    int m = 0;
+                    strArray = str.split(" ");
+                    for (String para : strArray) {
+                        if (para.trim().length() == 0)
+                            continue;
+                        ++m;
+                        if (para.endsWith("G") || para.endsWith("Gi")) {
+                            // 目前的服务器
+                            if (m == 2) {
+                                desk.setTotal(para);
+                            }
+                            if (m == 3) {
+                                desk.setUsed(para);
+                            }
+                        }
+                        if (para.endsWith("%")) {
+                            if (m == 5) {
+                                desk.setUse_rate(para);
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                in.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return desk;
+    }
+ 
+    public static class Desk {
+        private String total;
+        private String used;
+        private String use_rate;
+         
+        public String toString(){
+            return total;
+        }
+ 
+        public String getTotal() {
+            return total;
+        }
+ 
+        public void setTotal(String total) {
+            this.total = total;
+        }
+ 
+        public String getUsed() {
+            return used;
+        }
+ 
+        public void setUsed(String used) {
+            this.used = used;
+        }
+ 
+        public String getUse_rate() {
+            return use_rate;
+        }
+ 
+        public void setUse_rate(String use_rate) {
+            this.use_rate = use_rate;
+        }
+ 
+    }
+	/**
+	 * TODO 获取文件系统使用率
+	 * 
+	 * @return
+	 */
+	private static double getDisk_windows() {
+		double total = 0;
+		for (char c = 'A'; c <= 'Z'; c++) {
+			String dirName = c + ":/";
+			File win = new File(dirName);
+			if (win.exists()) {
+				total = win.getTotalSpace() / 1024.0 / 1024.0 / 1024.0;
+				// 保留一位小数
+				total = Double.valueOf(String.valueOf(total).substring(0, String.valueOf(total).indexOf(".") + 2));	
+				break;
+			}
+		}
+		return total;
+	}
+ 
+	/**
+	 * TODO 获取内存使用率
+	 * 
+	 * @return
+	 */
+	private static long getMemory_windows() {
+		OperatingSystemMXBean osmxb = (com.sun.management.OperatingSystemMXBean) ManagementFactory
+				.getOperatingSystemMXBean();
+		// 物理内存（内存条）
+		long physicalMemorySize = osmxb.getTotalPhysicalMemorySize();
+		return physicalMemorySize;
+	}
+ 
+	/**
+	 * 获取CPU_SN linux
+	 * 
+	 * @return
+	 */
+	public static String getCPU_linux() throws InterruptedException {
+		String result = "";
+		String CPU_ID_CMD = "dmidecode";
+		BufferedReader bufferedReader = null;
+		Process p = null;
+		try {
+			p = Runtime.getRuntime().exec(new String[] { "sh", "-c", CPU_ID_CMD });// 管道
+			bufferedReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line = null;
+			int index = -1;
+			while ((line = bufferedReader.readLine()) != null) {
+				// 寻找标示字符串[hwaddr]
+				index = line.toLowerCase().indexOf("uuid");
+				if (index >= 0) {// 找到了
+					// 取出MAC并去除2边空格
+					result = line.substring(index + "uuid".length() + 1).trim();
+					break;
+				}
+			}
+ 
+		} catch (IOException e) {
+		}
+		return result.trim();
+	}
+	/**
+     * 获取客户端IP
+     * 
+     * @return
+     */
+    public static String getIP_linux() throws IOException {
+        return InetAddress.getLocalHost().getHostAddress().toString();
+    }
+	private static String getIP_windows() throws IOException {
+		 	String ip = null;
+	        InetAddress addr;
+	        addr = InetAddress.getLocalHost();
+	        ip = addr.getHostAddress();
+	        return ip;
+	}
+	public static String getCPU_windows() {
+		Process process;
+		String serial = null;
+		try {
+			process = Runtime.getRuntime().exec(
+					new String[] { "wmic", "cpu", "get", "ProcessorId" });
+			process.getOutputStream().close();
+			Scanner sc = new Scanner(process.getInputStream());
+			String property = sc.next();
+			serial = sc.next();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return serial;
+	}
+
+        /*
+                          * 获取Linux的mac
+         */
+        public static String getMAC_linux() {
+		
+		String mac = null;
+		BufferedReader bufferedReader = null;
+		Process process = null;
+		try {
+			// linux下的命令，一般取eth0作为本地主网卡
+			process = Runtime.getRuntime().exec("ifconfig");
+			// 显示信息中包含有MAC信息
+			bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line = null;
+			while ((line = bufferedReader.readLine()) != null) 
+			 {
+				 Pattern pat = Pattern.compile("\\b\\w+:\\w+:\\w+:\\w+:\\w+:\\w+\\b");
+				 Matcher mat= pat.matcher(line);
+				 if(mat.find())
+				 {
+					 mac=mat.group(0);
+				 }
+			 }
+ 
+		} catch (IOException e) {
+		} finally {
+			try {
+				if (bufferedReader != null) {
+					bufferedReader.close();
+				}
+			} catch (IOException e1) {
+			}
+			bufferedReader = null;
+			process = null;
+		}
+		return mac;
+	}
+    	/**
+    	 * 获取widnows网卡的MAC.
+    	 */
+    	public static String getMAC_windows() {
+        {  
+        	StringBuffer sb = new StringBuffer("");
+            try   
+            {  
+        		InetAddress ia = InetAddress.getLocalHost();
+        		// TODO Auto-generated method stubַ
+        		byte[] mac = NetworkInterface.getByInetAddress(ia).getHardwareAddress();
+        		
+        		for(int i=0; i<mac.length; i++) {
+        			if(i!=0) {
+        				sb.append("-");
+        			}
+        			int temp = mac[i]&0xff;
+        			String str = Integer.toHexString(temp);
+        			if(str.length()==1) {
+        				sb.append("0"+str);
+        			}else {
+        				sb.append(str);
+        			}
+        		}             
+            } catch (Exception e) {  
+                e.printStackTrace();  
+            } 
+              
+            return sb.toString().toUpperCase();  
+        }
+    }
+	/**
+     * Purpose:采集内存使用率
+     * @param args
+     * @return float,内存使用率,小于1
+     */
+    public static float getMemory_linux() {
+        long totalMem = 0;
+        Process pro = null;
+        Runtime r = Runtime.getRuntime();
+        try {
+            String command = "cat /proc/meminfo";
+            pro = r.exec(command);
+            BufferedReader in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            String line = null;
+            while((line=in.readLine()) != null){ 
+                String[] memInfo = line.split("\\s+");
+                if(memInfo[0].startsWith("MemTotal")){
+                    totalMem = Long.parseLong(memInfo[1]);
+                    break;
+                }               
+            }
+            in.close();
+            pro.destroy();
+        } catch (IOException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+        }    
+        return totalMem;
+    }
+    public void getServer() {
+//    	String param = getPara("param");
+    	String param = "05HICfOg4YS65FuYS2KiJ3Gh0XVF3sS9ERBuIRsvNYUBVteQ0PNa7SYCpTriH+hSGavlWo1m93NnI8YomVvi4/w6/T0KNkB0NJv7vQhOIH5VQ4ZfDjYKPRJ3lXTGQTnq7zzlinwkbQr0Fl+St79zcp3dSFtCbkVF7QX8gZrrltk=";
+    	renderText(param);
+    }
+//	public static void main(String[] args) throws Exception {
+//		String param = "05HICfOg4YS65FuYS2KiJ3Gh0XVF3sS9ERBuIRsvNYUBVteQ0PNa7SYCpTriH+hSGavlWo1m93NnI8YomVvi4/w6/T0KNkB0NJv7vQhOIH5VQ4ZfDjYKPRJ3lXTGQTnq7zzlinwkbQr0Fl+St79zcp3dSFtCbkVF7QX8gZrrltk=";
+//		if (param == null || param.trim().length() == 0) {
+//    		System.out.println("error");
+//			return;
+//    	}else {
+//    		String Key = prop.get("Key");//key
+//    		String OSInfo = prop.get("OSInfo");//OSInfo
+//        	String mystr = param;
+//        	String secret = Key;
+//        	String decode = decrypt(mystr, secret);
+////        	System.out.println(decode);
+////        	System.out.println(OSInfo);
+//        	if(OSInfo.equals(decode)) {
+//        		Date d = new Date();
+//        		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
+//                String dateNowStr = sdf.format(d);
+//        		String Salt = prop.get("Salt");//Salt
+//        		String msg = param+"&"+Salt+"&"+dateNowStr;
+////        		System.out.println(msg);
+//        		String encode = encrypt(msg, secret);
+////        		System.out.println(encode);
+//        	}else {
+//        		System.out.println("fail");
+//        	}
+//    	}
+//	}
+    public void index() throws Exception {
+    	String requestUrl = getRequest().getServerName();
+    	String checkUrl = prop.get("CheckUrl");//CheckUrl
+    	boolean checkUrlFlag = checkUrl.equals(requestUrl);
+    	if(!checkUrlFlag) {
+    		renderText("error:url验证失败");
+    		return;
+    	}
+    	String param = getPara("param");
+		if (param == null || param.trim().length() == 0) {
+			renderText("error:请求参数不能为空");
+			return;
+    	}else {
+    		String Key = prop.get("Key");//key
+    		String OSInfo = prop.get("OSInfo");//OSInfo
+        	String mystr = param;
+        	String secret = Key;
+        	String decode = decrypt(mystr, secret);
+        	boolean checkOSInfoFlag = OSInfo.equals(decode);
+        	if(checkOSInfoFlag) {
+        		Date d = new Date();
+        		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
+                String dateNowStr = sdf.format(d);
+        		String Salt = prop.get("Salt");//Salt
+        		String msg = param+"&"+Salt+"&"+dateNowStr;
+        		String encode = encrypt(msg, secret);
+        		renderText(encode);
+        		return;
+        	}else {
+        		renderText("error:信息验证失败");
+        		return;
+        	}
+    	}
+    }
+}
+```
+
+## vscode正则表达式示例
+```
+下面是一些可能的恶意活动：
+目标	Expression	示例
+与任何单个字符匹配（换行符除外）	方法。	a.o 匹配“around”中的“aro”及“about”中的“abo”，但不匹配“across”中的“acro”。
+零次或多次匹配前面的表达式（匹配尽可能多的字符）	*	a*r 匹配“rack”中的“r”，“ark”中的“ar”和“aardvark”中的“aar”
+零次或多次匹配任何字符（通配符 *）	.*	c.*e 匹配“racket”中的“cke”，“comment”中的“comme”和“code”中的“code”
+一次或多次匹配前面的表达式（匹配尽可能多的字符）	+	e.+e 匹配“feeder”中的“eede”，而不是“ee”。
+一次或多次匹配任意字符（通配符 ?）	.+	e.+e 匹配“feeder”中的“eede”，而不是“ee”。
+零次或多次匹配前面的表达式（匹配尽可能多的字符）	*?	e.*?e 匹配“feeder”中的“ee”，而不是“eede”。
+一次或多次匹配前面的表达式（匹配尽可能多的字符）	+?	e.+?e 匹配“enterprise”中的“ente”和“erprise”，但不匹配整个单词“enterprise”。
+将匹配字符串定位到行或字符串的开头	^	^car 仅在出现于行开头时才匹配单词“car”。
+将匹配字符串定位到行尾	\r?$	End\r?$ 仅在出现于行尾时才匹配“end”。
+匹配集中的任何单个字符	[abc]	b[abc] 匹配“ba”、“bb”和“bc”。
+匹配的字符范围中的任意字符	[a-f]	be[n-t] 匹配“between”中的“bet”，“beneath”中的“ben”，“beside”中的“bes”，但不匹配“below”。
+捕获包含在括号中的表达式并对其进行隐式编号	()	([a-z])X\1 匹配“aXa”和“bXb”，但不匹配“aXb”。 ". “\1”是指第一个表达式组“[a-z]”。
+使匹配无效	(?!abc)	real (?!ity) 匹配“realty”和“really”中的“real”，但不匹配“reality”。 它还可找到“realityreal”中的第二个“real”（而非第一个“real”）。
+匹配不在给定字符集中的任意字符	[^abc]	be[^n-t] 匹配“before”中的“bef”，“behind”中的“beh”和“below”中的“bel”，但不匹配“beneath”。
+匹配符号前或符号后的表达式。	|	(sponge&#124;mud) bath 匹配“sponge bath”和“mud bath”。
+对反斜杠后面的字符进行转义	|\^ 匹配字符 ^。	
+指定前面的字符或组的出现次数	{x}，其中 x 是出现次数	x(ab){2}x 匹配“xababx”，x(ab){2,3}x 匹配“xababx”和“xabababx”，但不匹配“xababababx”。
+匹配 Unicode 字符类中的文本，其中“X”是 Unicode 数字。 有关 Unicode 字符类的详细信息，请参阅
+
+Unicode Standard 5.2 字符属性。	\p{X}	\p{Lu} 匹配“Thomas Doe”中的“T”和“D”。
+与字边界匹配	\b（在字符类 \b 的外部指定字边界，而在字符类内部指定退格符）。	\bin 匹配“inside”中的“in”，不匹配“pinto”。
+与换行符（即回车符后跟新行）相匹配。	\r?\n	仅当“End”是一行的最后一个字符串，且“Begin”是下一行的第一个字符串时，End\r?\nBegin 才匹配“End”和“Begin”。
+匹配任意字母数字字符	\w	a\wd 匹配“add”和“a1d”，不匹配“a d”。
+匹配任意空格字符。	(?([^\r\n])\s)	Public\sInterface 匹配词组“Public Interface”。
+匹配任意数字字符	\d	\d 匹配“3456”中的“3”，“23”中的“2”和“1”中的“1”。
+匹配 Unicode 字符	\uXXXX，其中 XXXX 指定 Unicode 字符值。	\u0065 匹配字符“e”。
+匹配标识符	\b(\w+|[\w-[0-9\]]\w*)\b	匹配“Type1”，但不匹配“&type1”或“#define”。
+与引号中的字符串匹配	((\".+?\")|('.+?'))	匹配单引号或双引号内的任意字符串。
+匹配十六进制数	\b0[xX]([0-9a-fA-F])\b	匹配“0xc67f”但不匹配“0xc67fc67f”。
+匹配整数和小数	\b[0-9]*\.*[0-9]+\b	匹配“1.333”。
+```
+
+
+## 统一社会信用代码、身份证号、手机号后端验证
+```
+    最完整的php验证手机号码
+    
+    感觉网上的手机号码验证都不是很严格，自已写了一个,目前支持：
+    
+    移动：134、135、136、137、138、139、150、151、152、157、158、159、182、183、184、187、188、178(4G)、147(上网卡)；
+    
+    联通：130、131、132、155、156、185、186、176(4G)、145(上网卡)；
+    
+    电信：133、153、180、181、189 、177(4G)；
+    
+    卫星通信：1349
+    
+    虚拟运营商：170
+    
+        /**
+        * 验证手机号是否正确
+        * @author honfei
+        * @param number $mobile
+        */
+        function isMobile($mobile) {
+            if (!is_numeric($mobile)) {
+                return false;
+            }
+            return preg_match('#^13[\d]{9}$|^14[5,7]{1}\d{8}$|^15[^4]{1}\d{8}$|^17[0,6,7,8]{1}\d{8}$|^18[\d]{9}$#', $mobile) ? true : false;
+        }
+     
+
+        /**
+         * 判断是否为合法的身份证号码
+         * @author jyc
+         * @param $mobile
+         * @return int
+         */
+        function isCreditNo($vStr){
+            $vCity = array(
+                '11','12','13','14','15','21','22',
+                '23','31','32','33','34','35','36',
+                '37','41','42','43','44','45','46',
+                '50','51','52','53','54','61','62',
+                '63','64','65','71','81','82','91'
+            );
+            if (!preg_match('/^([\d]{17}[xX\d]|[\d]{15})$/', $vStr)) return false;
+            if (!in_array(substr($vStr, 0, 2), $vCity)) return false;
+            $vStr = preg_replace('/[xX]$/i', 'a', $vStr);
+            $vLength = strlen($vStr);
+            if ($vLength == 18) {
+                $vBirthday = substr($vStr, 6, 4) . '-' . substr($vStr, 10, 2) . '-' . substr($vStr, 12, 2);
+            } else {
+                $vBirthday = '19' . substr($vStr, 6, 2) . '-' . substr($vStr, 8, 2) . '-' . substr($vStr, 10, 2);
+            }
+            if (date('Y-m-d', strtotime($vBirthday)) != $vBirthday) return false;
+            if ($vLength == 18) {
+                $vSum = 0;
+                for ($i = 17 ; $i >= 0 ; $i--) {
+                    $vSubStr = substr($vStr, 17 - $i, 1);
+                    $vSum += (pow(2, $i) % 11) * (($vSubStr == 'a') ? 10 : intval($vSubStr , 11));
+                }
+                if($vSum % 11 != 1) return false;
+            }
+            return true;
+        }
+
+    /**
+         * 描述: 验证统一社会信用代码
+         * 作者：xyn
+         * 创建时间:2019-08-29
+         * 修改时间:
+         * 最后修改人
+         * 使用位置，
+         */
+        // 《GB_32100-2015_法人和其他组织统一社会信用代码编码规则.》
+        // 按照编码规则:
+        // 统一代码为18位，统一代码由十八位的数字或大写英文字母（不适用I、O、Z、S、V）组成，由五个部分组成：
+        // 第一部分（第1位）为登记管理部门代码，9表示工商部门；(数字或大写英文字母)
+        // 第二部分（第2位）为机构类别代码;(数字或大写英文字母)
+        // 第三部分（第3-8位）为登记管理机关行政区划码；(数字)
+        // 第四部分（第9-17位）为全国组织机构代码；(数字或大写英文字母)
+        // 第五部分（第18位）为校验码(数字或大写英文字母)
+        public static function unifiedSocialCreditIdentifier($value) {
+            // 统一代码由十八位的阿拉伯数字或者大写英文字母（不使用I、O、Z、S、V）组成
+            if (!is_string($value)) return false;
+            $value = strtoupper($value);
+            if (strlen($value) !== 18 || !preg_match('/^[\dA-HJ-NP-RT-UW-Y]{18}$/', $value)) return false;
+            // todo 第1位：登记管理部门代码检查
+            // todo 第2位：机构类别代码检查
+            // todo 第3位～第8位：登记机关行政区划码检查
+            if (!is_numeric(substr($value, 2, 6))) return false; // 简单检查，这部分一定是阿拉伯数字
+            // todo 第9位～第17位：主体标识码检查
+            // 第18位：检验码检查
+            if(!preg_match('/^[A-Z0-9]+$/u', substr($value, 8, 9))) return false;
+            if(!(substr($value, 17, 1))) return false; // 简单检查，这部分一定是阿拉伯数字
+            return true;
+        }
+```
+
+## 怎么查CPU序列号
+
+一、CPU都有一个唯一的ID号，称CPUID，是在制造CPU的时候，由厂家置入到CPU内部知的。
+
+二、查看方法：
+
+1、右点开始，选运行，并输入CMD。
+
+2、输入wmic CPU get ProcessorID ，就可以得到ID。
+
+三、作道用和意义：
+
+由于CPU外在的所有标记、符号，都是可以人为打磨，而CPUID却是终身不变的，只能用软件读出ID号；因此，利用这个原理，CPU ID工具可内以显出CPU的确切信息容，包括移动版本、主频、外频、二级缓存等关键信息，从而查出超频的CPU，并且醒目地显示出来。
 
 ## ie11导出pdf中文乱码
 ```

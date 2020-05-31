@@ -1,3 +1,8 @@
+## mysql 查询项目名称重复的项目
+```
+select * from project where name in (select   name from   project where deletedmark = 0 group by   name having count(name) > 1);
+```
+
 ## Mysql 查询今日的数据、近七天的数据、近30天的数据，以此类推
 ```
 查询近七天的数据
