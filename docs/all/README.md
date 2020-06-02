@@ -14,6 +14,9 @@ meta:
 ---
 
 # 最新文章
+## [redis使用教程](/all/redis使用教程/)  `修仙` 
+> redis使用教程
+
 ## [sqlyog使用指南](/all/sqlyog使用指南/)  `修仙` 
 > sqlyog使用指南
 
