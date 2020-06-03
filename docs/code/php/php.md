@@ -1,3 +1,10 @@
+## 天气接口无法访问问题
+
+将php写的前端代码http改为https即可访问
+
+http://www.tianqiapi.com/api?version=v61&appid=78811125&appsecret=J59dynVo
+
+https://www.tianqiapi.com/api?version=v61&appid=78811125&appsecret=J59dynVo
 
 
 ## java获取客户端url
