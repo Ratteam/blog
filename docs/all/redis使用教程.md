@@ -270,6 +270,8 @@ redis 127.0.0.1:6379> CONFIG GET loglevel
 ```
 
 **参数说明**
+
+```
 redis.conf 配置项说明如下：
 
 daemonize no	Redis 默认不是以守护进程的方式运行，可以通过该配置项修改，使用 yes 启用守护进程（Windows 不支持守护线程的配置为 no ）
@@ -348,6 +350,7 @@ hash-max-zipmap-value 512	指定在超过一定的数量或者最大的元素超
 activerehashing yes	指定是否激活重置哈希，默认为开启（后面在介绍 Redis 的哈希算法时具体介绍）
 
 include /path/to/local.conf	指定包含其它的配置文件，可以在同一主机上多个Redis实例之间使用同一份配置文件，而同时各个实例又拥有自己的特定配置文件
+```
 
 ## Redis 数据类型
 > Redis支持五种数据类型：string（字符串），hash（哈希），list（列表），set（集合）及zset(sorted set：有序集合)。
@@ -1392,7 +1395,7 @@ MSET (10 keys): 93283.58 requests per second
 ```
 
 redis 性能测试工具可选参数如下所示：
-
+```
 序号	选项	描述	默认值
 1	-h	指定服务器主机名	127.0.0.1
 2	-p	指定服务器端口	6379
@@ -1408,6 +1411,7 @@ redis 性能测试工具可选参数如下所示：
 12	-l	生成循环，永久执行测试	
 13	-t	仅运行以逗号分隔的测试命令列表。	
 14	-I	Idle 模式。仅打开 N 个 idle 连接并等待。	
+```
 
 以下实例我们使用了多个参数来测试 redis 性能：
 
