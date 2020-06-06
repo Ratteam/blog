@@ -13,7 +13,7 @@ meta:
     content: super duper SEO
 ---
 
-# 电台迷
+# 电台
 
 ## [月半小夜曲](/nervecat/index.html) <audio id="audio" controls="" preload="none"> <source id="mp3" src="/radio/月半小夜曲.wav"> </audio>
 > 月半小夜曲
