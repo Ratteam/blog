@@ -1,5 +1,5 @@
 module.exports = [
-  // markdown中使用ts 
+  // markdown中使用ts组件
   [
     'vuepress-plugin-typescript',
     {
@@ -8,13 +8,13 @@ module.exports = [
       },
     },
   ],
-  // 添加组件插件,没有效果
+  // 增加目录组件
   ['vuepress-plugin-table-of-contents'],
-  // 平滑滚动插件,没有效果
+  // 平滑滚动组件
   ['vuepress-plugin-smooth-scroll'],
-  // 顶部显示进度栏控制插件,没有效果
+  // 顶部显示进度栏控制组件
   ['vuepress-plugin-nprogress'],
-  // markdown支持 TeX 语法 插件
+  // markdown支持TeX语法组件
   [
     'vuepress-plugin-mathjax',
     {
@@ -24,21 +24,7 @@ module.exports = [
       },
     },
   ],
-  // git提交记录插件,没有效果
-  [
-    [
-      'vuepress-plugin-git-log',
-      {
-        additionalProps: {
-          subject: '%s',
-          authorEmail: '%ae',
-        },
-        // additionalArgs: '--no-merge',
-        // onlyFirstAndLastCommit: true,
-      },
-    ],
-  ],
-  // markdown标签 自定义样式插件
+  // 注册新的Markdown容器组件
   // 可改动该文件docs\.vuepress\styles\index.styl
   // you can use this plugin multiple times
   [
@@ -65,7 +51,7 @@ module.exports = [
       defaultTitle: '',
     },
   ],
-  // 路由设置插件 
+  // 路由设置组件 
   [
     'vuepress-plugin-clean-urls',
     {
@@ -74,18 +60,18 @@ module.exports = [
       notFoundPath: '/404.html',
     },
   ],
-  // 返回顶部插件
+  // 返回顶部组件
   '@vuepress/back-to-top',
-  // 处理站点中的复制行为插件
+  // 处理站点中的复制行为组件
   ['copyright', {
-    disabled: false, // true:禁用插件
+    disabled: false, // true:禁用组件
     minLength: 1, // 超过多少字后触发其他限制条件
     noCopy: false, // true:禁止复制
     noSelect: false, // true:禁止选择
     authorName: "https://ratfrog.github.io/",// 作者名字
     clipboardComponent: "../docs/.vuepress/components/Copyright", // 自定义剪贴板组件
   }],
-  // 图片缩放插件
+  // 图片缩放组件
   ['vuepress-plugin-zooming', {
     selector: '.theme-default-content img',
     options: {
@@ -94,12 +80,12 @@ module.exports = [
     },
     delay: 1000,
   }],
-  // 看板娘插件
+  // 看板娘组件
   [
     'vuepress-plugin-helper-live2d', {
       live2d: {
         // 是否启用(关闭请设置为false)(default: true)
-        enable: false,
+        enable: true,
         // 模型名称(default: hibiki)>>>取值请参考：
         // https://github.com/JoeyBling/hexo-theme-yilia-plus/wiki/live2d%E6%A8%A1%E5%9E%8B%E5%8C%85%E5%B1%95%E7%A4%BA
         model: 'hibiki',
