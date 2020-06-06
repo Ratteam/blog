@@ -13,6 +13,7 @@ module.exports = [
       type: 'theorem',
       before: info => `<div class="theorem"><p class="title">${info}</p>`,
       after: '</div>',
+      defaultTitle: '',
     },
   ],
 
@@ -21,10 +22,7 @@ module.exports = [
     'vuepress-plugin-container',
     {
       type: 'tip',
-      defaultTitle: {
-        '/': 'TIP',
-        '/zh/': '提示',
-      },
+      defaultTitle: '',
     },
   ],
   // 路由设置插件 
