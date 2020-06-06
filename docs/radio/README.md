@@ -17,6 +17,3 @@ meta:
 
 ## [月半小夜曲](/nervecat/index.html) <audio id="audio" controls="" preload="none"> <source id="mp3" src="/radio/月半小夜曲.wav"> </audio>
 > 月半小夜曲
-
-## [铃声](/nervecat/index.html) <audio id="audio" controls="" preload="none"> <source id="mp3" src="/radio/铃声.mp3"> </audio>
-> 铃声

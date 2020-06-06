@@ -1,7 +1,44 @@
 module.exports = [
+  // you can use this plugin multiple times
+  [
+    'vuepress-plugin-container',
+    {
+      type: 'right',
+      defaultTitle: '',
+    },
+  ],
+  [
+    'vuepress-plugin-container',
+    {
+      type: 'theorem',
+      before: info => `<div class="theorem"><p class="title">${info}</p>`,
+      after: '</div>',
+    },
+  ],
+
+  // this is how VuePress Default Theme use this plugin
+  [
+    'vuepress-plugin-container',
+    {
+      type: 'tip',
+      defaultTitle: {
+        '/': 'TIP',
+        '/zh/': '提示',
+      },
+    },
+  ],
+  // 路由设置插件 
+  [
+    'vuepress-plugin-clean-urls',
+    {
+      normalSuffix: '/',
+      indexSuffix: '/',
+      notFoundPath: '/404.html',
+    },
+  ],
   // 返回顶部插件
   '@vuepress/back-to-top',
-  // 复制内容插件
+  // 处理站点中的复制行为插件
   ['copyright', {
     disabled: false, // true:禁用插件
     minLength: 1, // 超过多少字后触发其他限制条件
