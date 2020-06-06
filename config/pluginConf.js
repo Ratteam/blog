@@ -1,4 +1,6 @@
 module.exports = [
+  // markdown标签 自定义样式插件
+  // 可改动该文件docs\.vuepress\styles\index.styl
   // you can use this plugin multiple times
   [
     'vuepress-plugin-container',
@@ -16,7 +18,6 @@ module.exports = [
       defaultTitle: '',
     },
   ],
-
   // this is how VuePress Default Theme use this plugin
   [
     'vuepress-plugin-container',
