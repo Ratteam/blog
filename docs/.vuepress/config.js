@@ -11,7 +11,7 @@ module.exports = {
     smoothScroll: true,
     lastUpdated: '上次更新时间',
     nav: [
-      { text: '测试', link: '/test/' },
+      // { text: '测试', link: '/test/' },
       {
         text: '学习',
         items: [ { text: '编程', link: '/code/' },
@@ -34,6 +34,6 @@ module.exports = {
       { text: '公告板', link: '/bbs/' },
       { text: '留言板', link: '/message/' },
     ],
-    sidebar: 'false' // false默认不开启侧边导航
+    sidebar: 'false' // false默认不开启侧边导航 auto开启
   }
 }
