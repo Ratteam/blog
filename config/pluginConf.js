@@ -1,4 +1,14 @@
 module.exports = [
+  // git提交记录插件
+  [
+    [
+      'vuepress-plugin-git-log',
+      {
+        additionalArgs: '--no-merge',
+        onlyFirstAndLastCommit: true,
+      },
+    ],
+  ],
   // markdown标签 自定义样式插件
   // 可改动该文件docs\.vuepress\styles\index.styl
   // you can use this plugin multiple times

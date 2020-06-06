@@ -11,6 +11,7 @@ module.exports = {
     smoothScroll: true,
     lastUpdated: '上次更新时间',
     nav: [
+      { text: '测试', link: '/test/' },
       {
         text: '学习',
         items: [ { text: '编程', link: '/code/' },
