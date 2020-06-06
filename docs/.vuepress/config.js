@@ -27,6 +27,7 @@ module.exports = {
       { text: '支持打赏', link: '/more/' },
       { text: '关于我', link: '/about/' },
       { text: '照片墙', link: '/photowall/' },
+      { text: '电台迷', link: '/radio/' },
       { text: '时间轴', link: '/timeline/' },
       { text: '公告板', link: '/bbs/' },
       { text: '留言板', link: '/message/' },
