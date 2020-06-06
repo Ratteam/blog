@@ -1,4 +1,19 @@
 module.exports = [
+  // markdown中使用ts 
+  [
+    'vuepress-plugin-typescript',
+    {
+      tsLoaderOptions: {
+        // All options of ts-loader
+      },
+    },
+  ],
+  // 添加组件插件,没有效果
+  ['vuepress-plugin-table-of-contents'],
+  // 平滑滚动插件,没有效果
+  ['vuepress-plugin-smooth-scroll'],
+  // 顶部显示进度栏控制插件,没有效果
+  ['vuepress-plugin-nprogress'],
   // markdown支持 TeX 语法 插件
   [
     'vuepress-plugin-mathjax',
