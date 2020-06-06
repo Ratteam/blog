@@ -1,11 +1,25 @@
 module.exports = [
-  // git提交记录插件
+  // markdown支持 TeX 语法 插件
+  [
+    'vuepress-plugin-mathjax',
+    {
+      target: 'svg',
+      macros: {
+        '*': '\\times',
+      },
+    },
+  ],
+  // git提交记录插件,没有效果
   [
     [
       'vuepress-plugin-git-log',
       {
-        additionalArgs: '--no-merge',
-        onlyFirstAndLastCommit: true,
+        additionalProps: {
+          subject: '%s',
+          authorEmail: '%ae',
+        },
+        // additionalArgs: '--no-merge',
+        // onlyFirstAndLastCommit: true,
       },
     ],
   ],
