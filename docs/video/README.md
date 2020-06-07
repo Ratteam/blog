@@ -15,5 +15,5 @@ meta:
 
 # 视频
 
-## <video id="video" controls="" preload="none" poster="/photo/600x600.png"> <source id="mp4" src="/video/a.mp4" type="video/mp4"> </video>
+<video id="video" controls="" preload="none" poster="/photo/fm.jpg"> <source id="mp4" src="/video/a.mp4" type="video/mp4"> </video>
 > 月半小夜曲
