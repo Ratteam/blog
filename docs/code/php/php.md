@@ -1,3 +1,164 @@
+## 最新河南获取考勤图片base64
+```
+// url转base64
+    public function checkUrlAndUrlToBase64AndCheckBase64($url){
+        // 待更换url 左外网，右内网
+        $baseUrl = [
+            '222.143.32.68:8201'=>'10.120.81.193:7096',
+        ];
+        $urlHost= parse_url($url,PHP_URL_HOST).':'.parse_url($url,PHP_URL_PORT);
+        // 初始化
+        $newUrl = $urlHost;
+        if(array_key_exists($urlHost,$baseUrl)){
+            // 获取内网地址
+            $newUrl = $baseUrl[$urlHost];
+        }
+        // 替换url为内网
+        $url= str_replace($urlHost,$newUrl,$url);
+        $response = @get_headers($url);
+        if(preg_match('/200/',$response[0])){ 
+            // url转base64
+            $imgHtmlCode=true;
+            $img = $url;
+            $imageInfo = getimagesize($img);
+            $base64 = "" . chunk_split(base64_encode(file_get_contents($img)));
+            //$imgBase64 = 'data:' . $imageInfo['mime'] . ';base64,' . chunk_split(base64_encode(file_get_contents($img)));
+            $imgBase64 = base64_encode(file_get_contents($img));
+            return $imgBase64;
+        }else{ 
+            return "";
+        }
+    }
+```
+
+## 图片转base64问题
+```
+ /*图片转换为 base64格式编码*/
+    function fileToBase64($file){
+        $base64_file = '';
+        if(file_exists($file)){
+            //$mime_type= mime_content_type($file);
+            $base64_data = base64_encode(file_get_contents($file));
+            $base64_file = $base64_data;
+        }
+        return $base64_file;
+    }
+```
+
+## parse_url — 解析 URL，返回其组成部分
+parse_url
+
+说明
+parse_url ( string $url [, int $component = -1 ] ) : mixed
+
+参数
+url
+要解析的 URL。无效字符将使用 _ 来替换。
+
+component
+指定 PHP_URL_SCHEME、 PHP_URL_HOST、 PHP_URL_PORT、 PHP_URL_USER、 PHP_URL_PASS、 PHP_URL_PATH、 PHP_URL_QUERY 或 PHP_URL_FRAGMENT 的其中一个来获取 URL 中指定的部分的 string。 （除了指定为 PHP_URL_PORT 后，将返回一个 integer 的值）。
+
+## yii2 刷新缓存（刷新模型缓存）
+```
+//方法二:清空所有的缓存--不仅仅是mysql表结构  
+    Yii::app()->cache->flush(); 
+```
+
+## php截取指定2个字符之间字符串的方法
+```
+    function getNeedBetween($kw1,$mark1,$mark2){
+        $kw=$kw1;
+        $st =stripos($kw,$mark1);
+        $ed =stripos($kw,$mark2);
+        if(($st==false||$ed==false)||$st>=$ed)
+        return 0;
+        $kw=substr($kw,($st+1),($ed-$st-1));
+        return $kw;
+    }
+```
+
+## 执行setInterval函数而不延迟
+```
+foo();
+    setInterval(foo, delay);
+```
+
+## git报错--RPC failed，curl 18 transfer closed with outstanding read data remaining
+1.将https换为ssh
+
+2.设置参数
+```
+git config --global http.postBuffer 524288000
+git clone git@github.com:RatFrog/ratfrog.github.io.git
+```
+
+
+## git 切换远程仓库地址
+1、切换远程仓库地址：
+方式一：修改远程仓库地址
+【git remote set-url origin URL】 更换远程仓库地址，URL为新地址。
+方式二：先删除远程仓库地址，然后再添加
+【git remote rm origin】 删除现有远程仓库 
+【git remote add origin url】添加新远程仓库
+2、【git remote -v 】查看远程仓库的地址
+
+## 如何使setInterval在一段时间后或经过多次操作后停止？
+```
+若要在运行一组次数后停止它，只需在间隔中添加一个计数器，然后当它达到该数时清除它。
+
+var timesRun = 0;
+var interval = setInterval(function(){
+    timesRun += 1;
+    if(timesRun === 60){
+        clearInterval(interval);
+    }
+    //do whatever here..
+}, 2000); 
+
+在设定的时间过去后停止它
+
+var startTime = new Date().getTime();
+var interval = setInterval(function(){
+    if(new Date().getTime() - startTime > 60000){
+        clearInterval(interval);
+        return;
+    }
+    //do whatever here..
+}, 2000);  
+```
+
+## mysql的group_concat函数设置最大长度
+临时生效
+```
+SET GLOBAL group_concat_max_len = 4294967295;
+SET SESSION group_concat_max_len = 4294967295;
+show variables like 'group_concat_max_len';
+```
+
+永久生效
+```
+vim /etc/my.cnf
+group_concat_max_len = 50000
+配置后需要重启MySQL服务
+```
+
+
+## Vuepress 如何引入百度统计和谷歌统计
+```
+ ['link', { rel: 'icon', href: '/icon.png' }],
+    [
+    "script",
+    {},
+    `var _hmt = _hmt || [];
+    (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?46eb6dbf0c639c7f8f8b9bc2e1b8e9ad";
+    var s = document.getElementsByTagName("script")[0]; 
+    s.parentNode.insertBefore(hm, s);
+    })();`
+    ]
+```
+
 ## 天气接口无法访问问题
 
 将php写的前端代码http改为https即可访问

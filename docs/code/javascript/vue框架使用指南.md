@@ -1,3 +1,83 @@
+## 验证url是否可用
+```
+public function checkUrl($url){
+    $response = get_headers($url);
+    if(preg_match('/200/',$response[0])){ 
+        return true;
+    }else{ 
+        return false;
+    }
+}
+```
+
+## js正则验证企业座机号码
+```
+const phoneReg = /^(0[1-9]\d{1,3}\-([2-9]\d{5,8}))$|^(1[356789]\d{9})$/;
+export {
+  phoneReg
+}
+```
+
+## element-ui 多选表格怎么做单选
+```
+		handleselectionchange(val) {
+			this.multipleselection = val
+			if (this.multipleselection.length > 1) {
+				this.$refs.multipletable.toggleRowSelection(this.multipleselection[0]);
+			}
+		},
+```
+
+## vue + elementui upload上传图片到服务器以及保存后回显问题
+```
+<el-form-item label="产品图片" prop="productImg">
+          <el-upload
+            action="https://jsonplaceholder.typicode.com/posts/"
+            list-type="picture-card"
+            :on-preview="handlePictureCardPreview"
+            :on-remove="handleRemove"
+            :auto-upload="false"
+            :on-change="addFile"
+            :file-list="showFiles" //编辑时显示图片的精髓
+            ref="upload"
+          >
+            <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible" size="tiny">
+            <img width="100%" :src="dialogImageUrl" alt />
+          </el-dialog>
+        </el-form-item>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="submitForm('subjectForm')">确 定</el-button>
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+        </div>
+```
+```
+openModal(val, data) {
+        let fileArr = [];
+        let fileObj = {};
+        fileObj.name="file";
+        fileObj.url = data.file;
+        fileArr.push(fileObj);
+        this.showFiles  = fileArr,
+  },
+```
+
+## js中append与prepend的使用
+1.append是指在被选元素的末尾插入一级子元素。而prepend是指在被选元素的首部插入一级子元素。
+
+2.for循环append要看清重复的部分。可分为大的append和小的append。
+
+## "export 'default' (imported as 'phoneReg') was not found in '@/common/utils/
+发现是import语法问题
+
+在import后面加上大括号解决
+
+import {getCompanyList} from 'api/recruitManage/index';
+
+import，export语法规范详解：http://es6.ruanyifeng.com/#docs/module#export
+
+
 ## 处理两种类型的图片地址
 ```
 							// 处理两种类型的图片地址
