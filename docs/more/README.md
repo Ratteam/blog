@@ -1,6 +1,6 @@
 ---
 home: true
-heroImage: /good.png
+heroImage: /good.jpg
 tagline: 微信扫一扫上面的二维码图案，打赏一下
 actionText: 关于我 →
 actionLink: /about/

@@ -12,6 +12,7 @@ meta:
 ---
 
 # 照片墙
+![Vuepress](/photo/a1.jpg)
 
 <!-- ![Vuepress](/photo/600x600.png) -->
 <!-- ## [贰零贰零年五月](/photowall/202005/) -->
