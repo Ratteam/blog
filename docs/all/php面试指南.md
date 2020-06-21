@@ -12,14 +12,24 @@ https://github.com/wudi/PHP-Interview-Best-Practices-in-China
 
 https://github.com/colinlet/PHP-Interview-QA
 
-1.PHP 的底层性能特点。2.面向对象开发经验。3.至少掌握几个主流框架的架构原理，例如 Yii，CI，ThinkPHP 等。可以帮助拓展视野，站在巨人的肩膀上，可以省去很多走弯路的时间。4.服务器端了解 Python，erlang等其他编程语言能做的工作，并不是所有工作都需要交给 PHP 来实现的，学会多语言架构很重要。5.对于客户端，无论是 C 端还是 B 端的展现方式有了解。6.沟通能力，尤其要学会了解需求方的真正意图，制定出较优解决方案，这个多数是靠经验积累了。
+1.PHP 的底层性能特点。
+
+2.面向对象开发经验。
+
+3.至少掌握几个主流框架的架构原理，例如 Yii，CI，ThinkPHP 等。可以帮助拓展视野，站在巨人的肩膀上，可以省去很多走弯路的时间。
+
+4.服务器端了解 Python，erlang等其他编程语言能做的工作，并不是所有工作都需要交给 PHP 来实现的，学会多语言架构很重要。
+
+5.对于客户端，无论是 C 端还是 B 端的展现方式有了解。
+
+6.沟通能力，尤其要学会了解需求方的真正意图，制定出较优解决方案，这个多数是靠经验积累了。
 
 1、给你四个坐标点，判断它们能不能组成一个矩形，如判断([0,0],[0,1],[1,1],[1,0])能组成一个矩形。
 
 勾股定理，矩形是对角线相等的四边形。只要任意三点不在一条直线上，任选一点，求这一点到另外三点的长度的平方,两个短的之和如果等于最长的，那么这就是矩形。
 
 2、写一段代码判断单向链表中有没有形成环，如果形成环，请找出环的入口处，即P点
-
+```
 /*
  *单链表的结点类
  */
@@ -54,8 +64,11 @@ class LinkListUtli {
         return slow;
     }
 }
+```
+
 3、写一个函数，获取一篇文章内容中的全部图片，并下载
 
+```
 function download_images($article_url = '', $image_path = 'tmp'){
  
     // 获取文章类容
@@ -96,8 +109,11 @@ function download_images($article_url = '', $image_path = 'tmp'){
     }
  
 }
+```
+
 4、获取当前客户端的IP地址，并判断是否在（111.111.111.111,222.222.222.222)
 
+```
 如果没有使用代理服务器：
 
 $ip = $_SERVER['REMOTE_ADDR'];
@@ -109,6 +125,7 @@ $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
 参考文章
 
 https://www.cnblogs.com/rendd/p/6183094.html
+```
 
 5、nginx的log_format配置如下：
 
@@ -118,6 +135,7 @@ log_format main ‘remoteaddr−remote_user [timelocal]"request”’
 
 a、列出“request_time”最大的20行？
 b、列出早上10点访问量做多的20个url地址？
+
 6、什么是CSRF攻击？XSS攻击？如何防范？
 
 CSRF：跨站请求伪造，可以通过通过判断来源和加 Token 的方式来防范。
@@ -125,8 +143,9 @@ CSRF：跨站请求伪造，可以通过通过判断来源和加 Token 的方式
 XSS：跨站脚本攻击，可以通过对内容转义和过滤来防范,还有CSP
 
 7、应用中我们经常会遇到在user表随机调取10条数据来展示的情况，简述你如何实现该功能。
-
+```
 SELECT * FROM `table` WHERE id >= (SELECT FLOOR( MAX(id) * RAND()) FROM `table` ) ORDER BY id LIMIT 1;
+```
 参考文章：
 
 https://www.cnblogs.com/riasky/p/3367558.html
@@ -296,6 +315,7 @@ DELETE
 OPTIONS
 TRACE
 CONNECT
+
 37、有一颗二叉树，写代码找出来从根节点到flag节点的最短路径并打印出来，flag节点有多个。比如下图这个树中的6和14是flag节点，请写代码打印8、3、6 和 8、10、14两个路径
 
  
