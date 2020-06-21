@@ -13,7 +13,7 @@ module.exports = {
     nav: [
       // { text: '测试', link: '/test/' },
       {
-        text: '学习',
+        text: '分类',
         items: [ { text: '编程', link: '/code/' },
           { text: '弈棋', link: '/chess/' },
           { text: '理财', link: '/financing/' },
