@@ -38,7 +38,7 @@ meta:
 ## [怎样学会单片机](/all/怎样学会单片机/)  `编程+` 
 > 怎样学会单片机
 
-## [android教程](/code/javascript/android教程/)  `编程+` 
+## [android教程](/all/android教程/)  `编程+` 
 > android教程
 
 ## [cad快捷键使用指南](/all/cad快捷键使用指南/)  `编程+` 
@@ -74,10 +74,10 @@ meta:
 ## [vue框架使用指南](/all/vue框架使用指南/) `编程+` 
 > JavaScript 是互联网上最流行的脚本语言，这门语言可用于 HTML 和 web，更可广泛用于服务器、PC、笔记本电脑、平板电脑和智能手机等设备。
 
-## [apache服务超时处理phpstudy+apache+php](/code/php/apache服务超时处理phpstudy+apache+php/)  `编程+` 
+## [apache服务超时处理phpstudy+apache+php](/all/apache服务超时处理phpstudy+apache+php/)  `编程+` 
 > 超时处理
 
-## [nginx服务超时处理centos7+nginx+php](/code/php/nginx服务超时处理centos7+nginx+php/)  `编程+` 
+## [nginx服务超时处理centos7+nginx+php](/all/nginx服务超时处理centos7+nginx+php/)  `编程+` 
 > 超时处理
 
 ## [sql注入获取后台管理员账号密码](/all/sql注入获取后台管理员账号密码/)  `编程+` 

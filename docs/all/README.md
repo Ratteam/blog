@@ -53,13 +53,13 @@ meta:
 ## [员工拒绝加班被判赔偿公司1万8](/all/员工拒绝加班被判赔偿公司1万8/)  `入魔+` 
 > 新闻
 
-## [围棋入门指南](/chess/围棋入门指南/)  `弈棋+` 
+## [围棋入门指南](/all/围棋入门指南/)  `弈棋+` 
 > 围棋入门指南
 
 ## [股票名称前字母含义](/all/股票名称前字母含义/)  `理财+` 
 > 股票名称前字母含义
 
-## [《海龟交易法则》笔记](/financing/《海龟交易法则》笔记/)  `理财+` 
+## [《海龟交易法则》笔记](/all/《海龟交易法则》笔记/)  `理财+` 
 > 主要讲述的是海龟所用的交易系统是一个完整的交易系统。这是我们取得成功的一个主要因素。我们的系统使我们更容易地进行一致性的、成功的交易，因为它没有给交易员的判断力留下重要的决策任务。
 
 ## [redis使用教程](/all/redis使用教程/)  `编程+` 
@@ -86,7 +86,7 @@ meta:
 ## [怎样学会单片机](/all/怎样学会单片机/)  `编程+` 
 > 怎样学会单片机
 
-## [android教程](/code/javascript/android教程/)  `编程+` 
+## [android教程](/all/android教程/)  `编程+` 
 > android教程
 
 ## [cad快捷键使用指南](/all/cad快捷键使用指南/)  `编程+` 
@@ -122,10 +122,10 @@ meta:
 ## [vue框架使用指南](/all/vue框架使用指南/) `编程+` 
 > JavaScript 是互联网上最流行的脚本语言，这门语言可用于 HTML 和 web，更可广泛用于服务器、PC、笔记本电脑、平板电脑和智能手机等设备。
 
-## [apache服务超时处理phpstudy+apache+php](/code/php/apache服务超时处理phpstudy+apache+php/)  `编程+` 
+## [apache服务超时处理phpstudy+apache+php](/all/apache服务超时处理phpstudy+apache+php/)  `编程+` 
 > 超时处理
 
-## [nginx服务超时处理centos7+nginx+php](/code/php/nginx服务超时处理centos7+nginx+php/)  `编程+` 
+## [nginx服务超时处理centos7+nginx+php](/all/nginx服务超时处理centos7+nginx+php/)  `编程+` 
 > 超时处理
 
 ## [sql注入获取后台管理员账号密码](/all/sql注入获取后台管理员账号密码/)  `编程+` 

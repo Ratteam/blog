@@ -1,3 +1,4 @@
+<TOC />
 # cad使用指南
 
 ## 安装CAD提示并行配置不正确，使用命令行sxstrace.exe工具

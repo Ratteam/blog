@@ -70,19 +70,15 @@ class LinkListUtli {
 
 ```
 function download_images($article_url = '', $image_path = 'tmp'){
- 
     // 获取文章类容
     $content = file_get_contents($article_url);
- 
     // 利用正则表达式得到图片链接
     $reg_tag = '/<img.*?\"([^\"]*(jpg|bmp|jpeg|gif|png)).*?>/';
     $ret = preg_match_all($reg_tag, $content, $match_result); 
     $pic_url_array = array_unique($match_result1[1]);
- 
     // 创建路径
     $dir = getcwd() . DIRECTORY_SEPARATOR .$image_path;
     mkdir(iconv("UTF-8", "GBK", $dir), 0777, true);
- 
     foreach($pic_url_array as $pic_url){
         // 获取文件信息
         $ch = curl_init($pic_url);
@@ -94,11 +90,9 @@ function download_images($article_url = '', $image_path = 'tmp'){
         $fileInfo = curl_exec($ch);
         $httpinfo = curl_getinfo($ch);
         curl_close($ch);
- 
         // 获取图片文件后缀
         $ext = strrchr($pic_url, '.');
         $filename = $dir . '/' . uniqid() . $ext; 
- 
         // 保存图片信息到文件
         $local_file = fopen($filename, 'w');
         if(false !== $local_file){
@@ -107,7 +101,6 @@ function download_images($article_url = '', $image_path = 'tmp'){
             }
         }
     }
- 
 }
 ```
 
