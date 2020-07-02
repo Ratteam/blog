@@ -14,6 +14,14 @@ meta:
 ---
 
 # 网站
+## [力扣]() `力扣`
+> 力扣
+- 网址：https://leetcode-cn.com/problemset/algorithms/
+
+## [菜鸟在线编辑器]() `菜鸟在线编辑器`
+> 菜鸟在线编辑器
+- 网址：https://c.runoob.com/compile/12
+
 ## [ps官方文档]() `ps官方文档`
 > ps官方文档
 - 网址：https://helpx.adobe.com/cn/support/photoshop-china.html?promoid=5NHJ8FD2&mv=other

@@ -14,12 +14,13 @@ module.exports = {
       // { text: '测试', link: '/test/' },
       {
         text: '分类',
-        items: [ { text: '编程', link: '/code/' },
-          { text: '弈棋', link: '/chess/' },
-          { text: '理财', link: '/financing/' },
-          { text: '运动', link: '/exercise/' },
-          { text: '修仙', link: '/good/' },
-          { text: '入魔', link: '/bad/' },
+        items: [ 
+          { text: '编程', link: '/all/code/' },
+          { text: '弈棋', link: '/all/chess/' },
+          { text: '理财', link: '/all/financing/' },
+          { text: '运动', link: '/all/exercise/' },
+          { text: '修仙', link: '/all/good/' },
+          { text: '入魔', link: '/all/bad/' },
         ]
       },
       { text: '网站', link: '/web/' },

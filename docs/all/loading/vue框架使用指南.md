@@ -1,3 +1,47 @@
+<TOC />
+## js 日期加一天或者减一天，最简单方法
+```
+通过计算一天的时间戳是多少进行换算：(new Date(new Date().getTime()-86400000)).Format("yyyy-MM-dd hh:mm:ss")
+ 
+注:js是没有format函数，需要自己定义，下面是为js的date对象添加一个方法
+ 
+Date.prototype.Format = function(fmt) 
+{ //author: meizz 
+var o = { 
+"M+" : this.getMonth()+1, //月份 
+"d+" : this.getDate(), //日 
+"h+" : this.getHours(), //小时 
+"m+" : this.getMinutes(), //分 
+"s+" : this.getSeconds(), //秒 
+"q+" : Math.floor((this.getMonth()+3)/3), //季度 
+"S" : this.getMilliseconds() //毫秒 
+}; 
+if(/(y+)/.test(fmt)) 
+fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length)); 
+for(var k in o) 
+if(new RegExp("("+ k +")").test(fmt)) 
+fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length))); 
+return fmt; 
+}
+```
+
+## js获取当月的天数
+```
+  created() {
+    let dates = new Date();
+    var year = dates.getFullYear();
+    let mon = dates.getMonth() + 1;
+    this.month = year + "-" + mon;
+  },
+  methods: {
+    getDataDay(){
+				let year = this.month.substring(0,4)
+				let nextMonth = this.month.substring(5,7);
+				let d = new Date(year, nextMonth, 0);
+				return d.getDate();
+			},
+		}
+```
 ## 验证url是否可用
 ```
 public function checkUrl($url){

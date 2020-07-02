@@ -1,3 +1,4 @@
+<TOC />
 # javascript语法使用指南
 
 ## JavaScript 简介

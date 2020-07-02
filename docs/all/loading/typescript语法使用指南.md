@@ -1,3 +1,4 @@
+<TOC />
 # typescript语法使用指南
 
 ## TypeScript 教程
