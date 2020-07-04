@@ -1,6 +1,6 @@
 ---
 # 标签文字
-title: 弈棋
+title: The rest of my life.
 # 语言
 lang: zh-CN
 # 侧边栏
@@ -13,6 +13,13 @@ meta:
     content: super duper SEO
 ---
 
-# 弈棋
-## [围棋入门指南](/all/围棋入门指南/)  `弈棋+` 
-> 围棋入门指南
+
+
+
+
+
+
+
+
+
+

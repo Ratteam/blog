@@ -1,18 +1,25 @@
 ---
 # 标签文字
-title: 最新文章
+title: The rest of my life.
 # 语言
 lang: zh-CN
 # 侧边栏
 sidebar: false
 # 头信息
 meta:
-  - name: 最新文章 
+  - name: description
     content: hello
   - name: keywords
     content: super duper SEO
 ---
 
-# 最新文章
-## [随笔](/all/随笔/)  
-> 随笔
+
+
+
+
+
+
+
+
+
+

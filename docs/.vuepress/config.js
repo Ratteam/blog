@@ -11,16 +11,16 @@ module.exports = {
     smoothScroll: true,
     lastUpdated: '上次更新时间',
     nav: [
-      // { text: '测试', link: '/test/' },
       {
         text: '分类',
         items: [ 
-          { text: '编程', link: '/all/code/' },
-          { text: '弈棋', link: '/all/chess/' },
-          { text: '理财', link: '/all/financing/' },
-          { text: '运动', link: '/all/exercise/' },
-          { text: '修仙', link: '/all/good/' },
-          { text: '入魔', link: '/all/bad/' },
+          { text: '钱钱', link: '/all/qianqian/' },
+          { text: '写写', link: '/all/xiexie/' },
+          { text: '星星', link: '/all/xingxing/' },
+          { text: '拍拍', link: '/all/paipai/' },
+          { text: '翻翻', link: '/all/fanfan/' },
+          { text: '画画', link: '/all/huahua/' },
+          { text: '其其', link: '/all/qiqi/' },
         ]
       },
       { text: '网站', link: '/web/' },

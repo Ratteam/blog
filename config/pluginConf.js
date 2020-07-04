@@ -65,7 +65,7 @@ module.exports = [
   // 处理站点中的复制行为组件
   ['copyright', {
     disabled: false, // true:禁用组件
-    minLength: 1, // 超过多少字后触发其他限制条件
+    minLength: 100, // 超过多少字后触发其他限制条件
     noCopy: false, // true:禁止复制
     noSelect: false, // true:禁止选择
     authorName: "https://ratfrog.github.io/",// 作者名字

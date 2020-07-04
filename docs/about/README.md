@@ -1,4 +1,16 @@
 ---
+# 标签文字
+title: 打赏我
+# 语言
+lang: zh-CN
+# 侧边栏
+sidebar: false
+# 头信息
+meta:
+  - name: 打赏我
+    content: hello
+  - name: keywords
+    content: super duper SEO
 home: true
 heroImage: /wx.png
 tagline: 以下是我的人生目标 ↓ 
