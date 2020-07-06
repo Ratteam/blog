@@ -1,5 +1,50 @@
 <TOC />
-神魔仙界
+# game
+
+## 像素修仙传开发指南 
+
+## 工具集
+
+photoshop
+
+ASEPRITE
+
+PXYXELEDIT
+
+vscode+liveserver
+
+微信开发者工具
+
+谷歌浏览器
+
+typescript
+
+## ps绘制像素素材
+文件——新建——设置名称，宽度=32像素，高度=32像素，背景=透明
+
+选择铅笔工具——设置大小为1像素，开始作画
+
+选择橡皮擦工具——设置模式为铅笔，大小为1像素，进行擦除
+
+画草图,没有数位板，还是用手绘吧！
+
+## 像素游戏美术注意事项
+要用透明背景制作
+要注意设备如手机分辨率大小，来决定画布大小。如：iPhoneSE(320x568)
+
+1.长按画笔工具，在弹出的框内选择铅笔工具。（使用铅笔工具画出的线就不会有过度的透明色了）
+2.点选橡皮工具，在上方的状态条中把模式改为铅笔。（这样用橡皮擦除的地方也就不会有透明色了）
+3.点选油漆桶，同样是在上方把消除锯齿的勾去掉，容差改为0（这样一来油漆桶也能用了，很便利）
+4.选套索、多边套索、魔棒，将消除锯齿去掉，魔棒的容差改成0（嗯～作用同上）
+5.按快捷键ctrl+K或在编辑中找到预设-常规，将图像插值改为邻近。（这样一来～即使使用ctrl+T进行自由变换，也不会产生过度色和透明色了）
+6.还是ctrl+K打开的那个面板里，将常规换到单位与标尺，把单位换成像素。（这样就可以在信息面板里清楚地看到图片的坐标和选区的像素大小了）
+
+
+## 相关软件
+ps
+piskel
+aseprite
+## 神魔仙界
 
 《神魔仙界》是由广州爱游信息科技有限公司(4399)研发，4399游戏主运，QQ163网页游戏平台、溪谷游戏、紫霞游戏、37wan、火玩网、玩武侠、51游戏社区、91wan、8090游戏、ya247平台等平台联合运营的一款Q版角色扮演类网页游戏，于2012年05月25日发行。
 
@@ -887,3 +932,1118 @@ PK值如何消除？
 2、点击每日争霸奖励可以查看仙宠争霸赛不同排名的奖励，努力让您的仙宠获得更好的奖励吧。
 
 参考：https://baike.sogou.com/v52959923.htm
+## 如何学习ue4
+## 概念
+1.教学是为了节约学习时间的。学习者最宝贵的是时间
+
+2.最好的学习方式是边干边学
+
+3.快速找到有效的信息
+
+## 蓝图&C++
+蓝图：
+
+1.对设计师友好
+
+2.易学易用
+
+3.快速搭建原型
+
+4.功能全面
+
+5.任何人都可以学，且先学
+
+C++:
+
+1.性能优异
+
+2.模块化
+
+3.扩展性强，自由度高
+
+4.进阶必备
+
+5.设计师可以不学，程序员必学
+
+## 资源
+1.官方视频教学
+
+2.官方文档
+
+3.知乎社区，英文论坛
+
+4.官方资源wiki技术文章
+
+5.官方工程案例
+
+## 其它资源
+bilibili
+
+知乎
+
+youtube
+
+aboutCG
+
+翼狐
+
+Udemy
+
+PlualSight
+
+Gnomon
+
+3dmotive
+
+Digital-tutors
+
+lunda
+
+ue4官方账号
+
+## 搜索
+1.Google英文关键词>Google中文关键词>百度
+
+2.去掉为什么 怎么 如何
+
+3.例举相关词汇，力求准确描述
+
+4.如果无法搜索到合适内容，采用同义词搜索
+
+5.如果遇到了必须包含的关键字，使用引号包含
+
+## 获取帮助的技巧
+1.保持基本礼貌
+
+2.尽可能详细的描述清楚你的问题，需求和相关背景信息
+```
+错误：“怎么做一个然子弹飞一会的效果？”
+
+正确：先提供视频，“怎么做视频中这种子弹飞行时，游戏速度减慢，同时镜头聚焦到子弹，跟随子弹飞向敌人直到击中的效果？我知道怎么切换镜头，但是不知道怎么让游戏速度慢下来”
+
+错误：“为什么我跟着视频第X集做完了就报错，我确定跟你做的一样”
+
+正确：自己多检查几遍，如果不行，再多检查几遍，细心和排错是开发者必备的基本功
+```
+
+3.叙述问题不要啰嗦，保持简洁，突出重点，删除不必要的干扰。提供必要的代码和截图。
+
+## 总结
+1.自己做一个简单的练习小项目，不要很炫酷，但是功能要完善。
+
+2.坚持完成，尽量靠搜索、查文档等方式解决遇到的各种问题。
+
+3.这个小项目的目标设定很重要，不要设计一些暂时不适合你段位的目标，例如：“编写一个很聪明的AI”,“做一款3A大作”。
+
+4.相比之下，仿制一些经典小游戏，制作一个坦克大战，对新手来说更容易完成，也更容易学到东西。
+
+5.记住做这个项目的目的只是学习
+## 准备软件工具及人员配置
+前期准备技术人员配置
+因为我是一个人做的。我本来就是美术转程序。所以这块比较擅长。
+一般来说3个人足够了。如果你有融资渠道。或者资金比较充足。推荐以下配置
+A.平民版配置：
+1.全能设计师一名
+2.客户端程序一名
+3.服务端程序一名
+
+B.普通企业版配置：
+1.UI设计师 1名
+2.原画 1-2名
+3.客户端 1-2名
+4.服务端 1-2名
+5.数据库 1-2名
+6.策划1名
+
+C.高端豪华大气土豪配置：
+
+1.UI设计师 2-3名(包含UI场景/ICON图标等)
+2.原画 2-4名 （场景原画，角色原画等）
+3.EGRET切图及适配 1-2名
+3.客户端 2-3名
+4.服务端 2-4名
+5.数据库 1-2名
+6.策划2-3名 （主策/数值/情景等）
+
+7.骨骼动画设计师1-2名
+8.特效设计师1-2名（包含序列动画/粒子特效等）
+
+
+准备的软件工具：
+
+EGRET的这几个是必须要装的。基本都能用到。
+
+
+WING是用来开发项目工程 （给程序员和前端设计师用的）
+DB是做龙骨动画用的。（给设计师用的）
+EgretFeather是做粒子动画用的。（给设计师用的）
+ResDepot是用来管理资源文件的（给程序员用的）
+TextureMerger是用来做序列动画，图集资源和BITMAP文字的（给设计师用的）
+
+其他准备工具：
+1.设计类：ps/fw/ai等设计工具、这个不用多说。
+2.原画类:sai/ai/painter/ps等 设计师用的
+3.服务端程序类：服务端准备任意的程序都可以。php/c#/java/go等等。。都可以具体看你们有啥
+4.客户端：会EGRET的。如果招不到人。招AS3或者JAVA的。上手很快。TS的语法跟JAVA和AS3相似度90%。
+5.数据库：这个无所谓,mysql,sqlserver都行。看你们自己需求
+6.服务器一台。这个可以暂用公司或者个人本地电脑调试。最好租一台。阿里云和腾讯目前都有折扣
+7.开发协作工具：git或者svn都可以。方便协同开发。我是一个人做。没这么麻烦。。哈哈哈哈哈
+
+其他需要准备的一些小玩意（后期很舒服）：
+1.PNG批量压缩工具
+2.PNG转ICON工具
+3.格式工厂
+4.其他
+
+## 配置环境及目录构架
+1.架设好SVN及分配好目录。方便维护及版本更新。   以下目录仅为个人推荐项目构架的一些规范。如有更好的方法。欢迎探讨
+
+
+A.design目录-----------------------设计师用的
+         a1. UI设计源文件/png/psd等
+         a2.  龙骨动画项目工程文件，每个龙骨文件需要在该目录下新建一个子文件夹。
+
+                因为新疆的龙骨动画默认的就是当前目录。所以这里要注意
+          （这里建议每个龙骨的名字有规范，包括龙骨贴图的图片名，不然会有BUG后期）
+          
+         a3. 粒子动画文件夹
+               （注意最好新建每个文件夹，粒子文件没法保存，只有导出和导入一个json文件。命名需要规范）
+         a4. 切图文件夹，这里是UI切完导出的文件夹目录。这个单独的文件夹只是方便后期图集打包。
+         a5. 图集文件夹。这个就是上面打包图集的最终程序使用的文件夹。也需要单独出来就很方便。
+
+B. client目录----------------------客户端程序目录
+            a1.release目录，用来发布版本的目录
+            a2.pro目录, egret的项目工程目录。
+
+            a3.lib目录，第三方库的调用目录
+
+C.  server目录-------------------服务端
+             a1.根据程序员习惯自建
+
+
+D.  doc目录-----------------------策划专用
+            a1.doc文档等，策划文档
+            a2.outjson文档，根据策划的excel等导出的json文件目录。最终给程序调用的。
+                  （这里可以是道具,数值,等各种的配置文档，最好由excel生成后导出csv然后转换成json）
+
+E. 其他杂项
+            杂项工具类文件，比如PNG压缩，格式工厂等
+            开发工具类：比如设计师用的各种设计软件，程序员用的各种开发工具，环境等
+            通用素材类
+            工作记录、版本更新等记录            接口及各种重要的记录文件等，比如APPID,开发者账号,微信支付商户号,AppSecret,服务器IP账号密码等。这个比较重要。看你们自己规划了
+
+如果租用服务器，该配置的都配置好。比如IIS或者apache环境等。
+如果服务端开发的包括JAVA环境之类的。
+如果需要上架微信EGRET的环境需要：
+
+1.工具：微信开发者工具。方便后期调试接口等
+
+2.有固定需要的可以安装谷歌浏览器等。
+
+## 配置第三方的库和所需要的SDK
+1.官方提供的第三方库基本包含了所有需要的第三方库了。
+下载地址：http://bbs.egret.com/thread-24868-1-1.html
+
+注意了，官方这些下下面的。这个是倒序的。
+
+2.下载下来后，先放到我们上个帖子说的E杂项开发工具类文件夹里。
+
+3.根据需求加载第三方库就行了。第三方库的配置官方有很多案例和帖子，我就这里就不造轮子了。
+就说下基本需要用到的几个，
+a1.particle这个是粒子动画的库，这个是必须要的
+a2.weixinapi 这个是微信接口的，如果你需要微信接口，这个也必须装上
+a3.jszip，除非你追求极限速度和效率。可有可无。
+
+具体调用第三方库在下个帖子会有讲到。
+
+## 创建EGRET工程
+在我第二期所说的client目录下pro里面。打开
+
+1.新建项目。项目名字自取，文件夹就是上面的目录
+
+注意：把这三个勾上，其他默认即可。
+
+打开后，界面就这样了。我们找到左边的这个文件
+
+虽然有很多第三方库教程了。不想造轮子。但是系列教程嘛。。。哎。。先做了。
+
+如上图所示，我加载了粒子库和微信API库。
+path路径就是上一个帖子让你们下载的官方第三方库你实际下载的目录。
+
+配置好后，记得编译一次，然后最好重启一下编辑器。看是否成功。
+如果有问题。用官方那个bat方式重新构建一次。
+
+成功的话就是在你项目左边libs目录下面会多出这两个目录，就证明成功了。
+
+最后就是点这个debug调试图标看一看。就基本没问题了。
+
+## 目录配置及基本概念
+我就不做知识普及了。。。。太浪费时间
+就说下基本常用的几个东西就行了。。
+
+1.resource文件夹。这里面基本都是放资源文件的
+   比如声音你可以建立个sound文件夹，图片的建立个images文件夹等。包括粒子文件夹，骨骼动画文件夹等。。
+
+2.注意一点，推荐建立个game_exml文件夹。这个是用来放自己的exml文件的。
+   我上面说的这些都是新建的项目里没有的。推荐大家还是先把每个文件夹都建立好在resource文件下下面。
+
+3.src就是客户端源码文件夹了。这里面的子文件夹根据大家编码习惯自建吧。方法跟AS,JAVA之类都差不多。。
+
+4.注意看那个default.res.json,这个是所有资源的管理Json，这个很重要。没接触过的朋友们先记住这个东西。
+
+5.egretProperties.json是我上个帖子讲过的第三方库的配置文件。配置好了这个基本不用再管他了。
+
+这期主要就是一些基本概念及目录配置的常识问题。。
+
+## 创建基本的常用TS类 
+我先概括一下基本常用的类。方便开发时候直接用到的。缺少的我后期补上。差不多上算一个基本的游戏框架了。
+我的源码写的比较烂。就不上来给你们吐槽了。
+具体的代码方法在后面几篇帖子都有普及。。。。
+这里只是你们记下有需要用到下面的这些东西
+了解下基本需要用到这些就行了。不用死记
+
+1.数据接口类
+   用来接收和发送给服务端交互数据的
+
+2.文字类
+   包括默认的LABLE和BITMAP LABLE等。
+   包括有需要转换的，比如10000显示为1W等。
+
+3.粒子特效类
+    a1.存储静态粒子的/需要常用的。比如经常用到金币特效等。不会被remove的
+    a2.解析粒子和更换粒子图片类等。有些粒子特效一样。只是需要换图的。比如爆发金币和爆发钻石等。。
+
+4.tween动画类
+   这里分享个官方一直没解决的。就是无限循环播放TWEEN动画的
+      [mw_shl_code=actionscript3,true]    //循环播放EGRET TWEEN动画
+    export function playAnimation(target: egret.tween.TweenGroup, isLoop: boolean): void {
+        if (isLoop) {
+            for (var key in target.items) {
+                target.items[key].props = { loop: true };
+            }
+        }
+        target.play();
+    }[/mw_shl_code]
+5.龙骨类
+     龙骨动画可以单独做一个类出来。只要传入参数，就能返回一个display进行控制。
+
+6.movieClip类
+       同龙骨，需要单独一个，传入几个个参数就行。比如控制播放几次，X,Y，哪个Group去装载等。
+
+7.声音控制类
+      比如声音播放几次，播放哪个声音，包括声音的控制等。
+
+8.客户端数据存储类/用来存储一些用户的基本信息，比如姓名，登录ID这些
+       好随时存取的。不用每次都去服务端取，减少服务器压力
+
+9.微信接口类等。。
+      
+10.公用弹窗,提示类等
+         一些tips，有的是没有按钮，有的1,2个按钮等。
+
+11.系统常用
+     比如场景的宽高之类常用的。debug是否等。。
+
+以上这些基本包含了每个游戏都需要用到的基本东西了。。需要先建立好
+
+## 序列动画类的创建及使用教程
+
+打开这个
+
+然后选择第一个movieClip
+
+然后新建个项目
+
+新建完后是需要新创建动画
+
+创建完后在左边动画哪里添加动作
+
+没问题的话是这样的
+
+然后在动画那里再右键添加帧。。。
+
+然后找到你序列帧的图片文件夹。CTRL+A全选就行了。。。。。
+
+会自动加载进来。点左边那个播放箭头没可以看到被加载进来的序列动画了。。
+
+最后项目导出。会导出一个JSON和PNG文件。。。。
+
+最后把你这两个文件放入项目工程资源目录里。
+项目工程会自动提示有新增文件。点确定！！！
+
+使用播放这个的代码：
+```
+[mw_shl_code=actionscript3,true]  var data = RES.getRes(文件名+ "_json");
+        var txtr = RES.getRes(文件名+ "_png");
+        var mcFactory: egret.MovieClipDataFactory = new egret.MovieClipDataFactory(data, txtr);
+        var cacheMovie: egret.MovieClip = new egret.MovieClip(mcFactory.generateMovieClipData(GroupName));
+        cacheMovie.x = _x;
+        cacheMovie.y = _y
+        _loadMc.addChild(cacheMovie)
+        cacheMovie.gotoAndPlay(动画名, timers);
+        cacheMovie.addEventListener(egret.Event.COMPLETE, (e: egret.Event) => {
+            _loadMc.removeChild(cacheMovie)
+        }, this);[/mw_shl_code]
+```
+
+## bitmap文字的创建及使用教程
+
+同样是这个
+
+选择第三个 font
+
+第一步新建字体
+
+第二步。选择字体图片。记得这里每个字体跟名字要一样
+
+OK后直接导出
+
+一样放到你EGRET项目工程资源目录下。
+EGRET里会提示新增。点确定。。
+
+使用代码：
+```
+[mw_shl_code=actionscript3,true]  var tField = new egret.BitmapText();        tField.font = RES.getRes("Ttext1_fnt");
+        tField.width = 100;
+        tField.x = thex + 100;
+        tField.y = they - 150;
+        tField.height = 50;
+        tField.anchorOffsetX = 50;
+        tField.textAlign = "center";
+        tField.text = _strs;
+        tField.alpha = 1;
+        tField.letterSpacing = -8;
+        tField.scaleX = 1.5;
+        tField.scaleY = 1.5;
+        _plane.addChildAt(tField, 999);;[/mw_shl_code]
+```
+注意：EXML里也可以直接用bitmaplable使用这个这个字体
+但是：需要重启编辑器才能看到！！！！
+
+## 粒子动画的创建及使用教程
+
+粒子动画适合用来做一些下雨，下雪，爆炸，烟花，金币喷发等。。。。
+
+用这个工具
+
+打开后就这样。参数的话自己去调就行了。
+左边那个雪花那里是粒子的图片文件。
+需要的话自己做好个PNG。直接拖进去就行了。。。
+
+然后导出，一样是导出的一个PNG和json文件。
+
+同样放到EGRET目录下。
+
+WING提示新增的话，就确定。
+
+使用代码：
+```
+[mw_shl_code=actionscript3,true]       //粒子效果
+            var texture = RES.getRes("LoginParticle_png");
+            var config = RES.getRes("LoginParticle_json");
+            this.system = new particle.GravityParticleSystem(texture, config);
+            this.addChild(this.system);
+            this.system.y = 200;
+            this.system.start()[/mw_shl_code]
+```
+
+## 声音类的创建及使用教程
+这个算是最简单的了没啥好说的。
+不过要注意两点
+
+1.是微信上面IOS不会自动播放背景音乐。解决办法是直接在HTML里面实现。或者模拟按钮点击
+
+2.就是声音格式的问题。这个通病论坛有解决办法。你们自己去看就行
+
+```
+[mw_shl_code=actionscript3,true]   var sound: egret.Sound = RES.getRes(soundurl);
+        sound.play(0, -1);
+        return sound;[/mw_shl_code]
+```
+
+## 龙骨动画的创建及使用教程
+工具是这个
+
+进来直接创建龙骨动画。
+
+先说下这个。类似于spine和AS3的骨骼动画。。有相似经验的应该很容易上手。
+
+文件新建后第一步是先保存
+
+然后找到保存目录。打开library这个目录。把切分开来的图片都放进去
+
+类似于这样。
+
+然后回到编辑器。点开右边文件夹 发现图片都已经加载进来了
+
+全选以上的图片。拖动到左边的场景里面
+
+然后在场景里一个个拖动先把模型摆好
+注意XY的中心点。对准好。
+
+如果图片层级不对。在右边的层级编辑器可以进行层级调整
+类似PS的层级。
+
+然后就是创建骨骼了
+
+类似这样拉把骨骼都拉好。。。我这里随意拉下演示下。。
+
+点击左边会有骨骼的权重和约束这些。做过3D的朋友都知道是啥东西。。这个我就不多说了。
+没做过的研究下就明白了。这个新功能我记得以前EGRET版本没有的。
+
+然后切换到动画界面就可以做动画了。
+
+要注意的是动画界面右边这个。
+这里是程序需要调用的地方。所以如果是大量的角色需要控制。需要每组动画有个动画名
+
+类似这样。比如死亡一个动画，攻击一个动画之类。。。。
+
+全部弄完后导出会有3个文件
+1.贴图文件png
+2.动画文件json
+3.骨骼文件json
+
+放到程序WING下面。提示加载确认。
+然后代码部分：
+
+这里有两点要注意
+1.如果被加载到程序里面了，但是没有动画怎么办？那是因为你可能没有加入大时钟。
+2.我这个加载龙骨代码可能比较老了。有新的方法请参考官网
+```
+[mw_shl_code=actionscript3,true]  let rawData = RES.getRes(armatureName + "_ske_json");
+            let texture = RES.getRes(armatureName + "_tex_png");
+            let textureData = RES.getRes(armatureName + "_tex_json");
+            var dragonbonesFactory: dragonBones.EgretFactory = new dragonBones.EgretFactory();
+            dragonbonesFactory.addDragonBonesData(dragonBones.DataParser.parseDragonBonesData(rawData));
+            dragonbonesFactory.addTextureAtlasData(new dragonBones.EgretTextureAtlas(texture, textureData));
+            var armature: dragonBones.Armature = dragonbonesFactory.buildArmature("Armature");
+            armature.addEventListener(dragonBones.AnimationEvent.LOOP_COMPLETE, this.loop_com, this);
+            this.userLoadPlane.addChild(armature.getDisplay());
+            armature.animation.play(movies);
+            armature.display.x = thex;
+            armature.display.y = they;
+            /**  
+             * 开启大时钟这步很关键  
+             * */
+            dragonBones.WorldClock.clock.add(armature);
+            return armature;[/mw_shl_code]
+```
+
+## exml的创建及使用教程
+这个东西是直接在WING里面的。虽然说WING是给程序员用的。
+但是我还是觉得EXML这种可视化UI的东西还是美术来做效果最佳。
+
+因为我推荐设计师使用。所以这里给设计师们大概说下
+
+首先你要弄明白左边这些东西都是干什么的。
+如果你写过DIV+CSS之类的。那么肯定一眼都明白了。
+如果没写过。也需要了解下左边每个东西都是干啥用的。
+不明白去问程序。这些东西1,2个小时差不多新手都能搞懂。
+
+说几个重要点：
+
+第一个就是约束这一块。这块很重要。影响到游戏适配。具体适配方法下面一个帖子会有。
+但是这里注意我这样勾就是直接全部拉升，如果只勾上中和左中，就是居中对齐。之类。这些东西需要你们熟悉
+
+另外就是分类属性和所有属性这块。
+所有属性里可以设置非常多东西。。
+
+重要点，请记笔记：
+1.EXML里面默认的TWEEN动画。如果不是装载在GROUP里的。不要变动XY。
+而如果有TWEEN动画。得保证每个帧都需要设置属性。
+
+2.有些参数在所有属性里面没有的。但是可以直接在EXML源码文件里自己加。比如BitmapLable的Offset。
+就是锚点。可以直接在EXML里面设置等等。
+
+3.内容多的尽量用组或者GROUP包起来。这样代码方便控制。
+
+4.新增的BITMAPLABE需要重启编辑器才有效。
+
+使用方法很简单，在TS里
+```
+[mw_shl_code=actionscript3,true]     public constructor() {
+            super();
+            this.addEventListener(eui.UIEvent.COMPLETE, this.WarinitUI, this);
+            this.skinName = "resource/egamexml/War.exml";
+        }[/mw_shl_code]
+```
+
+## exml的适配及手机屏幕适配教程
+论坛里有各种适配的方法。但是各有利弊。
+
+我个人推荐一种非常简单的。效果也还不错的一种
+
+先放代码。
+```
+[mw_shl_code=actionscript3,true]   export function setScreenAuto(_target) {
+        _target.left = 0;
+        _target.right = 0;
+        _target.top = 0;
+        _target.bottom = 0;
+    }[/mw_shl_code]
+```
+这个单独放到配置类里。
+所有的加载EXML文件里 IntUI后。
+只要setScreenAuto（this）就可以了
+
+data-scale-mode="SHOW_ALL"
+这个还是默认的都可以不用变。
+
+另外就是上面说的EXML那个约束里面只要设计师调整好布局就很方便了。
+
+## json格式的使用/配置档
+JSON这种对于程序员来说都是家常便饭了。
+我这里要说的是策划如何使用。
+
+比如一个怪物属性之类的配置文件
+
+直接文件另存，先存为CSV格式。
+
+然后找网上很多CSV转JSON的工具。一搜就一堆。。
+
+转化成的JSON就是这个样子。。
+
+JSON好处就是EGRET里直接加载进去就是object格式。程序用起来很方便。
+顺便提一下。哪怕是所谓的protobuf，也只是转换成二进制而已。
+现在JSON几乎是所有游戏的主流数据格式。
+WING会自动加载，加载完毕使用方法:
+```
+[mw_shl_code=actionscript3,true] var _json = RES.getRes("gwall_json");[/mw_shl_code]
+```
+
+## 服务端交互的post方法与服务端交互的SOCKET方法
+我这个拿去改改就可以用了。
+这个是Post数据的。
+加上了断线重连次数和后缀随机防止缓存的。
+```
+[mw_shl_code=actionscript3,true]/**
+* 网络公共类
+* by skave
+* (c) copyright 2017 - 2019
+* All Rights Reserved.
+*/
+class Sys_PostJson {
+    //发送数据到服务器
+    public static sendPostRequest(linkurl: string, bytes: string, backFun: Function, _plane) {
+        var request = new egret.HttpRequest();
+        request.responseType = egret.HttpResponseType.TEXT;
+        request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+        request.open(MyData.MyServerIP + linkurl + "?random=" + egret.getTimer() * 99999999999, egret.HttpMethod.POST);
+        request.send(bytes);
+        request.addEventListener(egret.Event.COMPLETE, onPostComplete, this);
+        request.addEventListener(egret.IOErrorEvent.IO_ERROR, onPostIOError, this);
+        request.addEventListener(egret.ProgressEvent.PROGRESS, onPostProgress, this);
+
+        function onPostComplete(event: egret.Event) {
+            var request = <egret.HttpRequest>event.currentTarget;
+            var Datas = JSON.parse(request.response);
+            return backFun(Datas, _plane);
+        }
+        function onPostIOError(event: egret.IOErrorEvent): void {
+            console.log("post error : " + event);
+            //再次重新请求
+            setTimerS()
+        }
+        function onPostProgress(event: egret.ProgressEvent): void {
+            //console.log("post progress : " + Math.floor(100 * event.bytesLoaded / event.bytesTotal) + "%");
+        }
+        var TimerConut = 0;
+        function setTimerS() {
+            TimerConut++;
+            if (TimerConut < 5) {
+                request.responseType = egret.HttpResponseType.TEXT;
+                request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+                request.open(MyData.MyServerIP + linkurl + "?random=" + egret.getTimer() * 99999999999, egret.HttpMethod.POST);
+                request.send(bytes);
+            } else {
+                var aleartBoxplane = new game.AleartBox();
+                aleartBoxplane.setTxtShow("温馨提示", "网络出错！");
+                _plane.parent.addChildAt(aleartBoxplane, 999);
+                aleartBoxplane.yesbtn.addEventListener(egret.TouchEvent.TOUCH_TAP, reloadS, this);
+            }
+
+        }
+        function reloadS() {
+            TimerConut = 0;
+            setTimerS()
+        }
+
+    }
+}
+
+[/mw_shl_code]
+```
+
+关于SOCKET。注意目前只支持WEBSOCKET。。
+这个代码直接用官网上面的就有。拿去用就行。。。
+
+交互数据的注意几点：
+1.跨域问题，JSONP可以解决。
+2.如果是SOCKET，得处理好掉包，粘包等问题。这些成品论坛也有不少。我就不造轮子了。
+3.部分服务端的编码和客户端编码不一致造成的问题。比如GBK和UTF8。甚至UTF8的BOM都可能造成程序错误~~
+
+## 常见的一些坑
+1.如果使用TextureMerger打包图片导出sheet时候记得勾选左下角的文件名，因为Egret里面默认加载的是_png之类，如果没有勾选可能会产生无法识别的情况。
+
+2。如果本地调试没问题，但是发布后，进不去界面，而你又使用了EXML，请检查skinName的大小写问题，比如你加载了X.exml，而名字实际是x.exml，就会报错。
+
+3.IOS里支持的日期格式是2017/01/02，如果你数据库服务端是20170-07-02请用个正则表达式转换过来。不然IOS会出现BUG。
+
+4、EXML里面适配后，再里面做动画，只有scalex,scaley和alpha有效，XY这些根据适配会有问题。最好的办法是做个GROPUE再进行这个GROUP的TWEEN。
+
+5.如果用TextureMerger做MovieClip动画，一个MC里包含好几个动画，请确保每个动画名的文件名不一样。比如两个动画都是1.png-8.png.那么调用动画将无法控制动画名。
+
+6.做LOADING的时候。推荐RES分3个组以上。第一次加载常用的。其他的放到后台慢慢加。setMaxLoadingThread可以增加线程数。
+
+7.散图用TextureMerger打包成大图最好别超过2048*2048，另外别超过5M，然后使用PNG压缩可以压缩6-8倍以上。
+
+8.粒子特效最好一个场景最多2个，每个的最大粒子数不要超过50个，严重影响部分手机的FPS。
+
+9.用龙骨做动画的时候，请设置龙骨动画的display坐标始终保持在0,0,其他用动画控制。这样在返回一个display时候用scale不会出问题。
+
+10.接微信API第三方的那个接口。如果确保在微信开发工具里接口没问题。但是始终加载不到数据的时候。请重启电脑。重启编辑器没用。。。我也不知道为什么。
+
+11.有极低的概率加载资源的时候default.res会遗漏文件。需要手动编辑。
+
+## 游戏发布及发布的注意事项
+这个要注意的特别多。
+发布的时候。
+
+1.图片压缩问题。
+PNG的零碎图尽量做成图集，然后用TINPNG去压缩。4M的图片可以压倒800Kb!
+
+2.微信小程序问题
+微信小程序要求整个发布项目大小不能超过4M。
+
+3.JS的压缩问题。
+可以使用JSZIP，也能压到很恐怖的地步。
+
+4.如果发布后，发现跑起来突然卡死。
+说不定不是程序问题。而是少了某个资源没加载到。具体可以用调试工具看。
+
+5.声音问题。
+这个我记得之前说过。官方有案列，但是请用压缩工具也照样可以把声音文件压缩得很小。
+
+6.黑屏及LOADING
+这个虽然说官方有方案。但是不能完美解决。最好的办法还是租好的服务器。买按流量算的带宽。
+这个实际问题其实是用户连第一步代码都没加载完。。。
+
+7.如果出现发布后EXML加载不了。但路径实际有。
+请检查两条
+a.服务器是否Mine文件类型添加exml.
+b.EXML文件大小写和程序里写的调用的是否一致！！！
+
+## 公司注册需要的流程
+为什么要注册公司？
+因为很多微信接口。支付等都需要企业账户才能进行。不然只能用测试的。
+
+直接去找代办的。靠谱的一般也就1500-2000块就能办下来。
+
+然后办下来后会有一个财务章和一个公章。
+包括两个营业执照。其中一个是副本。
+最好找个合伙的朋友。
+一个做监事，一个做法人。。。。。。
+
+需要提前准备两个U盾和银行卡。直接去银行申请。半小时就下来了。
+农行最方便也容易。。。
+
+记得提前申请好微信的公众号。
+
+另外需要另外新注册个QQ。
+
+因为有可能你的QQ限制。
+所以需要一个新的QQ去注册公众号平台最保险。
+
+切记：公司营业范围最好是互联网相关的。不然后面会很麻烦
+
+## 如何去银行开企业账户
+如果需要开企业账户。
+你得有办公地点。如果没有租一个。或者借朋友的都可以。。
+银行会派人看你的租赁凭证。。
+这玩意很多办公楼其实不提供。。。。。。。
+所以给租房合同也可以谈。。
+
+企业账户办下来快的话需要2-3天。
+期间会有银行人员过来跟你拍照和办公地点拍照等等。。
+如果你有认识银行的朋友那更快。。。
+
+这个时候请同步把你所有的资料全部准备好了。
+包括微信会有 申请企业公众平台的申请函。
+直接去 公众平台填写资料。
+填写完就可以下载了。
+下载完。自己买个印泥，盖章!
+等企业账户开出来会有个U盾和卡，
+看你财务是否找公司代账的。这个找帮你代办公司的一般都这种业务。
+
+## 对接微信上架
+首先需要你提交到微信公众平台的账号认证通过。
+----------------------------------------------------------
+提交后，对方会打款几分钱到你企业账户。
+然后给你电话问你是多少。确保账号是你的。
+一般最快1-2天就能开通下来了。
+其实最重要的是这块。。
+
+APPID和AppSecret
+拿到这两个东西后，去用官网提供的那个JDK接口。亲测可用。
+
+配置好里面的的东西后。直接用微信开发者工具调试就行。
+其中有不少的坑。
+
+比如验证不通过。
+你要检查回调地址等。。
+基本上最容易出现接口不通的最大问题都是这个没配置！！
+切记！！
+
+还有IP白名单那块。设置的不是你电脑的。是服务器的！！
+
+## 如何正确洽谈渠道&分成比例 
+这期才是重中之重。。。所以请看仔细了
+1.如果你的游戏品质不是特别上天那种。别指望被大公司拿去独代。
+  首先你得对自己产品有个大概的底。
+  然后去找渠道评估。一般会评级E-S级。
+  一般A级的产品都是很不错的了。
+
+2.一般研发的产品直接可以找多个渠道上限。多接几家。联运就行。
+
+3.至于分成一般都是28开，就是你2，渠道8.如果你觉得自己产品特别牛逼。可以谈37甚至更高(注意：如果是H5游戏。目前分成是46,渠道6)
+
+4.渠道会对你的产品有些特别的功能需求。
+
+5.产品能不能赚钱。重要还是看渠道给你推多少的量了。
+
+6.跟渠道签合同要仔细。别被坑。如果没有合同样本的。可以找我要样本。
+
+7.然后躺着等收钱吧。。。
+
+找渠道就像找工作。。渠道很多。。但是渠道也非常缺产品。。。。如果你觉得自己产品有搞头。可以试下自己运营
+
+## 查克拉
+
+注意：死=输了 这个有很多版本的 五年级版的
+查克拉  +1查 用一只手放在另一手上，置于的胸前 凡是攻击的用这个时会死掉
+飞镖    -1查 双手摩擦，做发牌状
+闪      -0查 无限 闪掉千年杀 双手往两边移动
+
+0级
+卡卡西
+千年杀  -1查 杀死查 同千年杀
+雷切    -4查 闪防不住 指尖和起来然后快速展开
+超雷切  -5查 以上都防不住 同雷切（只是说的不同）
+
+赢了的话可以升级得新的东西 玩跳级的直接升2级
+
+1级 
+鸣人
+鸣人盾 -0查 和闪一样 用右手比成爪子用左手握住右手关节
+螺旋丸 -1查 杀掉千年杀 同上不过是往下手要转过来
+影分身 -3查 闪 千年杀 查克拉防不住 雷切赢得了影分身 双手伸出食、中指用第2个关节敲一下
+多重影分身 -5查 闪 千年杀 查克拉 雷切防不住和超雷切抵消 同上（只是说的不同）
+倍化 -5查 千年杀的话倍化死 可以说强化（意思）将鸣人盾升到1级 螺旋丸攻击力加强防御力不加 1级 变五花螺旋丸 2级 七彩螺旋丸 升到10级 光明大玉螺旋丸！！！ 
+
+2级
+宇智波佐助
+火墙 -0查 和闪一样 双手伸出食、中指展开 雷切赢得了火墙 
+火遁凤仙火 -1查 原攻现防 防御力 比上还差 手势同下 
+千鸟 -1查 螺旋丸抵消 手势太难不说了
+马虎火遁大火球之术 -3查 闪 千年杀 查克拉 雷切防不住超雷切赢得了 手势同上
+马虎火遁豪火球之术 -5查 闪 千年杀 查克拉 雷切 多重影分身防不住超雷切抵消 手势同上
+爆气 -5查（像街机）刺盾 
+黑暗千鸟 -3查 
+黑信（不知道对不对）-5查闪可以闪的开。
+
+3级
+宇智波斑
+近眼 -0查 防的 雷切抗3查
+炸   -1查 千鸟抵消 但赢得了螺旋丸 影分身炸，死了 举手一捏
+超炸 -3查 威力同超雷切 手势同上（只是说的不同）
+开眼（大家知道他是谁了吧）-5查 提升近眼等级 攻击力防御力加强 可以得个东西 就是下面的招式 
+瞟敌人出查时你用这招时可以瞟到 -5查 千年杀可以杀死 
+在开一瞟  -10查
+
+参考:https://tieba.baidu.com/p/5147420209?red_tag=1762339301&traceid=
+## Egret引擎介绍
+
+免费
+
+开源
+
+跨平台
+
+使用TypeScript开发
+
+结构简单
+
+## 开发工具安装
+
+安装node.js
+
+安装egret引擎
+
+## egret命令行介绍
+
+egret help 查看命令
+
+create                        创建新项目
+
+build                         构建指定项目,编译指定项目的 TypeScript 文件
+
+publish                       发布项目，使用GoogleClosureCompiler压缩代码
+
+run                           启动HttpServer,并在默认浏览器中打开指定项目
+
+clean                         重置项目中的引擎代码
+
+create_lib                    创建新第三方库项目
+
+create_app                    从h5游戏生成app
+
+upgrade                       升级项目代码
+
+make                          编译引擎源码
+
+info                          获得Egret信息
+
+## 创建第一个egret项目
+
+```
+egret create demo
+```
+
+**各文件含义**
+
+- egretProperties.json：项目配置文件
+
+- src：项目源代码目录。source code的缩写。
+
+- libs：项目运行库。
+
+  项目各模块所对应的所有类库。对egretProperties.json进行修改后，需要用project->build engine来重新生成项目运行库。
+
+- bin-debug：项目编译目录。
+
+  这文件夹包含调试运行过程中会调用到的所有文件。其中源代码目录的文件会被编译到bin-debug/src目录中。bin-debug/lib有个列表文件，用来列出项目需要的所有运行库文件。
+
+- esource：项目资源目录。
+
+  存放项目运行所需要的所有资源。包括图片和配置文件。通常在资源目录建立一个资源清单文件，默认为resource.json。
+  图片或声音等资源文件的默认目录为resource/assets。配置数据文件的默认存储目录为resource/config。
+
+- bin-release：项目发布目录。
+
+## egret的事件机制
+
+在Egret中，事件模型定义了一套标准的生成和处理事件消息的方法，使程序中的对象可以相互交互，通信，保持自身状态和相应变化。简单的说，数据的提供者只管发出数据对象，只要确保数据对象是 egret.Event 类或者子类的实例即可。这种数据对象 ，称为事件（Event）。数据对象的发出者，称之为事件发送者（Event dispatcher）。同时，接受事件的对象，称为 事件侦听者（Event listener)。
+
+## 开发工具
+
+egret工具集
+
+## 围住神经猫游戏
+用egret白鹭引擎写的围住神经猫h5游戏，使用的egret版本为5.2.11
+
+github地址:https://github.com/Ratteam/nervecat.git
+
+## 游戏资源处理
+
+打开EgretWing，点击文件——新建项目
+
+打开cmd控制台——输入`egret run -a`将项目启动
+
+将游戏声音资源放到：resource\assets\audio
+
+将图片文件资源放到：resource\assets\img
+
+## 加载游戏资源
+
+打开resource\default.res.json配置文件
+
+将默认资源移除，将audio和img拖拽到资源列表
+
+查看audio和img内资源是否都加载到配置中了，如果没有加载成功。请用手动拖拽资源到右边配置文件中
+
+## 图片纹理集的处理
+
+## 开始游戏界面制作
+nervecat\src\Main.ts
+```
+//////////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2014-present, Egret Technology.
+//  All rights reserved.
+//  Redistribution and use in source and binary forms, with or without
+//  modification, are permitted provided that the following conditions are met:
+//
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of the Egret nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+//
+//  THIS SOFTWARE IS PROVIDED BY EGRET AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
+//  OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+//  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+//  IN NO EVENT SHALL EGRET AND CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+//  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+//  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICESLOSS OF USE, DATA,
+//  OR PROFITS OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+//  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+//  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+//  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+//////////////////////////////////////////////////////////////////////////////////////
+
+class Main extends egret.DisplayObjectContainer {
+    /**
+    * 构造函数，创建对象时初始化对象
+    */
+    public constructor() {
+        super()
+        this.addEventListener(egret.Event.ADDED_TO_STAGE, this.onAddToStage, this)
+    }
+    /**
+    * 访问构造函数结束后，通过addEventListener指定的回调调用该函数
+    */
+    private onAddToStage(event: egret.Event) {
+        // 生命周期管理器 egret.lifecycle
+        egret.lifecycle.addLifecycleListener((context) => {
+            context.onUpdate = () => {
+                // console.log(context);
+            }
+        })
+        // 进入后台时调用
+        egret.lifecycle.onPause = () => {
+            console.log("app 进入后台");
+            egret.ticker.pause()// 关闭渲染与心跳
+        }
+        // 进入前台时调用
+        egret.lifecycle.onResume = () => {
+            console.log("app 进入前台");
+            egret.ticker.resume()// 打开渲染与心跳
+        }
+        // 调用开始游戏方法，捕捉异常
+        this.runGame().catch(e => {
+            console.log(e)
+        })
+    }
+    /**
+     * 开始游戏方法
+     */
+    private async runGame() {
+        // 加载资源
+        await this.loadResource()
+        // 创建游戏场景
+        this.createGameScene()
+    }
+    /**
+     * 加载资源文件
+     */
+    private async loadResource() {
+        try {
+            // loading显示
+            const loadingView = new LoadingUI()
+            this.stage.addChild(loadingView)
+            // 加载资源配置文件
+            await RES.loadConfig("resource/default.res.json", "resource/")
+            // 指定资源组
+            await RES.loadGroup("preload", 0, loadingView)
+            // loading隐藏
+            this.stage.removeChild(loadingView)
+        }
+        catch (e) {
+            console.error(e)
+        }
+    }
+
+    /**
+     * 创建游戏场景
+     */
+    private createGameScene() {
+        // 显示对象容器
+        let container: egret.DisplayObjectContainer = new egret.DisplayObjectContainer()
+        // 将显示对象容器添加到页面
+        this.addChild(container)
+        // GameUtil类文件在game-nerve-cat-master\src\common\GameUtil.ts
+        let bg: egret.Bitmap = GameUtil.createBitmapByName('bg', 'jpg')
+        // 将背景图放到显示对象容器中
+        container.addChild(bg)
+        // 因为使用了fixedWide模式，自己根据舞台宽高，重新设置背景图片大小（会被裁剪）
+        // 获取舞台宽度
+        let ratioW = GameUtil.getStageWidth() / bg.width
+        // 获取舞台宽度
+        let ratioH = GameUtil.getStageHeight() / bg.height
+        // 获取舞台比例
+        let ratio = bg.width / bg.height
+        // 比对比例更改页面显示
+        if (ratioW > ratioH) {
+            bg.width = GameUtil.getStageWidth()
+            bg.height = bg.width / ratio
+        } else {
+            bg.height = GameUtil.getStageHeight()
+            bg.width = bg.height * ratio
+        }
+        bg.x = (GameUtil.getStageWidth() - bg.width) / 2
+        // 设置存放游戏场景的容器
+        // SceneController类文件在game-nerve-cat-master\src\game\SceneController.ts
+        SceneController.instance.setStage(container)
+        // 初始化游戏显示游戏场景
+        SceneController.initGame()
+    }
+}
+```
+
+## 游戏背景界面制作
+
+```
+
+```
+
+## 游戏成功面板制作
+
+## 游戏失败面板制作
+
+## 游戏结束面板制作
+
+## 神经猫的动画资源处理
+
+## 制作神经猫动画
+
+## 算法工具类的编写
+
+## 地图元素制作
+
+## 地图排序算法编写
+
+## 视图管理器
+
+## 其他界面逻辑
+
+## 数据管理器的创建
+
+## 创建寻路数据元素
+
+## 创建寻路算法AI类
+
+## 寻找周围可走范围算法
+
+## 判断出口点算法
+
+## 随机走路算法
+
+## 寻找最短路径算法
+
+## 文档类的编写
+
+## 激活视图管理器
+
+## 编写游戏开始逻辑
+
+## 编写地图事件响应函数
+
+## 测试游戏
+
+## 美化界面
+
+## 将游戏打包

@@ -1,3 +1,561 @@
+# PHP
+
+## Yii2中的依赖注入
+
+### 基本概念
+
+1.依赖倒置（反转）原则（DIP）：一种软件架构设计的原则（抽象概念，是一种思想）
+在面向对象编程领域中，依赖反转原则（Dependency inversion principle，DIP）是指一种特定的解耦（传统的依赖关系创建在高层次上，而具体的策略设置则应用在低层次的模块上）形式，使得高层次的模块不依赖于低层次的模块的实现细节，依赖关系被颠倒（反转），从而使得低层次模块依赖于高层次模块的需求抽象。
+
+该原则规定：
+
+    1.高层次的模块不应该依赖于低层次的模块，两者都应该依赖于抽象接口。
+    2.抽象接口不应该依赖于具体实现。而具体实现则应该依赖于抽象接口。
+
+图片描述
+
+在上图中，高层对象A依赖于底层对象B的实现；图2中，把高层对象A对底层对象的需求抽象为一个接口A，底层对象B实现了接口A，这就是依赖反转。
+
+该原则颠倒了一部分人对于面向对象设计的认识方式。如高层次和低层次对象都应该依赖于相同的抽象接口。它转换了依赖，高层模块不依赖于低层模块的实现，而低层模块依赖于高层模块定义的接口。通俗的讲，就是高层模块定义接口，低层模块负责实现。
+
+2.控制反转（IoC）：一种反转流、依赖和接口的方式（DIP的具体实现方式，一种设计原则）
+控制反转（Inversion of Control，缩写为IoC），是面向对象编程中的一种设计原则，可以用来减低计算机代码之间的耦合度。其中最常见的方式叫做依赖注入（Dependency Injection，简称DI），还有一种方式叫“依赖查找”（Dependency Lookup）。通过控制反转，对象在被创建的时候，由一个调控系统内所有对象的外界实体，将其所依赖的对象的引用传递给它。也可以说，依赖被注入到对象中。
+
+参考：https://segmentfault.com/a/1190000010788354
+### 入口文件
+> 文件位置：web\index.php
+
+```
+//定义全局变量
+defined('YII_DEBUG') or define('YII_DEBUG', true);
+defined('YII_ENV') or define('YII_ENV', 'dev');
+
+//composer自动加载代码机制，可参考 https://segmentfault.com/a/1190000010788354
+require(__DIR__ . '/../vendor/autoload.php');
+
+//1.引入工具类Yii
+//2.注册自动加载函数
+//3.生成依赖注入中使用到的容器
+require(__DIR__ . '/../vendor/yiisoft/yii2/Yii.php');
+
+//加载应用配置
+$config = require(__DIR__ . '/../config/web.php');
+
+//生成应用并运行
+(new yii\web\Application($config))->run();
+```
+
+参考：https://segmentfault.com/a/1190000011823699
+## sql注入获取后台管理员账号密码
+在完全拿下服务器主机之前，存在sql注入漏洞的网站，可能会因此提供给黑客后台管理员的账号密码，黑客登录后台后，上传木马，拿下整个主机。这是sql注入的一种应用场景。
+
+以下讲解sql注入获取后台管理员账号密码的过程，本文以尽力对新手友好的展现过程来讲解基本原理，高手与百事通请避免观看，以免徒耗时间。
+
+为避免读者惹上麻烦，已对原本目标网站信息进行涂抹，并提供笔者自己搭建的测试网站供有兴趣的朋友操作，换句话说，黑我的网站是合法的。
+
+正式开始，在网站中，点击人才招聘，跳转到如下页面，同时地址栏url变为图中所示。
+
+可以看到链接中传给服务器参数，id=2，此处逻辑一般为：服务器获取到id值为2，再通过id值返回给浏览器对应页面或内容，这个过程有可能会经过数据库。
+
+首先惯常试试是否存在sql注入漏洞，将地址栏中的id=2更改为id=2'，即在值2后面添加单引号，回车看结果。
+
+sweet，塔斯丁狗，服务器返回了数据库错误，并详细的打印了错误信息。由错误信息可以得知，网站使用了mysql数据库，并展示了具体的sql语句：
+
+select * from sy_page where 1 and id=2
+这条语句表示：查询sy_page表里id为2的全部数据，而发生错误的原因则是因为多出的单引号使sql语句语法发生错误。
+
+同时可以看出，我们只加过一个单引号'，上图错误信息却显示，实际sql语句中变为了\'反斜杠加单引号，这说明，服务器是做了特殊符号过滤的，以此来防sql注入，这确实起作用，我们便无法注入带有单引号双引号等特殊符号的语句，但其他的注入却是没问题的。
+
+在确定存在sql注入漏洞后，对于查询语句，可以先确定查询的数据有多少列，通过如下图链接所示增加排序条件order by来探测，将地址栏中id=2改为id=2 order by 15，这将使原本的查询语句变成
+
+select * from sy_page where 1 and id=2 order by 15
+这表示，在原来查询结果的基础上进行排序，排序的依据是第15列数据的值。
+
+但实际结果却报错，显示不存在第15列，这正是我们追求的结果，说明查询的出数据不超过15列。
+
+递减列数尝试，直到列数降为10時，才不再报错，如下图所示，说明数据有10列。
+
+在得知列数后，便可以开启真正的掠夺了。那就是在原本的查询结果中加入自己的查询数据。如下图所示，将地址栏中
+
+id=2
+改为
+
+id=2 union select 1,2,3,4,5,6,7,8,9,10
+
+这样变化的意图是什么？举个例子，假如下图所示查询数据为网站本来正常的查询结果，id=852，从左至右刚好10列数据。
+
+而加入union select 1,2,3,4,5,6,7,8,9,10后，查询结果便如下图所示。多出了一行结果为1 2 3 4 5 6 7 8 9 10的数据。
+
+而网站中这行多出来的数据没有显示在页面上的原因是什么？可以想像，网站在获取到两行数据后只取了第一行的数据，因为网站根本没预料到会有两行以上的数据。那么我们只需要将自己的数据排到第一行，就可以替代网站本身的数据了。于是再做一次排序，继续追加一句order by 1，根据第一列的值进行排序，便产生如下结果
+
+可以看到，我们自己的数据排到了最前面，这是因为我们自己构建的数据中，第一列的值为1，小于上图示例数据852，于是排到了前面。
+
+随后拿到网站中测试，将
+
+id=2
+改为
+
+id=2 union select 1,2,3,4,5,6,7,8,9,10 order by 1
+可以看到，我们的内容替换掉了网站内容，第二列数据值2与第6列数据值6显示在了网站页面。
+
+这两列显示数据便成了数据输出窗口。换言之，只需要将2和6的值替换为数据库实际内容，就可以输出到页面显示，被我们看见。
+
+得知第2列和第6列会显示后，便可以开始尝试将2和6替换为系统表数据，将前面的
+
+id=2 union select 1,2,3,4,5,6,7,8,9,10 order by 1
+更改为
+
+id=2 union select 1,table_schema,3,4,5,table_name,7,8,9,10 from information_schema.columns order by 1
+
+这句表示，我们自己追加的数据不再是单纯的10个数字，而是从mysql的系统表columns中查询的数据，第二列与第六列分别显示columns表中的table_schema列与table_name列数据。table_schema列存储的是数据库名字信息，table_name列存储着表名信息。下图查询到的数据库名为information_schema，表名为character_sets
+
+上面查询的columns表是mysql的系统表，里面存储着mysql中所有的表名及列信息，如下图的本机展示可以看到所有的表名，列名，列的数据类型，通过这个表，可以爆出所有的表名，列名，及所在数据库，是获取数据的突破口。
+
+下图是一个本机测试，用的是前面爆网站表名的语句：
+
+select * from table1 where id=852 union select 1,table_schema,3,4,5,table_name,7,8,9,10 from information_schema.columns order by 1
+可以看到，所有的表列数据被追加到我们自己的数据里，做个对比的话，下图最后一列数据就像网站正常显示的数据，其他的则是我们注入的数据。
+
+那么如何把这么多行数据逐个爆出来呢？很明显依靠排序是不足以实现的，这时可以再在之前的查询语句后追加一个limit条件，如下图所示
+
+limit m,n
+表示筛选出从第m+1行开始的n行数据
+
+limit 0,1
+便表示筛选出第一行开始的一行数据，这样如下图就得到了第一行数据，换成limit 1,1则是筛选出第二行数据，以此类推，可以分别得出每一行的数据。
+
+应用到网站中，发现从第41行开始不再是系统表，如下图所示，第41行爆出了数据库名sq_sydata，表名sy_admin
+
+一行一行爆，如图展示，更改limit限定值会爆出其他的表名。
+
+最后爆出了所有的表，如下图所示。
+
+按照命名推断，sy_admin表必定是后台管理员账号表，既然columns系统表中存放着所有列信息，自然也可以用来将sy_admin表的列名爆出来，将
+
+id=2 union select 1,table_schema,3,4,5,table_name,7,8,9,10 from information_schema.columns order by 1
+中的table_schema（数据库名）替换为table_name（表名），table_name（表名）替换为column_name（列名），再尝试更改limit的限定值，直到更改为480時开始出现sy_admin表的内容，下图可以看到第481列（limit 480,1）爆出了sy_admin表的一个列名为id。
+
+继续递增列爆481，得到列名loginname。
+
+继续递增，最终爆出sy_admin表的所有列名，如下图所示。
+
+可以推断，上图中的lpginname列应该是用户名，password则是登录密码。
+
+ok，已经得到了sy_admin表的所有列名，接下来就可以开始获取sy_admin表中的实际数据了。
+
+然后我们不再查询系统表，转向sy_admin表，如下图所示，将第二列替换为loginname，第六列替换为password，表名从系统表information_schema.columns（information_schema数据库中的columns表）更换为sq_sydata.sy_admin（sq_sydata数据库中的sy_admin表），再稍微更换limit限定条件，最终得到了后台管理员admin的密码，如下图所示
+
+目标达成。
+
+上图中加密后的密码可以通过工具或百度在线md5解密工具解密，不作赘述。
+
+同样也可以更换列名查出其他的信息，比如下图所示登录次数27次，上次登录于2月1号。以及其他的东西，你懂的。
+# php性能优化
+## php语言级的性能优化
+优化点：少写代码，多用php自身能力
+- 性能问题：自身代码冗余较多，可读性不佳，并且性能低。
+- 为什么性能低：php代码需要编译解析为底层语言，这一过程每次请求都会处理一遍，开销大。
+- 解决方案：多用php内置变量、常量、函数
+- 测试方法：直接使用ab对比
+
+优化点：php内置函数的性能优劣
+- 性能问题：php内置函数，之间依然存在快慢差异
+- 解决方案：多去了解php内置函数的时间复杂度
+- 测试方法：对比isset()和array_key_exists()的性能差异
+```php
+<?php
+    $start = current_time();
+    $i = 0;
+    $arr = range(1, 200000);
+    while($i<200000){
+        ++$i;
+        //isset($arr[$i]);
+        array_key_exists($i,$arr);
+    }
+    $end = current_time();
+    echo "Lost Time:". number_format($end-$start,3)*1000;
+    echo "\n";
+    function current_time(){
+        list($usec, $sec) = explode(" ".microtime());
+        return ((float)$usec + (float)$sec);
+    }
+?>
+```
+优化点：尽可能少用魔法函数
+- 情况描述：php提供的魔法函数，性能不佳
+- 为什么性能低：为了给php程序员省事，php语言为你做了很多
+- 解决方案：尽可能规避使用魔法函数
+- 测试方法：time php test.php
+    - time  liunx命令
+    - php 指定程序
+    - test.php 指定文件 
+    > 注意：php主要在返回值中看user耗时
+
+优化点：产生额外开销在错误抑制符
+- 情况描述：php提供的错误抑制符只是为了方便懒人
+- @的实际逻辑：在代码开始前，结束后，增加Opcode,忽略报错
+    vld php Opcode查看扩展:用于将Opcode显示出来
+- 解决方案：尽量不要使用@错误抑制符
+- 测试方法：php -dvld.active=1 -dvld.execute=0 at.php
+    
+- php 执行php的vld显示Opcode
+    
+优化点：避免在循环内做运算
+- 情况描述：循环内在函数或运算会被重复执行
+- 解决方案：在循环外获取需要在值，再给循环操作
+
+优化点：减少计算密集型业务
+- 情况描述：php不适合密集型的场景
+- 为什么：php语言特性决定php不适合做大数据业务
+- php适合场景：适合衔接webserver与sql
+
+优化点：务必使用带引号字符串做键值
+- 情况描述：php会将没有引号的键值当作常量，产生查找常量在开销。
+- 解决方案：严格使用带引号作为键值
+
+## php周边问题的性能优化
+- php周边有什么:
+    - linux运行环境
+    - 文件存储  硬盘
+    - 数据库    mysql
+    - 缓存      redis
+    - 网络  
+
+优化点：减少文件类操作
+- 常见php场景在开销次序
+读写内存 << 读写数据库 << 读写磁盘 << 读写网络数据
+
+优化点：优化网络请求
+- 网络请求的坑：
+    1. 对方接口的不确定因素
+    2. 网络稳定性
+- 如何优化网络请求：
+    - 设置超时时间
+    1. 连接超时 <200ms
+    2. 读超时   <800ms
+    3. 写超时   <500ms
+    - 将串行请求并行化
+    1. 使用curl_multi_*()
+    2. 使用swoole扩展
+
+优化点：压缩php接口输出
+- 如何压缩：使用Gzip即可
+- 压缩的利于弊：利于我们的数据输出，Client段能更快获取数据;弊端为会有额外的CPU开销
+
+优化点：缓存重复计算内容
+- 什么情况下坐输出内容缓存：多次请求，内容不变情况
+
+重叠时间窗口思想===并行
+旁路方案===并行
+
+## php语言自身分析、优化
+
+### php性能分析
+
+工具:XHPorf（源自FackBook的php性能分析工具）
+实践：通过分析Wordpress程序，做优化。
+使用: php --ri xhprof   查看版本
+在入口文件index.php添加
+
+```php
+xhprof_enable();
+
+// ...
+
+$data = xhporf_disable();
+include_once "/var/www/html/xhprof_lib/utils/xhprof_lib.php";
+include_once "/var/www/html/xhprof_lib/utils/xhprof_runs.php";
+$objXhprofRun = new XHProfRuns_Default();
+$run_id = $objXhprofRun->save_run($data,"test");
+var_dump($run_id);
+```
+查看xhp目录查看相关信息
+参数：
+    runction_name   函数名
+    calls   被调用在次数
+    InclWallTime    当流程走到该函数，之前和现在这个函数处理在总耗时
+    ExclWallTime    这个函数执行了多少微秒
+
+其他工具推荐：
+    ab  压力测试
+    vld opcode代码分析
+
+php性能瓶颈解决方案：
+    Opcode Cache:php扩展APC等
+    peci.php.net    php扩展网站
+    使用php扩展解决复杂的业务
+    Runtime优化:HHVM
+
+### Apache Benchmark(ab)
+
+> ab是由Apache提供的压力测试软件。安装apache服务器时会自带该压测软件
+- 使用方法: ./ab -n1000 -c100 http://www.baidu.com/
+    - -n 请求数
+    - -c 并发数
+    - http 压测目标地址
+    - -h 帮助 
+
+**返回参数说明**
+- Requests per second（每秒接受请求数尽可能多）
+- Time per request（每秒请求在耗时尽可能少）
+## Laravel5.8版本安装教程
+1.安装
+
+方式1：全局安装
+
+通过composer安装 laravel 安装器
+
+composer global require "laravel/installer"
+
+确保将 composer vender bin 目录放置在你的系统环境变量 $PATH 中，以便系统可以找到 Laravel 的可执行文件。该目录根据您的操作系统存在不同的位置中；一些常见的配置包括：
+
+macOS: $HOME/.composer/vendor/bin
+
+GNU / Linux 发行版: $HOME/.config/composer/vendor/bin
+
+安装完后可通过 laravel new 项目名安装laravel
+
+方式二：命令行安装
+
+composer create-project --prefer -dist laravel/laravel 项目名
+2.配置公共目录
+
+安装完laravel后必须将web服务器根目录指向public文件夹。如果是本地环境可忽略此操作。
+3.配置读写权限
+
+storage和bootstrap/cache 两个文件夹需要写入权限。如果未配置laravel程序将无法运行。如果是本地环境可忽略此操作。
+4.创建.env文件
+
+laravel安装完成，如果只有.env.example文件，需要创建.evn文件并将.env.example中的内容复制到.env中。
+5.生成应用秘钥
+
+laravel安装完成后，需要在命令行下运行php artisan key:generate，该命令会生成一个32位的随机数，并写入.env文件中
+6.修改config/app.php下的timezone
+
+app.php中的timezone默认是UTC,UTC是世界统一时间，需要将时区改成中国时区Asia/Shanghai
+7.配置数据库
+
+创建数据库并将数据库配
+
+置信息写入.env文件
+```
+DB_CONNECTION=mysql
+
+DB_HOST=127.0.0.1
+
+DB_PORT=3306
+
+DB_DATABASE=homestead
+
+DB_USERNAME=root
+
+DB_PASSWORD=root
+
+```
+
+参考：https://www.jianshu.com/p/a3cdec31be9b
+## Composer 安装与使用
+
+Composer 是 PHP 的一个依赖管理工具。我们可以在项目中声明所依赖的外部工具库，Composer 会帮你安装这些依赖的库文件，有了它，我们就可以很轻松的使用一个命令将其他人的优秀代码引用到我们的项目中来。
+
+Composer 默认情况下不是全局安装，而是基于指定的项目的某个目录中（例如 vendor）进行安装。
+
+Composer 需要 PHP 5.3.2+ 以上版本，且需要开启 openssl。
+
+Composer 可运行在 Windows 、 Linux 以及 OSX 平台上。
+
+Composer 的安装
+Wondows 平台
+
+Wondows 平台上，我们只需要下载 Composer-Setup.exe 后，一步步安装即可。
+
+需要注意的是你需要开启 openssl 配置，我们打开 php 目录下的 php.ini，将 extension=php_openssl.dll 前面的分号去掉就可以了。
+
+安装成功后，我们可以通过命令窗口(cmd) 输入 composer --version 命令来查看是否安装成功：
+
+接下来我们可以更改 Packagist 为国内镜像：
+
+composer config -g repo.packagist composer https://packagist.phpcomposer.com
+
+Linux 平台
+
+Linux 平台可以使用以下命令来安装：
+
+# php -r "copy('https://install.phpcomposer.com/installer', 'composer-setup.php');"
+# php composer-setup.php
+
+All settings correct for using Composer
+Downloading...
+
+Composer (version 1.6.5) successfully installed to: /root/composer.phar
+Use it: php composer.phar
+
+移动 composer.phar，这样 composer 就可以进行全局调用：
+
+# mv composer.phar /usr/local/bin/composer
+
+切换为国内镜像：
+
+# composer config -g repo.packagist composer https://packagist.phpcomposer.com
+
+更新 composer：
+
+# composer selfupdate
+
+Mac OS 系统
+
+Mac OS 系统可以使用以下命令来安装：
+
+$ curl -sS https://getcomposer.org/installer | php
+$ sudo mv composer.phar /usr/local/bin/composer
+$ composer --version
+Composer version 1.7.2 2018-08-16 16:57:12
+
+切换为国内镜像：
+
+$ composer config -g repo.packagist composer https://packagist.phpcomposer.com
+
+更新 composer：
+
+$ composer selfupdate
+
+Composer 的使用
+
+要使用 Composer，我们需要先在项目的目录下创建一个 composer.json 文件，文件描述了项目的依赖关系。
+
+文件格式如下：
+
+{
+    "require": {
+        "monolog/monolog": "1.2.*"
+    }
+}
+
+以上文件说明我们需要下载从 1.2 开始的任何版本的 monolog。
+
+接下来只要运行以下命令即可安装依赖包：
+
+composer install
+
+require 命令
+
+除了使用 install 命令外，我们也可以使用 require 命令快速的安装一个依赖而不需要手动在 composer.json 里添加依赖信息：
+
+$ composer require monolog/monolog
+
+Composer 会先找到合适的版本，然后更新composer.json文件，在 require 那添加 monolog/monolog 包的相关信息，再把相关的依赖下载下来进行安装，最后更新 composer.lock 文件并生成 php 的自动加载文件。
+update 命令
+
+update 命令用于更新项目里所有的包，或者指定的某些包：
+
+# 更新所有依赖
+$ composer update
+
+# 更新指定的包
+$ composer update monolog/monolog
+
+# 更新指定的多个包
+$ composer update monolog/monolog symfony/dependency-injection
+
+# 还可以通过通配符匹配包
+$ composer update monolog/monolog symfony/*
+
+需要注意的时，包能升级的版本会受到版本约束的约束，包不会升级到超出约束的版本的范围。例如如果 composer.json 里包的版本约束为 ^1.10，而最新版本为 2.0。那么 update 命令是不能把包升级到 2.0 版本的，只能最高升级到 1.x 版本。关于版本约束请看后面的介绍。
+remove 命令
+
+remove 命令用于移除一个包及其依赖（在依赖没有被其他包使用的情况下），如果依赖被其他包使用，则无法移除：
+
+$ composer remove monolog/monolog
+Loading composer repositories with package information
+Updating dependencies (including require-dev)
+Package operations: 0 installs, 0 updates, 2 removals
+  - Removing psr/log (1.0.2)
+  - Removing monolog/monolog (1.23.0)
+Generating autoload files
+
+search 命令
+
+search 命令可以搜索包：
+
+$ composer search monolog
+
+该命令会输出包及其描述信息，如果只想输出包名可以使用 --only-name 参数：
+
+$ composer search --only-name monolog
+
+show 命令
+
+show 命令可以列出当前项目使用到包的信息：
+
+# 列出所有已经安装的包
+$ composer show
+
+# 可以通过通配符进行筛选
+$ composer show monolog/*
+
+# 显示具体某个包的信息
+$ composer show monolog/monolog
+
+基本约束
+精确版本
+
+我们可以告诉 Composer 安装的具体版本，例如：1.0.2，指定 1.0.2 版本。
+范围
+
+通过使用比较操作符来指定包的范围。这些操作符包括：>，>=，<，<=，!=。
+
+你可以定义多个范围，使用空格或者逗号 , 表示逻辑上的与，使用双竖线 || 表示逻辑上的或。其中与的优先级会大于或。 实例：
+
+    >=1.0
+    >=1.0 <2.0
+    >=1.0 <1.1 || >=1.2
+
+我们也可以通过使用连字符 - 来指定版本范围。
+
+连字符的左边表明了 >= 的版本，如果右边的版本不是完整的版本号，则会被使用通配符进行补全。例如1.0 - 2.0等同于>=1.0.0 <2.1（2.0相当于2.0.*），而1.0.0 - 2.1.0则等同于>=1.0.0 <=2.1.0。
+通配符
+
+可以使用通配符来设置版本。1.0.*相当于>=1.0 <1.1。
+例子：1.0.*
+波浪号 ~
+
+我们先通过后面这个例子去解释~操作符的用法：~1.2相当于>=1.2 <2.0.0，而~1.2.3相当于>=1.2.3 <1.3.0。对于使用Semantic Versioning作为版本号标准的项目来说，这种版本约束方式很实用。例如~1.2定义了最小的小版本号，然后你可以升级2.0以下的任何版本而不会出问题，因为按照Semantic Versioning的版本定义，小版本的升级不应该有兼容性的问题。简单来说，~定义了最小的版本，并且允许版本的最后一位版本号进行升级（没懂得话，请再看一边前面的例子）。
+例子：~1.2
+
+    需要注意的是，如果~作用在主版本号上，例如~1，按照上面的说法，Composer可以安装版本1以后的主版本，但是事实上是~1会被当作~1.0对待，只能增加小版本，不能增加主版本。
+
+折音号 ^
+
+^操作符的行为跟Semantic Versioning有比较大的关联，它允许升级版本到安全的版本。例如，^1.2.3相当于>=1.2.3 <2.0.0，因为在2.0版本前的版本应该都没有兼容性的问题。而对于1.0之前的版本，这种约束方式也考虑到了安全问题，例如^0.3会被当作>=0.3.0 <0.4.0对待。
+例子：^1.2.3
+版本稳定性
+
+如果你没有显式的指定版本的稳定性，Composer会根据使用的操作符，默认在内部指定为-dev或者-stable。例如：
+约束 	内部约束
+1.2.3 	=1.2.3.0-stable
+>1.2 	>1.2.0.0-stable
+>=1.2 	>=1.2.0.0-dev
+>=1.2-stable 	>=1.2.0.0-stable
+<1.3 	<1.3.0.0-dev
+<=1.3 	<=1.3.0.0-stable
+1 - 2 	>=1.0.0.0-dev <3.0.0.0-dev
+~1.3 	>=1.3.0.0-dev <2.0.0.0-dev
+1.4.* 	>=1.4.0.0-dev <1.5.0.0-dev
+例子：1.0 - 2.0
+
+如果你想指定版本只要稳定版本，你可以在版本后面添加后缀-stable。
+
+minimum-stability 配置项定义了包在选择版本时对稳定性的选择的默认行为。默认是stable。它的值如下（按照稳定性排序）：dev，alpha，beta，RC和stable。除了修改这个配置去修改这个默认行为，我们还可以通过稳定性标识（例如@stable和@dev）来安装一个相比于默认配置不同稳定性的版本。例如：
+
+{
+    "require": {
+        "monolog/monolog": "1.0.*@beta",
+        "acme/foo": "@dev"
+    }
+}
+
+参考：https://www.runoob.com/w3cnote/composer-install-and-usage.html
+## php面试指南
 https://github.com/laravel-china/php-the-right-way
 
 https://github.com/Twipped/InterviewThis

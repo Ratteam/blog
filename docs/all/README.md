@@ -17,11 +17,20 @@ meta:
 ## [随笔](/all/随笔/)  
 > 随笔
 
+## [phpstudy](/all/phpstudy/)  
+> phpstudy
+
+## [gitclone文件较大时报错](/all/qianqian/gitclone文件较大时报错/)  
+> gitclone文件较大时报错
+
+## [visualstudio怎么导入一个工程](/all/qianqian/visualstudio怎么导入一个工程/)  
+> visualstudio怎么导入一个工程
+
 ## [如何学习ue4](/all/qianqian/如何学习ue4/)  
 > 如何学习ue4
 
-## [leetcode题解cpp](/all/qianqian/leetcode题解cpp/)  
-> leetcode题解cpp
+## [leetcode](/all/qianqian/leetcode/)  
+> leetcode
 
 ## [vs2013如何快速运行一个C++程序](/all/qianqian/vs2013如何快速运行一个C++程序/)  
 > vs2013如何快速运行一个C++程序
