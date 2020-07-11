@@ -17,23 +17,110 @@ meta:
 ## [随笔](/all/随笔/)  
 > 随笔
 
-## [phpstudy](/all/phpstudy/)  
-> phpstudy
+## [Android](/all/qianqian/Android/)  
+> Android
 
-## [gitclone文件较大时报错](/all/qianqian/gitclone文件较大时报错/)  
-> gitclone文件较大时报错
+## [Blender](/all/qianqian/Blender/)  
+> Blender
 
-## [visualstudio怎么导入一个工程](/all/qianqian/visualstudio怎么导入一个工程/)  
-> visualstudio怎么导入一个工程
+## [Cad](/all/qianqian/Cad/)  
+> Cad
 
-## [如何学习ue4](/all/qianqian/如何学习ue4/)  
-> 如何学习ue4
+## [Cpp](/all/qianqian/Cpp/)  
+> Cpp
 
-## [leetcode](/all/qianqian/leetcode/)  
-> leetcode
+## [Embedded](/all/qianqian/Embedded/)  
+> Embedded
 
-## [vs2013如何快速运行一个C++程序](/all/qianqian/vs2013如何快速运行一个C++程序/)  
-> vs2013如何快速运行一个C++程序
+## [English](/all/qianqian/English/)  
+> English
 
-## [cpp语法使用指南](/all/qianqian/cpp语法使用指南/)  
-> cpp语法使用指南
+## [Financial](/all/qianqian/Financial/)  
+> Financial
+
+## [Game](/all/qianqian/Game/)  
+> Game
+
+## [GitHub](/all/qianqian/GitHub/)  
+> GitHub
+
+## [Gobot](/all/qianqian/Gobot/)  
+> Gobot
+
+## [JavaScript](/all/qianqian/JavaScript/)  
+> JavaScript
+
+## [Jenkins](/all/qianqian/Jenkins/)  
+> Jenkins
+
+## [Kubernetes](/all/qianqian/Kubernetes/)  
+> Kubernetes
+
+## [Law](/all/qianqian/Law/)  
+> Law
+
+## [LeetCode](/all/qianqian/LeetCode/)  
+> LeetCode
+
+## [Linux](/all/qianqian/Linux/)  
+> Linux
+
+## [Markdown](/all/qianqian/Markdown/)  
+> Markdown
+
+## [Mysql](/all/qianqian/Mysql/)  
+> Mysql
+
+## [News](/all/qianqian/News/)  
+> News
+
+## [Nginx](/all/qianqian/Nginx/)  
+> Nginx
+
+## [Oracle](/all/qianqian/Oracle/)  
+> Oracle
+
+## [PhotoShop](/all/qianqian/PhotoShop/)  
+> PhotoShop
+
+## [Php](/all/qianqian/Php/)  
+> Php
+
+## [PhpStudy](/all/qianqian/PhpStudy/)  
+> PhpStudy
+
+## [Psychology](/all/qianqian/Psychology/)  
+> Psychology
+
+## [Python](/all/qianqian/Python/)  
+> Python
+
+## [Redis](/all/qianqian/Redis/)  
+> Redis
+
+## [SqlDeveloper](/all/qianqian/SqlDeveloper/)  
+> SqlDeveloper
+
+## [SqlYog](/all/qianqian/SqlYog/)  
+> SqlYog
+
+## [StrangeKnowledge](/all/qianqian/StrangeKnowledge/)  
+> StrangeKnowledge
+
+## [TypeScript](/all/qianqian/TypeScript/)  
+> TypeScript
+
+## [Vim](/all/qianqian/Vim/)  
+> Vim
+
+## [VisualStudio](/all/qianqian/VisualStudio/)  
+> VisualStudio
+
+## [VsCode](/all/qianqian/VsCode/)  
+> VsCode
+
+## [Windows](/all/qianqian/Windows/)  
+> Windows
+
+## [Zabbix](/all/qianqian/Zabbix/)  
+> Zabbix
