@@ -68,8 +68,8 @@ meta:
 ## [Markdown](/all/qianqian/Markdown/)  
 > Markdown
 
-## [Mysql](/all/qianqian/Mysql/)  
-> Mysql
+## [sql](/all/qianqian/sql/)  
+> sql
 
 ## [News](/all/qianqian/News/)  
 > News
@@ -97,12 +97,6 @@ meta:
 
 ## [Redis](/all/qianqian/Redis/)  
 > Redis
-
-## [SqlDeveloper](/all/qianqian/SqlDeveloper/)  
-> SqlDeveloper
-
-## [SqlYog](/all/qianqian/SqlYog/)  
-> SqlYog
 
 ## [StrangeKnowledge](/all/qianqian/StrangeKnowledge/)  
 > StrangeKnowledge

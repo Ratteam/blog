@@ -14,6 +14,18 @@ meta:
 ---
 
 # 网站
+## [sololearn在线代码编辑器]() `sololearn在线代码编辑器`
+> sololearn在线代码编辑器
+- 网址：https://code.sololearn.com/166/#cpp
+
+## [sololearn]() `sololearn`
+> sololearn
+- 网址：https://www.sololearn.com
+
+## [持续集成服务 Travis CI]() `持续集成服务 Travis CI`
+> 持续集成服务 Travis CI
+- 网址：https://www.travis-ci.org/
+
 ## [力扣]() `力扣`
 > 力扣
 - 网址：https://leetcode-cn.com/problemset/algorithms/
