@@ -10,4 +10,4 @@ cache:
 install:
   - yarn install
 scripts:
-  - ls
+  - ./deploy.sh
