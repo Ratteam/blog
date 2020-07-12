@@ -10,4 +10,4 @@ cache:
 install:
   - yarn install
 scripts:
-  - ./deploy.sh
+  - npm run docs:build
