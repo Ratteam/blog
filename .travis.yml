@@ -1,9 +1,14 @@
----
 language: node_js
 node_js:
   - node
-
-script:
-  - ./deploy.sh
-  - yarn --version
-  
+branchs:
+  only:
+    - master
+cache:
+  directories:
+    - node_modules
+install:
+  - yarn install
+scripts:
+  - yarn docs:dev
+  - bash deploy.sh
