@@ -10,5 +10,10 @@ cache:
 install:
   - yarn install
 scripts:
-  - yarn docs:dev
-  - bash deploy.sh
+  # 构建
+  - yarn docs:build
+  - cd docs/.vuepress/dist
+  - git init
+  - git add -A
+  - git commit -m 'deploy'
+  - git push -f https://github.com/RatFrog/ratfrog.github.io.git master
