@@ -10,7 +10,7 @@ cache:
 install:
   - yarn install
 scripts:
-  # 构建
+  - cd blog
   - yarn docs:build
   - cd docs/.vuepress/dist
   - git init
