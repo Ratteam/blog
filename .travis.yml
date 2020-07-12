@@ -10,7 +10,7 @@ cache:
 install:
   - yarn install
 scripts:
-  - cd blog
+  - cd Ratteam/blog
   - yarn docs:build
   - cd docs/.vuepress/dist
   - git init
