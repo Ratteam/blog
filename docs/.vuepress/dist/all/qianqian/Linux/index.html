@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>screen命令学习 | ratfrog的博客</title>
+    <meta name="description" content="Just playing around">
+    <meta name="generator" content="VuePress 1.3.1">
+    <link rel="icon" href="/icon.png">
+  <script>var _hmt = _hmt || [];
+    (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?46eb6dbf0c639c7f8f8b9bc2e1b8e9ad";
+    var s = document.getElementsByTagName("script")[0]; 
+    s.parentNode.insertBefore(hm, s);
+    })();</script>
+    
+    <link rel="preload" href="/assets/css/0.styles.0cf81d82.css" as="style"><link rel="preload" href="/assets/js/app.f33c03af.js" as="script"><link rel="preload" href="/assets/js/2.8a1ae630.js" as="script"><link rel="preload" href="/assets/js/30.a18f130f.js" as="script"><link rel="prefetch" href="/assets/js/10.a06011e4.js"><link rel="prefetch" href="/assets/js/11.e1114912.js"><link rel="prefetch" href="/assets/js/12.edc64439.js"><link rel="prefetch" href="/assets/js/13.a3173774.js"><link rel="prefetch" href="/assets/js/14.4bed2e41.js"><link rel="prefetch" href="/assets/js/15.1699dde0.js"><link rel="prefetch" href="/assets/js/16.bad8e339.js"><link rel="prefetch" href="/assets/js/17.a90a954f.js"><link rel="prefetch" href="/assets/js/18.eada6ffb.js"><link rel="prefetch" href="/assets/js/19.91c13f14.js"><link rel="prefetch" href="/assets/js/20.56a81c75.js"><link rel="prefetch" href="/assets/js/21.41c09a46.js"><link rel="prefetch" href="/assets/js/22.cfc872f3.js"><link rel="prefetch" href="/assets/js/23.a2e057c4.js"><link rel="prefetch" href="/assets/js/24.7249cf00.js"><link rel="prefetch" href="/assets/js/25.1e415478.js"><link rel="prefetch" href="/assets/js/26.c0bb86a7.js"><link rel="prefetch" href="/assets/js/27.f219c934.js"><link rel="prefetch" href="/assets/js/28.c5d553d6.js"><link rel="prefetch" href="/assets/js/29.ed288419.js"><link rel="prefetch" href="/assets/js/3.edeb5efd.js"><link rel="prefetch" href="/assets/js/31.b2cb940b.js"><link rel="prefetch" href="/assets/js/32.805baf01.js"><link rel="prefetch" href="/assets/js/33.306f9fe8.js"><link rel="prefetch" href="/assets/js/34.04f2de4f.js"><link rel="prefetch" href="/assets/js/35.43117b54.js"><link rel="prefetch" href="/assets/js/36.cbcad82d.js"><link rel="prefetch" href="/assets/js/37.3ef6ca82.js"><link rel="prefetch" href="/assets/js/38.b96ccc3c.js"><link rel="prefetch" href="/assets/js/39.a703af32.js"><link rel="prefetch" href="/assets/js/4.983ed5d5.js"><link rel="prefetch" href="/assets/js/40.4cf0ab32.js"><link rel="prefetch" href="/assets/js/41.c53bad33.js"><link rel="prefetch" href="/assets/js/42.79a3b3ee.js"><link rel="prefetch" href="/assets/js/43.1b497787.js"><link rel="prefetch" href="/assets/js/44.45420b05.js"><link rel="prefetch" href="/assets/js/45.5cdb95ea.js"><link rel="prefetch" href="/assets/js/46.3458eeea.js"><link rel="prefetch" href="/assets/js/47.2bd0a24c.js"><link rel="prefetch" href="/assets/js/48.a9880aaf.js"><link rel="prefetch" href="/assets/js/49.4415a9a4.js"><link rel="prefetch" href="/assets/js/5.14a93412.js"><link rel="prefetch" href="/assets/js/50.d5af4139.js"><link rel="prefetch" href="/assets/js/51.99f0485b.js"><link rel="prefetch" href="/assets/js/52.9c6543e0.js"><link rel="prefetch" href="/assets/js/53.d8f935c7.js"><link rel="prefetch" href="/assets/js/54.389f76b6.js"><link rel="prefetch" href="/assets/js/55.52c85add.js"><link rel="prefetch" href="/assets/js/56.d1ed2a00.js"><link rel="prefetch" href="/assets/js/57.b907a098.js"><link rel="prefetch" href="/assets/js/58.a46232ef.js"><link rel="prefetch" href="/assets/js/59.9bc3c7c3.js"><link rel="prefetch" href="/assets/js/6.d7af4825.js"><link rel="prefetch" href="/assets/js/60.d923f5d7.js"><link rel="prefetch" href="/assets/js/61.f3bb3210.js"><link rel="prefetch" href="/assets/js/62.7a5b52ff.js"><link rel="prefetch" href="/assets/js/63.4c2b44e4.js"><link rel="prefetch" href="/assets/js/64.9ec9de3e.js"><link rel="prefetch" href="/assets/js/65.411c26a0.js"><link rel="prefetch" href="/assets/js/66.242077af.js"><link rel="prefetch" href="/assets/js/7.bf14451a.js"><link rel="prefetch" href="/assets/js/8.7342b8d4.js"><link rel="prefetch" href="/assets/js/9.e7e3dd5a.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.0cf81d82.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container no-sidebar"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">ratfrog的博客</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="分类" class="dropdown-title"><span class="title">分类</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/all/qianqian/" class="nav-link router-link-active">
+  钱钱
+</a></li><li class="dropdown-item"><!----> <a href="/all/xiexie/" class="nav-link">
+  写写
+</a></li><li class="dropdown-item"><!----> <a href="/all/xingxing/" class="nav-link">
+  星星
+</a></li><li class="dropdown-item"><!----> <a href="/all/paipai/" class="nav-link">
+  拍拍
+</a></li><li class="dropdown-item"><!----> <a href="/all/fanfan/" class="nav-link">
+  翻翻
+</a></li><li class="dropdown-item"><!----> <a href="/all/huahua/" class="nav-link">
+  画画
+</a></li><li class="dropdown-item"><!----> <a href="/all/qiqi/" class="nav-link">
+  其其
+</a></li></ul></div></div><div class="nav-item"><a href="/web/" class="nav-link">
+  网站
+</a></div><div class="nav-item"><a href="/app/" class="nav-link">
+  应用
+</a></div><div class="nav-item"><a href="/radio/" class="nav-link">
+  电台
+</a></div><div class="nav-item"><a href="/video/" class="nav-link">
+  视频
+</a></div><div class="nav-item"><a href="/all/" class="nav-link router-link-active">
+  最新文章
+</a></div><div class="nav-item"><a href="/more/" class="nav-link">
+  支持打赏
+</a></div><div class="nav-item"><a href="/about/" class="nav-link">
+  关于我
+</a></div><div class="nav-item"><a href="/photowall/" class="nav-link">
+  照片墙
+</a></div><div class="nav-item"><a href="/timeline/" class="nav-link">
+  时间轴
+</a></div><div class="nav-item"><a href="/bbs/" class="nav-link">
+  公告板
+</a></div><div class="nav-item"><a href="/message/" class="nav-link">
+  留言板
+</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="分类" class="dropdown-title"><span class="title">分类</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/all/qianqian/" class="nav-link router-link-active">
+  钱钱
+</a></li><li class="dropdown-item"><!----> <a href="/all/xiexie/" class="nav-link">
+  写写
+</a></li><li class="dropdown-item"><!----> <a href="/all/xingxing/" class="nav-link">
+  星星
+</a></li><li class="dropdown-item"><!----> <a href="/all/paipai/" class="nav-link">
+  拍拍
+</a></li><li class="dropdown-item"><!----> <a href="/all/fanfan/" class="nav-link">
+  翻翻
+</a></li><li class="dropdown-item"><!----> <a href="/all/huahua/" class="nav-link">
+  画画
+</a></li><li class="dropdown-item"><!----> <a href="/all/qiqi/" class="nav-link">
+  其其
+</a></li></ul></div></div><div class="nav-item"><a href="/web/" class="nav-link">
+  网站
+</a></div><div class="nav-item"><a href="/app/" class="nav-link">
+  应用
+</a></div><div class="nav-item"><a href="/radio/" class="nav-link">
+  电台
+</a></div><div class="nav-item"><a href="/video/" class="nav-link">
+  视频
+</a></div><div class="nav-item"><a href="/all/" class="nav-link router-link-active">
+  最新文章
+</a></div><div class="nav-item"><a href="/more/" class="nav-link">
+  支持打赏
+</a></div><div class="nav-item"><a href="/about/" class="nav-link">
+  关于我
+</a></div><div class="nav-item"><a href="/photowall/" class="nav-link">
+  照片墙
+</a></div><div class="nav-item"><a href="/timeline/" class="nav-link">
+  时间轴
+</a></div><div class="nav-item"><a href="/bbs/" class="nav-link">
+  公告板
+</a></div><div class="nav-item"><a href="/message/" class="nav-link">
+  留言板
+</a></div> <!----></nav>  <!----> </aside> <main class="page"> <div class="theme-default-content content__default"><h2 id="screen命令学习"><a href="#screen命令学习" class="header-anchor">#</a> screen命令学习</h2> <p><strong>screen分session和window</strong></p> <p>session就是执行screen [-S session-name]生成的一个会话，在会话中可以打开多个window</p> <p><strong>screen命令使用说明</strong></p> <div class="language- extra-class"><pre class="language-text"><code>-A 　将所有的视窗都调整为目前终端机的大小。
+
+-d &lt;作业名称&gt; 　将指定的screen作业离线。
+
+-m 　即使目前已在作业中的screen作业，仍强制建立新的screen作业。
+
+-r &lt;作业名称&gt; 　恢复离线的screen作业。
+
+-R 　先试图恢复离线的作业。若找不到离线的作业，即建立新的screen作业。
+
+-s 　指定建立新视窗时，所要执行的shell。
+
+-S &lt;作业名称&gt; 　指定screen作业的名称。
+
+-v 　显示版本信息。
+
+-x 　恢复之前离线的screen作业。
+
+-ls或--list 　显示目前所有的screen作业。
+
+-wipe 　检查目前所有的screen作业，并删除已经无法使用的screen作业。
+</code></pre></div><p>screen -S test1          ##建立一个session,不带-S会随机session的名称
+ls /tmp                        ##执行一个命令
+Ctrl+a + d                   ##暂时离开当前session,回到原来的shell
+screen -ls                    ##查看所有session</p> <p>263.test1</p> <p>screen -r  263              ##返回session,263是指session名称前面的数字</p> <p><strong>在session中的一些快捷键</strong></p> <p>在每个screen session 下，所有命令都以 ctrl+a(C-a) 开始。
+C-a ? -&gt; Help，显示简单说明
+C-a c -&gt; Create，开启新的 window
+C-a n -&gt; Next，切换到下个 window
+C-a p -&gt; Previous，前一个 window
+C-a 0..9 -&gt; 切换到第 0..9 个window
+Ctrl+a [Space] -&gt; 由視窗0循序換到視窗9
+C-a C-a -&gt; 在两个最近使用的 window 间切换
+C-a x -&gt; 锁住当前的 window，需用用户密码解锁
+C-a d -&gt; detach，暂时离开当前session，将目前的 screen session (可能含有多个 windows) 丢到后台执行，并会回到还没进 screen 时的状态，此时在 screen session 里    每个 window 内运行的 process (无论是前台/后台)都在继续执行，即使 logout 也不影响。
+C-a z -&gt; 把当前session放到后台执行，用 shell 的 fg 命令則可回去。
+C-a w -&gt; Windows，列出已开启的 windows 有那些
+C-a t -&gt; Time，显示当前时间，和系统的 load
+C-a K -&gt; kill window，强行关闭当前的 window</p> <p>4.其他说明</p> <p>若 screen -ls 里有 Attached sessions:
+screen -d [id] -&gt; 强制离线，然后再screen -r [id]恢复</p> <p>不需要的session screen -r 进去以后，exit即可</p> <h2 id="lftp-ftp客户端软件"><a href="#lftp-ftp客户端软件" class="header-anchor">#</a> lftp FTP客户端软件</h2> <p>1.1 安装VSFTPD</p> <p>使用 yum 安装 vsftpd</p> <p>yum install -y vsftpd</p> <p>1.2 启动vsftpd</p> <p>安装完成后，启动 FTP 服务：</p> <p>service vsftpd start</p> <p>启动后，可以看到系统已经监听了 21 端口：</p> <p>netstat -nltp | grep 21</p> <p>此时，访问 ftp:// 192.168.19.170 可在本机浏览机器上访问了</p> <p>2、配置FTP 权限</p> <p>2.1 了解VSFTP 配置</p> <p>vsftpd 的配置目录为 /etc/vsftpd，包含下列的配置文件：</p> <p>vsftpd.conf 为主要配置文件</p> <p>ftpservers 配置禁止访问 FTP 服务器的用户列表</p> <p>user_list 配置用户访问控制</p> <p>2.2 阻止匿名访问和切换根目录</p> <p>匿名访问和切换根目录都会给服务器带来安全风险，我们把这两个功能关闭。</p> <p>编辑 /etc/vsftpd/vsftpd.conf，找到下面两处配置并修改：</p> <p>禁用匿名用户  YES 改为NO</p> <p>anonymous_enable=NO</p> <p>禁止切换根目录 删除#</p> <p>chroot_local_user=YES</p> <p>编辑完成后保存配置，重新启动 FTP 服务</p> <p>service vsftpd restart</p> <p>2.3 创建FTP 用户</p> <p>创建一个用户 ftpserver</p> <p>useradd ftpserver</p> <p>为用户 ftpserver 设置密码</p> <p>echo &quot;ftp@123456&quot; | passwd ftpserver--stdin</p> <p>2.4 限制该用户仅能通过 FTP 访问</p> <p>限制用户 ftpserver只能通过FTP 访问服务器，而不能直接登录服务器：</p> <p>usermod -s /sbin/nologin ftpserver</p> <p>2.5 为用户分配主目录</p> <p>为用户 ftpserver创建主目录并约定：</p> <p>/data/ftp 为主目录,该目录不可上传文件</p> <p>/data/ftp/excelDir文件只能上传到该目录下</p> <p>在/data中创建相关的目录</p> <p>mkdir -p /data/ftp/excelDir</p> <p>2.5.1 创建登录欢迎文件</p> <p>echo &quot;Welcome to use FTP service.&quot;&gt; /data/ftp/welcome.txt</p> <p>设置访问权限</p> <p>chmod a-w /data/ftp &amp;&amp; chmod 777 -R/data/ftp/excelDir</p> <p>设置为用户的主目录：</p> <p>usermod -d /data/ftp ftpserver</p> <p>3、访问FTP</p> <p>根据您个人的工作环境，选择一种方式来访问已经搭建的 FTP 服务</p> <p>注意：记得关闭防火墙或者开放FTP默认端口(21)</p> <h2 id="关闭selinux服务"><a href="#关闭selinux服务" class="header-anchor">#</a> 关闭SELinux服务</h2> <p>setenforce  0</p> <h2 id="关闭防火墙"><a href="#关闭防火墙" class="header-anchor">#</a> 关闭防火墙</h2> <p>service iptables stop 或 iptables  -F</p> <div class="language- extra-class"><pre><code>vi /etc/vsftpd/ftpusers
+</code></pre></div><p>/etc/vsftpd/user_list</p> <p>都是禁止用户访问，不要吧ftp用户加入进去</p> <p>通过 Windows 资源管理器访问</p> <p>Windows 用户可以复制下面的链接</p> <p>到资源管理器的地址栏访问：</p> <p>ftp:// 192.168.19.170</p> <p>其中ftpserver为登录FTP的用户名，ftp@123456为登录FTP的密码</p> <p><strong>登录ftp</strong>
+(1)lftp username:password@127.0.0.1:21 回车
+(2)lftp username@127.0.0.1 回车     ##默认21端口 回车后输入密码
+(3)lftp 127.0.0.1 回车   ##回车后 login 登录
+(4)lftp 回车 --&gt; 127.0.0.1 --&gt; login 登录</p> <div class="language- extra-class"><pre class="language-text"><code>lftp 用户名:密码@ftp地址:传送端口（默认21）
+lftp username:password@127.0.0.1:21 
+</code></pre></div><p><strong>lftp中文乱码问题</strong>
+若登录后看到的都是乱码(因为一般本地都是utf-8的编码),怎么半呢，用 set 命令来解决</p> <div class="language- extra-class"><pre class="language-text"><code>set ftp:charset gbk(或者 gb2312 或 utf-8) 　　##设置ftp端的编码格式
+set file:charset utf-8 (...同上) 　　　　　　　##设置本地编码格式
+</code></pre></div><blockquote><p>附:set命令的技巧 (1)输入set 查看已经设置好的命令 (2)set -a 查看所有可以设置的命令</p></blockquote> <p><strong>查找ftp端文件</strong>
+ls *.txt　　　　 　　　　　　##查找当前目录下的所有txt文件</p> <p>ls ./123/ 　　　　　　　　　##列出123目录下所有文件</p> <p>find . -name &quot;*.txt&quot;   　　　　##递归查找站点上所有的txt文件</p> <p>find ./xx -name &quot;*.txt&quot; 　　　##查找xx目录下所有的txt文件</p> <p>附1: ls第二次读取的是本地,可以用 rels 代替 ls 或者catch off / catch on 来开关catch,catch flush清空本地catch</p> <p>附2: 浏览本地目录的命令可用!ls, 如 !ls /usr/local/bin/</p> <p><strong>下载文件</strong>
+下载文件之前要先设置好本地的目录，用来存放下载的文件</p> <p>lcd /home/123/web   　　　　##设置本地存放目录 默认为 /home/usr</p> <p>get 123.txt     　　　　　　　##下载123.txt文件到 /home/123/web 中</p> <p>get -c 123.txt 　　　　　　　##断点续传下载</p> <p>mget *.txt     　　　　　　　　##批量下载所有txt文件</p> <p>mget -c *.txt 　　　　　　　　##断点续传</p> <p>mget -c ./123/aaa/*.txt   　　　##断点续传、批量下载ftp端aaa目录下的所有txt文件</p> <p>pget -c -n 10 file.dat　　　　##以最多10个线程以允许续传的方式下载file.dat</p> <p>##可以通过设置 set pget:default-n 5 的值而使用默认值。</p> <p>mirror aaa/　　　　　　　　##将aaa目录整个的下载下来，子目录也会自动复制 本地自动建立目录</p> <p><strong>上传文件</strong>
+put 123.txt    　　　　　　 ##同下载</p> <p>mput *.txt    　　　　　　 ##同下载</p> <p>mirror -R aaa/ 　　　　　##同下载</p> <p><strong>设置被动/非被动模式</strong>
+set ftp:passive-mode 1 　　　## 1 被动 0非主动</p> <p>多任务处理</p> <p>ctrl+z 　　　　　　　##将当前进行的任务移交后台处理</p> <p>wait   　　　　　　　##将后台处理任务调至查看</p> <p>jobs   　　　　　　　##查看后台进行的任务列表</p> <p>kill all 或者 job_no 　##删除所有任务 或 指定的任务</p> <p><strong>将任务加入任务列表</strong></p> <p>queue get 123.txt</p> <p>queue put 234.txt</p> <p>queue mirror aaa/</p> <p>queue 　　　　　##查看任务列表</p> <p>jobs  　　　　　 ##查看后台任务列表</p> <p>queue start 　　　##开始任务列表</p> <p>queue stop 　　　##停止任务列表</p> <p>其他命令</p> <p>alias []</p> <p>定义别名</p> <p>alias less more</p> <p>alias reconnect &quot;close; cd .&quot;</p> <p>直接输入 alias 即可看到目前定义了那些别名。如果只输入 alias name 的话, 则是取消 name 这个别名。</p> <p>bookmark SUBCMD</p> <p>设定书签, 可将目前站台及所在目录设成书签, 下次可直接进来, 不用再 cd 来 cd 去的</p> <p>bookmark add name 　　用来新增名称为 name 的书签</p> <p>bookmark del name 　　删除名称为 name 的书签</p> <p>bookmark list 　　　　　显示目前有设定那些书签(另外直接打 bookmark 和 bookmark list 的结果一样)</p> <p>bookmark edit 　　　　　呼叫修改书签 (~/.lftp/bookmarks)</p> <p>cd 　　　　　　　　　　切换远端目录</p> <p>cache SUBCMD　　　管理 lftp 的 cache</p> <p>rels []　　　　　　　　从 cache 中显示远端档案列表</p> <p>rels 则不会从 cache 中读取</p> <p>recls opts [path/]pattern　从 cache 中显示远端的档案列表, 应该算是 ls 的加强版, 有很多参数可用,应该是可用来产生各种不同&gt;的档案列表以供其他程式使用。</p> <p>recls 则不会从 cache 中读取</p> <p>du options　　　　计算远端整个目录占用容量</p> <p>get OPTS -o　　　　抓取远端档案</p> <p>get rfile -o lfile</p> <p>抓 rfile 到本地为 lfile</p> <p>-c 为续传</p> <p>-E 抓档完成后, 将远端的档案砍了</p> <p>-a 为 ascii mode, 预设为 binary mode</p> <p>-O 设定 base directory 为本地端放档案的目录</p> <p>mget OPTS</p> <p>下载远端档案(可用 wildcard expansion 也就是 *)</p> <p>pget OPTS -o</p> <p>使用多个连结来下载档案, 预设为五个。</p> <p>-n 3 为叁个连结</p> <p>jobs -v</p> <p>显示目前有那些程序在背景执行</p> <p>-v 显示详细的资讯(-v 可多加几个来显示更详细的资讯)</p> <p>lcd</p> <p>切换本地端的目录</p> <p>mirror OPTS remote [local]</p> <p>下载整个目录(楼上的 get 只能用来抓档案)</p> <p>-c 续传</p> <p>-e 这个要小心一些, 比较远端和本地端的档案, 假如远端没有的, 就将本地端的档案删除, 也就是将本地端和远端资料同步。</p> <p>-R 上传整个目录</p> <p>-n 只下载较新的档案</p> <p>-r 不用递回到目录中</p> <p>--parallel=n 同时下载 n 个档案(预设一次只下载一个)</p> <p>module name args    载入模组</p> <p>put OPTS -o              上传档案</p> <p>mput OPTS               上传档案(可用 wildcard expansion 也就是 *)</p> <p>mv                              将远端的 file1 为 file2</p> <p>mrm                            用 wildcard expansion 方式来删除远端档案</p> <p>open OPTS              开启某个站台</p> <p>-u , -p site</p> <p>queue OPTS []         将 cmd 放到伫列中等待执行</p> <p>-d index                    将编号为 index 的 job 删除</p> <p>-m index new_index 将编号为 index 的 job 移至编号 new_index, 插队专用。</p> <p>-n index 在编号 index 之前新增一个 job</p> <p>wait []                      将背景执行中的程序移至前景(也可用 fg)</p> <p>kill all|                    删除全部的 jobs 或 job_no</p> <p>repeat delay command             每隔 delay 秒, 重覆执行 command, 预设是每隔一秒</p> <p>rm -r -f                       移除远端档案</p> <p>mkdir -p                     建立远端目录</p> <p>rmdir -f                        移除远端目录</p> <p>set OPT []                   设定变数</p> <p>直接键入 set 可看目前定义了那些变数</p> <p>source                      读取 file, 并执行 file 中的命令(应该是和 bash 中的 source 命令是一样的吧)</p> <p>debug [|off] -o            设定 debug level 为 level</p> <p>-o 将输出导向至 file</p> <p>exit [|bg]                   结束 lftp</p> <p>此时若还有 jobs, 则会将 lftp 放至背景执行, 继续未完成的工作</p> <p>history -w file-r file-c|-l cnt              和 bash 中的 history 功能一样</p> <p>renlist []　　只显示远端的档名</p> <p>pwd -p　　显示目前远端所在目录</p> <p>-p 连登入密码也显示</p> <p>scache []</p> <p>只打 scache 显示目前所有的 session, 加上 session_no 可切换至其他的 session,</p> <p>对於同时开启多个站台或同个站台不同目录间切换。</p> <h2 id="chown-指定文件的拥有者"><a href="#chown-指定文件的拥有者" class="header-anchor">#</a> chown 指定文件的拥有者</h2> <p>把文件yusi123.com的所有者改为yusi。</p> <p><code># chown yusi:yusi yusi123.com</code></p> <h2 id="ssh登录服务器"><a href="#ssh登录服务器" class="header-anchor">#</a> SSH	登录服务器</h2> <blockquote><p><strong>SSH</strong>为Secure Shell的缩写，由IETF的网络工作小组（Network Working Group）所制定；SSH为创建在应用层和传输层基础上的安全协议。</p> <p>传统的网络服务程序，如FTP、POP和Telnet其本质上都是不安全的；因为它们在网络上用明文传送数据、用户帐号和用户口令，很容易受到中间人（man-in-the-middle）攻击方式的攻击。就是存在另一个人或者一台机器冒充真正的服务器接收用户传给服务器的数据，然后再冒充用户把数据传给真正的服务器。</p> <p>而SSH是目前较可靠，专为远程登录会话和其他网络服务提供安全性的协议。利用SSH协议可以有效防止远程管理过程中的信息泄露问题。通过<strong>SSH</strong>可以对所有传输的数据进行加密，也能够防止DNS欺骗和IP欺骗。</p> <p>SSH之另一项优点为其传输的数据是经过压缩的，所以可以加快传输的速度。SSH有很多功能，它既可以代替Telnet，又可以为FTP、POP、甚至为PPP提供一个安全的“通道”。</p></blockquote> <p><strong>查看是否已经安装了ssh</strong></p> <div class="language- extra-class"><pre class="language-text"><code>rpm -qa|grep ssh	查看
+
+yum -y install ssh		安装
+</code></pre></div><blockquote><p>在命令行中输入“rpm -qa|grep ssh”，一般情况下，linux系统在安装系统时已经做了默认安装，如果系统中ssh被卸载掉了，那么可以使用命令“yum -y install ssh”进行安装。</p></blockquote> <p><strong>ssh服务的启动停止</strong></p> <div class="language- extra-class"><pre class="language-text"><code>systemctl start sshd	启动
+
+systemctl stop sshd	停止
+</code></pre></div><blockquote><p>和别的服务的操作一样，ssh服务的启停使用命令“systemctl start sshd”和“systemctl stop sshd”。</p></blockquote> <p><strong>连接到远程服务器</strong></p> <div class="language- extra-class"><pre class="language-text"><code>ssh root@服务器IP	连接服务器
+
+ssh -p 端口 root@服务器IP	指定端口连接服务器
+</code></pre></div><blockquote><p>在命令行中输入“ssh -l root 服务器IP”可以连接到服务器，也可以使用“ssh root@服务器IP”连接到服务器。</p></blockquote> <p><strong>ssh配置的修改</strong></p> <div class="language- extra-class"><pre class="language-text"><code>vi /etc/ssh/sshd_config	修改ssh配置
+</code></pre></div><p>在命令行中输入“vi /etc/ssh/sshd_config”命令可以进入ssh的配置页面，在其中修改参数。</p> <h2 id="scp传输文件"><a href="#scp传输文件" class="header-anchor">#</a> SCP	传输文件</h2> <blockquote><p>scp 命令用于 Linux 之间复制文件和目录。</p> <p>scp 是 secure copy 的缩写, scp 是 linux 系统下基于 ssh 登陆进行安全的远程文件拷贝命令。</p> <p>scp 是加密的，rcp是不加密的，scp 是 rcp 的加强版。</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>scp -P 4588 remote@www.runoob.com:/usr/local/sin.sh /home/administrator		指定端口传送文件
+
+scp root@www.runoob.com:/home/root/others/music /home/space/music/1.mp3 		从远程复制到本地
+
+scp local_file remote_username@remote_ip:remote_folder 		从本地复制到远程
+
+scp -r local_folder remote_username@remote_ip:remote_folder 		复制整个目录 -r递归复制整个目录
+</code></pre></div></div> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">上次更新时间:</span> <span class="time">7/6/2020, 10:38:49 PM</span></div></footer> <!----> </main></div><div class="global-ui"><!----><div id="live2d-widget" class="live2d-widget-container" style="position:fixed;right:65px;bottom:0px;width:135px;height:300px;z-index:99999;opacity:0.8;pointer-events:none;"><canvas id="live2d_canvas" width="135" height="300" class="live2d_canvas" style="position:absolute;left:0px;top:0px;width:135px;height:300px;"></canvas></div></div></div>
+    <script src="/assets/js/app.f33c03af.js" defer></script><script src="/assets/js/2.8a1ae630.js" defer></script><script src="/assets/js/30.a18f130f.js" defer></script>
+  </body>
+</html>

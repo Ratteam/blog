@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ratfrog的博客</title>
+    <meta name="description" content="Just playing around">
+    <meta name="generator" content="VuePress 1.3.1">
+    <link rel="icon" href="/icon.png">
+  <script>var _hmt = _hmt || [];
+    (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?46eb6dbf0c639c7f8f8b9bc2e1b8e9ad";
+    var s = document.getElementsByTagName("script")[0]; 
+    s.parentNode.insertBefore(hm, s);
+    })();</script>
+    
+    <link rel="preload" href="/assets/css/0.styles.0cf81d82.css" as="style"><link rel="preload" href="/assets/js/app.f33c03af.js" as="script"><link rel="preload" href="/assets/js/2.8a1ae630.js" as="script"><link rel="preload" href="/assets/js/55.52c85add.js" as="script"><link rel="prefetch" href="/assets/js/10.a06011e4.js"><link rel="prefetch" href="/assets/js/11.e1114912.js"><link rel="prefetch" href="/assets/js/12.edc64439.js"><link rel="prefetch" href="/assets/js/13.a3173774.js"><link rel="prefetch" href="/assets/js/14.4bed2e41.js"><link rel="prefetch" href="/assets/js/15.1699dde0.js"><link rel="prefetch" href="/assets/js/16.bad8e339.js"><link rel="prefetch" href="/assets/js/17.a90a954f.js"><link rel="prefetch" href="/assets/js/18.eada6ffb.js"><link rel="prefetch" href="/assets/js/19.91c13f14.js"><link rel="prefetch" href="/assets/js/20.56a81c75.js"><link rel="prefetch" href="/assets/js/21.41c09a46.js"><link rel="prefetch" href="/assets/js/22.cfc872f3.js"><link rel="prefetch" href="/assets/js/23.a2e057c4.js"><link rel="prefetch" href="/assets/js/24.7249cf00.js"><link rel="prefetch" href="/assets/js/25.1e415478.js"><link rel="prefetch" href="/assets/js/26.c0bb86a7.js"><link rel="prefetch" href="/assets/js/27.f219c934.js"><link rel="prefetch" href="/assets/js/28.c5d553d6.js"><link rel="prefetch" href="/assets/js/29.ed288419.js"><link rel="prefetch" href="/assets/js/3.edeb5efd.js"><link rel="prefetch" href="/assets/js/30.a18f130f.js"><link rel="prefetch" href="/assets/js/31.b2cb940b.js"><link rel="prefetch" href="/assets/js/32.805baf01.js"><link rel="prefetch" href="/assets/js/33.306f9fe8.js"><link rel="prefetch" href="/assets/js/34.04f2de4f.js"><link rel="prefetch" href="/assets/js/35.43117b54.js"><link rel="prefetch" href="/assets/js/36.cbcad82d.js"><link rel="prefetch" href="/assets/js/37.3ef6ca82.js"><link rel="prefetch" href="/assets/js/38.b96ccc3c.js"><link rel="prefetch" href="/assets/js/39.a703af32.js"><link rel="prefetch" href="/assets/js/4.983ed5d5.js"><link rel="prefetch" href="/assets/js/40.4cf0ab32.js"><link rel="prefetch" href="/assets/js/41.c53bad33.js"><link rel="prefetch" href="/assets/js/42.79a3b3ee.js"><link rel="prefetch" href="/assets/js/43.1b497787.js"><link rel="prefetch" href="/assets/js/44.45420b05.js"><link rel="prefetch" href="/assets/js/45.5cdb95ea.js"><link rel="prefetch" href="/assets/js/46.3458eeea.js"><link rel="prefetch" href="/assets/js/47.2bd0a24c.js"><link rel="prefetch" href="/assets/js/48.a9880aaf.js"><link rel="prefetch" href="/assets/js/49.4415a9a4.js"><link rel="prefetch" href="/assets/js/5.14a93412.js"><link rel="prefetch" href="/assets/js/50.d5af4139.js"><link rel="prefetch" href="/assets/js/51.99f0485b.js"><link rel="prefetch" href="/assets/js/52.9c6543e0.js"><link rel="prefetch" href="/assets/js/53.d8f935c7.js"><link rel="prefetch" href="/assets/js/54.389f76b6.js"><link rel="prefetch" href="/assets/js/56.d1ed2a00.js"><link rel="prefetch" href="/assets/js/57.b907a098.js"><link rel="prefetch" href="/assets/js/58.a46232ef.js"><link rel="prefetch" href="/assets/js/59.9bc3c7c3.js"><link rel="prefetch" href="/assets/js/6.d7af4825.js"><link rel="prefetch" href="/assets/js/60.d923f5d7.js"><link rel="prefetch" href="/assets/js/61.f3bb3210.js"><link rel="prefetch" href="/assets/js/62.7a5b52ff.js"><link rel="prefetch" href="/assets/js/63.4c2b44e4.js"><link rel="prefetch" href="/assets/js/64.9ec9de3e.js"><link rel="prefetch" href="/assets/js/65.411c26a0.js"><link rel="prefetch" href="/assets/js/66.242077af.js"><link rel="prefetch" href="/assets/js/7.bf14451a.js"><link rel="prefetch" href="/assets/js/8.7342b8d4.js"><link rel="prefetch" href="/assets/js/9.e7e3dd5a.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.0cf81d82.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container no-sidebar"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">ratfrog的博客</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="分类" class="dropdown-title"><span class="title">分类</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/all/qianqian/" class="nav-link">
+  钱钱
+</a></li><li class="dropdown-item"><!----> <a href="/all/xiexie/" class="nav-link">
+  写写
+</a></li><li class="dropdown-item"><!----> <a href="/all/xingxing/" class="nav-link">
+  星星
+</a></li><li class="dropdown-item"><!----> <a href="/all/paipai/" class="nav-link">
+  拍拍
+</a></li><li class="dropdown-item"><!----> <a href="/all/fanfan/" class="nav-link">
+  翻翻
+</a></li><li class="dropdown-item"><!----> <a href="/all/huahua/" class="nav-link">
+  画画
+</a></li><li class="dropdown-item"><!----> <a href="/all/qiqi/" class="nav-link">
+  其其
+</a></li></ul></div></div><div class="nav-item"><a href="/web/" class="nav-link">
+  网站
+</a></div><div class="nav-item"><a href="/app/" class="nav-link">
+  应用
+</a></div><div class="nav-item"><a href="/radio/" class="nav-link">
+  电台
+</a></div><div class="nav-item"><a href="/video/" class="nav-link">
+  视频
+</a></div><div class="nav-item"><a href="/all/" class="nav-link router-link-active">
+  最新文章
+</a></div><div class="nav-item"><a href="/more/" class="nav-link">
+  支持打赏
+</a></div><div class="nav-item"><a href="/about/" class="nav-link">
+  关于我
+</a></div><div class="nav-item"><a href="/photowall/" class="nav-link">
+  照片墙
+</a></div><div class="nav-item"><a href="/timeline/" class="nav-link">
+  时间轴
+</a></div><div class="nav-item"><a href="/bbs/" class="nav-link">
+  公告板
+</a></div><div class="nav-item"><a href="/message/" class="nav-link">
+  留言板
+</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="分类" class="dropdown-title"><span class="title">分类</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/all/qianqian/" class="nav-link">
+  钱钱
+</a></li><li class="dropdown-item"><!----> <a href="/all/xiexie/" class="nav-link">
+  写写
+</a></li><li class="dropdown-item"><!----> <a href="/all/xingxing/" class="nav-link">
+  星星
+</a></li><li class="dropdown-item"><!----> <a href="/all/paipai/" class="nav-link">
+  拍拍
+</a></li><li class="dropdown-item"><!----> <a href="/all/fanfan/" class="nav-link">
+  翻翻
+</a></li><li class="dropdown-item"><!----> <a href="/all/huahua/" class="nav-link">
+  画画
+</a></li><li class="dropdown-item"><!----> <a href="/all/qiqi/" class="nav-link">
+  其其
+</a></li></ul></div></div><div class="nav-item"><a href="/web/" class="nav-link">
+  网站
+</a></div><div class="nav-item"><a href="/app/" class="nav-link">
+  应用
+</a></div><div class="nav-item"><a href="/radio/" class="nav-link">
+  电台
+</a></div><div class="nav-item"><a href="/video/" class="nav-link">
+  视频
+</a></div><div class="nav-item"><a href="/all/" class="nav-link router-link-active">
+  最新文章
+</a></div><div class="nav-item"><a href="/more/" class="nav-link">
+  支持打赏
+</a></div><div class="nav-item"><a href="/about/" class="nav-link">
+  关于我
+</a></div><div class="nav-item"><a href="/photowall/" class="nav-link">
+  照片墙
+</a></div><div class="nav-item"><a href="/timeline/" class="nav-link">
+  时间轴
+</a></div><div class="nav-item"><a href="/bbs/" class="nav-link">
+  公告板
+</a></div><div class="nav-item"><a href="/message/" class="nav-link">
+  留言板
+</a></div> <!----></nav>  <!----> </aside> <main class="page"> <div class="theme-default-content content__default"><div><ul><li><a href="/all/%E9%9A%8F%E7%AC%94/#error-项目的默认-xml-命名空间必须为-msbuild-xml-命名空间。如果项目是用-msbuild-2003-格式创建的，请将-xmlns-http-schemas-microsoft-com-developer-msbuild-2003-添加到">error  : 项目的默认 XML 命名空间必须为 MSBuild XML 命名空间。如果项目是用 MSBuild 2003 格式创建的，请将 xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot; 添加到</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#visual-studio怎么导入一个工程">visual studio怎么导入一个工程</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#git-clone文件较大时报错">git clone文件较大时报错</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#查看github项目大小">查看github项目大小</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#phpstudy-首次访问提示forbidden-403错误的处理">phpstudy:首次访问提示forbidden 403错误的处理</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php-the-right-way">php-the-right-way</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#clean-php-code翻译版">clean-php-code翻译版</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#phpstudy-500-internal-server-error-解决办法">phpstudy 500 Internal Server Error 解决办法</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#phpstudy的php项目在nginx环境下404、403错误">phpstudy的php项目在nginx环境下404、403错误</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#我的godot开发环境调教记录分享">我的godot开发环境调教记录分享</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#pdca工作法：计划（plan）、执行（do）、检查（check）、调整（adjust）">PDCA工作法：计划（Plan）、执行（Do）、检查（Check）、调整（Adjust）</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php获取当前毫秒时间戳">php获取当前毫秒时间戳</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#mysql-出现you-can-t-specify-target-table-for-update-in-from-clause错误解决方法">MySQL 出现You can't specify target table for update in FROM clause错误解决方法</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#error-pulling-is-not-possible-because-you-have-unmerged-files">error: Pulling is not possible because you have unmerged files</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#oracle分组查询group-by的用法及讲解">Oracle分组查询group by的用法及讲解</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php中×tamp自动转化为×的解决办法">PHP中×tamp自动转化为×的解决办法</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#linux-cp-直接覆盖不提示信息-解决方法">linux cp 直接覆盖不提示信息 解决方法</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php连接oracle数据库测试代码">php连接oracle数据库测试代码</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#ssh免密码快速登录配置">ssh免密码快速登录配置</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#关于ora-12170-tns-连接超时等一系列oracle无法正常登入问题">关于ORA-12170 tns 连接超时等一系列Oracle无法正常登入问题</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#linux下php安装oci8扩展">linux下php安装oci8扩展</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php-excel-设置单元格格式为文本格式">php excel 设置单元格格式为文本格式</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#yii-之-model-使用方法">Yii 之 Model 使用方法</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#最新手机号正则表达式php包括166等号段">最新手机号正则表达式php包括166等号段</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#oracle-如何只查询第一条记录">oracle 如何只查询第一条记录</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#code-500-message-u9875-u9762-u4e0d-u5b58-u5728-illegal-string-offset">&quot;code&quot;:500,&quot;message&quot;:&quot;\u9875\u9762\u4e0d\u5b58\u5728:Illegal string offset</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#错误：ora-01704：字符串文字太长">错误：ORA-01704：字符串文字太长</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#warning-imagecreatefromjpeg-gd-jpeg-jpeg-library-reports-unrecoverable-error">Warning: imagecreatefromjpeg(): gd-jpeg: JPEG library reports unrecoverable error</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#curl-设置curlopt-timeout-ms-超时时间">CURL 设置CURLOPTTIMEOUTMS 超时时间</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#git报错：remote-http-basic-access-denied的解决方法">Git报错：remote: HTTP Basic: Access denied的解决方法</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#yii-报错-列名必须是一个字符串或者数组">YII 报错 列名必须是一个字符串或者数组</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#最新河南获取考勤图片base64">最新河南获取考勤图片base64</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#图片转base64问题">图片转base64问题</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#parse-url-—-解析-url，返回其组成部分">parse_url — 解析 URL，返回其组成部分</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#yii2-刷新缓存（刷新模型缓存）">yii2 刷新缓存（刷新模型缓存）</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php截取指定2个字符之间字符串的方法">php截取指定2个字符之间字符串的方法</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#执行setinterval函数而不延迟">执行setInterval函数而不延迟</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#git报错-rpc-failed，curl-18-transfer-closed-with-outstanding-read-data-remaining">git报错--RPC failed，curl 18 transfer closed with outstanding read data remaining</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#git-切换远程仓库地址">git 切换远程仓库地址</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#如何使setinterval在一段时间后或经过多次操作后停止？">如何使setInterval在一段时间后或经过多次操作后停止？</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#mysql的group-concat函数设置最大长度">mysql的group_concat函数设置最大长度</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#vuepress-如何引入百度统计和谷歌统计">Vuepress 如何引入百度统计和谷歌统计</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#天气接口无法访问问题">天气接口无法访问问题</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#java获取客户端url">java获取客户端url</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#java获取当前时间的年月日方法">Java获取当前时间的年月日方法</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#java中比较两个字符串是否相等的问题">Java中比较两个字符串是否相等的问题</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#java-报错java-security-invalidkeyexception-illegal-key-size。">java 报错java.security.InvalidKeyException: Illegal key size。</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#java-错误-编码gbk的不可映射字符">java 错误: 编码GBK的不可映射字符</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#java-jar包下载的网站">java jar包下载的网站</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#java-helloworld时报错-找不到或无法加载主类-问题的解决办法">java HelloWorld时报错:&quot;找不到或无法加载主类&quot;问题的解决办法</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#java执行单文件、javac编译单文件、多文件引入jar包、-cp解决无法加载主类问题">java执行单文件、javac编译单文件、多文件引入jar包、-cp解决无法加载主类问题</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#java获取linux和windos服务器信息和验证器">java获取linux和windos服务器信息和验证器</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#vscode正则表达式示例">vscode正则表达式示例</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#统一社会信用代码、身份证号、手机号后端验证">统一社会信用代码、身份证号、手机号后端验证</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#怎么查cpu序列号">怎么查CPU序列号</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#ie11导出pdf中文乱码">ie11导出pdf中文乱码</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#mysql-varchar-最大长度，text-类型占用空间剖析">MySQL varchar 最大长度，text 类型占用空间剖析</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#秒的单位">秒的单位</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php-fpm推荐配置">php-fpm推荐配置</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#兼容本地图片和网络图片转base64">兼容本地图片和网络图片转base64</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#通过外网把网络图片转成base64">通过外网把网络图片转成base64</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php自带方法验证邮箱、url、ip是否合法的函数">PHP自带方法验证邮箱、URL、IP是否合法的函数</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#解决java-compiler-level-does-not-match-the-version-of-the-installed-java-project-facet">解决java compiler level does not match the version of the installed java project facet</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#执行shell脚本报错：不是有效的标识符ad">执行shell脚本报错：不是有效的标识符ad</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#java打包war包">java打包war包</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#ie11正确卸载与重新安装">ie11正确卸载与重新安装</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php-请求url并且获取返回值">php 请求url并且获取返回值</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#用php扩展加密php代码">用php扩展加密php代码</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#mac地址是什么？">mac地址是什么？</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#用内网配源，安装lnmp服务">用内网配源，安装lnmp服务</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#设置php不报错">设置php不报错</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#设置php报错等级为不报错">设置php报错等级为不报错</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php-notice-undefined-index-header">PHP Notice: undefined index: header</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php-warning-date-it-is-not-safe-to-rely-on-the-system-s-timezone-settings">PHP Warning:  date(): It is not safe to rely on the system's timezone settings.</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php-notice-curl-setopt-curlopt-ssl-verifyhost-with-value-1-is-deprecated-and-will-be-removed-as-of-libcurl-7-28-1-it-is-recommended-to-use-value-2-instead-in">PHP Notice: curlsetopt(): CURLOPTSSL_VERIFYHOST with value 1 is deprecated and will be removed as of libcurl 7.28.1. It is recommended to use value 2 instead in</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#yii-更新数据时报错：列名必须是一个字符串或者数组">Yii 更新数据时报错：列名必须是一个字符串或者数组</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#最完整的php验证手机号码">最完整的php验证手机号码</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#oracle数据库插入clob字段时，提示ora-01704：字符串文字太长">Oracle数据库插入CLOB字段时，提示ORA-01704：字符串文字太长</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php错误级别的设置方法">php错误级别的设置方法</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#过滤xss潜在危险行为-过滤部分sql注入">过滤XSS潜在危险行为,过滤部分SQL注入</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#java服务安装cenos7-apache-tomcat-7-0-85-jdk1-7-0-80">java服务安装cenos7+apache-tomcat-7.0.85+jdk1.7.0_80</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php使用curl对接row-json-java的接口">php使用curl对接row+json+java的接口</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#tar包解压">.tar包解压</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#linux下安装php的mcrypt扩展">Linux下安装PHP的mcrypt扩展</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#git无法检测到文件名大小写的更改">Git无法检测到文件名大小写的更改</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#failed-to-open-stream-permission-denied-in-错误的解决方法">failed to open stream:Permission denied in 错误的解决方法</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#mysql查重语句">MySql查重语句</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#图片转base64和base64字符串转存图片">图片转base64和base64字符串转存图片</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#phpexcel导出maximum-31-characters-allowed-in-sheet-title">PHPexcel导出Maximum 31 characters allowed in sheet title.</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#unlink-no-such-file-or-directory的解决办法">unlink:No such file or directory的解决办法</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#安装php在zip扩展">安装php在zip扩展</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#linux-find-命令查找文件和文件夹">linux find 命令查找文件和文件夹</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#fatal-error-call-to-undefined-function-bcmul">Fatal error: Call to undefined function bcmul()</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#gitignore-不起作用的解决办法">gitignore 不起作用的解决办法</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php-判断日志文件夹是否存在-不存在则创建">php 判断日志文件夹是否存在,不存在则创建</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php命令">php命令</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#为什么要-urlencode">为什么要 urlencode()</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#iis数据量过大报错：c-php-php5-6-nts-php-cgi-exe-fastcgi-进程超过了配置的请求超时时限">IIS数据量过大报错：C:\php\php5.6-nts\php-cgi.exe - FastCGI 进程超过了配置的请求超时时限</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#如何给图片添加电子签名">如何给图片添加电子签名</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php程序for异常退出">php程序for异常退出</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php-htmlspecialchars-和htmlspecialchars-decode-html标签转义和反转义">php .htmlspecialchars()和htmlspecialchars_decode() html标签转义和反转义</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#php中设置时区方法小结">PHP中设置时区方法小结</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#fatal-error-using-this-when-not-in-object-context-in">Fatal error Using $this when not in object context in</a></li><li><a href="/all/%E9%9A%8F%E7%AC%94/#ftp报错处理">ftp报错处理</a></li></ul></div> <h2 id="error-项目的默认-xml-命名空间必须为-msbuild-xml-命名空间。如果项目是用-msbuild-2003-格式创建的，请将-xmlns-http-schemas-microsoft-com-developer-msbuild-2003-添加到"><a href="#error-项目的默认-xml-命名空间必须为-msbuild-xml-命名空间。如果项目是用-msbuild-2003-格式创建的，请将-xmlns-http-schemas-microsoft-com-developer-msbuild-2003-添加到" class="header-anchor">#</a> error  : 项目的默认 XML 命名空间必须为 MSBuild XML 命名空间。如果项目是用 MSBuild 2003 格式创建的，请将 xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot; 添加到</h2> <p>https://social.msdn.microsoft.com/Forums/zh-CN/4c5d6135-4b74-4525-94e2-69b0d6fd15da/vs20132115236733vs201739033304463838239064?forum=2212</p> <h2 id="visual-studio怎么导入一个工程"><a href="#visual-studio怎么导入一个工程" class="header-anchor">#</a> visual studio怎么导入一个工程</h2> <p>https://zhidao.baidu.com/question/457328329.html</p> <h2 id="git-clone文件较大时报错"><a href="#git-clone文件较大时报错" class="header-anchor">#</a> git clone文件较大时报错</h2> <p>https://blog.csdn.net/p_xiaojia/article/details/97689863</p> <h2 id="查看github项目大小"><a href="#查看github项目大小" class="header-anchor">#</a> 查看github项目大小</h2> <p>https://api.github.com/repos/Ratteam/godot</p> <h2 id="phpstudy-首次访问提示forbidden-403错误的处理"><a href="#phpstudy-首次访问提示forbidden-403错误的处理" class="header-anchor">#</a> phpstudy:首次访问提示forbidden 403错误的处理</h2> <p>设置一下：phpstudy设置-&gt;允许目录列表，然后就OK了</p> <h2 id="php-the-right-way"><a href="#php-the-right-way" class="header-anchor">#</a> php-the-right-way</h2> <p>https://laravel-china.github.io/php-the-right-way/</p> <h2 id="clean-php-code翻译版"><a href="#clean-php-code翻译版" class="header-anchor">#</a> clean-php-code翻译版</h2> <p>https://github.com/nineyang/clean-php-code</p> <h2 id="phpstudy-500-internal-server-error-解决办法"><a href="#phpstudy-500-internal-server-error-解决办法" class="header-anchor">#</a> phpstudy 500 Internal Server Error 解决办法</h2> <p>https://www.cnblogs.com/wesky/p/10101016.html</p> <h2 id="phpstudy的php项目在nginx环境下404、403错误"><a href="#phpstudy的php项目在nginx环境下404、403错误" class="header-anchor">#</a> phpstudy的php项目在nginx环境下404、403错误</h2> <p>https://blog.csdn.net/qq_29180565/article/details/100803686</p> <h2 id="我的godot开发环境调教记录分享"><a href="#我的godot开发环境调教记录分享" class="header-anchor">#</a> 我的godot开发环境调教记录分享</h2> <p>https://indienova.com/u/yahoohoo/blogread/12104</p> <p>https://indienova.com/u/yahoohoo/blogread/12327</p> <h2 id="pdca工作法：计划（plan）、执行（do）、检查（check）、调整（adjust）"><a href="#pdca工作法：计划（plan）、执行（do）、检查（check）、调整（adjust）" class="header-anchor">#</a> PDCA工作法：计划（Plan）、执行（Do）、检查（Check）、调整（Adjust）</h2> <h2 id="php获取当前毫秒时间戳"><a href="#php获取当前毫秒时间戳" class="header-anchor">#</a> php获取当前毫秒时间戳</h2> <div class="language- extra-class"><pre class="language-text"><code>   // 13位毫秒时间戳
+    function msectime()
+    {
+        list($msec, $sec) = explode(' ', microtime());
+        return (float)sprintf('%.0f', (floatval($msec) + floatval($sec)) * 1000);
+    }
+</code></pre></div><h2 id="mysql-出现you-can-t-specify-target-table-for-update-in-from-clause错误解决方法"><a href="#mysql-出现you-can-t-specify-target-table-for-update-in-from-clause错误解决方法" class="header-anchor">#</a> MySQL 出现You can't specify target table for update in FROM clause错误解决方法</h2> <p>https://www.cnblogs.com/zhuiluoyu/p/7607908.html</p> <h2 id="error-pulling-is-not-possible-because-you-have-unmerged-files"><a href="#error-pulling-is-not-possible-because-you-have-unmerged-files" class="header-anchor">#</a> error: Pulling is not possible because you have unmerged files</h2> <p>https://blog.csdn.net/mango_love/article/details/87261529</p> <h2 id="oracle分组查询group-by的用法及讲解"><a href="#oracle分组查询group-by的用法及讲解" class="header-anchor">#</a> Oracle分组查询group by的用法及讲解</h2> <p>https://baijiahao.baidu.com/s?id=1664040284917893293&amp;wfr=spider&amp;for=pc</p> <h2 id="php中×tamp自动转化为×的解决办法"><a href="#php中×tamp自动转化为×的解决办法" class="header-anchor">#</a> PHP中×tamp自动转化为×的解决办法</h2> <p>https://blog.csdn.net/qq_41921511/article/details/85159731</p> <h2 id="linux-cp-直接覆盖不提示信息-解决方法"><a href="#linux-cp-直接覆盖不提示信息-解决方法" class="header-anchor">#</a> linux cp 直接覆盖不提示信息 解决方法</h2> <div class="language- extra-class"><pre class="language-text"><code>https://www.cnblogs.com/tijun/p/8677119.html
+</code></pre></div><h2 id="php连接oracle数据库测试代码"><a href="#php连接oracle数据库测试代码" class="header-anchor">#</a> php连接oracle数据库测试代码</h2> <div class="language- extra-class"><pre class="language-text"><code>&lt;?php
+       $conn = oci_connect('C##MIGRANT_WORKERS', 'E2r201800', 'www.jzldjc.com:61522/MIGRANTWORK');
+       //  $conn = oci_connect('C##hnprd', 'E2r201800', 'www.jzldjc.com:61522/MIGRANTWORK');
+       //  $conn = oci_connect('C##MIGRANT_WORKERS', 'E2r201800', '192.168.10.128:1521/MIGRANTWORK');
+        if (!$conn) {
+        $e = oci_error();
+        print htmlentities($e['message']);
+        exit;
+        }else {
+        echo &quot;连接oracle成功！&quot;;
+        }
+</code></pre></div><h2 id="ssh免密码快速登录配置"><a href="#ssh免密码快速登录配置" class="header-anchor">#</a> ssh免密码快速登录配置</h2> <p>https://www.cnblogs.com/bingoli/p/10567734.html</p> <h2 id="关于ora-12170-tns-连接超时等一系列oracle无法正常登入问题"><a href="#关于ora-12170-tns-连接超时等一系列oracle无法正常登入问题" class="header-anchor">#</a> 关于ORA-12170 tns 连接超时等一系列Oracle无法正常登入问题</h2> <p>https://blog.csdn.net/qq_40707682/article/details/81667918?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase</p> <h2 id="linux下php安装oci8扩展"><a href="#linux下php安装oci8扩展" class="header-anchor">#</a> linux下php安装oci8扩展</h2> <div class="language- extra-class"><pre class="language-text"><code>wget https://github.com/liexusong/php-beast/archive/master.zip
+
+unzip master.zip
+
+cd php-beast-master
+
+/usr/local/php/bin/phpize
+
+./configure --with-php-config=/usr/local/php/bin/php-config
+
+make &amp;&amp; make install
+
+编译好之后修改php.ini配置文件, 加入配置项: extension=beast.so, 重启php-fpm
+
+
+
+</code></pre></div><h2 id="php-excel-设置单元格格式为文本格式"><a href="#php-excel-设置单元格格式为文本格式" class="header-anchor">#</a> php excel 设置单元格格式为文本格式</h2> <p>https://www.cnblogs.com/djwhome/p/9483940.html</p> <h2 id="yii-之-model-使用方法"><a href="#yii-之-model-使用方法" class="header-anchor">#</a> Yii 之 Model 使用方法</h2> <p>https://blog.csdn.net/libo_sina/article/details/8537416?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase</p> <h2 id="最新手机号正则表达式php包括166等号段"><a href="#最新手机号正则表达式php包括166等号段" class="header-anchor">#</a> 最新手机号正则表达式php包括166等号段</h2> <div class="language- extra-class"><pre class="language-text"><code>/**
+ * 验证手机号是否正确
+ * @author zy
+ * @param number $mobile
+ */
+function isMobile($mobile) {
+    if (!is_numeric($mobile)) {
+        return false;
+    }
+    return preg_match(&quot;/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\\d{8}$/&quot;, $mobile) ? true : false;
+}
+</code></pre></div><h2 id="oracle-如何只查询第一条记录"><a href="#oracle-如何只查询第一条记录" class="header-anchor">#</a> oracle 如何只查询第一条记录</h2> <div class="language- extra-class"><pre class="language-text"><code>select * from (select * from &lt;table&gt; order by &lt;key&gt;) where rownum=1;
+
+</code></pre></div><h2 id="code-500-message-u9875-u9762-u4e0d-u5b58-u5728-illegal-string-offset"><a href="#code-500-message-u9875-u9762-u4e0d-u5b58-u5728-illegal-string-offset" class="header-anchor">#</a> &quot;code&quot;:500,&quot;message&quot;:&quot;\u9875\u9762\u4e0d\u5b58\u5728:Illegal string offset</h2> <div class="language- extra-class"><pre class="language-text"><code>$res[&quot;data&quot;] = &quot;&quot;;
+$res[&quot;code&quot;] = 0;
+$res[&quot;message&quot;] = $resultInfo;
+改为：					
+$res = [];
+$res[&quot;data&quot;] = &quot;&quot;;
+$res[&quot;code&quot;] = 0;
+$res[&quot;message&quot;] = $resultInfo;
+</code></pre></div><h2 id="错误：ora-01704：字符串文字太长"><a href="#错误：ora-01704：字符串文字太长" class="header-anchor">#</a> 错误：ORA-01704：字符串文字太长</h2> <p>https://stackoverflow.com/questions/13945710/error-ora-01704-string-literal-too-long</p> <h2 id="warning-imagecreatefromjpeg-gd-jpeg-jpeg-library-reports-unrecoverable-error"><a href="#warning-imagecreatefromjpeg-gd-jpeg-jpeg-library-reports-unrecoverable-error" class="header-anchor">#</a> Warning: imagecreatefromjpeg(): gd-jpeg: JPEG library reports unrecoverable error</h2> <p>http://www.imooc.com/qadetail/61807</p> <p>https://www.zhihu.com/question/20671238</p> <h2 id="curl-设置curlopt-timeout-ms-超时时间"><a href="#curl-设置curlopt-timeout-ms-超时时间" class="header-anchor">#</a> CURL 设置CURLOPT_TIMEOUT_MS 超时时间</h2> <p>https://feilong.tech/2017/08/24/curlopt_timeout_ms/</p> <h2 id="git报错：remote-http-basic-access-denied的解决方法"><a href="#git报错：remote-http-basic-access-denied的解决方法" class="header-anchor">#</a> Git报错：remote: HTTP Basic: Access denied的解决方法</h2> <p>打开凭据管理器 - Windows凭据，找到对应的凭据，删除掉，重新clone，就会弹框</p> <p>提示用户名和密码。</p> <h2 id="yii-报错-列名必须是一个字符串或者数组"><a href="#yii-报错-列名必须是一个字符串或者数组" class="header-anchor">#</a> YII 报错 列名必须是一个字符串或者数组</h2> <p>yii一个表里必须有一个主键，所以看看你的数据库吧</p> <h2 id="最新河南获取考勤图片base64"><a href="#最新河南获取考勤图片base64" class="header-anchor">#</a> 最新河南获取考勤图片base64</h2> <div class="language- extra-class"><pre class="language-text"><code>// url转base64
+    public function checkUrlAndUrlToBase64AndCheckBase64($url){
+        // 待更换url 左外网，右内网
+        $baseUrl = [
+            '222.143.32.68:8201'=&gt;'10.120.81.193:7096',
+        ];
+        $urlHost= parse_url($url,PHP_URL_HOST).':'.parse_url($url,PHP_URL_PORT);
+        // 初始化
+        $newUrl = $urlHost;
+        if(array_key_exists($urlHost,$baseUrl)){
+            // 获取内网地址
+            $newUrl = $baseUrl[$urlHost];
+        }
+        // 替换url为内网
+        $url= str_replace($urlHost,$newUrl,$url);
+        $response = @get_headers($url);
+        if(preg_match('/200/',$response[0])){ 
+            // url转base64
+            $imgHtmlCode=true;
+            $img = $url;
+            $imageInfo = getimagesize($img);
+            $base64 = &quot;&quot; . chunk_split(base64_encode(file_get_contents($img)));
+            //$imgBase64 = 'data:' . $imageInfo['mime'] . ';base64,' . chunk_split(base64_encode(file_get_contents($img)));
+            $imgBase64 = base64_encode(file_get_contents($img));
+            return $imgBase64;
+        }else{ 
+            return &quot;&quot;;
+        }
+    }
+</code></pre></div><h2 id="图片转base64问题"><a href="#图片转base64问题" class="header-anchor">#</a> 图片转base64问题</h2> <div class="language- extra-class"><pre class="language-text"><code> /*图片转换为 base64格式编码*/
+    function fileToBase64($file){
+        $base64_file = '';
+        if(file_exists($file)){
+            //$mime_type= mime_content_type($file);
+            $base64_data = base64_encode(file_get_contents($file));
+            $base64_file = $base64_data;
+        }
+        return $base64_file;
+    }
+</code></pre></div><h2 id="parse-url-—-解析-url，返回其组成部分"><a href="#parse-url-—-解析-url，返回其组成部分" class="header-anchor">#</a> parse_url — 解析 URL，返回其组成部分</h2> <p>parse_url</p> <p>说明
+parse_url ( string $url [, int $component = -1 ] ) : mixed</p> <p>参数
+url
+要解析的 URL。无效字符将使用 _ 来替换。</p> <p>component
+指定 PHP_URL_SCHEME、 PHP_URL_HOST、 PHP_URL_PORT、 PHP_URL_USER、 PHP_URL_PASS、 PHP_URL_PATH、 PHP_URL_QUERY 或 PHP_URL_FRAGMENT 的其中一个来获取 URL 中指定的部分的 string。 （除了指定为 PHP_URL_PORT 后，将返回一个 integer 的值）。</p> <h2 id="yii2-刷新缓存（刷新模型缓存）"><a href="#yii2-刷新缓存（刷新模型缓存）" class="header-anchor">#</a> yii2 刷新缓存（刷新模型缓存）</h2> <div class="language- extra-class"><pre class="language-text"><code>//方法二:清空所有的缓存--不仅仅是mysql表结构  
+    Yii::app()-&gt;cache-&gt;flush(); 
+</code></pre></div><h2 id="php截取指定2个字符之间字符串的方法"><a href="#php截取指定2个字符之间字符串的方法" class="header-anchor">#</a> php截取指定2个字符之间字符串的方法</h2> <div class="language- extra-class"><pre class="language-text"><code>    function getNeedBetween($kw1,$mark1,$mark2){
+        $kw=$kw1;
+        $st =stripos($kw,$mark1);
+        $ed =stripos($kw,$mark2);
+        if(($st==false||$ed==false)||$st&gt;=$ed)
+        return 0;
+        $kw=substr($kw,($st+1),($ed-$st-1));
+        return $kw;
+    }
+</code></pre></div><h2 id="执行setinterval函数而不延迟"><a href="#执行setinterval函数而不延迟" class="header-anchor">#</a> 执行setInterval函数而不延迟</h2> <div class="language- extra-class"><pre class="language-text"><code>foo();
+    setInterval(foo, delay);
+</code></pre></div><h2 id="git报错-rpc-failed，curl-18-transfer-closed-with-outstanding-read-data-remaining"><a href="#git报错-rpc-failed，curl-18-transfer-closed-with-outstanding-read-data-remaining" class="header-anchor">#</a> git报错--RPC failed，curl 18 transfer closed with outstanding read data remaining</h2> <p>1.将https换为ssh</p> <p>2.设置参数</p> <div class="language- extra-class"><pre class="language-text"><code>git config --global http.postBuffer 524288000
+git clone git@github.com:RatFrog/ratfrog.github.io.git
+</code></pre></div><h2 id="git-切换远程仓库地址"><a href="#git-切换远程仓库地址" class="header-anchor">#</a> git 切换远程仓库地址</h2> <p>1、切换远程仓库地址：
+方式一：修改远程仓库地址
+【git remote set-url origin URL】 更换远程仓库地址，URL为新地址。
+方式二：先删除远程仓库地址，然后再添加
+【git remote rm origin】 删除现有远程仓库
+【git remote add origin url】添加新远程仓库
+2、【git remote -v 】查看远程仓库的地址</p> <h2 id="如何使setinterval在一段时间后或经过多次操作后停止？"><a href="#如何使setinterval在一段时间后或经过多次操作后停止？" class="header-anchor">#</a> 如何使setInterval在一段时间后或经过多次操作后停止？</h2> <div class="language- extra-class"><pre class="language-text"><code>若要在运行一组次数后停止它，只需在间隔中添加一个计数器，然后当它达到该数时清除它。
+
+var timesRun = 0;
+var interval = setInterval(function(){
+    timesRun += 1;
+    if(timesRun === 60){
+        clearInterval(interval);
+    }
+    //do whatever here..
+}, 2000); 
+
+在设定的时间过去后停止它
+
+var startTime = new Date().getTime();
+var interval = setInterval(function(){
+    if(new Date().getTime() - startTime &gt; 60000){
+        clearInterval(interval);
+        return;
+    }
+    //do whatever here..
+}, 2000);  
+</code></pre></div><h2 id="mysql的group-concat函数设置最大长度"><a href="#mysql的group-concat函数设置最大长度" class="header-anchor">#</a> mysql的group_concat函数设置最大长度</h2> <p>临时生效</p> <div class="language- extra-class"><pre class="language-text"><code>SET GLOBAL group_concat_max_len = 4294967295;
+SET SESSION group_concat_max_len = 4294967295;
+show variables like 'group_concat_max_len';
+</code></pre></div><p>永久生效</p> <div class="language- extra-class"><pre class="language-text"><code>vim /etc/my.cnf
+group_concat_max_len = 50000
+配置后需要重启MySQL服务
+</code></pre></div><h2 id="vuepress-如何引入百度统计和谷歌统计"><a href="#vuepress-如何引入百度统计和谷歌统计" class="header-anchor">#</a> Vuepress 如何引入百度统计和谷歌统计</h2> <div class="language- extra-class"><pre class="language-text"><code> ['link', { rel: 'icon', href: '/icon.png' }],
+    [
+    &quot;script&quot;,
+    {},
+    `var _hmt = _hmt || [];
+    (function() {
+    var hm = document.createElement(&quot;script&quot;);
+    hm.src = &quot;https://hm.baidu.com/hm.js?46eb6dbf0c639c7f8f8b9bc2e1b8e9ad&quot;;
+    var s = document.getElementsByTagName(&quot;script&quot;)[0]; 
+    s.parentNode.insertBefore(hm, s);
+    })();`
+    ]
+</code></pre></div><h2 id="天气接口无法访问问题"><a href="#天气接口无法访问问题" class="header-anchor">#</a> 天气接口无法访问问题</h2> <p>将php写的前端代码http改为https即可访问</p> <p>http://www.tianqiapi.com/api?version=v61&amp;appid=78811125&amp;appsecret=J59dynVo</p> <p>https://www.tianqiapi.com/api?version=v61&amp;appid=78811125&amp;appsecret=J59dynVo</p> <h2 id="java获取客户端url"><a href="#java获取客户端url" class="header-anchor">#</a> java获取客户端url</h2> <div class="language- extra-class"><pre class="language-text"><code>        String requestUrl = getRequest().getServerName();
+    	String checkUrl = prop.get(&quot;CheckUrl&quot;);//CheckUrl
+    	boolean checkUrlFlag = checkUrl.equals(requestUrl);
+    	if(!checkUrlFlag) {
+    		renderText(&quot;error:url验证失败&quot;);
+    		return;
+    	}
+</code></pre></div><p>String requestUrl = getRequest().getServerName();</p> <p>String getServerName()：获取服务器名，localhost；</p> <p>String getServerPort()：获取服务器端口号，8080；</p> <p>String getContextPath()：获取项目名，/Example；</p> <p>String getServletPath()：获取Servlet路径，/AServlet；</p> <p>String getQueryString()：获取参数部分，即问号后面的部分：username=zhangsan</p> <p>String getRequestURI()：获取请求URI，等于项目名+Servlet路径：/Example/AServlet</p> <p>String getRequestURL()：获取请求URL，等于不包含参数的整个请求路径：http://localhost:8080/Example/AServlet</p> <p>String request.getRemoteAddr()：获取服务器的IP，如localhost对应ip为127.0.0.1</p> <h2 id="java获取当前时间的年月日方法"><a href="#java获取当前时间的年月日方法" class="header-anchor">#</a> Java获取当前时间的年月日方法</h2> <div class="language- extra-class"><pre class="language-text"><code>package com.ob;  
+  
+import java.text.ParseException;  
+import java.text.SimpleDateFormat;  
+import java.util.Calendar;  
+import java.util.Date;  
+  
+public class DateTest {  
+  
+    public static void main(String[] args) throws ParseException {  
+        Calendar now = Calendar.getInstance();  
+        System.out.println(&quot;年: &quot; + now.get(Calendar.YEAR));  
+        System.out.println(&quot;月: &quot; + (now.get(Calendar.MONTH) + 1) + &quot;&quot;);  
+        System.out.println(&quot;日: &quot; + now.get(Calendar.DAY_OF_MONTH));  
+        System.out.println(&quot;时: &quot; + now.get(Calendar.HOUR_OF_DAY));  
+        System.out.println(&quot;分: &quot; + now.get(Calendar.MINUTE));  
+        System.out.println(&quot;秒: &quot; + now.get(Calendar.SECOND));  
+        System.out.println(&quot;当前时间毫秒数：&quot; + now.getTimeInMillis());  
+        System.out.println(now.getTime());  
+  
+        Date d = new Date();  
+        System.out.println(d);  
+        SimpleDateFormat sdf = new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss&quot;);  
+        String dateNowStr = sdf.format(d);  
+        System.out.println(&quot;格式化后的日期：&quot; + dateNowStr);  
+          
+        String str = &quot;2012-1-13 17:26:33&quot;;  //要跟上面sdf定义的格式一样  
+        Date today = sdf.parse(str);  
+        System.out.println(&quot;字符串转成日期：&quot; + today);  
+    }  
+}  
+</code></pre></div><h2 id="java中比较两个字符串是否相等的问题"><a href="#java中比较两个字符串是否相等的问题" class="header-anchor">#</a> Java中比较两个字符串是否相等的问题</h2> <p>==比较的是两个字符串的地址是否为相等（同一个地址），equals()方法比较的是两个字符串对象的内容是否相同（当然，若两个字符串引用同一个地址，使用equals()比较也返回true）。</p> <h2 id="java-报错java-security-invalidkeyexception-illegal-key-size。"><a href="#java-报错java-security-invalidkeyexception-illegal-key-size。" class="header-anchor">#</a> java 报错java.security.InvalidKeyException: Illegal key size。</h2> <p>在项目使用加解密时，发生了异常？由于在同事电脑上运行正常，所以很奇怪。run 运行时也没有异常，就是null。</p> <p>debug测试发现，在解密和加密时发生了异常。java.security.InvalidKeyException: Illegal key size</p> <p>而run没有异常抛出时因为代码里catch异常后，没有向外抛出。导致看不到异常，这是一个不好的习惯。</p> <p>搜索后发现是由于jdk限制策略，导致只能128位key进行加解密，而256位加解密则抛出异常。</p> <p>加解密使用的jdk里的如下两个jar包。</p> <p>jdk 1.8处理：去以下地址下载，解压后替换原来的jar。</p> <p>https://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html</p> <p>再次运行则正常了。</p> <h2 id="java-错误-编码gbk的不可映射字符"><a href="#java-错误-编码gbk的不可映射字符" class="header-anchor">#</a> java 错误: 编码GBK的不可映射字符</h2> <p>解决办法：</p> <p>1.使用javac -encoding UTF-8 test.java  编译通过：</p> <p>2.修改文件encoding编码为 ANSI，编译通过：</p> <h2 id="java-jar包下载的网站"><a href="#java-jar包下载的网站" class="header-anchor">#</a> java jar包下载的网站</h2> <p>https://mvnrepository.com/</p> <h2 id="java-helloworld时报错-找不到或无法加载主类-问题的解决办法"><a href="#java-helloworld时报错-找不到或无法加载主类-问题的解决办法" class="header-anchor">#</a> java HelloWorld时报错:&quot;找不到或无法加载主类&quot;问题的解决办法</h2> <p>javac HelloWorld.java
+java HelloWorld</p> <p>注意:
+不要带.class
+检查第一行是否有package e2r.cn;</p> <h2 id="java执行单文件、javac编译单文件、多文件引入jar包、-cp解决无法加载主类问题"><a href="#java执行单文件、javac编译单文件、多文件引入jar包、-cp解决无法加载主类问题" class="header-anchor">#</a> java执行单文件、javac编译单文件、多文件引入jar包、-cp解决无法加载主类问题</h2> <p>注意：路径在linux中用：隔开  在windows中用；隔开，对于.class文件来说，只需要指明包的路径即可；但是对于jar文件来说，必须要指定全路径即路径+文件名的格式，不能只指定一个路径
+windows环境
+javac -cp Desktop\test\lib\pinyin4j-2.5.0.jar Desktop\test\src\A.java
+java -cp Desktop\test\lib\pinyin4j-2.5.0.jar;Desktop\test\src A 不可不可以</p> <p>javac -encoding UTF-8 -cp /test/lib/sigar.jar /test/src/GetComputerInfo.java
+java -cp /test/lib/sigar.jar;/test/src/GetComputerInfo</p> <p>linux环境
+javac -cp /test/lib/sigar.jar /test/src/GetComputerInfo.java
+java -cp /test/lib/sigar.jar:/test/src GetComputerInfo</p> <h2 id="java获取linux和windos服务器信息和验证器"><a href="#java获取linux和windos服务器信息和验证器" class="header-anchor">#</a> java获取linux和windos服务器信息和验证器</h2> <p>获取</p> <div class="language- extra-class"><pre class="language-text"><code>package e2r.cn;
+import org.apache.commons.codec.binary.Base64;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Security;
+import java.security.spec.AlgorithmParameterSpec;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.lang.management.ManagementFactory;
+
+import com.jfinal.core.Controller;
+import com.jfinal.kit.Prop;
+import com.jfinal.kit.PropKit;
+import com.sun.management.OperatingSystemMXBean;
+
+import com.jfinal.core.Controller;
+
+public class GetAesPcInfoController extends Controller{
+	private static Prop prop = PropKit.use(&quot;config.properties&quot;);//加载配置文件
+    private static final String CHARSET_NAME = &quot;UTF-8&quot;;
+    private static final String AES_NAME = &quot;AES&quot;;
+    private static final String ALGORITHM = &quot;AES/CBC/PKCS7Padding&quot;;
+	static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+    /**
+               * 加密
+     * @param content
+     * @param key
+     * @return
+     */
+    public static String encrypt(String content, String key) {
+        byte[] result = null;
+        try {
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(CHARSET_NAME), AES_NAME);
+            AlgorithmParameterSpec paramSpec = new IvParameterSpec(subBytes(key.getBytes(CHARSET_NAME)));
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, paramSpec);
+            result = cipher.doFinal(content.getBytes(CHARSET_NAME));
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return Base64.encodeBase64String(result);
+    }
+
+    /**
+               * 解密
+     * @param content
+     * @param key
+     * @return
+     */
+    public static String decrypt(String content, String key) {
+        try {
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(CHARSET_NAME), AES_NAME);
+            AlgorithmParameterSpec paramSpec = new IvParameterSpec(subBytes(key.getBytes(CHARSET_NAME)));
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, paramSpec);
+            return new String(cipher.doFinal(Base64.decodeBase64(content)), CHARSET_NAME);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+                * 从一个byte[]数组中截取一部分
+     * @param src
+     * @return
+     */
+    public static byte[] subBytes(byte[] src) {
+        if (src.length &lt; 16) {
+            throw new RuntimeException(&quot;无法从Key中获取偏移量!&quot;);
+        }
+        byte[] bs = new byte[16];
+        for (int i = 0; i &lt; 16; i++) {
+            bs[i] = src[i];
+        }
+        return bs;
+    }
+    public static Desk getDisk_linux() {
+        Desk desk = new Desk();
+        try {
+            Runtime rt = Runtime.getRuntime();
+            Process p = rt.exec(&quot;df -hl&quot;);// df -hl 查看硬盘空间
+            BufferedReader in = null;
+            try {
+                in = new BufferedReader(new InputStreamReader(
+                        p.getInputStream()));
+                String str = null;
+                String[] strArray = null;
+                int line = 0;
+                while ((str = in.readLine()) != null) {
+                    line++;
+                    if (line != 2) {
+                        continue;
+                    }
+                    int m = 0;
+                    strArray = str.split(&quot; &quot;);
+                    for (String para : strArray) {
+                        if (para.trim().length() == 0)
+                            continue;
+                        ++m;
+                        if (para.endsWith(&quot;G&quot;) || para.endsWith(&quot;Gi&quot;)) {
+                            // 目前的服务器
+                            if (m == 2) {
+                                desk.setTotal(para);
+                            }
+                            if (m == 3) {
+                                desk.setUsed(para);
+                            }
+                        }
+                        if (para.endsWith(&quot;%&quot;)) {
+                            if (m == 5) {
+                                desk.setUse_rate(para);
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                in.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return desk;
+    }
+ 
+    public static class Desk {
+        private String total;
+        private String used;
+        private String use_rate;
+         
+        public String toString(){
+            return total;
+        }
+ 
+        public String getTotal() {
+            return total;
+        }
+ 
+        public void setTotal(String total) {
+            this.total = total;
+        }
+ 
+        public String getUsed() {
+            return used;
+        }
+ 
+        public void setUsed(String used) {
+            this.used = used;
+        }
+ 
+        public String getUse_rate() {
+            return use_rate;
+        }
+ 
+        public void setUse_rate(String use_rate) {
+            this.use_rate = use_rate;
+        }
+ 
+    }
+	/**
+	 * TODO 获取文件系统使用率
+	 * 
+	 * @return
+	 */
+	private static double getDisk_windows() {
+		double total = 0;
+		for (char c = 'A'; c &lt;= 'Z'; c++) {
+			String dirName = c + &quot;:/&quot;;
+			File win = new File(dirName);
+			if (win.exists()) {
+				total = win.getTotalSpace() / 1024.0 / 1024.0 / 1024.0;
+				// 保留一位小数
+				total = Double.valueOf(String.valueOf(total).substring(0, String.valueOf(total).indexOf(&quot;.&quot;) + 2));	
+				break;
+			}
+		}
+		return total;
+	}
+ 
+	/**
+	 * TODO 获取内存使用率
+	 * 
+	 * @return
+	 */
+	private static long getMemory_windows() {
+		OperatingSystemMXBean osmxb = (com.sun.management.OperatingSystemMXBean) ManagementFactory
+				.getOperatingSystemMXBean();
+		// 物理内存（内存条）
+		long physicalMemorySize = osmxb.getTotalPhysicalMemorySize();
+		return physicalMemorySize;
+	}
+ 
+	/**
+	 * 获取CPU_SN linux
+	 * 
+	 * @return
+	 */
+	public static String getCPU_linux() throws InterruptedException {
+		String result = &quot;&quot;;
+		String CPU_ID_CMD = &quot;dmidecode&quot;;
+		BufferedReader bufferedReader = null;
+		Process p = null;
+		try {
+			p = Runtime.getRuntime().exec(new String[] { &quot;sh&quot;, &quot;-c&quot;, CPU_ID_CMD });// 管道
+			bufferedReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line = null;
+			int index = -1;
+			while ((line = bufferedReader.readLine()) != null) {
+				// 寻找标示字符串[hwaddr]
+				index = line.toLowerCase().indexOf(&quot;uuid&quot;);
+				if (index &gt;= 0) {// 找到了
+					// 取出MAC并去除2边空格
+					result = line.substring(index + &quot;uuid&quot;.length() + 1).trim();
+					break;
+				}
+			}
+ 
+		} catch (IOException e) {
+		}
+		return result.trim();
+	}
+	/**
+     * 获取客户端IP
+     * 
+     * @return
+     */
+    public static String getIP_linux() throws IOException {
+        return InetAddress.getLocalHost().getHostAddress().toString();
+    }
+	private static String getIP_windows() throws IOException {
+		 	String ip = null;
+	        InetAddress addr;
+	        addr = InetAddress.getLocalHost();
+	        ip = addr.getHostAddress();
+	        return ip;
+	}
+	public static String getCPU_windows() {
+		Process process;
+		String serial = null;
+		try {
+			process = Runtime.getRuntime().exec(
+					new String[] { &quot;wmic&quot;, &quot;cpu&quot;, &quot;get&quot;, &quot;ProcessorId&quot; });
+			process.getOutputStream().close();
+			Scanner sc = new Scanner(process.getInputStream());
+			String property = sc.next();
+			serial = sc.next();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return serial;
+	}
+
+        /*
+                          * 获取Linux的mac
+         */
+        public static String getMAC_linux() {
+		
+		String mac = null;
+		BufferedReader bufferedReader = null;
+		Process process = null;
+		try {
+			// linux下的命令，一般取eth0作为本地主网卡
+			process = Runtime.getRuntime().exec(&quot;ifconfig&quot;);
+			// 显示信息中包含有MAC信息
+			bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line = null;
+			while ((line = bufferedReader.readLine()) != null) 
+			 {
+				 Pattern pat = Pattern.compile(&quot;\\b\\w+:\\w+:\\w+:\\w+:\\w+:\\w+\\b&quot;);
+				 Matcher mat= pat.matcher(line);
+				 if(mat.find())
+				 {
+					 mac=mat.group(0);
+				 }
+			 }
+ 
+		} catch (IOException e) {
+		} finally {
+			try {
+				if (bufferedReader != null) {
+					bufferedReader.close();
+				}
+			} catch (IOException e1) {
+			}
+			bufferedReader = null;
+			process = null;
+		}
+		return mac;
+	}
+    	/**
+    	 * 获取widnows网卡的MAC.
+    	 */
+    	public static String getMAC_windows() {
+        {  
+        	StringBuffer sb = new StringBuffer(&quot;&quot;);
+            try   
+            {  
+        		InetAddress ia = InetAddress.getLocalHost();
+        		// TODO Auto-generated method stubַ
+        		byte[] mac = NetworkInterface.getByInetAddress(ia).getHardwareAddress();
+        		
+        		for(int i=0; i&lt;mac.length; i++) {
+        			if(i!=0) {
+        				sb.append(&quot;-&quot;);
+        			}
+        			int temp = mac[i]&amp;0xff;
+        			String str = Integer.toHexString(temp);
+        			if(str.length()==1) {
+        				sb.append(&quot;0&quot;+str);
+        			}else {
+        				sb.append(str);
+        			}
+        		}             
+            } catch (Exception e) {  
+                e.printStackTrace();  
+            } 
+              
+            return sb.toString().toUpperCase();  
+        }
+    }
+	/**
+     * Purpose:采集内存使用率
+     * @param args
+     * @return float,内存使用率,小于1
+     */
+    public static float getMemory_linux() {
+        long totalMem = 0;
+        Process pro = null;
+        Runtime r = Runtime.getRuntime();
+        try {
+            String command = &quot;cat /proc/meminfo&quot;;
+            pro = r.exec(command);
+            BufferedReader in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            String line = null;
+            while((line=in.readLine()) != null){ 
+                String[] memInfo = line.split(&quot;\\s+&quot;);
+                if(memInfo[0].startsWith(&quot;MemTotal&quot;)){
+                    totalMem = Long.parseLong(memInfo[1]);
+                    break;
+                }               
+            }
+            in.close();
+            pro.destroy();
+        } catch (IOException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+        }    
+        return totalMem;
+    }
+    public void index() throws Exception {
+		String Key = prop.get(&quot;Key&quot;);//key
+    	String msg = null;
+    	String os = null;
+    	os = System.getProperty(&quot;os.name&quot;).toUpperCase();
+		if(&quot;LINUX&quot;.equals(os)) {
+			msg = (
+			&quot;OS:&quot; + os+&quot;&amp;&quot;+
+			&quot;CPU_SN:&quot; + getCPU_linux()+&quot;&amp;&quot;+
+			&quot;IP:&quot; + getIP_linux()+&quot;&amp;&quot;+
+			&quot;MAC:&quot; + getMAC_linux()+&quot;&amp;&quot;+
+			&quot;DISK_SIZE:&quot; + getDisk_linux()+&quot;&amp;&quot;+
+			&quot;MEMORY_SIZE:&quot; + getMemory_linux());
+		}else {
+			msg = (&quot;OS:&quot; + os+&quot;&amp;&quot;+
+			&quot;CPU_SN:&quot; + getCPU_windows()+&quot;&amp;&quot;+
+			&quot;IP:&quot; + getIP_windows()+&quot;&amp;&quot;+
+			&quot;MAC:&quot; + getMAC_windows()+&quot;&amp;&quot;+
+			&quot;DISK_SIZE:&quot; + getDisk_windows()+&quot;G&quot;+&quot;&amp;&quot;+
+			&quot;MEMORY_SIZE:&quot; + getMemory_windows());
+		}
+        String mystr = msg;
+        String secret = Key;
+        String encode = encrypt(mystr, secret);
+//        renderText(msg);
+        renderText(encode);
+    }
+}
+
+</code></pre></div><p>验证</p> <div class="language- extra-class"><pre class="language-text"><code>package e2r.cn;
+import org.apache.commons.codec.binary.Base64;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Security;
+import java.security.spec.AlgorithmParameterSpec;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Date;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.lang.management.ManagementFactory;
+
+import com.jfinal.core.Controller;
+import com.jfinal.kit.Prop;
+import com.jfinal.kit.PropKit;
+import com.sun.management.OperatingSystemMXBean;
+
+import com.jfinal.core.Controller;
+import com.jfinal.kit.Prop;
+import com.jfinal.kit.PropKit;
+import com.jfinal.plugin.activerecord.Page;
+import com.jfinal.plugin.activerecord.Record;
+
+public class CheckAesPcInfoController extends Controller{
+	private static Prop prop = PropKit.use(&quot;config.properties&quot;);//加载配置文件
+    private static final String CHARSET_NAME = &quot;UTF-8&quot;;
+    private static final String AES_NAME = &quot;AES&quot;;
+    private static final String ALGORITHM = &quot;AES/CBC/PKCS7Padding&quot;;
+	static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+    /**
+     * 加密
+     * @param content
+     * @param key
+     * @return
+     */
+    public static String encrypt(String content, String key) {
+        byte[] result = null;
+        try {
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(CHARSET_NAME), AES_NAME);
+            AlgorithmParameterSpec paramSpec = new IvParameterSpec(subBytes(key.getBytes(CHARSET_NAME)));
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, paramSpec);
+            result = cipher.doFinal(content.getBytes(CHARSET_NAME));
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return Base64.encodeBase64String(result);
+    }
+
+    /**
+     * 解密
+     * @param content
+     * @param key
+     * @return
+     */
+    public static String decrypt(String content, String key) {
+        try {
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(CHARSET_NAME), AES_NAME);
+            AlgorithmParameterSpec paramSpec = new IvParameterSpec(subBytes(key.getBytes(CHARSET_NAME)));
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, paramSpec);
+            return new String(cipher.doFinal(Base64.decodeBase64(content)), CHARSET_NAME);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+                * 从一个byte[]数组中截取一部分
+     * @param src
+     * @return
+     */
+    public static byte[] subBytes(byte[] src) {
+        if (src.length &lt; 16) {
+            throw new RuntimeException(&quot;无法从Key中获取偏移量!&quot;);
+        }
+        byte[] bs = new byte[16];
+        for (int i = 0; i &lt; 16; i++) {
+            bs[i] = src[i];
+        }
+        return bs;
+    }
+    public static Desk getDisk_linux() {
+        Desk desk = new Desk();
+        try {
+            Runtime rt = Runtime.getRuntime();
+            Process p = rt.exec(&quot;df -hl&quot;);// df -hl 查看硬盘空间
+            BufferedReader in = null;
+            try {
+                in = new BufferedReader(new InputStreamReader(
+                        p.getInputStream()));
+                String str = null;
+                String[] strArray = null;
+                int line = 0;
+                while ((str = in.readLine()) != null) {
+                    line++;
+                    if (line != 2) {
+                        continue;
+                    }
+                    int m = 0;
+                    strArray = str.split(&quot; &quot;);
+                    for (String para : strArray) {
+                        if (para.trim().length() == 0)
+                            continue;
+                        ++m;
+                        if (para.endsWith(&quot;G&quot;) || para.endsWith(&quot;Gi&quot;)) {
+                            // 目前的服务器
+                            if (m == 2) {
+                                desk.setTotal(para);
+                            }
+                            if (m == 3) {
+                                desk.setUsed(para);
+                            }
+                        }
+                        if (para.endsWith(&quot;%&quot;)) {
+                            if (m == 5) {
+                                desk.setUse_rate(para);
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                in.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return desk;
+    }
+ 
+    public static class Desk {
+        private String total;
+        private String used;
+        private String use_rate;
+         
+        public String toString(){
+            return total;
+        }
+ 
+        public String getTotal() {
+            return total;
+        }
+ 
+        public void setTotal(String total) {
+            this.total = total;
+        }
+ 
+        public String getUsed() {
+            return used;
+        }
+ 
+        public void setUsed(String used) {
+            this.used = used;
+        }
+ 
+        public String getUse_rate() {
+            return use_rate;
+        }
+ 
+        public void setUse_rate(String use_rate) {
+            this.use_rate = use_rate;
+        }
+ 
+    }
+	/**
+	 * TODO 获取文件系统使用率
+	 * 
+	 * @return
+	 */
+	private static double getDisk_windows() {
+		double total = 0;
+		for (char c = 'A'; c &lt;= 'Z'; c++) {
+			String dirName = c + &quot;:/&quot;;
+			File win = new File(dirName);
+			if (win.exists()) {
+				total = win.getTotalSpace() / 1024.0 / 1024.0 / 1024.0;
+				// 保留一位小数
+				total = Double.valueOf(String.valueOf(total).substring(0, String.valueOf(total).indexOf(&quot;.&quot;) + 2));	
+				break;
+			}
+		}
+		return total;
+	}
+ 
+	/**
+	 * TODO 获取内存使用率
+	 * 
+	 * @return
+	 */
+	private static long getMemory_windows() {
+		OperatingSystemMXBean osmxb = (com.sun.management.OperatingSystemMXBean) ManagementFactory
+				.getOperatingSystemMXBean();
+		// 物理内存（内存条）
+		long physicalMemorySize = osmxb.getTotalPhysicalMemorySize();
+		return physicalMemorySize;
+	}
+ 
+	/**
+	 * 获取CPU_SN linux
+	 * 
+	 * @return
+	 */
+	public static String getCPU_linux() throws InterruptedException {
+		String result = &quot;&quot;;
+		String CPU_ID_CMD = &quot;dmidecode&quot;;
+		BufferedReader bufferedReader = null;
+		Process p = null;
+		try {
+			p = Runtime.getRuntime().exec(new String[] { &quot;sh&quot;, &quot;-c&quot;, CPU_ID_CMD });// 管道
+			bufferedReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line = null;
+			int index = -1;
+			while ((line = bufferedReader.readLine()) != null) {
+				// 寻找标示字符串[hwaddr]
+				index = line.toLowerCase().indexOf(&quot;uuid&quot;);
+				if (index &gt;= 0) {// 找到了
+					// 取出MAC并去除2边空格
+					result = line.substring(index + &quot;uuid&quot;.length() + 1).trim();
+					break;
+				}
+			}
+ 
+		} catch (IOException e) {
+		}
+		return result.trim();
+	}
+	/**
+     * 获取客户端IP
+     * 
+     * @return
+     */
+    public static String getIP_linux() throws IOException {
+        return InetAddress.getLocalHost().getHostAddress().toString();
+    }
+	private static String getIP_windows() throws IOException {
+		 	String ip = null;
+	        InetAddress addr;
+	        addr = InetAddress.getLocalHost();
+	        ip = addr.getHostAddress();
+	        return ip;
+	}
+	public static String getCPU_windows() {
+		Process process;
+		String serial = null;
+		try {
+			process = Runtime.getRuntime().exec(
+					new String[] { &quot;wmic&quot;, &quot;cpu&quot;, &quot;get&quot;, &quot;ProcessorId&quot; });
+			process.getOutputStream().close();
+			Scanner sc = new Scanner(process.getInputStream());
+			String property = sc.next();
+			serial = sc.next();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return serial;
+	}
+
+        /*
+                          * 获取Linux的mac
+         */
+        public static String getMAC_linux() {
+		
+		String mac = null;
+		BufferedReader bufferedReader = null;
+		Process process = null;
+		try {
+			// linux下的命令，一般取eth0作为本地主网卡
+			process = Runtime.getRuntime().exec(&quot;ifconfig&quot;);
+			// 显示信息中包含有MAC信息
+			bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line = null;
+			while ((line = bufferedReader.readLine()) != null) 
+			 {
+				 Pattern pat = Pattern.compile(&quot;\\b\\w+:\\w+:\\w+:\\w+:\\w+:\\w+\\b&quot;);
+				 Matcher mat= pat.matcher(line);
+				 if(mat.find())
+				 {
+					 mac=mat.group(0);
+				 }
+			 }
+ 
+		} catch (IOException e) {
+		} finally {
+			try {
+				if (bufferedReader != null) {
+					bufferedReader.close();
+				}
+			} catch (IOException e1) {
+			}
+			bufferedReader = null;
+			process = null;
+		}
+		return mac;
+	}
+    	/**
+    	 * 获取widnows网卡的MAC.
+    	 */
+    	public static String getMAC_windows() {
+        {  
+        	StringBuffer sb = new StringBuffer(&quot;&quot;);
+            try   
+            {  
+        		InetAddress ia = InetAddress.getLocalHost();
+        		// TODO Auto-generated method stubַ
+        		byte[] mac = NetworkInterface.getByInetAddress(ia).getHardwareAddress();
+        		
+        		for(int i=0; i&lt;mac.length; i++) {
+        			if(i!=0) {
+        				sb.append(&quot;-&quot;);
+        			}
+        			int temp = mac[i]&amp;0xff;
+        			String str = Integer.toHexString(temp);
+        			if(str.length()==1) {
+        				sb.append(&quot;0&quot;+str);
+        			}else {
+        				sb.append(str);
+        			}
+        		}             
+            } catch (Exception e) {  
+                e.printStackTrace();  
+            } 
+              
+            return sb.toString().toUpperCase();  
+        }
+    }
+	/**
+     * Purpose:采集内存使用率
+     * @param args
+     * @return float,内存使用率,小于1
+     */
+    public static float getMemory_linux() {
+        long totalMem = 0;
+        Process pro = null;
+        Runtime r = Runtime.getRuntime();
+        try {
+            String command = &quot;cat /proc/meminfo&quot;;
+            pro = r.exec(command);
+            BufferedReader in = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            String line = null;
+            while((line=in.readLine()) != null){ 
+                String[] memInfo = line.split(&quot;\\s+&quot;);
+                if(memInfo[0].startsWith(&quot;MemTotal&quot;)){
+                    totalMem = Long.parseLong(memInfo[1]);
+                    break;
+                }               
+            }
+            in.close();
+            pro.destroy();
+        } catch (IOException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+        }    
+        return totalMem;
+    }
+    public void getServer() {
+//    	String param = getPara(&quot;param&quot;);
+    	String param = &quot;05HICfOg4YS65FuYS2KiJ3Gh0XVF3sS9ERBuIRsvNYUBVteQ0PNa7SYCpTriH+hSGavlWo1m93NnI8YomVvi4/w6/T0KNkB0NJv7vQhOIH5VQ4ZfDjYKPRJ3lXTGQTnq7zzlinwkbQr0Fl+St79zcp3dSFtCbkVF7QX8gZrrltk=&quot;;
+    	renderText(param);
+    }
+//	public static void main(String[] args) throws Exception {
+//		String param = &quot;05HICfOg4YS65FuYS2KiJ3Gh0XVF3sS9ERBuIRsvNYUBVteQ0PNa7SYCpTriH+hSGavlWo1m93NnI8YomVvi4/w6/T0KNkB0NJv7vQhOIH5VQ4ZfDjYKPRJ3lXTGQTnq7zzlinwkbQr0Fl+St79zcp3dSFtCbkVF7QX8gZrrltk=&quot;;
+//		if (param == null || param.trim().length() == 0) {
+//    		System.out.println(&quot;error&quot;);
+//			return;
+//    	}else {
+//    		String Key = prop.get(&quot;Key&quot;);//key
+//    		String OSInfo = prop.get(&quot;OSInfo&quot;);//OSInfo
+//        	String mystr = param;
+//        	String secret = Key;
+//        	String decode = decrypt(mystr, secret);
+////        	System.out.println(decode);
+////        	System.out.println(OSInfo);
+//        	if(OSInfo.equals(decode)) {
+//        		Date d = new Date();
+//        		SimpleDateFormat sdf = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);  
+//                String dateNowStr = sdf.format(d);
+//        		String Salt = prop.get(&quot;Salt&quot;);//Salt
+//        		String msg = param+&quot;&amp;&quot;+Salt+&quot;&amp;&quot;+dateNowStr;
+////        		System.out.println(msg);
+//        		String encode = encrypt(msg, secret);
+////        		System.out.println(encode);
+//        	}else {
+//        		System.out.println(&quot;fail&quot;);
+//        	}
+//    	}
+//	}
+    public void index() throws Exception {
+    	String requestUrl = getRequest().getServerName();
+    	String checkUrl = prop.get(&quot;CheckUrl&quot;);//CheckUrl
+    	boolean checkUrlFlag = checkUrl.equals(requestUrl);
+    	if(!checkUrlFlag) {
+    		renderText(&quot;error:url验证失败&quot;);
+    		return;
+    	}
+    	String param = getPara(&quot;param&quot;);
+		if (param == null || param.trim().length() == 0) {
+			renderText(&quot;error:请求参数不能为空&quot;);
+			return;
+    	}else {
+    		String Key = prop.get(&quot;Key&quot;);//key
+    		String OSInfo = prop.get(&quot;OSInfo&quot;);//OSInfo
+        	String mystr = param;
+        	String secret = Key;
+        	String decode = decrypt(mystr, secret);
+        	boolean checkOSInfoFlag = OSInfo.equals(decode);
+        	if(checkOSInfoFlag) {
+        		Date d = new Date();
+        		SimpleDateFormat sdf = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);  
+                String dateNowStr = sdf.format(d);
+        		String Salt = prop.get(&quot;Salt&quot;);//Salt
+        		String msg = param+&quot;&amp;&quot;+Salt+&quot;&amp;&quot;+dateNowStr;
+        		String encode = encrypt(msg, secret);
+        		renderText(encode);
+        		return;
+        	}else {
+        		renderText(&quot;error:信息验证失败&quot;);
+        		return;
+        	}
+    	}
+    }
+}
+</code></pre></div><h2 id="vscode正则表达式示例"><a href="#vscode正则表达式示例" class="header-anchor">#</a> vscode正则表达式示例</h2> <div class="language- extra-class"><pre class="language-text"><code>下面是一些可能的恶意活动：
+目标	Expression	示例
+与任何单个字符匹配（换行符除外）	方法。	a.o 匹配“around”中的“aro”及“about”中的“abo”，但不匹配“across”中的“acro”。
+零次或多次匹配前面的表达式（匹配尽可能多的字符）	*	a*r 匹配“rack”中的“r”，“ark”中的“ar”和“aardvark”中的“aar”
+零次或多次匹配任何字符（通配符 *）	.*	c.*e 匹配“racket”中的“cke”，“comment”中的“comme”和“code”中的“code”
+一次或多次匹配前面的表达式（匹配尽可能多的字符）	+	e.+e 匹配“feeder”中的“eede”，而不是“ee”。
+一次或多次匹配任意字符（通配符 ?）	.+	e.+e 匹配“feeder”中的“eede”，而不是“ee”。
+零次或多次匹配前面的表达式（匹配尽可能多的字符）	*?	e.*?e 匹配“feeder”中的“ee”，而不是“eede”。
+一次或多次匹配前面的表达式（匹配尽可能多的字符）	+?	e.+?e 匹配“enterprise”中的“ente”和“erprise”，但不匹配整个单词“enterprise”。
+将匹配字符串定位到行或字符串的开头	^	^car 仅在出现于行开头时才匹配单词“car”。
+将匹配字符串定位到行尾	\r?$	End\r?$ 仅在出现于行尾时才匹配“end”。
+匹配集中的任何单个字符	[abc]	b[abc] 匹配“ba”、“bb”和“bc”。
+匹配的字符范围中的任意字符	[a-f]	be[n-t] 匹配“between”中的“bet”，“beneath”中的“ben”，“beside”中的“bes”，但不匹配“below”。
+捕获包含在括号中的表达式并对其进行隐式编号	()	([a-z])X\1 匹配“aXa”和“bXb”，但不匹配“aXb”。 &quot;. “\1”是指第一个表达式组“[a-z]”。
+使匹配无效	(?!abc)	real (?!ity) 匹配“realty”和“really”中的“real”，但不匹配“reality”。 它还可找到“realityreal”中的第二个“real”（而非第一个“real”）。
+匹配不在给定字符集中的任意字符	[^abc]	be[^n-t] 匹配“before”中的“bef”，“behind”中的“beh”和“below”中的“bel”，但不匹配“beneath”。
+匹配符号前或符号后的表达式。	|	(sponge&amp;#124;mud) bath 匹配“sponge bath”和“mud bath”。
+对反斜杠后面的字符进行转义	|\^ 匹配字符 ^。	
+指定前面的字符或组的出现次数	{x}，其中 x 是出现次数	x(ab){2}x 匹配“xababx”，x(ab){2,3}x 匹配“xababx”和“xabababx”，但不匹配“xababababx”。
+匹配 Unicode 字符类中的文本，其中“X”是 Unicode 数字。 有关 Unicode 字符类的详细信息，请参阅
+
+Unicode Standard 5.2 字符属性。	\p{X}	\p{Lu} 匹配“Thomas Doe”中的“T”和“D”。
+与字边界匹配	\b（在字符类 \b 的外部指定字边界，而在字符类内部指定退格符）。	\bin 匹配“inside”中的“in”，不匹配“pinto”。
+与换行符（即回车符后跟新行）相匹配。	\r?\n	仅当“End”是一行的最后一个字符串，且“Begin”是下一行的第一个字符串时，End\r?\nBegin 才匹配“End”和“Begin”。
+匹配任意字母数字字符	\w	a\wd 匹配“add”和“a1d”，不匹配“a d”。
+匹配任意空格字符。	(?([^\r\n])\s)	Public\sInterface 匹配词组“Public Interface”。
+匹配任意数字字符	\d	\d 匹配“3456”中的“3”，“23”中的“2”和“1”中的“1”。
+匹配 Unicode 字符	\uXXXX，其中 XXXX 指定 Unicode 字符值。	\u0065 匹配字符“e”。
+匹配标识符	\b(\w+|[\w-[0-9\]]\w*)\b	匹配“Type1”，但不匹配“&amp;type1”或“#define”。
+与引号中的字符串匹配	((\&quot;.+?\&quot;)|('.+?'))	匹配单引号或双引号内的任意字符串。
+匹配十六进制数	\b0[xX]([0-9a-fA-F])\b	匹配“0xc67f”但不匹配“0xc67fc67f”。
+匹配整数和小数	\b[0-9]*\.*[0-9]+\b	匹配“1.333”。
+</code></pre></div><h2 id="统一社会信用代码、身份证号、手机号后端验证"><a href="#统一社会信用代码、身份证号、手机号后端验证" class="header-anchor">#</a> 统一社会信用代码、身份证号、手机号后端验证</h2> <div class="language- extra-class"><pre class="language-text"><code>    最完整的php验证手机号码
+    
+    感觉网上的手机号码验证都不是很严格，自已写了一个,目前支持：
+    
+    移动：134、135、136、137、138、139、150、151、152、157、158、159、182、183、184、187、188、178(4G)、147(上网卡)；
+    
+    联通：130、131、132、155、156、185、186、176(4G)、145(上网卡)；
+    
+    电信：133、153、180、181、189 、177(4G)；
+    
+    卫星通信：1349
+    
+    虚拟运营商：170
+    
+        /**
+        * 验证手机号是否正确
+        * @author honfei
+        * @param number $mobile
+        */
+        function isMobile($mobile) {
+            if (!is_numeric($mobile)) {
+                return false;
+            }
+            return preg_match('#^13[\d]{9}$|^14[5,7]{1}\d{8}$|^15[^4]{1}\d{8}$|^17[0,6,7,8]{1}\d{8}$|^18[\d]{9}$#', $mobile) ? true : false;
+        }
+     
+
+        /**
+         * 判断是否为合法的身份证号码
+         * @author jyc
+         * @param $mobile
+         * @return int
+         */
+        function isCreditNo($vStr){
+            $vCity = array(
+                '11','12','13','14','15','21','22',
+                '23','31','32','33','34','35','36',
+                '37','41','42','43','44','45','46',
+                '50','51','52','53','54','61','62',
+                '63','64','65','71','81','82','91'
+            );
+            if (!preg_match('/^([\d]{17}[xX\d]|[\d]{15})$/', $vStr)) return false;
+            if (!in_array(substr($vStr, 0, 2), $vCity)) return false;
+            $vStr = preg_replace('/[xX]$/i', 'a', $vStr);
+            $vLength = strlen($vStr);
+            if ($vLength == 18) {
+                $vBirthday = substr($vStr, 6, 4) . '-' . substr($vStr, 10, 2) . '-' . substr($vStr, 12, 2);
+            } else {
+                $vBirthday = '19' . substr($vStr, 6, 2) . '-' . substr($vStr, 8, 2) . '-' . substr($vStr, 10, 2);
+            }
+            if (date('Y-m-d', strtotime($vBirthday)) != $vBirthday) return false;
+            if ($vLength == 18) {
+                $vSum = 0;
+                for ($i = 17 ; $i &gt;= 0 ; $i--) {
+                    $vSubStr = substr($vStr, 17 - $i, 1);
+                    $vSum += (pow(2, $i) % 11) * (($vSubStr == 'a') ? 10 : intval($vSubStr , 11));
+                }
+                if($vSum % 11 != 1) return false;
+            }
+            return true;
+        }
+
+    /**
+         * 描述: 验证统一社会信用代码
+         * 作者：xyn
+         * 创建时间:2019-08-29
+         * 修改时间:
+         * 最后修改人
+         * 使用位置，
+         */
+        // 《GB_32100-2015_法人和其他组织统一社会信用代码编码规则.》
+        // 按照编码规则:
+        // 统一代码为18位，统一代码由十八位的数字或大写英文字母（不适用I、O、Z、S、V）组成，由五个部分组成：
+        // 第一部分（第1位）为登记管理部门代码，9表示工商部门；(数字或大写英文字母)
+        // 第二部分（第2位）为机构类别代码;(数字或大写英文字母)
+        // 第三部分（第3-8位）为登记管理机关行政区划码；(数字)
+        // 第四部分（第9-17位）为全国组织机构代码；(数字或大写英文字母)
+        // 第五部分（第18位）为校验码(数字或大写英文字母)
+        public static function unifiedSocialCreditIdentifier($value) {
+            // 统一代码由十八位的阿拉伯数字或者大写英文字母（不使用I、O、Z、S、V）组成
+            if (!is_string($value)) return false;
+            $value = strtoupper($value);
+            if (strlen($value) !== 18 || !preg_match('/^[\dA-HJ-NP-RT-UW-Y]{18}$/', $value)) return false;
+            // todo 第1位：登记管理部门代码检查
+            // todo 第2位：机构类别代码检查
+            // todo 第3位～第8位：登记机关行政区划码检查
+            if (!is_numeric(substr($value, 2, 6))) return false; // 简单检查，这部分一定是阿拉伯数字
+            // todo 第9位～第17位：主体标识码检查
+            // 第18位：检验码检查
+            if(!preg_match('/^[A-Z0-9]+$/u', substr($value, 8, 9))) return false;
+            if(!(substr($value, 17, 1))) return false; // 简单检查，这部分一定是阿拉伯数字
+            return true;
+        }
+</code></pre></div><h2 id="怎么查cpu序列号"><a href="#怎么查cpu序列号" class="header-anchor">#</a> 怎么查CPU序列号</h2> <p>一、CPU都有一个唯一的ID号，称CPUID，是在制造CPU的时候，由厂家置入到CPU内部知的。</p> <p>二、查看方法：</p> <p>1、右点开始，选运行，并输入CMD。</p> <p>2、输入wmic CPU get ProcessorID ，就可以得到ID。</p> <p>三、作道用和意义：</p> <p>由于CPU外在的所有标记、符号，都是可以人为打磨，而CPUID却是终身不变的，只能用软件读出ID号；因此，利用这个原理，CPU ID工具可内以显出CPU的确切信息容，包括移动版本、主频、外频、二级缓存等关键信息，从而查出超频的CPU，并且醒目地显示出来。</p> <h2 id="ie11导出pdf中文乱码"><a href="#ie11导出pdf中文乱码" class="header-anchor">#</a> ie11导出pdf中文乱码</h2> <div class="language- extra-class"><pre class="language-text"><code>        $user_agent = $_SERVER['HTTP_USER_AGENT'];
+        $flag1 = substr_count($user_agent,&quot;msie&quot;);
+        $flag2 = substr_count($user_agent,&quot;like Gecko&quot;);
+        if ($flag1 || $flag2){
+            $WorkerName= urlencode($WorkerName);
+        }
+</code></pre></div><p>完整导出代码</p> <div class="language- extra-class"><pre class="language-text"><code>        /**
+         * 描述: 电子合同pdf
+         * 作者：jyc
+         * 创建时间:2018-11-02
+         * 修改时间:
+         * 最后修改人:
+         */
+        public function actionExport_pdf()
+        {
+            Yii::import('lib.tcpdf.TCPDF', true);
+            //实例化
+            $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
+            // 设置文档信息
+            //$pdf-&gt;SetCreator('Helloweba');
+            //$pdf-&gt;SetAuthor('yueguangguang');
+    
+            $pdf-&gt;SetSubject('TCPDF Tutorial');
+            $pdf-&gt;SetKeywords('TCPDF, PDF, PHP');
+            $pdf-&gt;setPrintHeader(false);
+            $pdf-&gt;setPrintFooter(false);
+    
+            //        // 设置页眉和页脚信息
+            //        $pdf-&gt;SetHeaderData('logo.png', 30, 'Helloweba.com', '致力于WEB前端技术在中国的应用',
+            //            array(0,64,255), array(0,64,128));
+            //        $pdf-&gt;setFooterData(array(0,64,0), array(0,64,128));
+            //
+            //        // 设置页眉和页脚字体
+            //        $pdf-&gt;setHeaderFont(Array('stsongstdlight', '', '10'));
+            //        $pdf-&gt;setFooterFont(Array('helvetica', '', '8'));
+    
+            // 设置默认等宽字体
+            $pdf-&gt;SetDefaultMonospacedFont('courier');
+    
+            // 设置间距
+            //$pdf-&gt;SetMargins(15, 0, 15);
+            $pdf-&gt;SetHeaderMargin(5);
+            $pdf-&gt;SetFooterMargin(0);
+    
+            // 设置分页
+            //$pdf-&gt;SetAutoPageBreak(true, 25);
+            //$pdf-&gt;SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+            // set image scale factor
+            $pdf-&gt;setImageScale(PDF_IMAGE_SCALE_RATIO);
+    
+            // set default font subsetting mode
+            $pdf-&gt;setFontSubsetting(true);
+            $pdf-&gt;Ln(4);
+            //设置字体
+            //$pdf-&gt;SetFont('stsongstdlight', '', 10);
+            $pdf-&gt;SetFont('msyh', '', 10);
+            $pdf-&gt;SetMargins(10, 0, 10);
+            $pdf-&gt;AddPage();
+            $id =  $_GET['id'];
+            $contract_detail = Contract::get_detail($id);
+            $pay_calculation_way_type = SysDictionary::pay_calculation_way();
+            $work_type = SysDictionary::_findAllByTypeCode();
+            $contract_detail['pay_calculation_way_text'] = $pay_calculation_way_type[ $contract_detail['PayCalculationWay']];
+            //如果是八大员就显示施工总包
+            if ($contract_detail['IsEightofficers'] ==1) {
+                $contract_detail['LaborCompanyName'] = $contract_detail['ContractorName'];
+            }
+            $pdf-&gt;SetTitle($contract_detail['WorkerName'].'的电子合同');
+            $year = explode('-', $contract_detail['StartTime']);
+            //array(substr( $contract_detail['StartTime'],0,4),substr($contract_detail['StartTime'],5,2),substr($contract_detail['StartTime'],8,2));
+            $html=&quot;&lt;div style=\&quot;width:100%; margin: 0 auto;\&quot;&gt;&quot;;
+            $html.=&quot;&lt;h5 style=\&quot;text-align:center;font-size: 26px\&quot;&gt;建筑业简易劳动合同&lt;/h5&gt;&quot;;
+            $html.=&quot;&lt;table  style=\&quot;width:100%;font-size: 12px\&quot;&gt;&quot;;
+            $html.=&quot;&lt;tr&gt;&lt;td&gt;&quot;;
+            $html.=&quot;甲方： {$contract_detail['LaborCompanyName']}&quot;;
+            $html.=&quot;&lt;/td&gt;&quot;;
+            $html.=&quot;&lt;td style=\&quot;text-align: right\&quot;&gt;&quot;;
+            $html.=&quot;乙方： {$contract_detail['WorkerName']} （{$contract_detail['IDnumber']}）&quot;;
+            $html.=&quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
+            $html.=&quot;&lt;/table&gt;&quot;;
+            $html.=&quot;&lt;p style=\&quot;font-size: 12px;line-height:1.6\&quot;&gt;&quot;.
+            &quot;&lt;span style=\&quot;font-weight: bolder;font-size: 14px\&quot;&gt;根据《劳动法》、《劳动合同法》及有关规定，甲乙双方遵循平等自愿、协商一致的原则签订本合同。&lt;/span&gt;&lt;br/&gt;&quot;.
+            &quot;&lt;span style=\&quot;font-weight: bolder;font-size: 14px\&quot;&gt;一、合同类别、期限 &lt;/span&gt;&lt;br/&gt;&quot;.
+            &quot;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;以完成一定工作（任务），自 {$year[0]}年{$year[1]}月{$year[2]}日起至工作（任务）完成时终止。&lt;br/&gt;&quot;.
+            &quot;&lt;span style=\&quot;font-weight: bolder;font-size: 14px\&quot;&gt;二、工作岗位、地点、内容、时间&lt;/span&gt;&lt;br/&gt;&quot;.
+            &quot;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;甲方招用乙方在{$contract_detail['ProjectName']}项目从事&amp;nbsp;&amp;nbsp;{$work_type[$contract_detail['WorkClasses']]} 工作。乙方的工作地点为{$contract_detail['Address']}。经双方协商一致，可以变更工作岗位（工种）和工作地点。甲方保证乙方每周至少休息一天。甲方因施工建设需要，征得乙方同意后，可安排乙方加班。延长工时、休息日加班无法安排补休、法定节假日加班的，甲方按《劳动法》第四十四条规定支付加班工资。&lt;br/&gt;&quot;.
+            &quot;&lt;span style=\&quot;font-weight: bolder;font-size: 14px\&quot;&gt;三、工资支付&lt;/span&gt;&lt;br/&gt;&quot;.
+            &quot;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;乙方工资为{$contract_detail['Wage']}{$contract_detail['pay_calculation_way_text']}。甲方按月结算工资，并在下一个月的{$contract_detail['PayDate']} 日前向乙方支付工资。&lt;br/&gt;&quot;.
+            &quot;&lt;span style=\&quot;font-weight: bolder;font-size: 14px\&quot;&gt;四、工伤保险 &lt;/span&gt;&lt;br/&gt;&quot;.
+            &quot;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;双方按国家规定参加工伤保险。甲方为乙办理有关工伤保险手续，并承担相应的工伤保险义务。&lt;br/&gt;&quot;.
+            &quot;&lt;span style=\&quot;font-weight: bolder;font-size: 14px\&quot;&gt;五、劳动保护和劳动条件&lt;/span&gt;&lt;br/&gt;&quot;.
+            &quot;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;甲方应当在乙方上岗前进行安全生产培训，乙方从事国家规定的特殊工种，应当经过培训并取得相应的职业资格证书方可上岗。甲方根据生产岗位的需要，按照国家劳动安全卫生的有关规定为乙配备必要的安全防护设施，发放必要的劳动保护用品。甲方依法建立安全生产制度。乙方严格遵守甲方依法制定的各项规章制度，不违章作业，防止劳动过程中的事故，减少职业危害。乙方有权拒绝甲方的违章指挥。&lt;br/&gt;&quot;.
+            &quot;&lt;span style=\&quot;font-weight: bolder;font-size: 14px\&quot;&gt;六、解除和终止&lt;/span&gt;&lt;br/&gt;&quot;.
+            &quot;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;本劳动合同的解除或终止，依《劳动合同法》规定执行。&lt;br/&gt;&quot;.
+            &quot;&lt;span style=\&quot;font-weight: bolder;font-size: 14px\&quot;&gt;七、劳动争议处理&lt;/span&gt;&lt;br/&gt;&quot;.
+            &quot;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;甲乙双方发生劳动争议，可以协商解决，也可以依照《劳动争议调解仲裁法》的规定通过申请调解、仲裁和提起诉讼解决。&lt;br/&gt;&quot;.
+            &quot;&lt;span style=\&quot;font-weight: bolder;font-size: 14px\&quot;&gt;八、其他约定&lt;/span&gt;{$contract_detail['Remark']}&lt;br/&gt;&quot;.
+            &quot;&lt;span style=\&quot;font-weight: bolder;font-size: 14px\&quot;&gt;九、其他&lt;/span&gt;&lt;br/&gt;&quot;.
+            &quot;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;本劳动合同一式二份，甲乙双方各执一份。&lt;br/&gt;&quot;.
+            &quot;&lt;/p&gt;&quot;;
+            $html.=&quot;&lt;table  style=\&quot;width:100%;font-size: 14px\&quot;&gt;&quot;;
+            $html.=&quot;&lt;tr&gt;&lt;td&gt;&quot;;
+            $html.=&quot;甲方（公章）&quot;;
+            $html.=&quot;&lt;/td&gt;&quot;;
+            $html.=&quot;&lt;td style=\&quot;text-align: right\&quot;&gt;&quot;;
+            $html.=&quot;乙方（签字或盖章）&quot;;
+            $html.=&quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
+            $html.=&quot;&lt;/table&gt;&quot;;
+            $html.=&quot;&lt;table  style=\&quot;width:100%;font-size: 14px\&quot;&gt;&quot;;
+            $html.=&quot;&lt;tr&gt;&lt;td&gt;&lt;br/&gt;&lt;br/&gt;&quot;;
+            $html.=&quot;法定代表人或委托代理人&lt;br/&gt;（签字或盖章）&quot;;
+            $html.=&quot;&lt;/td&gt;&quot;;
+            $html.=&quot;&lt;td style=\&quot;text-align: right\&quot;&gt;&lt;br/&gt;&lt;br/&gt;&quot;;
+            $html.=&quot;签订日期:&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;年&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;月&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;日&quot;;
+            $html.=&quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
+            $html.=&quot;&lt;/table&gt;&quot;;
+            $html.=&quot;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&quot;;
+            // 判断文件是否损坏
+            $pic_url = &quot;./uploads/worker/front_{$contract_detail['AvatarEncryption']}.jpeg&quot;;
+            $data = @file_get_contents($pic_url);
+            $pic_status = @imagecreatefromstring($data);
+            if( $pic_status != false ){
+                $imgFlag = 1;
+                // echo '图片状态正常！！';
+            }else{
+                $imgFlag = 0;
+                // echo '图片已损坏！！';
+            }
+            if($imgFlag == 1){
+                $html.=&quot;&lt;table  style=\&quot;width:100%;font-size: 14px\&quot;&gt;&quot;;
+                $html.=&quot;&lt;tr&gt;&lt;td&gt;&quot;;
+                $html.=&quot;&lt;img src=\&quot;/uploads/worker/front_{$contract_detail['AvatarEncryption']}.jpeg\&quot;  style=\&quot;width:280px;height:160px;\&quot;/&gt;&quot;;
+                if (is_file(sprintf(&quot;%s/uploads/worker/front_%s.jpeg&quot;, WWWPATH, $contract_detail['AvatarEncryption']))===false) {
+                    $html.=&quot;&lt;p style=\&quot;text-align: center\&quot;&gt;身份证复印件正面粘贴&lt;/p&gt;&quot;;
+                }
+                $html.=&quot;&lt;/td&gt;&quot;;
+                $html.=&quot;&lt;td style=\&quot;text-align: right\&quot;&gt;&quot;;
+                $html.=&quot;&lt;img src=\&quot;/uploads/worker/back_{$contract_detail['AvatarEncryption']}.jpeg\&quot;  style=\&quot;width:280px;height:160px;\&quot;/&gt;&quot;;
+                if (is_file(sprintf(&quot;%s/uploads/worker/back_%s.jpeg&quot;, WWWPATH, $contract_detail['AvatarEncryption']))===false) {
+                    $html.=&quot;&lt;p style=\&quot;text-align: center\&quot;&gt;身份证复印件反面粘贴&lt;/p&gt;&quot;;
+                }
+                $html.=&quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
+                $html.=&quot;&lt;/table&gt;&quot;;
+            }
+            $html.=&quot;&lt;/div&gt;&quot;;
+            $pdf-&gt;writeHTML($html, true, false, false, false, 'L');
+            //输出PDF
+            $dirname =IdCardPictureHandler::get_path().date('Ymd/');
+            if(!is_dir($dirname)){
+                mkdir($dirname,0777,true);
+            }
+            $name = $contract_detail['WorkerName'].$contract_detail['IDnumber'];
+            $WorkerName = self::convertEncoding($name);
+            $data = $pdf-&gt;Output('t.pdf', 'S');
+            $fileName = $dirname.&quot;{$WorkerName}.pdf&quot;;
+            $user_agent = $_SERVER['HTTP_USER_AGENT'];
+            $flag1 = substr_count($user_agent,&quot;msie&quot;);
+            $flag2 = substr_count($user_agent,&quot;like Gecko&quot;);
+            if ($flag1 || $flag2){
+                $WorkerName= urlencode($WorkerName);
+            }
+            file_put_contents($fileName,$data);
+            $dist = IdCardPictureHandler::get_path().$name.'.pdf';
+            Contract::model()-&gt;updateAll(array('ContractUrl'=&gt;substr($dist,1)),'Id=:staff',array(':staff'=&gt;$id));
+            $pdf-&gt;Output(&quot;{$WorkerName}.pdf&quot;, 'I');
+        }
+</code></pre></div><h2 id="mysql-varchar-最大长度，text-类型占用空间剖析"><a href="#mysql-varchar-最大长度，text-类型占用空间剖析" class="header-anchor">#</a> MySQL varchar 最大长度，text 类型占用空间剖析</h2> <p>MySQL 表中行的最大大小为 65,534（实际行存储从第二个字节开始）字节。每个 BLOB 和 TEXT 列只占其中的 5 至 9 个字节。</p> <p>varchar 最长是 64k，但是注意 这里的 64k 是整个 row 的长度，要考虑到其它的 column，还有如果存在 not null 的时候也会占用一位，对不同的字符集，有效长度还不一样，比如 utf8，最多 21,845，还要除去别的 column，但是 varchar 在一般情况下存储都够用了。</p> <p>如果遇到了大文本，考虑使用 text，最大能到 4G。效率来说基本是 char&gt;varchar&gt;text，但是如果使用的是 Innodb 引擎的话，推荐使用 varchar 代替 char。char 和 varchar 可以有默认值，text 不能指定默认值。</p> <h2 id="秒的单位"><a href="#秒的单位" class="header-anchor">#</a> 秒的单位</h2> <p>秒的单位都有毫秒，微秒，纳秒，皮秒，飞秒，阿秒，仄秒，幺秒。</p> <p>1ms (毫秒) 1毫秒=0.001秒=10*3秒(millisecond)</p> <p>1μs (微秒) 1微秒=0.000001=10*6秒(microsecond)</p> <p>1ns (纳秒) 1纳秒=0.000000001秒=10*9秒(nanosecond)</p> <p>1ps (皮秒) 1皮秒=0.000000000001秒=10*12秒</p> <p>1fs (飞秒) 1飞秒=0.00000000000001秒=10*15秒</p> <p>1as (阿秒) 1阿秒=0.00000000000000001秒=10*18秒</p> <p>1zm (仄秒) 1仄秒=0.00000000000000000001秒=10*21秒</p> <p>1ym (幺秒) 1幺秒=0.00000000000000000000001秒=10*24秒</p> <p>10后面的数字是指数（3、6、9、12、*15）</p> <h2 id="php-fpm推荐配置"><a href="#php-fpm推荐配置" class="header-anchor">#</a> php-fpm推荐配置</h2> <p>vim /usr/local/php/etc/php-fpm.conf</p> <div class="language- extra-class"><pre class="language-text"><code>源
+
+pm.max_children = 5
+
+pm.start_servers = 2
+
+pm.min_spare_servers = 1
+
+pm.max_spare_servers = 3
+
+;pm.process_idle_timeout = 10s
+
+;pm.max_requests = 500
+
+目标
+
+pm.max_children = 500
+
+pm.start_servers = 20
+
+pm.min_spare_servers = 10
+
+pm.max_spare_servers = 30
+
+;m.process_idle_timeout = 10s
+
+;m.max_requests = 500
+</code></pre></div><h2 id="兼容本地图片和网络图片转base64"><a href="#兼容本地图片和网络图片转base64" class="header-anchor">#</a> 兼容本地图片和网络图片转base64</h2> <div class="language- extra-class"><pre class="language-text"><code>                // 兼容本地图片和网络图片转base64
+                // 有多张图片做截取
+                if(substr_count($item['MachineUrl'], ',')){
+                    $base64=explode(',', $item['MachineUrl']);
+                    $images = $base64[0];//照片
+                }else{
+                    $images=$item['MachineUrl'];// 单照片
+                }
+                // 判断是本地图片，还是网络图片
+                if(filter_var($images, FILTER_VALIDATE_URL)){
+                    $images = $this-&gt;onlineimgtobase64($images);
+                }else{
+                    $images = fileToBase64('.'.$images);
+                }
+            }
+</code></pre></div><h2 id="通过外网把网络图片转成base64"><a href="#通过外网把网络图片转成base64" class="header-anchor">#</a> 通过外网把网络图片转成base64</h2> <div class="language- extra-class"><pre class="language-text"><code>/** 通过外网把uploads/tvscreen图片转成base64
+* @param string $img 图片地址
+* @return string
+*/
+public function onlineimgtobase64($img='')
+{
+    $url = 'http://52.82.105.19:81/Img.php';
+    if(Yii::app()-&gt;params['Isstatus'] == 1){
+        $url=sprintf($url.&quot;?img=%s&quot;, $img);
+        $re = curl_requst($url,&quot;GET&quot;);
+        return $re;
+    }
+}
+</code></pre></div><h2 id="php自带方法验证邮箱、url、ip是否合法的函数"><a href="#php自带方法验证邮箱、url、ip是否合法的函数" class="header-anchor">#</a> PHP自带方法验证邮箱、URL、IP是否合法的函数</h2> <div class="language- extra-class"><pre class="language-text"><code>var_dump(filter_var('bob@example.com', FILTER_VALIDATE_EMAIL));
+var_dump(filter_var('http://example.com', FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED));
+</code></pre></div><h2 id="解决java-compiler-level-does-not-match-the-version-of-the-installed-java-project-facet"><a href="#解决java-compiler-level-does-not-match-the-version-of-the-installed-java-project-facet" class="header-anchor">#</a> 解决java compiler level does not match the version of the installed java project facet</h2> <p>因工作的关系，Eclipse开发的Java项目拷来拷去，有时候会报一个很奇怪的错误。明明源码一模一样，为什么项目复制到另一台机器上，就会报“java compiler level does not match the version of the installed java project facet”错误呢？</p> <p>其实要解决也很简单，在资源管理器下，找到项目所在的目录，在.settings子目录里面，用文本编辑器打开org.eclipse.wst.common.project.facet.core.xml配置文件</p> <p>修改version，让它与项目的编译器版本设置保持一致即可。</p> <p>要查看项目的编译器版本设置，在Eclipse环境中，鼠标右键选择项目，点击Properties，选择Java Compiler，可以在窗口右边看到编译器版本</p> <h2 id="执行shell脚本报错：不是有效的标识符ad"><a href="#执行shell脚本报错：不是有效的标识符ad" class="header-anchor">#</a> 执行shell脚本报错：不是有效的标识符ad</h2> <p>执行shell脚本一直报错</p> <p>原因是在Windows上用notepad++写的脚本，不是Unix格式的</p> <p>转为Unix格式即可</p> <p>建议：直接在Linux环境下编写脚本便不会有格式问题</p> <h2 id="java打包war包"><a href="#java打包war包" class="header-anchor">#</a> java打包war包</h2> <p>右击项目——Export——WAR file</p> <p>即可打包</p> <h2 id="ie11正确卸载与重新安装"><a href="#ie11正确卸载与重新安装" class="header-anchor">#</a> ie11正确卸载与重新安装</h2> <p>去掉勾选——重启即可卸载</p> <p>勾选中——重启即可安装</p> <h2 id="php-请求url并且获取返回值"><a href="#php-请求url并且获取返回值" class="header-anchor">#</a> php 请求url并且获取返回值</h2> <div class="language- extra-class"><pre class="language-text"><code>// $conf = parse_ini_file(dirname(__FILE__) . '/configure.ini');
+// if (!$conf) {
+//     exit(&quot;Fatal: failed to read configure.ini file\n&quot;);
+// }
+// $javaMacUrl = trim($conf['java_mac_url']);
+// $localMac = trim($conf['local_mac']);
+// $opts = array('http'=&gt;array('header' =&gt; &quot;User-Agent:MyAgent/1.0\r\n&quot;));
+// $context = stream_context_create($opts);
+// $javaMac = file_get_contents($javaMacUrl, false,$context);
+// if($localMac!=$javaMac){
+//     header(&quot;Content-type: text/html; charset=utf-8&quot;);
+//     exit(&quot;程序出错了!&quot;);
+// }
+</code></pre></div><h2 id="用php扩展加密php代码"><a href="#用php扩展加密php代码" class="header-anchor">#</a> 用php扩展加密php代码</h2> <p>扩展地址：
+https://github.com/liexusong/php-beast</p> <p>在linux中安装beast扩展</p> <div class="language- extra-class"><pre class="language-text"><code>wget https://github.com/liexusong/php-beast/archive/master.zip
+unzip master.zip
+cd php-beast-master
+/usr/local/php/bin/phpize
+./configure --with-php-config=/usr/local/php/bin/php-config
+make &amp;&amp; make install
+编译好之后修改php.ini配置文件, 加入配置项: extension=beast.so, 重启php-fpm
+</code></pre></div><p>更换base扩展源码秘钥
+更换base扩展AES加密源码秘钥后，加密后的文件有变化</p> <div class="language- extra-class"><pre class="language-text"><code>使用AES加密并更换key值为E2r201800xianweb
+
+    	0x45, 0x32, 0x72, 0x32, 0x30, 0x31, 0x38, 0x30,
+            0x30, 0x78, 0x69, 0x61, 0x6E, 0x77, 0x65, 0x62,
+    	0x45	E
+    	0x32	2
+    	0x72	r
+    	0x32	2
+    	0x30	0
+    	0x31	1
+    	0x38	8
+    	0x30	0
+    	0x30	0
+    	0x78	x
+    	0x69	i
+    	0x61	a
+    	0x6E	n
+    	0x77	w
+    	0x65	e
+    	0x62	b
+</code></pre></div><p>设置base扩展mac地址绑定
+可绑定多个mac地址
+绑定mac地址后该扩展php-fpm就无法启动了</p> <p>更改aes加密秘钥和mac地址后
+将index.php和protected文件夹内文件加密
+可以访问，暂时没有发现问题。</p> <h2 id="mac地址是什么？"><a href="#mac地址是什么？" class="header-anchor">#</a> mac地址是什么？</h2> <p>mac地址就相当于你这个人的身份证号，是全球唯一的，而且mac地址是物理层的，应用于数据链路层的，当一个数据报文要发送时，先添加源目ip地址，再添加源目mac地址，对端收到后，会拆解数据报文，先拆mac地址，然后查看数据报文的目的ip是不是自己，如果是，就会把数据报文自己留下来，如果不是，就会查自己的路由表，看有没有目的ip在里面，有的话，再次把已经拆解的数据报文再次添加上mac地址，继续往下传</p> <h2 id="用内网配源，安装lnmp服务"><a href="#用内网配源，安装lnmp服务" class="header-anchor">#</a> 用内网配源，安装lnmp服务</h2> <p>准备base文件</p> <p>准备nginx服务指向base文件</p> <p>/usr/local/nginx/vhosts</p> <div class="language- extra-class"><pre class="language-text"><code>    server {
+            listen       7097;
+            server_name_in_redirect  off;
+            charset utf-8;
+    
+            access_log  www.access.log  main;
+            error_log  logs/www.error.log;
+            set  $wwwroot /home/data/installfile/base;
+            root $wwwroot;
+            index index.html index.htm index.php;
+            location / {
+    	root /home/data/installfile/base;
+    	index index.html index.html;
+    	autoindex on;
+    	autoindex_exact_size off;
+    	autoindex_localtime on;
+    }
+            #error_page  404              /404.html;
+            # redirect server error pages to the static page /50x.html
+            #
+            error_page   500 502 503 504  /50x.html;
+            location = /50x.html {
+                    root   html;
+            }
+    
+            # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+            #
+            #location ~ \.php$ {
+            #    proxy_pass   http://127.0.0.1;
+            #}
+    
+            # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+            #
+            location ~ \.php?.*$ {
+                    root           $wwwroot;
+                    fastcgi_pass   127.0.0.1:9000;
+                    fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+                    fastcgi_connect_timeout 240;
+                    fastcgi_send_timeout 240;
+                    fastcgi_read_timeout 240;
+                    fastcgi_buffer_size 64k;
+                    fastcgi_buffers 4 64k;
+                    fastcgi_busy_buffers_size 128k;
+                    fastcgi_temp_file_write_size 128k;
+                    include        fastcgi_params;
+            }
+    
+            location ~* \.(gif|jpg|jpeg|png|bmp|swf|otf|svg|eot|ttf|woff)$
+            {
+                      root                  $wwwroot;
+                      expires               30d;
+            }
+    
+            location ~* \.(js|css)?$
+            {
+                      root                  $wwwroot;
+                      expires               1d;
+            }
+    
+            #include common.conf;
+    
+            # deny access to .htaccess files, if Apache's document root
+            # concurs with nginx's one
+            #
+            location ~ /\.ht {
+                deny  all;
+            }
+    }
+</code></pre></div><p>在另一台服务器更改/etc/yum.repos.d/centos.repo</p> <div class="language- extra-class"><pre class="language-text"><code>    [centos]
+    name=centos
+    baseurl=http://10.0.21.193:7097
+    gpgcheck=0
+    enabled=1
+</code></pre></div><p>yum clean all</p> <h2 id="设置php不报错"><a href="#设置php不报错" class="header-anchor">#</a> 设置php不报错</h2> <div class="language- extra-class"><pre class="language-text"><code>define('DEBUG',false); // 在开发时,声明一个DEBUG模式 
+if(defined('DEBUG')) { //检测到处于开发模式 
+　　error_reporting(E_ALL); 
+} else { 
+　　error_reporting(0); 
+}
+</code></pre></div><h2 id="设置php报错等级为不报错"><a href="#设置php报错等级为不报错" class="header-anchor">#</a> 设置php报错等级为不报错</h2> <div class="language- extra-class"><pre class="language-text"><code>// 设置php报错等级为不报错
+error_reporting(0); 
+</code></pre></div><h2 id="php-notice-undefined-index-header"><a href="#php-notice-undefined-index-header" class="header-anchor">#</a> PHP Notice: undefined index: header</h2> <div class="language- extra-class"><pre class="language-text"><code>119行改为以下配置
+header = isset(POST['header'])?$POST['header']:'';
+</code></pre></div><h2 id="php-warning-date-it-is-not-safe-to-rely-on-the-system-s-timezone-settings"><a href="#php-warning-date-it-is-not-safe-to-rely-on-the-system-s-timezone-settings" class="header-anchor">#</a> PHP Warning:  date(): It is not safe to rely on the system's timezone settings.</h2> <p>在php.ini里找到date.timezone这行，把值改成PRC，如date.timezone = PRC。</p> <p>如果没有这一行直接加上就好。最后重启WEB服务器与PHP即可。</p> <div class="language- extra-class"><pre class="language-text"><code>// 设置时间格式
+date_default_timezone_set(&quot;PRC&quot;);
+</code></pre></div><h2 id="php-notice-curl-setopt-curlopt-ssl-verifyhost-with-value-1-is-deprecated-and-will-be-removed-as-of-libcurl-7-28-1-it-is-recommended-to-use-value-2-instead-in"><a href="#php-notice-curl-setopt-curlopt-ssl-verifyhost-with-value-1-is-deprecated-and-will-be-removed-as-of-libcurl-7-28-1-it-is-recommended-to-use-value-2-instead-in" class="header-anchor">#</a> PHP Notice: curl_setopt(): CURLOPT_SSL_VERIFYHOST with value 1 is deprecated and will be removed as of libcurl 7.28.1. It is recommended to use value 2 instead in</h2> <div class="language- extra-class"><pre class="language-text"><code>1已被弃用，改为2即可
+31行改为以下配置
+// 对认证证书来源的检查
+curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
+</code></pre></div><h2 id="yii-更新数据时报错：列名必须是一个字符串或者数组"><a href="#yii-更新数据时报错：列名必须是一个字符串或者数组" class="header-anchor">#</a> Yii 更新数据时报错：列名必须是一个字符串或者数组</h2> <p>建表语句缺少主键</p> <div class="language- extra-class"><pre class="language-text"><code>ALTER TABLE GUARANTEE ADD CHECK (&quot;ID&quot; IS NOT NULL);
+
+ALTER TABLE GUARANTEE ADD PRIMARY KEY (&quot;ID&quot;);
+</code></pre></div><p>参考：https://www.zhangweijie.net/post/2013/10/31/1223.html</p> <h2 id="最完整的php验证手机号码"><a href="#最完整的php验证手机号码" class="header-anchor">#</a> 最完整的php验证手机号码</h2> <p>感觉网上的手机号码验证都不是很严格，自已写了一个,目前支持：</p> <p>移动：134、135、136、137、138、139、150、151、152、157、158、159、182、183、184、187、188、178(4G)、147(上网卡)；</p> <p>联通：130、131、132、155、156、185、186、176(4G)、145(上网卡)；</p> <p>电信：133、153、180、181、189 、177(4G)；</p> <p>卫星通信：1349</p> <p>虚拟运营商：170</p> <div class="language- extra-class"><pre class="language-text"><code>    /**
+    * 验证手机号是否正确
+    * @author honfei
+    * @param number $mobile
+    */
+    function isMobile($mobile) {
+        if (!is_numeric($mobile)) {
+            return false;
+        }
+        return preg_match('#^13[\d]{9}$|^14[5,7]{1}\d{8}$|^15[^4]{1}\d{8}$|^17[0,6,7,8]{1}\d{8}$|^18[\d]{9}$#', $mobile) ? true : false;
+    }
+</code></pre></div><h2 id="oracle数据库插入clob字段时，提示ora-01704：字符串文字太长"><a href="#oracle数据库插入clob字段时，提示ora-01704：字符串文字太长" class="header-anchor">#</a> Oracle数据库插入CLOB字段时，提示ORA-01704：字符串文字太长</h2> <div class="language- extra-class"><pre class="language-text"><code>DECLARE  
+  clobValue 表名.字段名%TYPE;  
+BEGIN  
+  clobValue := 'XXX'; --字段内容  
+  UPDATE 表名 T SET T.字段名 = clobValue WHERE 条件;  
+  COMMIT;  
+END;  
+/  
+</code></pre></div><p>参考：https://blog.csdn.net/Leolu007/article/details/81027704?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.nonecase&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.nonecase</p> <p>##　tomcat自动关闭
+发现是有两个版本的tomcat在互相影响，一个重启，另一个将不能访问</p> <h2 id="php错误级别的设置方法"><a href="#php错误级别的设置方法" class="header-anchor">#</a> php错误级别的设置方法</h2> <div class="language- extra-class"><pre class="language-text"><code>define('DEBUG',true); // 在开发时,声明一个DEBUG模式 
+if(defined('DEBUG')) { //检测到处于开发模式 
+　　error_reporting(E_ALL); 
+} else { 
+　　error_reporting(0); 
+}
+</code></pre></div><h2 id="过滤xss潜在危险行为-过滤部分sql注入"><a href="#过滤xss潜在危险行为-过滤部分sql注入" class="header-anchor">#</a> 过滤XSS潜在危险行为,过滤部分SQL注入</h2> <div class="language- extra-class"><pre class="language-text"><code>/**
+ * 过滤XSS潜在危险行为,过滤部分SQL注入
+ * 过滤字符串左右空格
+ * @author gaowei&lt;jeakry88@sina.com&gt;
+ * @param $mixed 要处理的原始字符串信息,字符串或字符串数组
+ */
+function match_xss_special($mixed) {
+  $ra = Array('/([\x00-\x08,\x0b-\x0c,\x0e-\x19])/', '/script/', '/javascript/', '/vbscript/', '/expression/', '/applet/', '/meta/', '/xml/', '/blink/', '/link/', '/style/', '/embed/', '/object/', '/frame/', '/layer/', '/title/', '/bgsound/', '/base/', '/onload/', '/onunload/', '/onchange/', '/onsubmit/', '/onreset/', '/onselect/', '/onblur/', '/onfocus/', '/onabort/', '/onkeydown/', '/onkeypress/', '/onkeyup/', '/onclick/', '/ondblclick/', '/onmousedown/', '/onmousemove/', '/onmouseout/', '/onmouseover/', '/onmouseup/', '/onunload/');
+  if (is_array($mixed)) {
+    foreach ($mixed as $key =&gt; $value) {
+      $mixed[$key] = match_xss_special($mixed[$key]);
+    }
+  } else if (is_string($mixed)) {
+    //不对magic_quotes_gpc转义过的字符使用addslashes(),避免双重转义。
+    if (!get_magic_quotes_gpc()) {
+      //给单引号（'）、双引号（&quot;）、反斜线（\）与 NUL（NULL 字符）加上反斜线转义
+      //$mixed = addslashes($mixed);
+    }
+    $mixed=trim($mixed);
+    //$mixed = str_replace(array('&amp;', '&lt;', '&gt;'), array('&amp;amp;', '&amp;lt;', '&amp;gt;'), $mixed);
+    //删除非打印字符，粗暴式过滤xss可疑字符串
+    //$mixed = preg_replace($ra, '', $mixed);
+    //去除 HTML 和 PHP 标记并转换为 HTML 实体
+    //$mixed = htmlentities(strip_tags($mixed));
+    //$mixed = htmlspecialchars(trim($mixed), ENT_QUOTES);
+  }
+  return $mixed;
+}
+</code></pre></div><h2 id="java服务安装cenos7-apache-tomcat-7-0-85-jdk1-7-0-80"><a href="#java服务安装cenos7-apache-tomcat-7-0-85-jdk1-7-0-80" class="header-anchor">#</a> java服务安装cenos7+apache-tomcat-7.0.85+jdk1.7.0_80</h2> <p>1.将jdk，apache解压到/user/local/下面</p> <div class="language- extra-class"><pre><code>tar -xf apache-tomcat-7.0.85.tar
+tar -xf jdk1.7.0_80.tar
+</code></pre></div><p>2.修改/etc/profile</p> <div class="language- extra-class"><pre><code>vim /etc/profile
+export JAVA_HOME=/usr/local/jdk1.7.0_80/
+export JRE_HOME=/usr/local/jdk1.7.0_80/jre
+export PATH=$PATH:/usr/local/jdk1.7.0_80/bin
+export CLASSPATH=./:/usr/local/jdk1.7.0_80/lib
+source /etc/profile
+</code></pre></div><p>source /etc/profile 立即生效</p> <p>3.将curlraw.war放到apache下的webapps目录下</p> <p>4.启动tomcat</p> <p>/usr/local/apache-tomcat-7.0.85/bin/startup.sh</p> <p>5.停止tomcat</p> <p>/usr/local/apache-tomcat-7.0.85/bin/shutdown.sh</p> <p>6.修改webapp/curlraw/data_config.txt里的数据库配置为</p> <p>webapps/curlraw/WEB-INF/classes/data_config.txt</p> <p>修改一下tomcat端口号，进入tomcat的conf目录下，修改server.xml文件，通过vi命令打开文件后直接输入/8080检索到端口号的位置，进入编辑模式后修改端口号为8081</p> <p>注意查看端口是否和其他服务冲突</p> <p>7重启tomcat</p> <p>curl localhost:8081/curlraw/hello/testUploadCorp</p> <h2 id="php使用curl对接row-json-java的接口"><a href="#php使用curl对接row-json-java的接口" class="header-anchor">#</a> php使用curl对接row+json+java的接口</h2> <p>curl会出现一直不响应的情况。</p> <p>后来改成curl访问我方java服务</p> <p>我方java再传给对方java，将拿到的返回值给php</p> <p>完成操作。</p> <h2 id="tar包解压"><a href="#tar包解压" class="header-anchor">#</a> .tar包解压</h2> <p>tar -xf all.tar</p> <h2 id="linux下安装php的mcrypt扩展"><a href="#linux下安装php的mcrypt扩展" class="header-anchor">#</a> Linux下安装PHP的mcrypt扩展</h2> <div class="language- extra-class"><pre class="language-text"><code>cd /data/nginx+php/php-5.5.12/ext/mcrypt
+
+/usr/local/php/bin/phpize
+
+./configure --with-php-config=/usr/local/php/bin/php-config
+
+make &amp;&amp; make install
+
+vim /etc/php.ini
+
+extension = /usr/local/php/lib/php/extensions/no-debug-zts-20131226/mcrypt.so
+
+/usr/local/php/sbin/php-fpm -c /etc/php.ini
+</code></pre></div><h2 id="git无法检测到文件名大小写的更改"><a href="#git无法检测到文件名大小写的更改" class="header-anchor">#</a> Git无法检测到文件名大小写的更改</h2> <p>在当前项目中，早先创建并已经push到远程的文件及文件夹，将名称大小写更改后，git无法检测出更改。
+出现这种情况的原因是，git默认配置为忽略大小写，因此无法正确检测大小写的更改。
+那么，解决办法是，在当前项目中，运行git config core.ignorecase false，关闭git忽略大小写配置，即可检测到大小写名称更改。</p> <h2 id="failed-to-open-stream-permission-denied-in-错误的解决方法"><a href="#failed-to-open-stream-permission-denied-in-错误的解决方法" class="header-anchor">#</a> failed to open stream:Permission denied in 错误的解决方法</h2> <p>1，问题：用php在做项目的时候，偶尔会出现failed to open stream:Permission denied in 这个错误，原因是因为某个没有某个文件的血的权限，所以在写入文件的时候会报错
+2，解决方案：点击该文件，右击，点击属性，会看到该文件的所有属性，点击安全，即可设置所有组的用户权限，点击写入即可有写入权限</p> <h2 id="mysql查重语句"><a href="#mysql查重语句" class="header-anchor">#</a> MySql查重语句</h2> <div class="language- extra-class"><pre class="language-text"><code>SELECT
+    count(*),
+    IndentId
+FROM
+    t_customerforsale
+-- WHERE
+--     IndentId = ''
+GROUP BY
+    IndentId
+HAVING
+    count(*) &gt; 1;
+</code></pre></div><h2 id="图片转base64和base64字符串转存图片"><a href="#图片转base64和base64字符串转存图片" class="header-anchor">#</a> 图片转base64和base64字符串转存图片</h2> <div class="language- extra-class"><pre class="language-text"><code>    /**
+     * @desc base64字符串转存图片
+     * @param string $imgBase64 图片base64格式字符串
+     * @param string $filename 文件名称
+     * @author tzg
+     * @since 0.1
+     * note:1.该方法使用了修改文件，所以./uploads/worker/必须加755权限
+     */
+    private static function base64_to_picture($imgBase64,$filename){
+        //if(!file_exists(self::$path.$filename.'.jpeg')){
+        if (preg_match('/^(data:\s*image\/(\w+);base64,)/',$imgBase64,$res)) {
+            //获取图片类型
+            $type = $res[2];
+            //图片保存路径
+    		$webroot = Yii::getPathOfAlias('webroot');
+    		$ym = date('Ymd');
+    		$home_images_path = '/uploads/images/' . $ym;
+    		$new_file = $webroot . '/' . $home_images_path.'/';
+            if (!file_exists($new_file)) {
+                @mkdir($new_file,0755,true);
+                @chmod($new_file,0755);
+            }
+            //图片名字
+            $new_file = $new_file.$filename.'.'.$type;
+            if (file_put_contents($new_file,base64_decode(str_replace($res[1],'', $imgBase64)))) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+    
+        /**
+         * @desc 图片base64字符串转存图片
+         * @param string $imgBase64 图片base64格式字符串
+         * @param string $filename 文件名称
+         * @author tzg
+         * @since 0.1
+         * note:1.该方法使用了修改文件，所以./uploads/worker/必须加755权限
+         */
+        private static function base64_to_picture($imgBase64,$filename){
+            //if(!file_exists(self::$path.$filename.'.jpeg')){
+            if (preg_match('/^(data:\s*image\/(\w+);base64,)/',$imgBase64,$res)) {
+                //获取图片类型
+                $type = $res[2];
+                //图片保存路径
+    			$webroot = Yii::getPathOfAlias('webroot');
+    			$ym = date('Ymd');
+    			$home_images_path = '/uploads/images/' . $ym;
+    			$new_file = $webroot . '/' . $home_images_path.'/';
+                if (!file_exists($new_file)) {
+                    @mkdir($new_file,0755,true);
+                    @chmod($new_file,0755);
+                }
+                //图片名字
+                $new_file = $new_file.$filename.'.'.$type;
+                if (file_put_contents($new_file,base64_decode(str_replace($res[1],'', $imgBase64)))) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+</code></pre></div><h2 id="phpexcel导出maximum-31-characters-allowed-in-sheet-title"><a href="#phpexcel导出maximum-31-characters-allowed-in-sheet-title" class="header-anchor">#</a> PHPexcel导出Maximum 31 characters allowed in sheet title.</h2> <div class="language- extra-class"><pre class="language-text"><code>$xls_name = mb_strimwidth($xls_name, 0, 28, &quot;...&quot;);  //excel的文件名太长会报错，需要截取
+</code></pre></div><h2 id="unlink-no-such-file-or-directory的解决办法"><a href="#unlink-no-such-file-or-directory的解决办法" class="header-anchor">#</a> unlink:No such file or directory的解决办法</h2> <div class="language- extra-class"><pre class="language-text"><code>is_file($url) &amp;&amp; $this-&gt;unlink($url)
+</code></pre></div><h2 id="安装php在zip扩展"><a href="#安装php在zip扩展" class="header-anchor">#</a> 安装php在zip扩展</h2> <div class="language- extra-class"><pre class="language-text"><code>wget http://pecl.php.net/get/zip-1.12.4.tgz
+tar zxfv zip-1.12.4.tgz
+cd /home/nginx+php/php-5.5.12/ext/zip
+/usr/local/php/bin/phpize
+./configure --with-php-config=/usr/local/php/bin/php-config
+make
+make install
+</code></pre></div><h2 id="linux-find-命令查找文件和文件夹"><a href="#linux-find-命令查找文件和文件夹" class="header-anchor">#</a> linux find 命令查找文件和文件夹</h2> <div class="language- extra-class"><pre class="language-text"><code>在/home目录下查找以.txt结尾的文件名
+
+find /home -name &quot;*.txt&quot;
+</code></pre></div><h2 id="fatal-error-call-to-undefined-function-bcmul"><a href="#fatal-error-call-to-undefined-function-bcmul" class="header-anchor">#</a> <strong>Fatal error</strong>: Call to undefined function bcmul()</h2> <p>不连网：</p> <div class="language- extra-class"><pre class="language-text"><code>cd /opt/installfile/nginx+php/nginx+php/php-5.5.12/ext/bcmath
+/usr/local/php/bin/phpize(phpize的路径根据各自安装有所不同)
+/configure --with-php-config=/usr/local/php/bin/php-config(php-config文件的路径)
+make &amp;&amp; make install
+最后还需要把生成的bcmath.so文件加入到php.ini中 extesion=bcmath.so（如果没有设定extesion_dir，可能要加上全路径，查看phpize执行后的生成的so文件的路径即可，这里是：extension_dir= /usr/local/php/lib/php/extensions/no-debug-non-zts-20121212/)
+然后重启web服务器，就Ok了
+</code></pre></div><h2 id="gitignore-不起作用的解决办法"><a href="#gitignore-不起作用的解决办法" class="header-anchor">#</a> gitignore 不起作用的解决办法</h2> <p>.gitignore文件只是ignore没有被staged(cached)文件，对于已经被staged文件，加入ignore文件时一定要先从staged移除。</p> <p>因此，要想用gitignore忽略文件，必须先把它们从staged中移除</p> <div class="language- extra-class"><pre class="language-text"><code>git rm -r --cached .
+git add .
+git commit -m 'update .gitignore'
+</code></pre></div><h2 id="php-判断日志文件夹是否存在-不存在则创建"><a href="#php-判断日志文件夹是否存在-不存在则创建" class="header-anchor">#</a> php 判断日志文件夹是否存在,不存在则创建</h2> <div class="language- extra-class"><pre class="language-text"><code>//判断日志文件夹是否存在,不存在则创建
+        $logPath = &quot;./log/upload&quot;;
+        if (!is_dir ($logPath)) {
+            mkdir ( $logPath, 0755, true );
+            chmod ( $logPath, 0755 );
+        }
+</code></pre></div><h2 id="php命令"><a href="#php命令" class="header-anchor">#</a> php命令</h2> <p><code>pkill php-fpm</code>     关闭php-fpm</p> <p><code>/usr/local/php/sbin/php-fpm -c /etc/php.ini</code>       指定php-fpm配置并开启</p> <h2 id="为什么要-urlencode"><a href="#为什么要-urlencode" class="header-anchor">#</a> 为什么要 urlencode()</h2> <p>url转义其实也只是为了符合url的规范而已。因为在标准的url规范中中文和很多的字符是不允许出现在url中的。</p> <p>按照每个字符对应的字符编码，不是符合我们范围的，统统的转化为%的形式也就是了。自然也是16进制的形式。</p> <h2 id="iis数据量过大报错：c-php-php5-6-nts-php-cgi-exe-fastcgi-进程超过了配置的请求超时时限"><a href="#iis数据量过大报错：c-php-php5-6-nts-php-cgi-exe-fastcgi-进程超过了配置的请求超时时限" class="header-anchor">#</a> IIS数据量过大报错：C:\php\php5.6-nts\php-cgi.exe - FastCGI 进程超过了配置的请求超时时限</h2> <p>解决办法：
+IIS7-&gt;FastCGI设置-&gt;双击&quot;php-cgi.exe&quot;-&gt;&quot;活动超时&quot; 项默认是设置为70(秒)，改为600(10分钟，此处根据需求设置可以略高~)</p> <h2 id="如何给图片添加电子签名"><a href="#如何给图片添加电子签名" class="header-anchor">#</a> 如何给图片添加电子签名</h2> <p>将文档截图成图片</p> <p>将图片发送到苹果手机</p> <p>在苹果手机中编辑图片，选择画笔里的签名</p> <p>将签名放在合适位置，保存图片</p> <h2 id="php程序for异常退出"><a href="#php程序for异常退出" class="header-anchor">#</a> php程序for异常退出</h2> <p>public function actionIndex()
+{
+$total = 10000;
+$pageCount = 100;
+<mjx-container jax="SVG" class="MathJax"><svg xmlns="http://www.w3.org/2000/svg" width="18.657ex" height="2.262ex" viewBox="0 -750 8246.6 1000" style="vertical-align:-0.566ex;"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="70" d="M23 287Q24 290 25 295T30 317T40 348T55 381T75 411T101 433T134 442Q209 442 230 378L240 387Q302 442 358 442Q423 442 460 395T497 281Q497 173 421 82T249 -10Q227 -10 210 -4Q199 1 187 11T168 28L161 36Q160 35 139 -51T118 -138Q118 -144 126 -145T163 -148H188Q194 -155 194 -157T191 -175Q188 -187 185 -190T172 -194Q170 -194 161 -194T127 -193T65 -192Q-5 -192 -24 -194H-32Q-39 -187 -39 -183Q-37 -156 -26 -148H-6Q28 -147 33 -136Q36 -130 94 103T155 350Q156 355 156 364Q156 405 131 405Q109 405 94 377T71 316T59 280Q57 278 43 278H29Q23 284 23 287ZM178 102Q200 26 252 26Q282 26 310 49T356 107Q374 141 392 215T411 325V331Q411 405 350 405Q339 405 328 402T306 393T286 380T269 365T254 350T243 336T235 326L232 322Q232 321 229 308T218 264T204 212Q178 106 178 102Z"></path></g><g data-mml-node="mi" transform="translate(503, 0)"><path data-c="61" d="M33 157Q33 258 109 349T280 441Q331 441 370 392Q386 422 416 422Q429 422 439 414T449 394Q449 381 412 234T374 68Q374 43 381 35T402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487Q506 153 506 144Q506 138 501 117T481 63T449 13Q436 0 417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157ZM351 328Q351 334 346 350T323 385T277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q217 26 254 59T298 110Q300 114 325 217T351 328Z"></path></g><g data-mml-node="mi" transform="translate(1032, 0)"><path data-c="67" d="M311 43Q296 30 267 15T206 0Q143 0 105 45T66 160Q66 265 143 353T314 442Q361 442 401 394L404 398Q406 401 409 404T418 412T431 419T447 422Q461 422 470 413T480 394Q480 379 423 152T363 -80Q345 -134 286 -169T151 -205Q10 -205 10 -137Q10 -111 28 -91T74 -71Q89 -71 102 -80T116 -111Q116 -121 114 -130T107 -144T99 -154T92 -162L90 -164H91Q101 -167 151 -167Q189 -167 211 -155Q234 -144 254 -122T282 -75Q288 -56 298 -13Q311 35 311 43ZM384 328L380 339Q377 350 375 354T369 368T359 382T346 393T328 402T306 405Q262 405 221 352Q191 313 171 233T151 117Q151 38 213 38Q269 38 323 108L331 118L384 328Z"></path></g><g data-mml-node="mi" transform="translate(1509, 0)"><path data-c="65" d="M39 168Q39 225 58 272T107 350T174 402T244 433T307 442H310Q355 442 388 420T421 355Q421 265 310 237Q261 224 176 223Q139 223 138 221Q138 219 132 186T125 128Q125 81 146 54T209 26T302 45T394 111Q403 121 406 121Q410 121 419 112T429 98T420 82T390 55T344 24T281 -1T205 -11Q126 -11 83 42T39 168ZM373 353Q367 405 305 405Q272 405 244 391T199 357T170 316T154 280T149 261Q149 260 169 260Q282 260 327 284T373 353Z"></path></g><g data-mml-node="mo" transform="translate(2252.8, 0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mi" transform="translate(3308.6, 0)"><path data-c="63" d="M34 159Q34 268 120 355T306 442Q362 442 394 418T427 355Q427 326 408 306T360 285Q341 285 330 295T319 325T330 359T352 380T366 386H367Q367 388 361 392T340 400T306 404Q276 404 249 390Q228 381 206 359Q162 315 142 235T121 119Q121 73 147 50Q169 26 205 26H209Q321 26 394 111Q403 121 406 121Q410 121 419 112T429 98T420 83T391 55T346 25T282 0T202 -11Q127 -11 81 37T34 159Z"></path></g><g data-mml-node="mi" transform="translate(3741.6, 0)"><path data-c="65" d="M39 168Q39 225 58 272T107 350T174 402T244 433T307 442H310Q355 442 388 420T421 355Q421 265 310 237Q261 224 176 223Q139 223 138 221Q138 219 132 186T125 128Q125 81 146 54T209 26T302 45T394 111Q403 121 406 121Q410 121 419 112T429 98T420 82T390 55T344 24T281 -1T205 -11Q126 -11 83 42T39 168ZM373 353Q367 405 305 405Q272 405 244 391T199 357T170 316T154 280T149 261Q149 260 169 260Q282 260 327 284T373 353Z"></path></g><g data-mml-node="mi" transform="translate(4207.6, 0)"><path data-c="69" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(4552.6, 0)"><path data-c="6C" d="M117 59Q117 26 142 26Q179 26 205 131Q211 151 215 152Q217 153 225 153H229Q238 153 241 153T246 151T248 144Q247 138 245 128T234 90T214 43T183 6T137 -11Q101 -11 70 11T38 85Q38 97 39 102L104 360Q167 615 167 623Q167 626 166 628T162 632T157 634T149 635T141 636T132 637T122 637Q112 637 109 637T101 638T95 641T94 647Q94 649 96 661Q101 680 107 682T179 688Q194 689 213 690T243 693T254 694Q266 694 266 686Q266 675 193 386T118 83Q118 81 118 75T117 65V59Z"></path></g><g data-mml-node="mo" transform="translate(4850.6, 0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g><g data-mml-node="mi" transform="translate(5239.6, 0)"><path data-c="69" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(5584.6, 0)"><path data-c="6E" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(6184.6, 0)"><path data-c="74" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g><g data-mml-node="mi" transform="translate(6545.6, 0)"><path data-c="76" d="M173 380Q173 405 154 405Q130 405 104 376T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Q21 294 29 316T53 368T97 419T160 441Q202 441 225 417T249 361Q249 344 246 335Q246 329 231 291T200 202T182 113Q182 86 187 69Q200 26 250 26Q287 26 319 60T369 139T398 222T409 277Q409 300 401 317T383 343T365 361T357 383Q357 405 376 424T417 443Q436 443 451 425T467 367Q467 340 455 284T418 159T347 40T241 -11Q177 -11 139 22Q102 54 102 117Q102 148 110 181T151 298Q173 362 173 380Z"></path></g><g data-mml-node="mi" transform="translate(7030.6, 0)"><path data-c="61" d="M33 157Q33 258 109 349T280 441Q331 441 370 392Q386 422 416 422Q429 422 439 414T449 394Q449 381 412 234T374 68Q374 43 381 35T402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487Q506 153 506 144Q506 138 501 117T481 63T449 13Q436 0 417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157ZM351 328Q351 334 346 350T323 385T277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q217 26 254 59T298 110Q300 114 325 217T351 328Z"></path></g><g data-mml-node="mi" transform="translate(7559.6, 0)"><path data-c="6C" d="M117 59Q117 26 142 26Q179 26 205 131Q211 151 215 152Q217 153 225 153H229Q238 153 241 153T246 151T248 144Q247 138 245 128T234 90T214 43T183 6T137 -11Q101 -11 70 11T38 85Q38 97 39 102L104 360Q167 615 167 623Q167 626 166 628T162 632T157 634T149 635T141 636T132 637T122 637Q112 637 109 637T101 638T95 641T94 647Q94 649 96 661Q101 680 107 682T179 688Q194 689 213 690T243 693T254 694Q266 694 266 686Q266 675 193 386T118 83Q118 81 118 75T117 65V59Z"></path></g><g data-mml-node="mo" transform="translate(7857.6, 0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g></g></g></svg></mjx-container>total)/<mjx-container jax="SVG" class="MathJax"><svg xmlns="http://www.w3.org/2000/svg" width="16.78ex" height="2.262ex" viewBox="0 -750 7416.7 1000" style="vertical-align:-0.566ex;"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="70" d="M23 287Q24 290 25 295T30 317T40 348T55 381T75 411T101 433T134 442Q209 442 230 378L240 387Q302 442 358 442Q423 442 460 395T497 281Q497 173 421 82T249 -10Q227 -10 210 -4Q199 1 187 11T168 28L161 36Q160 35 139 -51T118 -138Q118 -144 126 -145T163 -148H188Q194 -155 194 -157T191 -175Q188 -187 185 -190T172 -194Q170 -194 161 -194T127 -193T65 -192Q-5 -192 -24 -194H-32Q-39 -187 -39 -183Q-37 -156 -26 -148H-6Q28 -147 33 -136Q36 -130 94 103T155 350Q156 355 156 364Q156 405 131 405Q109 405 94 377T71 316T59 280Q57 278 43 278H29Q23 284 23 287ZM178 102Q200 26 252 26Q282 26 310 49T356 107Q374 141 392 215T411 325V331Q411 405 350 405Q339 405 328 402T306 393T286 380T269 365T254 350T243 336T235 326L232 322Q232 321 229 308T218 264T204 212Q178 106 178 102Z"></path></g><g data-mml-node="mi" transform="translate(503, 0)"><path data-c="61" d="M33 157Q33 258 109 349T280 441Q331 441 370 392Q386 422 416 422Q429 422 439 414T449 394Q449 381 412 234T374 68Q374 43 381 35T402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487Q506 153 506 144Q506 138 501 117T481 63T449 13Q436 0 417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157ZM351 328Q351 334 346 350T323 385T277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q217 26 254 59T298 110Q300 114 325 217T351 328Z"></path></g><g data-mml-node="mi" transform="translate(1032, 0)"><path data-c="67" d="M311 43Q296 30 267 15T206 0Q143 0 105 45T66 160Q66 265 143 353T314 442Q361 442 401 394L404 398Q406 401 409 404T418 412T431 419T447 422Q461 422 470 413T480 394Q480 379 423 152T363 -80Q345 -134 286 -169T151 -205Q10 -205 10 -137Q10 -111 28 -91T74 -71Q89 -71 102 -80T116 -111Q116 -121 114 -130T107 -144T99 -154T92 -162L90 -164H91Q101 -167 151 -167Q189 -167 211 -155Q234 -144 254 -122T282 -75Q288 -56 298 -13Q311 35 311 43ZM384 328L380 339Q377 350 375 354T369 368T359 382T346 393T328 402T306 405Q262 405 221 352Q191 313 171 233T151 117Q151 38 213 38Q269 38 323 108L331 118L384 328Z"></path></g><g data-mml-node="mi" transform="translate(1509, 0)"><path data-c="65" d="M39 168Q39 225 58 272T107 350T174 402T244 433T307 442H310Q355 442 388 420T421 355Q421 265 310 237Q261 224 176 223Q139 223 138 221Q138 219 132 186T125 128Q125 81 146 54T209 26T302 45T394 111Q403 121 406 121Q410 121 419 112T429 98T420 82T390 55T344 24T281 -1T205 -11Q126 -11 83 42T39 168ZM373 353Q367 405 305 405Q272 405 244 391T199 357T170 316T154 280T149 261Q149 260 169 260Q282 260 327 284T373 353Z"></path></g><g data-mml-node="mi" transform="translate(1975, 0)"><path data-c="43" d="M50 252Q50 367 117 473T286 641T490 704Q580 704 633 653Q642 643 648 636T656 626L657 623Q660 623 684 649Q691 655 699 663T715 679T725 690L740 705H746Q760 705 760 698Q760 694 728 561Q692 422 692 421Q690 416 687 415T669 413H653Q647 419 647 422Q647 423 648 429T650 449T651 481Q651 552 619 605T510 659Q484 659 454 652T382 628T299 572T226 479Q194 422 175 346T156 222Q156 108 232 58Q280 24 350 24Q441 24 512 92T606 240Q610 253 612 255T628 257Q648 257 648 248Q648 243 647 239Q618 132 523 55T319 -22Q206 -22 128 53T50 252Z"></path></g><g data-mml-node="mi" transform="translate(2690, 0)"><path data-c="6F" d="M201 -11Q126 -11 80 38T34 156Q34 221 64 279T146 380Q222 441 301 441Q333 441 341 440Q354 437 367 433T402 417T438 387T464 338T476 268Q476 161 390 75T201 -11ZM121 120Q121 70 147 48T206 26Q250 26 289 58T351 142Q360 163 374 216T388 308Q388 352 370 375Q346 405 306 405Q243 405 195 347Q158 303 140 230T121 120Z"></path></g><g data-mml-node="mi" transform="translate(3175, 0)"><path data-c="75" d="M21 287Q21 295 30 318T55 370T99 420T158 442Q204 442 227 417T250 358Q250 340 216 246T182 105Q182 62 196 45T238 27T291 44T328 78L339 95Q341 99 377 247Q407 367 413 387T427 416Q444 431 463 431Q480 431 488 421T496 402L420 84Q419 79 419 68Q419 43 426 35T447 26Q469 29 482 57T512 145Q514 153 532 153Q551 153 551 144Q550 139 549 130T540 98T523 55T498 17T462 -8Q454 -10 438 -10Q372 -10 347 46Q345 45 336 36T318 21T296 6T267 -6T233 -11Q189 -11 155 7Q103 38 103 113Q103 170 138 262T173 379Q173 380 173 381Q173 390 173 393T169 400T158 404H154Q131 404 112 385T82 344T65 302T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(3747, 0)"><path data-c="6E" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(4347, 0)"><path data-c="74" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g><g data-mml-node="mo" transform="translate(4708, 0)"><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></g><g data-mml-node="mo" transform="translate(5097, 0)"><path data-c="3B" d="M78 370Q78 394 95 412T138 430Q162 430 180 414T199 371Q199 346 182 328T139 310T96 327T78 370ZM78 60Q78 85 94 103T137 121Q202 121 202 8Q202 -44 183 -94T144 -169T118 -194Q115 -194 106 -186T95 -174Q94 -171 107 -155T137 -107T160 -38Q161 -32 162 -22T165 -4T165 4Q165 5 161 4T142 0Q110 0 94 18T78 60Z"></path></g><g data-mml-node="mi" transform="translate(5541.7, 0)"><path data-c="66" d="M118 -162Q120 -162 124 -164T135 -167T147 -168Q160 -168 171 -155T187 -126Q197 -99 221 27T267 267T289 382V385H242Q195 385 192 387Q188 390 188 397L195 425Q197 430 203 430T250 431Q298 431 298 432Q298 434 307 482T319 540Q356 705 465 705Q502 703 526 683T550 630Q550 594 529 578T487 561Q443 561 443 603Q443 622 454 636T478 657L487 662Q471 668 457 668Q445 668 434 658T419 630Q412 601 403 552T387 469T380 433Q380 431 435 431Q480 431 487 430T498 424Q499 420 496 407T491 391Q489 386 482 386T428 385H372L349 263Q301 15 282 -47Q255 -132 212 -173Q175 -205 139 -205Q107 -205 81 -186T55 -132Q55 -95 76 -78T118 -61Q162 -61 162 -103Q162 -122 151 -136T127 -157L118 -162Z"></path></g><g data-mml-node="mi" transform="translate(6091.7, 0)"><path data-c="6F" d="M201 -11Q126 -11 80 38T34 156Q34 221 64 279T146 380Q222 441 301 441Q333 441 341 440Q354 437 367 433T402 417T438 387T464 338T476 268Q476 161 390 75T201 -11ZM121 120Q121 70 147 48T206 26Q250 26 289 58T351 142Q360 163 374 216T388 308Q388 352 370 375Q346 405 306 405Q243 405 195 347Q158 303 140 230T121 120Z"></path></g><g data-mml-node="mi" transform="translate(6576.7, 0)"><path data-c="72" d="M21 287Q22 290 23 295T28 317T38 348T53 381T73 411T99 433T132 442Q161 442 183 430T214 408T225 388Q227 382 228 382T236 389Q284 441 347 441H350Q398 441 422 400Q430 381 430 363Q430 333 417 315T391 292T366 288Q346 288 334 299T322 328Q322 376 378 392Q356 405 342 405Q286 405 239 331Q229 315 224 298T190 165Q156 25 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 114 189T154 366Q154 405 128 405Q107 405 92 377T68 316T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mo" transform="translate(7027.7, 0)"><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path></g></g></g></svg></mjx-container>i=1;<mjx-container jax="SVG" class="MathJax"><svg xmlns="http://www.w3.org/2000/svg" width="3.169ex" height="1.808ex" viewBox="0 -661 1400.8 799" style="vertical-align:-0.312ex;"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="69" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mo" transform="translate(622.8, 0)"><path data-c="2A7D" d="M674 636Q682 636 688 630T694 615T687 601Q686 600 417 472L151 346L399 228Q687 92 691 87Q694 81 694 76Q694 58 676 56H670L382 192Q92 329 90 331Q83 336 83 348Q84 359 96 365Q104 369 382 500T665 634Q669 636 674 636ZM94 170Q102 172 104 172Q110 171 254 103T535 -30T678 -98Q694 -106 694 -118Q694 -136 676 -138H670L382 -2Q92 135 90 137Q83 142 83 154Q84 164 94 170Z"></path></g></g></g></svg></mjx-container>page;$i++) {
+$condition['page'] = $i;
+$condition['rows'] = <mjx-container jax="SVG" class="MathJax"><svg xmlns="http://www.w3.org/2000/svg" width="24.051ex" height="2.262ex" viewBox="0 -750 10630.4 1000" style="vertical-align:-0.566ex;"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="70" d="M23 287Q24 290 25 295T30 317T40 348T55 381T75 411T101 433T134 442Q209 442 230 378L240 387Q302 442 358 442Q423 442 460 395T497 281Q497 173 421 82T249 -10Q227 -10 210 -4Q199 1 187 11T168 28L161 36Q160 35 139 -51T118 -138Q118 -144 126 -145T163 -148H188Q194 -155 194 -157T191 -175Q188 -187 185 -190T172 -194Q170 -194 161 -194T127 -193T65 -192Q-5 -192 -24 -194H-32Q-39 -187 -39 -183Q-37 -156 -26 -148H-6Q28 -147 33 -136Q36 -130 94 103T155 350Q156 355 156 364Q156 405 131 405Q109 405 94 377T71 316T59 280Q57 278 43 278H29Q23 284 23 287ZM178 102Q200 26 252 26Q282 26 310 49T356 107Q374 141 392 215T411 325V331Q411 405 350 405Q339 405 328 402T306 393T286 380T269 365T254 350T243 336T235 326L232 322Q232 321 229 308T218 264T204 212Q178 106 178 102Z"></path></g><g data-mml-node="mi" transform="translate(503, 0)"><path data-c="61" d="M33 157Q33 258 109 349T280 441Q331 441 370 392Q386 422 416 422Q429 422 439 414T449 394Q449 381 412 234T374 68Q374 43 381 35T402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487Q506 153 506 144Q506 138 501 117T481 63T449 13Q436 0 417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157ZM351 328Q351 334 346 350T323 385T277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q217 26 254 59T298 110Q300 114 325 217T351 328Z"></path></g><g data-mml-node="mi" transform="translate(1032, 0)"><path data-c="67" d="M311 43Q296 30 267 15T206 0Q143 0 105 45T66 160Q66 265 143 353T314 442Q361 442 401 394L404 398Q406 401 409 404T418 412T431 419T447 422Q461 422 470 413T480 394Q480 379 423 152T363 -80Q345 -134 286 -169T151 -205Q10 -205 10 -137Q10 -111 28 -91T74 -71Q89 -71 102 -80T116 -111Q116 -121 114 -130T107 -144T99 -154T92 -162L90 -164H91Q101 -167 151 -167Q189 -167 211 -155Q234 -144 254 -122T282 -75Q288 -56 298 -13Q311 35 311 43ZM384 328L380 339Q377 350 375 354T369 368T359 382T346 393T328 402T306 405Q262 405 221 352Q191 313 171 233T151 117Q151 38 213 38Q269 38 323 108L331 118L384 328Z"></path></g><g data-mml-node="mi" transform="translate(1509, 0)"><path data-c="65" d="M39 168Q39 225 58 272T107 350T174 402T244 433T307 442H310Q355 442 388 420T421 355Q421 265 310 237Q261 224 176 223Q139 223 138 221Q138 219 132 186T125 128Q125 81 146 54T209 26T302 45T394 111Q403 121 406 121Q410 121 419 112T429 98T420 82T390 55T344 24T281 -1T205 -11Q126 -11 83 42T39 168ZM373 353Q367 405 305 405Q272 405 244 391T199 357T170 316T154 280T149 261Q149 260 169 260Q282 260 327 284T373 353Z"></path></g><g data-mml-node="mi" transform="translate(1975, 0)"><path data-c="43" d="M50 252Q50 367 117 473T286 641T490 704Q580 704 633 653Q642 643 648 636T656 626L657 623Q660 623 684 649Q691 655 699 663T715 679T725 690L740 705H746Q760 705 760 698Q760 694 728 561Q692 422 692 421Q690 416 687 415T669 413H653Q647 419 647 422Q647 423 648 429T650 449T651 481Q651 552 619 605T510 659Q484 659 454 652T382 628T299 572T226 479Q194 422 175 346T156 222Q156 108 232 58Q280 24 350 24Q441 24 512 92T606 240Q610 253 612 255T628 257Q648 257 648 248Q648 243 647 239Q618 132 523 55T319 -22Q206 -22 128 53T50 252Z"></path></g><g data-mml-node="mi" transform="translate(2690, 0)"><path data-c="6F" d="M201 -11Q126 -11 80 38T34 156Q34 221 64 279T146 380Q222 441 301 441Q333 441 341 440Q354 437 367 433T402 417T438 387T464 338T476 268Q476 161 390 75T201 -11ZM121 120Q121 70 147 48T206 26Q250 26 289 58T351 142Q360 163 374 216T388 308Q388 352 370 375Q346 405 306 405Q243 405 195 347Q158 303 140 230T121 120Z"></path></g><g data-mml-node="mi" transform="translate(3175, 0)"><path data-c="75" d="M21 287Q21 295 30 318T55 370T99 420T158 442Q204 442 227 417T250 358Q250 340 216 246T182 105Q182 62 196 45T238 27T291 44T328 78L339 95Q341 99 377 247Q407 367 413 387T427 416Q444 431 463 431Q480 431 488 421T496 402L420 84Q419 79 419 68Q419 43 426 35T447 26Q469 29 482 57T512 145Q514 153 532 153Q551 153 551 144Q550 139 549 130T540 98T523 55T498 17T462 -8Q454 -10 438 -10Q372 -10 347 46Q345 45 336 36T318 21T296 6T267 -6T233 -11Q189 -11 155 7Q103 38 103 113Q103 170 138 262T173 379Q173 380 173 381Q173 390 173 393T169 400T158 404H154Q131 404 112 385T82 344T65 302T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(3747, 0)"><path data-c="6E" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"></path></g><g data-mml-node="mi" transform="translate(4347, 0)"><path data-c="74" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path></g><g data-mml-node="mo" transform="translate(4708, 0)"><path data-c="3B" d="M78 370Q78 394 95 412T138 430Q162 430 180 414T199 371Q199 346 182 328T139 310T96 327T78 370ZM78 60Q78 85 94 103T137 121Q202 121 202 8Q202 -44 183 -94T144 -169T118 -194Q115 -194 106 -186T95 -174Q94 -171 107 -155T137 -107T160 -38Q161 -32 162 -22T165 -4T165 4Q165 5 161 4T142 0Q110 0 94 18T78 60Z"></path></g><g data-mml-node="TeXAtom" transform="translate(5152.7, 0)"><g data-mml-node="mo"><path data-c="2F" d="M423 750Q432 750 438 744T444 730Q444 725 271 248T92 -240Q85 -250 75 -250Q68 -250 62 -245T56 -231Q56 -221 230 257T407 740Q411 750 423 750Z"></path></g></g><g data-mml-node="TeXAtom" transform="translate(5652.7, 0)"><g data-mml-node="mo"><path data-c="2F" d="M423 750Q432 750 438 744T444 730Q444 725 271 248T92 -240Q85 -250 75 -250Q68 -250 62 -245T56 -231Q56 -221 230 257T407 740Q411 750 423 750Z"></path></g></g><g data-mml-node="mo" transform="translate(6430.4, 0)"><text data-variant="normal" transform="matrix(1 0 0 -1 0 0)" font-size="884px" font-family="serif">下</text><text data-variant="normal" transform="translate(600, 0) matrix(1 0 0 -1 0 0)" font-size="884px" font-family="serif">面</text><text data-variant="normal" transform="translate(1200, 0) matrix(1 0 0 -1 0 0)" font-size="884px" font-family="serif">语</text><text data-variant="normal" transform="translate(1800, 0) matrix(1 0 0 -1 0 0)" font-size="884px" font-family="serif">句</text><text data-variant="normal" transform="translate(2400, 0) matrix(1 0 0 -1 0 0)" font-size="884px" font-family="serif">影</text><text data-variant="normal" transform="translate(3000, 0) matrix(1 0 0 -1 0 0)" font-size="884px" font-family="serif">响</text><text data-variant="normal" transform="translate(3600, 0) matrix(1 0 0 -1 0 0)" font-size="884px" font-family="serif">到</text></g></g></g></svg></mjx-container>page了,会把$page赋值为1会导致异常退出
+$page = $condition['page'] ? $condition['page'] : 1;
+$page_count = $condition['rows'] ? $condition['rows'] : 10;
+echo $i;
+}
+}</p> <h2 id="php-htmlspecialchars-和htmlspecialchars-decode-html标签转义和反转义"><a href="#php-htmlspecialchars-和htmlspecialchars-decode-html标签转义和反转义" class="header-anchor">#</a> php .htmlspecialchars()和htmlspecialchars_decode() html标签转义和反转义</h2> <p>https://blog.csdn.net/xiaomogg/article/details/44854355</p> <h2 id="php中设置时区方法小结"><a href="#php中设置时区方法小结" class="header-anchor">#</a> PHP中设置时区方法小结</h2> <p>设置data.timezone = &quot;Asia/Shanghai&quot;;即可。
+设置data.timezone = &quot;PRC&quot;;即可。</p> <p>PRC 是中国的意思,这段代码是把默认时区设置成了中国标准时间</p> <h2 id="fatal-error-using-this-when-not-in-object-context-in"><a href="#fatal-error-using-this-when-not-in-object-context-in" class="header-anchor">#</a> Fatal error Using $this when not in object context in</h2> <p>大致意思是 $this 没有上下文，原因是没有对此类进行实例化。
+可以使用换为self::New();调用</p> <h2 id="ftp报错处理"><a href="#ftp报错处理" class="header-anchor">#</a> ftp报错处理</h2> <blockquote><p>put: Login failed: 530 Login incorrect.</p></blockquote> <p>重新设置ftp账户密码就正常了
+应该是密码过期机制导致的</p> <div class="language- extra-class"><pre class="language-text"><code>linux 用户密码到期导致ftp业务失败
+外网反馈某业务失败，查看log发现FTP连接失败，定位发现提示密码不对，重新修改FTP密码后恢复正常。
+但同时定位了下FTP密码被修改的原因，发现是密码过期了，因此查了下资料，查得修改过期时间的方法
+1.vim /etc/login.defs
+PASS_MAX_DAYS	99999
+
+2.chage username -M 99999
+
+下面是使用到的命令chage：
+[root@APPServer yang]# chage --help
+Usage: chage [options] [LOGIN]
+
+Options:
+-d, --lastday LAST_DAY set date of last password change to LAST_DAY
+-E, --expiredate EXPIRE_DATE set account expiration date to EXPIRE_DATE
+-h, --help display this help message and exit
+-I, --inactive INACTIVE set password inactive after expiration
+to INACTIVE
+-l, --list show account aging information
+-m, --mindays MIN_DAYS set minimum number of days before password
+change to MIN_DAYS
+-M, --maxdays MAX_DAYS set maximim number of days before password
+change to MAX_DAYS
+-W, --warndays WARN_DAYS set expiration warning days to WARN_DAYS
+
+以及一个不过期的账户信息：
+[root@APPServer yang]# chage username -l
+Last password change	: May 17, 2018
+Password expires	: never
+Password inactive	: never
+Account expires	: never
+Minimum number of days between password change	: 0
+Maximum number of days between password change	: 99999
+Number of days of warning before password expires	: 7
+</code></pre></div><p>##　PHP接口curl报错Connection timed out after 30001 milliseconds</p> <div class="language-php extra-class"><pre class="language-php"><code><span class="token variable">$timeout</span> <span class="token operator">=</span> <span class="token number">300</span><span class="token punctuation">;</span><span class="token comment">//设置大些</span>
+<span class="token function">curl_setopt</span><span class="token punctuation">(</span><span class="token variable">$curl</span><span class="token punctuation">,</span> <span class="token constant">CURLOPT_TIMEOUT</span><span class="token punctuation">,</span> <span class="token variable">$timeout</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 设置超时限制防止死循</span>
+</code></pre></div><p><strong>curl 超时设置</strong>
+PHP cURL 的超时设置有两个 CURLOPT_CONNECTTIMEOUT 和 CURLOPT_TIMEOUT，他们的区别是：</p> <ul><li><p>CURLOPT_CONNECTTIMEOUT 用来告诉 PHP 在成功连接服务器前等待多久（连接成功之后就会开始缓冲输出），这个参数是为了应对目标服务器的过载，下线，或者崩溃等可能状况。</p></li> <li><p>CURLOPT_TIMEOUT 用来告诉成功 PHP 从服务器接收缓冲完成前需要等待多长时间，如果目标是个巨大的文件，生成内容速度过慢或者链路速度过慢，这个参数就会很有用。</p></li></ul> <p>只加了CURLOPT_CONNECTTIMEOUT 经常会卡死</p> <p>使用 cURL 下载 MP3 文件是一个对开发人员来说不错的例子，CURLOPT_CONNECTTIMEOUT 可以设置为10秒，标识如果服务器10秒内没有响应，脚本就会断开连接，CURLOPT_TIMEOUT 可以设置为100秒，如果MP3文件100秒内没有下载完成，脚本将会断开连接。</p> <p>需要注意的是：CURLOPT_TIMEOUT 默认为0，意思是永远不会断开链接。所以不设置的话，可能因为链接太慢，会把 HTTP 资源用完。</p></div> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">上次更新时间:</span> <span class="time">7/6/2020, 10:38:49 PM</span></div></footer> <!----> </main></div><div class="global-ui"><!----><div id="live2d-widget" class="live2d-widget-container" style="position:fixed;right:65px;bottom:0px;width:135px;height:300px;z-index:99999;opacity:0.8;pointer-events:none;"><canvas id="live2d_canvas" width="135" height="300" class="live2d_canvas" style="position:absolute;left:0px;top:0px;width:135px;height:300px;"></canvas></div></div></div>
+    <script src="/assets/js/app.f33c03af.js" defer></script><script src="/assets/js/2.8a1ae630.js" defer></script><script src="/assets/js/55.52c85add.js" defer></script>
+  </body>
+</html>
