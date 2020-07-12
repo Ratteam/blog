@@ -1,3 +1,4 @@
+<TOC />
 ## nginx命令
 `ps -A | grep nginx`    -查看nginx是否启动
 

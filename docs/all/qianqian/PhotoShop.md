@@ -1,3 +1,4 @@
+<TOC />
 # ps使用指南
 
 ## photoshop的工作界面

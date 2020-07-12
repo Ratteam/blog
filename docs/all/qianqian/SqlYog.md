@@ -1,3 +1,4 @@
+<TOC />
 SQLyog详细使用教程
  
 SQLyog是一款功能强大的mysql数据库管理工具，这篇文章为大家详细介绍SQLyog的使用方法！

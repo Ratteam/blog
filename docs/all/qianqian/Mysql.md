@@ -1,3 +1,4 @@
+<TOC />
 ## mysql 查询项目名称重复的项目
 ```
 select * from project where name in (select   name from   project where deletedmark = 0 group by   name having count(name) > 1);

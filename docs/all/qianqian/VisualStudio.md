@@ -1,3 +1,4 @@
+<TOC />
 # VisualStudio
 
 ## vs2013如何快速运行一个C++程序

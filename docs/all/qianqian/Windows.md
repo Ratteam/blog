@@ -1,3 +1,4 @@
+<TOC />
 # Windows快捷键大全
 
 >　Windows快捷键大全，是指在Windows操作系统下，操作电脑的快捷方式。
