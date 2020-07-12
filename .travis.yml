@@ -1,13 +1,3 @@
-language: node_js
-node_js:
-  - node
-branchs:
-  only:
-    - master
-cache:
-  directories:
-    - node_modules
-install:
-  - yarn install
 scripts:
-  - yarn docs:build
+  - ls
+  - cd docs/.vuepress/dist
