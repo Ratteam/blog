@@ -10,4 +10,4 @@ cache:
 install:
   - yarn install
 scripts:
-  - npm run docs:build
+  - yarn docs:build
