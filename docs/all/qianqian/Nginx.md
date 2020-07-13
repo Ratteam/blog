@@ -15,7 +15,7 @@ KeepAlive 在一段时间内保持打开状态，它们会在这段时间内占�
 
 Nginx 使用 keepalive_timeout 来指定 KeepAlive 的超时时间（timeout）。指定每个 TCP 连接最多可以保持多长时间。Nginx 的默认值是 75 秒，有些浏览器最多只保持 60 秒，所以可以设定为 60 秒。若将它设置为 0，就禁止了 keepalive 连接。通常 keepalive_timeout 应该比 client_body_timeout(见下文)大。
 
-# 配置段: http, server, location
+### 配置段: http, server, location
 
 keepalive_timeout 60s;
 
@@ -23,7 +23,7 @@ client_body_timeout
 
 指定客户端与服务端建立连接后发送 request body 的超时时间。如果客户端在指定时间内没有发送任何内容，Nginx 返回 HTTP 408（Request Timed Out）。
 
-# 配置段: http, server, location
+### 配置段: http, server, location
 
 client_body_timeout 20s;
 
@@ -31,7 +31,7 @@ client_header_timeout
 
 客户端向服务端发送一个完整的 request header 的超时时间。如果客户端在指定时间内没有发送一个完整的 request header，Nginx 返回 HTTP 408（Request Timed Out）。
 
-# 配置段: http, server, location
+### 配置段: http, server, location
 
 client_header_timeout 10s;
 
@@ -39,7 +39,7 @@ send_timeout
 
 服务端向客户端传输数据的超时时间，根据转发的应用服务可以配置 proxy_send_timeout、uwsgi_send_timeout、fastcgi_send_timeout（见下文）。
 
-# 配置段:http, server, location
+### 配置段:http, server, location
 
 send_timeout 30s;
 Default: 
