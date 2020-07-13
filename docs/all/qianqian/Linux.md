@@ -1,4 +1,70 @@
 <TOC />
+## PHP安装redis扩展
+```
+以下操作需要在下载的 phpredis 目录中完成：
+
+$ wget https://github.com/phpredis/phpredis/archive/3.1.4.tar.gz
+$ cd phpredis-3.1.4                      # 进入 phpredis 目录
+$ /usr/local/php/bin/phpize              # php安装后的路径
+$ ./configure --with-php-config=/usr/local/php/bin/php-config
+$ make && make install
+修改php.ini文件
+vi /usr/local/php/lib/php.ini
+增加如下内容:
+
+extension_dir = "/usr/local/php/lib/php/extensions/no-debug-zts-20090626"
+
+extension=redis.so
+安装完成后重启php-fpm 或 apache。查看phpinfo信息，就能看到redis扩展。
+```
+## centos安装redis服务
+```
+#/bin/bash
+#############别道临#######################
+#############2019-10-17###################
+#############redis安装脚本#############
+
+############预定义变量#####################
+#为了避免报错,/bin/sh: cc: command not found,先执行下面的脚本
+yum -y install gcc gcc-c++ libstdc++-devel 
+make MALLOC=libc
+#定义版本号
+version=5.0.5
+#下载redis安装包
+#wget http://download.redis.io/releases/redis-$version.tar.gz
+#解压安装包
+tar xzvf redis-$version.tar.gz
+#进入解压后的安装包
+cd redis-$version
+#编译
+make
+#进入安装包中src文件夹
+cd src
+#编译
+make install PREFIX=/usr/local/redis
+#移动配置文件到安装目录下
+cd ../
+mkdir /usr/local/redis/etc
+mv redis.conf /usr/local/redis/etc
+#配置redis为后台启动
+sed -i "s/daemonize no/daemonize yes/g" /usr/local/redis/etc/redis.conf
+#启动redis
+/usr/local/redis/bin/redis-server /usr/local/redis/etc/redis.conf
+```
+
+## linux 本地同步文件
+```
+rsync -rax --delete --progress -e /opt/www/henan/source/distadmin/* /opt/www/henan/pre_source/distadmin
+rsync -rax --delete --progress -e /opt/www/henan/source/dist/* /opt/www/henan/pre_source/dist
+rsync -rax --delete --progress -e /opt/www/henan/source/distapp/* /opt/www/henan/pre_source/distapp
+rsync -rax --delete --progress -e /opt/www/henan/source/distadminapp/* /opt/www/henan/pre_source/distadminapp
+rsync -rax --delete --progress -e /opt/www/henan/source/distyw/* /opt/www/henan/pre_source/distyw
+rsync -rax --delete --progress -e /opt/www/henan/source/protected/components/* /opt/www/henan/pre_source/protected/components
+rsync -rax --delete --progress -e /opt/www/henan/source/protected/controllers/* /opt/www/henan/pre_source/protected/controllers
+rsync -rax --delete --progress -e /opt/www/henan/source/protected/models/* /opt/www/henan/pre_source/protected/models
+rsync -rax --delete --progress -e /opt/www/henan/source/protected/views/* /opt/www/henan/pre_source/protected/views
+```
+
 ## screen命令学习
 **screen分session和window**
 

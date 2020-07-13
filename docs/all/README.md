@@ -86,9 +86,6 @@ meta:
 ## [Php](/all/qianqian/Php/)  
 > Php
 
-## [PhpStudy](/all/qianqian/PhpStudy/)  
-> PhpStudy
-
 ## [Psychology](/all/qianqian/Psychology/)  
 > Psychology
 

@@ -1,4 +1,53 @@
 <TOC />
+## phpstudy添加redis扩展
+1、查看php版本 我的是5.6
+
+2、查看phpinfo 没有redis
+
+3、下载对应版本的扩展文件
+
+我的是：
+
+http://windows.php.net/downloads/pecl/releases/redis/2.2.7/php_redis-2.2.7-5.6-nts-vc11-x86.zip
+
+和
+
+http://windows.php.net/downloads/pecl/releases/igbinary/1.2.1/php_igbinary-1.2.1-5.5-nts-vc11-x86.zip
+
+4、拷贝php_igbinary.dll，php_igbinary.pdb，php_redis.dll，php_redis.pdb到php-5.6.27-nts\ext
+
+5、修改php.ini
+
+extension=php_igbinary.dll
+
+extension=php_redis.dll
+注意：php_igbinary.dll 在前
+
+;extension=php_snmp.dll  放这个前面
+6、在phpstudy中重启服务，查看phpinfo即可
+
+
+## get_headers
+```
+get_headers — 取得服务器响应一个 HTTP 请求所发送的所有标头
+
+说明
+get_headers ( string $url [, int $format = 0 ] ) : array
+get_headers() 返回一个数组，包含有服务器响应一个 HTTP 请求所发送的标头。
+
+参数
+url
+目标 URL。
+
+format
+如果将可选的 format 参数设为 1，则 get_headers() 会解析相应的信息并设定数组的键名。
+
+返回值
+返回包含有服务器响应一个 HTTP 请求所发送标头的索引或关联数组，如果失败则返回 FALSE。
+```
+## 打印文件日志
+file_put_contents("./log/OutUrlChangeInUrl.log", print_r($baseUrl,true).PHP_EOL, FILE_APPEND);
+
 ## laravel 500 Server Error，完美解决
 打开配置文件 laravel/config/app.php
 
