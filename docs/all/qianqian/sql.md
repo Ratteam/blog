@@ -1,4 +1,94 @@
 <TOC />
+## Oracle expdp导出数据
+Oracle EXPDP导出数据
+上一章介绍了EXP导出数据，在数据量较大的情况下，由于导出的效率较低，所以EXPDP是Oracle 10g开始引入的数据泵技术，数据泵技术是在数据库之间或者在数据库与操作系统之间传输数据的工具。
+
+EXPDP是数据泵导出的工具，它可以把数据库中的对象选择性的导出到操作系统中。比如：表、用户、表空间、数据库等。
+
+使用EXPDP工具与EXP不同的是，在使用EXPDP时要先创建目录对象，通过这个对象就可以找到要备份数据的数据库服务器，并且使EXPDP工具备份出来的数据必须存放在目录对象对应的操作系统的目录中。
+
+下面将分步讲解如何使用EXPDP导出数据：
+
+1、创建目录对象：
+
+创建目录对象是使用EXPDP工具进行导出的前提。
+
+创建目录对象的语法如下:
+
+CREATE DIRECTORY directoryname AS  'filename'
+语法解析：
+
+（1）、directoryname:创建的目录名称。
+
+（2）、filename:存放数据的文件夹名。
+
+2、给使用目录的用户赋权限：
+
+新创建的目录对象不是任何用户都可以使用的，只有拥有该目录使用权的用户才能使用，所以要为使用该目录的用户赋一个权限。笔者要导出的数据都在STUDENT(学生)用户下，那么赋权限的语句如下:
+
+
+GRANT READ,WRITE ON DIRECTORY directoryname TO student
+这里，directoryname就是创建的目录名称。
+
+案例1、创建目录对象dir并给student用户授予读写权限，代码如下：
+
+--创建目录对象dir，数据文件存放的路径为d:/expdpdi
+create directory dir as 'd:/expdpdir';
+--给用户授予目录对象的读写权限
+grant  read,write on directory dir to student ;
+
+
+3、选择性导出数据库数据
+
+前面已经创建好了目录，使用EXPDP工具导出数据的方法与EXP导出的方法类似，也是在DOS的命令窗口中实现的。
+
+Oracle expdp导出表数据：
+
+expdp student/123456@orcl dumpfile=student.dmp logfile=student.log tables= stuinfo directory=dir
+命令解析：
+
+（1）、dumpfile指定导出的dmp文件的名字。
+
+（2）、logfile指定导出时的日志文件的 名字。
+
+（3）、tables指定备份的表结构，可以导出多个表，通过（table1，table2...,tablen）进行选择
+
+（4）、directory指定导出的目录对象，目录对象中有对应的数据文件保存在哪个目录下。
+
+结果如下：
+
+oracle expdp导出
+
+然后，发现在D:\EXPDPDIR目录下已经生成了STUDENT.DMP的备份文件。
+
+1548861364985_416926.png
+
+
+
+Oracle expdp导出表数据（带条件）：
+
+expdp student/123456@orcl dumpfile=student_1.dmp logfile=student_1.log tables= stuinfo directory=dir 
+query="'where sex=1'"
+query：指定要添加的条件，把表中的数据进行过滤导出
+
+Oracle expdp导出表空间：
+
+expdp student/123456@orcl dumpfile=student_tablespace.dmp logfile=student_tablespace.log 
+tablespaces=(student)  directory=dir
+tablespaces：指定要导出的表空间的名字。
+
+Oracle expdp导出用户：
+
+expdp student/123456@orcl dumpfile=student_user.dmp logfile=student_user.log 
+owner=(student)  directory=dir
+owner：指定要导出的用户，前提条件是具有该用户的操作权限
+
+Oracle expdp导出整个库：
+
+expdp student/123456@orcl dumpfile=full.dmp logfile=full.log 
+full=y  directory=dir
+full=y指的是导出整个数据库，前提是该用户具有管理员权限。
+
 ## 关于读取Oracle数据库小数点前面0不显示问题
 ```
 to_char(af.Cash,'fm9999990.999999') as Cash,

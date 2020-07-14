@@ -14,6 +14,14 @@ meta:
 ---
 
 # 网站
+## [菜鸟编程教程]() `菜鸟编程教程`
+> 菜鸟编程教程
+- 网址：https://www.runoob.com/
+
+## [oracle数据库文章]() `oracle数据库文章`
+> oracle数据库文章
+- 网址：https://www.oraclejsq.com/
+
 ## [sololearn在线代码编辑器]() `sololearn在线代码编辑器`
 > sololearn在线代码编辑器
 - 网址：https://code.sololearn.com/166/#cpp

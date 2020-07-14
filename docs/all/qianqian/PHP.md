@@ -1,31 +1,31 @@
 <TOC />
+## 字符串类型时间前移一个小时
+```
+$one_hour_ago=(new DateTime('2017-04-20 11:46:00'))->modify('-1 hour')->format("Y-m-d H:i:s");
+echo $one_hour_ago;
+```
+
 ## phpstudy添加redis扩展
-1、查看php版本 我的是5.6
+```
+查看php版本 我的是5.6
 
-2、查看phpinfo 没有redis
+查看phpinfo 没有redis
 
-3、下载对应版本的扩展文件
-
-我的是：
-
+下载对应版本的扩展文件
 http://windows.php.net/downloads/pecl/releases/redis/2.2.7/php_redis-2.2.7-5.6-nts-vc11-x86.zip
-
-和
-
 http://windows.php.net/downloads/pecl/releases/igbinary/1.2.1/php_igbinary-1.2.1-5.5-nts-vc11-x86.zip
 
-4、拷贝php_igbinary.dll，php_igbinary.pdb，php_redis.dll，php_redis.pdb到php-5.6.27-nts\ext
+拷贝php_igbinary.dll，php_igbinary.pdb，php_redis.dll，php_redis.pdb到php-5.6.27-nts\ext
 
-5、修改php.ini
-
+修改php.ini
 extension=php_igbinary.dll
-
 extension=php_redis.dll
+
 注意：php_igbinary.dll 在前
-
 ;extension=php_snmp.dll  放这个前面
-6、在phpstudy中重启服务，查看phpinfo即可
 
+在phpstudy中重启服务，查看phpinfo即可
+```
 
 ## get_headers
 ```
@@ -45,10 +45,14 @@ format
 返回值
 返回包含有服务器响应一个 HTTP 请求所发送标头的索引或关联数组，如果失败则返回 FALSE。
 ```
+
 ## 打印文件日志
+```
 file_put_contents("./log/OutUrlChangeInUrl.log", print_r($baseUrl,true).PHP_EOL, FILE_APPEND);
+```
 
 ## laravel 500 Server Error，完美解决
+```
 打开配置文件 laravel/config/app.php
 
 找到 'debug'项 设置为 true
@@ -58,19 +62,25 @@ file_put_contents("./log/OutUrlChangeInUrl.log", print_r($baseUrl,true).PHP_EOL,
 在laravel下找到 .env.example，将其复制一份重命名为 ".env"
 
 在laravel下执行命令：php artisan key:generate，后刷新页面
+```
 
 ## 解决composer install遇到：Your requirements could not be resolved to an installable set of packages
+```
 解决办法：直接忽略版本就是了
-
 composer install --ignore-platform-reqs 或者 composer update --ignore-platform-reqs
+```
 
 ## laravel 代码报错 Warning: require(D:\WWW\laravel\bootstrap/../vendor/autoload.php
+```
 删除 composer.lock 文件，重新执行 composer install
 
 php版本不匹配，接着 composer install --ignore-platform-reqs     忽略版本匹配
+```
 
 ## 源码安装禅道诡异的的 no input file specified
+```
 确实没有input.php文件，将input.php.tmp 改为input.php即可
+```
 
 ## 面试题
 ### 1. 计算机网络体系结构
