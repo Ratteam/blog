@@ -1,4 +1,93 @@
 <TOC />
+
+## Phpstudy升级到Mysql8
+```
+下载
+下载安装包mysql8.0,如果你想要下载其它版本可以选择：mysql历史版本地址。
+
+将phpstudy的mysql目录重命名为Mysqlbak。
+
+然后把下载好的新版本的mysql解压到这个目录里。我的是F:\phpStudy\MySQL
+
+编辑my.ini文件
+下载的mysql8默认是没有my.ini的，
+复制原来的(Mysqlbak目录下的)一份my.ini到mysql目录下
+注意Mysql8的新特性和配置，原来的my.ini是不能直接用的。需要改下
+比如修改后我的my.ini
+
+[mysql]
+# 设置mysql客户端默认字符集
+default-character-set=utf8mb4
+ 
+[mysqld]
+# 设置3306端口
+port =3306
+# 设置mysql的安装目录
+basedir="F:\phpStudy\MySQL\"
+#存放数据的目录
+datadir="F:\phpStudy\MySQL\data"
+# 允许最大连接数
+max_connections=20
+# 服务端使用的字符集默认为8比特编码的latin1字符集
+character-set-server=utf8mb4
+collation-server = utf8mb4_unicode_ci
+# 创建新表时将使用的默认存储引擎
+default-storage-engine=INNODB
+#认证方式(如果这里不修改，会新版的密码认证，会连接不了数据库的，并且要放到mysqld下)
+default_authentication_plugin = mysql_native_password
+
+启动
+接下来我们来启动下 MySQL 数据库：
+
+以管理员身份打开 cmd 命令行工具（可以到C盘system32下的cmd.exe右键管理员运行），切换目录：
+
+我的是在F盘，先转到F盘先，然后再初始化MYSQL
+C:\Users\Administrator>F:
+
+F:\>cd F:\phpStudy\MySQL\bin
+
+F:\phpStudy\MySQL\bin>mysqld --initialize --console
+
+如果安装成功后，会出现mysql密码了比如上面我的是：+HVW8Qi(RT/d
+
+然后继续安装
+mysqld install
+
+启动服务器
+net start mysql
+
+phpStudy自带的mysql是5.5版本的，无法启动 mysql了 这是为什么？？？ 
+
+原因是phpStudy为我们注册了一个MySQL服务
+而我们用mysql -install命令安装Mysql的时候注册 了一个MySQL所以问题来了，两者冲突了。
+解决办法 很简单，打开CMD命令输入 sc delete MySQL 　
+
+启动成功后，输入密码登录
+
+注意：
+因为mysql8.0的密码加密方式跟之前的保存方式不一样，所以要转码，Navicat 或 phpstudy才能连接得
+
+更改密码：
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '这里输入你的密码自行修改';
+
+到此mysql8更新成功，接下来测试下phpstudy启动服务试下：
+先停掉Mysql服务：net stop mysql
+
+切换到phpstydy客户度界面，我重启服务看下 OK
+```
+ 
+## phpStudy2018 升级mysql版本，解决启动问题
+```
+点击phpStudy->其他选项菜单->服务管理器->MySQL->安装服务，
+点击phpStudy->其他选项菜单->服务管理器->打开服务管理->MySQL->安装服务
+
+应该有个MySQL和MySQLa，mysqla既然是phpstudy帮你注册的服务
+那你自己mysqld -install的注册的服务是mysql。
+执行sc delete mysql,再启动phpstudy就好了。
+假如phpstudy安装失败的话，记得要把执行sc delete mysql。
+skip-grant-tables，这个是跳过验证的，自己设置密码吧。
+```
+
 ## php-fpm配置文件详解
 ```
 第一部分：FPM 配置
@@ -245,6 +334,7 @@ pm.max_spare_servers = 3
 如果设置过小很容易出现"502 Bad Gateway" 和 “504  Gateway  Time-out”。
 默认为0，就是说没有启用，不加限制，但是这种设置前提是你的php-fpm足够健康，这个需要根据实际情况加以限定。
 ```
+
 ## nginx的https的443配置
 ```
 server {
@@ -303,12 +393,10 @@ server {
         deny  all;
     }
 }
-
 ```
 
 ## nginx服务超时处理centos7+nginx+php
 ```
-
 什么是连接超时
 举个例子，某饭店请了服务员招待顾客，但是现在饭店不景气，因此要解雇掉一些服务员。
 这里的服务员就相当于 Nginx 服务建立的连接
@@ -371,8 +459,8 @@ location / {
         proxy_send_timeout      300; 
         proxy_read_timeout      300;    
 }
-
 ```
+
 ## apache服务超时处理phpstudy+apache+php
 ```
 问题现象
@@ -444,6 +532,7 @@ location / {
 
 搞定
 ```
+
 ## phpstudy的php项目在nginx环境下404、403错误
 ```
 在vhost-ini文件上配置下面
@@ -480,10 +569,12 @@ server {
 所以，在vhost里没有这段内容直接输入域名访问就会报403的错误。
 除非你在域名后面加个 /index.php才可以正常访问;
 ```
+
 ## phpstudy:首次访问提示forbidden 403错误的处理
 ```
 设置一下：phpstudy设置->允许目录列表，然后就OK了
 ```
+
 ## phpstudy 500 Internal Server Error 解决办法
 ```
 版本：phpstudy 2018
@@ -500,6 +591,7 @@ root   "D:\phpStudy\PHPTutorial\WWW\composer\tp51\public";  // phpstudy 留下�
 // 正确   /
 root   "D:/phpStudy/PHPTutorial/WWW/thinkphp50/public";
 ```
+
 ## 字符串类型时间前移一个小时
 ```
 $one_hour_ago=(new DateTime('2017-04-20 11:46:00'))->modify('-1 hour')->format("Y-m-d H:i:s");
@@ -582,9 +674,9 @@ php版本不匹配，接着 composer install --ignore-platform-reqs     忽略�
 ```
 确实没有input.php文件，将input.php.tmp 改为input.php即可
 ```
-
 ## 面试题
-### 1. 计算机网络体系结构
+```
+1. 计算机网络体系结构
 
 - 应用层：应用层协议定义的是应用进程间通信和交互的规则
 - 运输层：运输层的任务就是负责向两台主机中进程之间的通信提供通用的数据传输服务
@@ -592,7 +684,7 @@ php版本不匹配，接着 composer install --ignore-platform-reqs     忽略�
 - 数据链路层：将网络层交下来的 IP 数据报组装成帧，并在两个相邻结点间的链路上传送
 - 物理层：利用物理媒体以比特形式传送数据
 
-### 2. UDP 的主要特点
+2. UDP 的主要特点
 
 - UDP 是无连接的，即发送数据之前不需要建立连接(发送数据结束时也没有连接可释放)，减少了开销和发送数据之前的时延
 - UDP 使用尽最大努力交付，即不保证可靠交付，主机不需要维持复杂的连接状态表
@@ -601,7 +693,7 @@ php版本不匹配，接着 composer install --ignore-platform-reqs     忽略�
 - UDP 支持一对一、一对多、多对一和多对多的交互通信
 - UDP 的首部开销小，只有8个字节，比 TCP 的20个字节的首部要短
 
-### 3. TCP 的主要特点
+3. TCP 的主要特点
 
 - TCP 是面向连接的运输层协议。应用程序在使用 TCP 协议之前，必须先建立 TCP 连接。在传送数据完毕后，必须释放已经建立的 TCP 连接
 - 每一条 TCP 连接只能有两个端点，每一条 TCP 连接只能是点对点的(一对一)
@@ -609,7 +701,7 @@ php版本不匹配，接着 composer install --ignore-platform-reqs     忽略�
 - TCP 提供全双工通信。TCP 允许通信双方的应用进程在任何时候都能发送数据。TCP 连接的两端都设有发送缓存和接受缓存，用来临时存放双向通信的数据
 - 面向字节流。TCP 中的“流”指的是流入到进程或从进程流出的字节序列
 
-### 4. 简述三报文握手建立 TCP 连接
+4. 简述三报文握手建立 TCP 连接
 
 - 服务器进程先创建传输控制块 TCB，并处于监听状态，等待客户端的连接请求
 - 客户端创建传输控制块 TCB，并向服务器发出连接请求报文段
@@ -619,11 +711,11 @@ php版本不匹配，接着 composer install --ignore-platform-reqs     忽略�
 
 > 传输控制块 TCB(Transmission Control Block)存储了每一个连接中的一些重要信息
 
-### 5. 建立 TCP 连接为什么最后还要发送确认
+ 5. 建立 TCP 连接为什么最后还要发送确认
 
 这主要是为了防止已失效的连接请求报文段突然又传到了 TCP 服务器，避免产生错误
 
-### 6. 简述 TCP 连接的释放
+ 6. 简述 TCP 连接的释放
 
 - 客户端应用进程发出连接释放报文段，并停止再发送数据，进入 FIN-WAIT-1(终止等待1)状态，等待服务器确认
 - 服务器收到连接释放报文段后即发出确认，进入 CLOSE-WAIT(关闭等待)状态，服务器若发送数据，客户端扔要接收
@@ -632,13 +724,13 @@ php版本不匹配，接着 composer install --ignore-platform-reqs     忽略�
 - 客户端收到连接释放报文段后，发出确认，进入 TIME-WAIT(时间等待)状态，经过时间等待计时器设置的时间 2MSL 后，进入 CLOSED(关闭) 状态
 - 服务器收到客户端报文段后，进入 CLOSED 状态
 
-### 7. TIME-WAIT 是什么，为什么必须等待 2MLS
+ 7. TIME-WAIT 是什么，为什么必须等待 2MLS
 
 TIME-WAIT 是一种 TCP 状态。等待 2MLS 可以保证客户端最后一个报文段能够到达服务器，如果未到达，服务器则会超时重传连接释放报文段，使得客户端、服务器都可以正常进入到 CLOSE(关闭) 状态
 
 > MSL是Maximum Segment Lifetime英文的缩写，中文可以译为“报文最大生存时间”，他是任何报文在网络上存在的最长时间，超过这个时间报文将被丢弃。
 
-### 8. TCP 粘包问题
+ 8. TCP 粘包问题
 
 在 TCP 这种字节流协议上做应用层分包是网络编程的基本需求。分包指的是在发生一个消息(message)或一帧(frame)数据时，通过一定的处理，让接收方能从字节流中识别并截取(还原)出一个个消息。因此，“粘包问题”是个伪命题
 
@@ -648,7 +740,7 @@ TIME-WAIT 是一种 TCP 状态。等待 2MLS 可以保证客户端最后一个�
 - 在每条消息的头部加一个长度字段，这恐怕是最常见的做法
 - 利用消息本身的格式来分包，例如 XML 格式的消息中 `<root>`...`</root>` 的配对，或者 JSON 格式中的 { ... } 的配对。解析这种消息格式通常会用到状态机(state machine)
 
-### 9. UDP、TCP 区别，适用场景
+ 9. UDP、TCP 区别，适用场景
 
 |对比项|UDP|TCP|
 |-|-|-|
@@ -663,17 +755,17 @@ TIME-WAIT 是一种 TCP 状态。等待 2MLS 可以保证客户端最后一个�
 |首部开销|8字节|20字节|
 |数据顺序|不保证|保证|
 
-#### UDP 适用场景
+UDP 适用场景
 
 面向数据报方式、网络数据大多为短消息、拥有大量 Client、对数据安全性无特殊要求、网络负担非常重，但对响应速度要求高
 
-#### TCP 适用场景
+ TCP 适用场景
 
 文件传输(FTP HTTP 对数据准确性要求较高，速度可以相对慢)
 发送或接收邮件(POP IMAP SMTP 对数据准确性要求高，非紧急应用)
 远程登录(telnet SSH 对数据准确性有要求，有连接的概念)
 
-### 10. 建立 socket 需要哪些步骤
+ 10. 建立 socket 需要哪些步骤
 
 - 创建 socket
 - 绑定 socket 到指定地址和端口
@@ -681,7 +773,7 @@ TIME-WAIT 是一种 TCP 状态。等待 2MLS 可以保证客户端最后一个�
 - 读取客户端输入
 - 关闭 socket
 
-### 11. DNS 主要作用是什么
+ 11. DNS 主要作用是什么
 
 计算机既可以被赋予 IP 地址，也可以被赋予主机名和域名。用户通常使用主机名或域名来访问对方的计算机，而不是直接通过 IP 地址访问
 
@@ -689,7 +781,7 @@ TIME-WAIT 是一种 TCP 状态。等待 2MLS 可以保证客户端最后一个�
 
 为了解决上述问题，DNS 服务应运而生。DNS 协议提供通过域名查找 IP 地址，或逆向从 IP 地址反查域名的服务
 
-### 12. HTTP 报文组成
+ 12. HTTP 报文组成
 
 HTTP 报文是由简单字符串组成，HTTP 报文都是纯文本，不是二进制代码，可以很方便地对其进行读写
 
@@ -701,11 +793,11 @@ HTTP 报文组成部分
 - 首部字段：起始行后面有零个或多个首部字段。每个首部字段都包含一个名字和一个值
 - 主体：空行之后就是可选的报文主体了，其中包含了所有类型的数据
 
-### 13. HTTP 状态码
+ 13. HTTP 状态码
 
 > HTTP 状态码用来告诉客户端，发生了什么事情，状态码位于响应的起始行中
 
-#### 状态码分类
+ 状态码分类
 
 |状态码|整体范围|已定义范围|分类|
 |-|-|-|-|
@@ -715,7 +807,7 @@ HTTP 报文组成部分
 |4XX|400~499|400~415|客户端错误|
 |5XX|500~599|500~505|服务器错误|
 
-#### 常见状态码
+ 常见状态码
 
 |状态码|原因短语|含义|考察概率|
 |-|-|-|-|
@@ -734,23 +826,23 @@ HTTP 报文组成部分
 |503|Service Unavailable|无法为请求提供服务|***|
 |504|Gateway Timeout|代理或网关超时(等待另一服务器响应超时)|***|
 
-### 14. 常见的 HTTP 方法
+ 14. 常见的 HTTP 方法
 
 HTTP 请求方法用于告诉服务器要做什么。HTTP 规范中定义了一组常用的请求方法。
 
-#### GET 方法
+ GET 方法
 
 GET 是最常用的方法。通常用于请求服务器发送某个资源。HTTP/1.1 要求服务器实现此方法
 
-#### POST 方法
+ POST 方法
 
 POST 方法起初是用来向服务器输入数据的。实际上，通常会用它来支持 HTML 的表单。表单中填好的数据通常会被送给服务器，然后由服务器将其发送到它要去的地方（比如，送到一个服务器网关程序中，然后由这个程序对其进行处理）
 
-### DELETE
+ DELETE
 
 DELETE 方法所做的事情就是请服务器删除请求 URL 所指定的资源。但是，客户端应用程序无法保证删除操作一定会被执行。因为 HTTP 规范允许服务器在不通知客户端的情况下撤销请求
 
-### 15. GET 与 POST 请求方式区别
+ 15. GET 与 POST 请求方式区别
 
 |GET|POST|
 |-|-|
@@ -760,13 +852,13 @@ DELETE 方法所做的事情就是请服务器删除请求 URL 所指定的资�
 |可以被缓存|不可以被缓存|
 |书签可收藏|书签不可收藏|
 
-### 16. HTTP 优缺点
+ 16. HTTP 优缺点
 
 基于应用级的接口，使用方便
 
 传输速度慢，数据包大；如实现实时交互，服务器性能压力大；数据传输安全性差
 
-### 17. HTTPS 通信原理
+ 17. HTTPS 通信原理
 
 安全 HTTP 是可选的。因此，对 Web 服务器发起请求时，我们需要有一种方式来告知 Web 服务器去执行 HTTP 的安全协议版本。这是在 URL 的方案中实现的。通常情况下，非安全 HTTP 的 URL 方案前缀为 http，如下所示：
 
@@ -786,13 +878,13 @@ DELETE 方法所做的事情就是请服务器删除请求 URL 所指定的资�
 
 SSL 是个二进制协议，与 HTTP 完全不同，其流量是承载在另一个端口上的（SSL 通常是由端口 443 承载的）。如果 SSL 和 HTTP 流量都从端口 80 到达，大部分 Web 服务器会将二进制 SSL 流量理解为错误的 HTTP 并关闭连接。将安全服务进一步整合到 HTTP 层中去就无需使用多个目的端口了，在实际中这样不会引发严重的问题
 
-#### 建立安全传输
+ 建立安全传输
 
 在未加密 HTTP 中，客户端会打开一条到 Web 服务器端口 80 的 TCP 连接，发送一条请求报文，接收一条响应报文，关闭连接
 
 由于 SSL 安全层的存在，HTTPS 中这个过程会略微复杂一些。在 HTTPS 中，客户端首先打开一条到 Web 服务器端口 443（安全 HTTP 的默认端口）的连接。一旦建立了 TCP 连接，客户端和服务器就会初始化 SSL 层，对加密参数进行沟通，并交换密钥。握手完成之后，SSL 初始化就完成了，客户端就可以将请求报文发送给安全层了。在将这些报文发送给 TCP 之前，要先对其进行加密
 
-#### SSL 握手
+ SSL 握手
 
 在发送已加密的 HTTP 报文之前，客户端和服务器要进行一次 SSL 握手，在这个握手过程中，它们要完成以下工作
 
@@ -806,7 +898,7 @@ SSL 是个二进制协议，与 HTTP 完全不同，其流量是承载在另一�
 这是 SSL 握手的简化版本。根据 SSL 的使用方式，握手过程可能会复杂一些，但总
 的思想就是这样
 
-#### 服务器证书
+ 服务器证书
 
 SSL 支持双向认证，将服务器证书承载回客户端，再将客户端的证书回送给服务器。而现在，浏览时并不经常使用客户端证书。大部分用户甚至都没有自己的客户端证书。服务器可以要求使用客户端证书，但实际中很少出现这种情况。
 
@@ -814,7 +906,7 @@ SSL 支持双向认证，将服务器证书承载回客户端，再将客户端�
 
 服务器证书是一个显示了组织的名称、地址、服务器 DNS 域名以及其他信息的 X.509 v3 派生证书。你和你所用的客户端软件可以检查证书，以确保所有的信息都是可信的
 
-#### 站点证书的有效性
+ 站点证书的有效性
 
 SSL 自身不要求用户检查 Web 服务器证书，但大部分现代浏览器都会对证书进行简单的完整性检查，并为用户提供进行进一步彻查的手段。网景公司提出的一种 Web 服务器证书有效性算法是大部分浏览器有效性验证技术的基础。
 
@@ -836,32 +928,34 @@ SSL 自身不要求用户检查 Web 服务器证书，但大部分现代浏览�
 
 为防止服务器复制其他人的证书，或拦截其他人的流量，大部分浏览器都会试着去验证证书中的域名与它们所对话的服务器的域名是否匹配。服务器证书中通常都包含一个域名，但有些 CA 会为一组或一群服务器创建一些包含了服务器名称列表或通配域名的证书。如果主机名与证书中的标识符不匹配，面向用户的客户端要么就去通知用户，要么就以表示证书不正确的差错报文来终止连接
 
-### 18. HTTP 2.0
+ 18. HTTP 2.0
 
 多路复用、客户端拉拽/服务器推送、流量控制、WebSocket
 
-### 19. WebSocket
+ 19. WebSocket
 
 WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通过 Web 上的一个 Socket 即可进行通信
 
-#### 主要特点
+ 主要特点
 
 - 推送功能：支持由服务器向客户端推送数据的推送功能
 - 减少通信量：只要建立起 WebSocket 连接，就希望一直保持连接状态
 
-### 20. IPv6 与 IPv4 有什么变化
+ 20. IPv6 与 IPv4 有什么变化
 
 更大的地址空间、扩展的地址层次结构、灵活的首部格式、改进的选项、允许协议继续扩充、支持资源的预分配
 
-### 21. 什么是心跳机制
+ 21. 什么是心跳机制
 
 心跳机制是定时发送一个自定义的结构体(心跳包)，让对方知道自己还活着，以确保连接的有效性的机制
 
-### 22. 什么是长连接
+ 22. 什么是长连接
 
 长连接，指在一个连接上可以连续发送多个数据包，在连接保持期间，如果没有数据包发送，需要双方发链路检测包
+```
 
 ## 基础篇
+```
 * [了解大部分数组处理函数](http://php.net/manual/zh/ref.array.php)
 * [字符串处理函数](http://php.net/manual/zh/ref.strings.php)  [区别 mb_ 系列函数](http://php.net/manual/zh/book.mbstring.php)
 * [& 引用，结合案例分析](https://secure.php.net/manual/zh/language.references.php)
@@ -880,8 +974,10 @@ WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通�
 * [单引号`'`与双引号`"`区别](https://stackoverflow.com/questions/3446216/what-is-the-difference-between-single-quoted-and-double-quoted-strings-in-php#answer-3446286)
 * [常见 HTTP 状态码，分别代表什么含义](https://zh.wikipedia.org/wiki/HTTP%E7%8A%B6%E6%80%81%E7%A0%81)
 * [301](https://zh.wikipedia.org/wiki/HTTP_301) 什么意思 [404](https://zh.wikipedia.org/wiki/HTTP_404) 呢?
+```
 
 ## 进阶篇
+```
 * Autoload、Composer 原理 [PSR-4](https://laravel-china.org/topics/2081/psr-specification-psr-4-automatic-loading-specification) 、[原理](https://segmentfault.com/a/1190000014948542)
 * Session 共享、存活时间
 * 异常处理
@@ -916,30 +1012,38 @@ WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通�
 * Xhprof 、Xdebug 性能调试工具使用
 * 索引数组 `[1, 2]` 与关联数组 `['k1'=>1, 'k2'=>2]` 有什么区别
 * [缓存的使用方式、场景](https://zhuanlan.zhihu.com/p/40091810)
+```
 
 ## 实践篇
+```
 * 给定二维数组，根据某个字段排序
 * 如何判断上传文件类型，如：仅允许 jpg 上传
 * 不使用临时变量交换两个变量的值 `$a=1; $b=2;`  =>  `$a=2; $b=1;`
 * strtoupper 在转换中文时存在乱码，你如何解决？```php echo strtoupper('ab你好c'); ```
 * Websocket、Long-Polling、Server-Sent Events(SSE) 区别
 * "Headers already sent" 错误是什么意思，如何避免
+```
 
 ## 算法篇
+```
 * 快速排序（手写）
 * 冒泡排序（手写）
 * 二分查找（了解）
 * 查找算法 KMP（了解）
 * 深度、广度优先搜索（了解）
 * LRU 缓存淘汰算法（了解，Memcached 采用该算法）
+```
 
 ## 数据结构篇（了解）
+```
 * 堆、栈特性
 * 队列
 * 哈希表
 * 链表
+```
 
 ## 对比篇
+```
 * Cookie 与 Session 区别
 * `GET` 与 `POST` 区别
 * `include` 与 `require` 区别
@@ -951,8 +1055,10 @@ WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通�
 * define() 与 const 区别
 * traits 与 interfaces 区别 及 traits 解决了什么痛点？
 * Git 与 SVN 区别
+```
 
 ## 数据库篇
+```
 * MySQL
     * CRUD
     * JOIN、LEFT JOIN 、RIGHT JOIN、INNER JOIN
@@ -983,8 +1089,10 @@ WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通�
         * 支持事务
         * 应用场景
     * 你之前为了解决什么问题使用的什么，为什么选它？
+```
 
 ## 服务器篇
+```
 * 查看 CPU、内存、时间、系统版本等信息
 * find 、grep 查找文件
 * awk 处理文本
@@ -998,8 +1106,10 @@ WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通�
 * 如何保障数据的可用性，即使被删库了也能恢复到分钟级别。你会怎么做。
 * 数据库连接过多，超过最大值，如何优化架构。从哪些方便处理？
 * 502 大概什么什么原因？ 如何排查  504呢？
+```
 
 ## 架构篇
+```
 * 偏运维（了解）：
     * 负载均衡（Nginx、HAProxy、DNS）
     * 主从复制（MySQL、Redis）
@@ -1020,8 +1130,10 @@ WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通�
 * 数据库设计
 * 静态化方案
 * 画出常见 PHP 应用架构图
+```
 
 ## 框架篇
+```
 * ThinkPHP（TP）、CodeIgniter（CI）、Zend（非 OOP 系列）
 * Yaf、Phalcon（C 扩展系）
 * Yii、Laravel、Symfony（纯 OOP 系列）
@@ -1033,8 +1145,10 @@ WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通�
     * 黑盒（相比 C 扩展系）
     * 运行速度（如：Laravel 加载一大堆东西）
     * 内存占用
+```
 
 ## 设计模式
+```
 * 单例模式（重点）
 * 工厂模式（重点）
 * 观察者模式（重点）
@@ -1042,8 +1156,10 @@ WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通�
 * 装饰器模式
 * 代理模式
 * 组合模式
+```
 
 ## 安全篇
+```
 * SQL 注入
 * XSS 与 CSRF
 * 输入过滤
@@ -1059,8 +1175,10 @@ WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通�
 * `disable_functions` 关闭高危函数
 * FPM 独立用户与组，给每个目录特定权限
 * 了解 Hash 与 Encrypt 区别
+```
 
 ## 高阶篇
+```
 * PHP 数组底层实现 （HashTable + Linked list）
 * Copy on write 原理，何时 GC
 * PHP 进程模型，进程通讯方式，进程线程区别
@@ -1068,8 +1186,10 @@ WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通�
 * PDO prepare 原理
 * PHP 7 与 PHP 5 有什么区别
 * Swoole 适用场景，协程实现方式
+```
 
 ## 前端篇
+```
 * 原生获取 DOM 节点，属性
 * 盒子模型
 * CSS 文件、style 标签、行内 style 属性优先级
@@ -1099,16 +1219,18 @@ WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通�
     * 静态资源延迟加载技术、预加载技术
     * keep-alive
     * CSS 在头部，JS 在尾部的优化（原理）
-
+```
 
 ## 网络篇
-
+```
 * IP 地址转 INT
 * 192.168.0.1/16 是什么意思
 * DNS 主要作用是什么？
 * IPv4 与 v6 区别
+```
 
 ## 网络编程篇
+```
 
 * TCP 三次握手流程
 * TCP、UDP 区别，分别适用场景
@@ -1120,8 +1242,10 @@ WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通�
 * 流与数据报的区别
 * 进程间通信几种方式，最快的是哪种？
 * `fork()` 会发生什么？
+```
 
 ## API 篇
+```
 
 * RESTful 是什么
 * 如何在不支持 `DELETE` 请求的浏览器上兼容 `DELETE` 请求
@@ -1135,18 +1259,21 @@ WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通�
 * OAuth 2 主要用在哪些场景下
 * JWT
 * PHP 中 `json_encode(['key'=>123]);` 与 `return json_encode([]);` 区别，会产生什么问题？如何解决
+```
 
 ## 加分项
+```
 * 了解常用语言特性，及不同场景适用性。
    * PHP VS Golang
    * PHP VS Python
    * PHP VS JAVA
 * 了解 PHP 扩展开发
 * 熟练掌握 C
+```
 
 ## Yii2中的依赖注入
-
-### 基本概念
+```
+ 基本概念
 
 1.依赖倒置（反转）原则（DIP）：一种软件架构设计的原则（抽象概念，是一种思想）
 在面向对象编程领域中，依赖反转原则（Dependency inversion principle，DIP）是指一种特定的解耦（传统的依赖关系创建在高层次上，而具体的策略设置则应用在低层次的模块上）形式，使得高层次的模块不依赖于低层次的模块的实现细节，依赖关系被颠倒（反转），从而使得低层次模块依赖于高层次模块的需求抽象。
@@ -1166,10 +1293,9 @@ WebSocket 是一种通信协议，定义了一个全双工通信信道，仅通�
 控制反转（Inversion of Control，缩写为IoC），是面向对象编程中的一种设计原则，可以用来减低计算机代码之间的耦合度。其中最常见的方式叫做依赖注入（Dependency Injection，简称DI），还有一种方式叫“依赖查找”（Dependency Lookup）。通过控制反转，对象在被创建的时候，由一个调控系统内所有对象的外界实体，将其所依赖的对象的引用传递给它。也可以说，依赖被注入到对象中。
 
 参考：https://segmentfault.com/a/1190000010788354
-### 入口文件
+ 入口文件
 > 文件位置：web\index.php
 
-```
 //定义全局变量
 defined('YII_DEBUG') or define('YII_DEBUG', true);
 defined('YII_ENV') or define('YII_ENV', 'dev');
@@ -1187,10 +1313,12 @@ $config = require(__DIR__ . '/../config/web.php');
 
 //生成应用并运行
 (new yii\web\Application($config))->run();
-```
 
 参考：https://segmentfault.com/a/1190000011823699
+```
+
 ## sql注入获取后台管理员账号密码
+```
 在完全拿下服务器主机之前，存在sql注入漏洞的网站，可能会因此提供给黑客后台管理员的账号密码，黑客登录后台后，上传木马，拿下整个主机。这是sql注入的一种应用场景。
 
 以下讲解sql注入获取后台管理员账号密码的过程，本文以尽力对新手友好的展现过程来讲解基本原理，高手与百事通请避免观看，以免徒耗时间。
@@ -1294,8 +1422,11 @@ ok，已经得到了sy_admin表的所有列名，接下来就可以开始获取s
 上图中加密后的密码可以通过工具或百度在线md5解密工具解密，不作赘述。
 
 同样也可以更换列名查出其他的信息，比如下图所示登录次数27次，上次登录于2月1号。以及其他的东西，你懂的。
-# php性能优化
-## php语言级的性能优化
+```
+
+## php性能优化
+```
+php语言级的性能优化
 优化点：少写代码，多用php自身能力
 - 性能问题：自身代码冗余较多，可读性不佳，并且性能低。
 - 为什么性能低：php代码需要编译解析为底层语言，这一过程每次请求都会处理一遍，开销大。
@@ -1306,7 +1437,6 @@ ok，已经得到了sy_admin表的所有列名，接下来就可以开始获取s
 - 性能问题：php内置函数，之间依然存在快慢差异
 - 解决方案：多去了解php内置函数的时间复杂度
 - 测试方法：对比isset()和array_key_exists()的性能差异
-```php
 <?php
     $start = current_time();
     $i = 0;
@@ -1324,7 +1454,6 @@ ok，已经得到了sy_admin表的所有列名，接下来就可以开始获取s
         return ((float)$usec + (float)$sec);
     }
 ?>
-```
 优化点：尽可能少用魔法函数
 - 情况描述：php提供的魔法函数，性能不佳
 - 为什么性能低：为了给php程序员省事，php语言为你做了很多
@@ -1393,15 +1522,13 @@ ok，已经得到了sy_admin表的所有列名，接下来就可以开始获取s
 旁路方案===并行
 
 ## php语言自身分析、优化
-
-### php性能分析
+ php性能分析
 
 工具:XHPorf（源自FackBook的php性能分析工具）
 实践：通过分析Wordpress程序，做优化。
 使用: php --ri xhprof   查看版本
 在入口文件index.php添加
 
-```php
 xhprof_enable();
 
 // ...
@@ -1412,7 +1539,6 @@ include_once "/var/www/html/xhprof_lib/utils/xhprof_runs.php";
 $objXhprofRun = new XHProfRuns_Default();
 $run_id = $objXhprofRun->save_run($data,"test");
 var_dump($run_id);
-```
 查看xhp目录查看相关信息
 参数：
     runction_name   函数名
@@ -1430,7 +1556,7 @@ php性能瓶颈解决方案：
     使用php扩展解决复杂的业务
     Runtime优化:HHVM
 
-### Apache Benchmark(ab)
+ Apache Benchmark(ab)
 
 > ab是由Apache提供的压力测试软件。安装apache服务器时会自带该压测软件
 - 使用方法: ./ab -n1000 -c100 http://www.baidu.com/
@@ -1442,7 +1568,10 @@ php性能瓶颈解决方案：
 **返回参数说明**
 - Requests per second（每秒接受请求数尽可能多）
 - Time per request（每秒请求在耗时尽可能少）
+```
+
 ## Laravel5.8版本安装教程
+```
 1.安装
 
 方式1：全局安装
@@ -1482,7 +1611,7 @@ app.php中的timezone默认是UTC,UTC是世界统一时间，需要将时区改�
 创建数据库并将数据库配
 
 置信息写入.env文件
-```
+
 DB_CONNECTION=mysql
 
 DB_HOST=127.0.0.1
@@ -1495,11 +1624,12 @@ DB_USERNAME=root
 
 DB_PASSWORD=root
 
-```
 
 参考：https://www.jianshu.com/p/a3cdec31be9b
-## Composer 安装与使用
+```
 
+## Composer 安装与使用
+```
 Composer 是 PHP 的一个依赖管理工具。我们可以在项目中声明所依赖的外部工具库，Composer 会帮你安装这些依赖的库文件，有了它，我们就可以很轻松的使用一个命令将其他人的优秀代码引用到我们的项目中来。
 
 Composer 默认情况下不是全局安装，而是基于指定的项目的某个目录中（例如 vendor）进行安装。
@@ -1525,8 +1655,8 @@ Linux 平台
 
 Linux 平台可以使用以下命令来安装：
 
-# php -r "copy('https://install.phpcomposer.com/installer', 'composer-setup.php');"
-# php composer-setup.php
+php -r "copy('https://install.phpcomposer.com/installer', 'composer-setup.php');"
+php composer-setup.php
 
 All settings correct for using Composer
 Downloading...
@@ -1536,15 +1666,15 @@ Use it: php composer.phar
 
 移动 composer.phar，这样 composer 就可以进行全局调用：
 
-# mv composer.phar /usr/local/bin/composer
+mv composer.phar /usr/local/bin/composer
 
 切换为国内镜像：
 
-# composer config -g repo.packagist composer https://packagist.phpcomposer.com
+composer config -g repo.packagist composer https://packagist.phpcomposer.com
 
 更新 composer：
 
-# composer selfupdate
+composer selfupdate
 
 Mac OS 系统
 
@@ -1592,16 +1722,16 @@ update 命令
 
 update 命令用于更新项目里所有的包，或者指定的某些包：
 
-# 更新所有依赖
+更新所有依赖
 $ composer update
 
-# 更新指定的包
+更新指定的包
 $ composer update monolog/monolog
 
-# 更新指定的多个包
+更新指定的多个包
 $ composer update monolog/monolog symfony/dependency-injection
 
-# 还可以通过通配符匹配包
+还可以通过通配符匹配包
 $ composer update monolog/monolog symfony/*
 
 需要注意的时，包能升级的版本会受到版本约束的约束，包不会升级到超出约束的版本的范围。例如如果 composer.json 里包的版本约束为 ^1.10，而最新版本为 2.0。那么 update 命令是不能把包升级到 2.0 版本的，只能最高升级到 1.x 版本。关于版本约束请看后面的介绍。
@@ -1631,13 +1761,13 @@ show 命令
 
 show 命令可以列出当前项目使用到包的信息：
 
-# 列出所有已经安装的包
+列出所有已经安装的包
 $ composer show
 
-# 可以通过通配符进行筛选
+可以通过通配符进行筛选
 $ composer show monolog/*
 
-# 显示具体某个包的信息
+显示具体某个包的信息
 $ composer show monolog/monolog
 
 基本约束
@@ -1699,849 +1829,16 @@ minimum-stability 配置项定义了包在选择版本时对稳定性的选择�
 }
 
 参考：https://www.runoob.com/w3cnote/composer-install-and-usage.html
-## php面试指南
-
-1.PHP 的底层性能特点。
-
-2.面向对象开发经验。
-
-3.至少掌握几个主流框架的架构原理，例如 Yii，CI，ThinkPHP 等。可以帮助拓展视野，站在巨人的肩膀上，可以省去很多走弯路的时间。
-
-4.服务器端了解 Python，erlang等其他编程语言能做的工作，并不是所有工作都需要交给 PHP 来实现的，学会多语言架构很重要。
-
-5.对于客户端，无论是 C 端还是 B 端的展现方式有了解。
-
-6.沟通能力，尤其要学会了解需求方的真正意图，制定出较优解决方案，这个多数是靠经验积累了。
-
-1、给你四个坐标点，判断它们能不能组成一个矩形，如判断([0,0],[0,1],[1,1],[1,0])能组成一个矩形。
-
-勾股定理，矩形是对角线相等的四边形。只要任意三点不在一条直线上，任选一点，求这一点到另外三点的长度的平方,两个短的之和如果等于最长的，那么这就是矩形。
-
-2、写一段代码判断单向链表中有没有形成环，如果形成环，请找出环的入口处，即P点
 ```
-/*
- *单链表的结点类
- */
-class LNode{
-    //为了简化访问单链表,结点中的数据项的访问权限都设为public
-    public int data;
-    public LNode next;
-}
- 
-class LinkListUtli {
-    //当单链表中没有环时返回null，有环时返回环的入口结点
-    public static LNode searchEntranceNode(LNode L)
-    {
-        LNode slow=L;//p表示从头结点开始每次往后走一步的指针
-        LNode fast=L;//q表示从头结点开始每次往后走两步的指针
-        while(fast !=null && fast.next !=null) 
-        {
-            if(slow==fast) break;//p与q相等，单链表有环
-            slow=slow.next;
-            fast=fast.next.next;
-        }
-        if(fast==null || fast.next==null) return null;
- 
-        // 重新遍历，寻找环的入口点
-        slow=L;
-        while(slow!=fast)
-        {
-            slow=slow.next;
-            fast=fast.next;
-        }
- 
-        return slow;
-    }
-}
-```
-
-3、写一个函数，获取一篇文章内容中的全部图片，并下载
-
-```
-function download_images($article_url = '', $image_path = 'tmp'){
-    // 获取文章类容
-    $content = file_get_contents($article_url);
-    // 利用正则表达式得到图片链接
-    $reg_tag = '/<img.*?\"([^\"]*(jpg|bmp|jpeg|gif|png)).*?>/';
-    $ret = preg_match_all($reg_tag, $content, $match_result); 
-    $pic_url_array = array_unique($match_result1[1]);
-    // 创建路径
-    $dir = getcwd() . DIRECTORY_SEPARATOR .$image_path;
-    mkdir(iconv("UTF-8", "GBK", $dir), 0777, true);
-    foreach($pic_url_array as $pic_url){
-        // 获取文件信息
-        $ch = curl_init($pic_url);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_NOBODY, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE );
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE );
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $fileInfo = curl_exec($ch);
-        $httpinfo = curl_getinfo($ch);
-        curl_close($ch);
-        // 获取图片文件后缀
-        $ext = strrchr($pic_url, '.');
-        $filename = $dir . '/' . uniqid() . $ext; 
-        // 保存图片信息到文件
-        $local_file = fopen($filename, 'w');
-        if(false !== $local_file){
-            if( false !== fwrite($local_file, $filecontent) ){
-            fclose($local_file);
-            }
-        }
-    }
-}
-```
-
-4、获取当前客户端的IP地址，并判断是否在（111.111.111.111,222.222.222.222)
-
-```
-如果没有使用代理服务器：
-
-$ip = $_SERVER['REMOTE_ADDR'];
-
-使用透明代理
-
-$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-
-参考文章
-
-https://www.cnblogs.com/rendd/p/6183094.html
-```
-
-5、nginx的log_format配置如下：
-
-log_format main ‘remoteaddr−remote_user [timelocal]"request”’ 
-‘statusbody_bytes_sent “httpreferer"″"http_user_agent” “upstreamresponsetime""request_time” “http_x_forwarded_for"';
-从今天的nginx log文件 access.log中：
-
-a、列出“request_time”最大的20行？
-b、列出早上10点访问量做多的20个url地址？
-
-6、什么是CSRF攻击？XSS攻击？如何防范？
-
-CSRF：跨站请求伪造，可以通过通过判断来源和加 Token 的方式来防范。
-
-XSS：跨站脚本攻击，可以通过对内容转义和过滤来防范,还有CSP
-
-7、应用中我们经常会遇到在user表随机调取10条数据来展示的情况，简述你如何实现该功能。
-```
-SELECT * FROM `table` WHERE id >= (SELECT FLOOR( MAX(id) * RAND()) FROM `table` ) ORDER BY id LIMIT 1;
-```
-参考文章：
-
-https://www.cnblogs.com/riasky/p/3367558.html
-
-http://www.jb51.net/article/48801.htm
-
-8、从扑克牌中随机抽5张牌，判断是不是一个顺子，即这5张牌是连续的
-
-这个问题有个关键点，扑克牌，1-13 不能再多了。这就很简单了。用PHP来做，定义一个数组分别存着1到13,拿出一个，置空一个，最后看下 这五个置空的 是不是连续的。这种情况不考虑抽出的顺序。
-
-9、两条相交的单向链表，如何求它们的第一个公共节点
-
-思想：
-
-如果两个链表相交，则从相交点开始，后面的节点都相同，即最后一个节点肯定相同；
-从头到尾遍历两个链表，并记录链表长度，当二者的尾节点不同，则二者肯定不相交；
-尾节点相同，如果A长为LA，B为LB，如果LA>LB,则A前LA-LB个先跳过
-如果两个单向链表有公共的结点，也就是说两个链表从某一结点开始，它们的m_pNext都指向同一个结点。但由于是单向链表的结点，每个结点只有一个m_pNext，因此从第一个公共结点开始，之后它们所有结点都是重合的，不可能再出现分叉。所以，两个有公共结点而部分重合的链表，拓扑形状看起来像一个Y，而不可能像X。
-
-参考文献：
-
-https://blog.csdn.net/wcyoot/article/details/6426436
-
-https://blog.csdn.net/Lieacui/article/details/52046548
-
-10、最长公共子序列问题LCS，如有[1,2,5,11,32,15,77]和[99,32,15,5,1,77]两个数组，找到它们共同都拥有的数，写出时间复杂度最优的代码，不能用array_intersect（这里有坑，需要去研究一下动态规划）。
-
-11、linux的内存分配和多线程原理
-
-12、MYSQL中主键与唯一索引的区别
-
-主键：绝对不能有空值。唯一索引：可以有空值
-
-参考：https://www.cnblogs.com/lonelyxmas/p/4594624.html
-
-13、http与https的主要区别
-
-关键是S上。简而言之，https建立连接后要先把SSL的证书发下去，有了公钥和私钥，就可以解密了。
-
-参考：https://www.cnblogs.com/zyl-Tara/p/7079696.html
-
-14、http状态码及其含意
-
-200 请求已成功，请求所希望的响应头或数据体将随此响应返回。
-301 被请求的资源已永久移动到新位置。
-302 请求的资源现在临时从不同的 URI 响应请求。
-400 1、语义有误，当前请求无法被服务器理解。2、请求参数有误。
-401 当前请求需要用户验证。
-403 服务器已经理解请求，但是拒绝执行它。
-404 请求失败，请求所希望得到的资源未被在服务器上发现。
-500 服务器遇到了一个未曾预料的状况，无法完成对请求的处理，会在程序码出错时出现。
-501 服务器不支持当前请求所需要的某个功能。无法识别请求的方法。
-502 作为网关或者代理工作的服务器尝试执行请求时，从上游服务器接收到无效的响应。
-503 由于临时的服务器维护或者过载，服务器当前无法处理请求。
-参考：http://tool.oschina.net/commons?type=5
-
-15、linux中怎么查看系统资源占用情况
-
-top、htop、free、uptime
-
-16、SQL注入的原理是什么？如何防止SQL注入
-
-原理：第一SQL本身有问题（这个不是主要问题）。第二你写的SQL很有问题（这是最主要的）
-
-防范：第一，绝对不要相信用户输入的任何东西。第二，预编译。现在的框架一般都会有SQL过滤的。
-
-17、isset(null) isset(false) empty(null) empty(false)输出
-
-PHP入门问题,isset和empty的区别
-
-分别是false, true, true, true
-
-18、优化MYSQL的方法
-
-第一，数据超过一定数量或者体积，请拆分表，垂直或者水平分（最有效果的优化）
-
-第二，务必有自增主键。通过自增主键来查数据是最快的。
-
-第三，常用的查询字段建立联合索引，写SQL一定要尊从最左原则，用到这个索引。
-
-第四，不要把逻辑运算放到sql里。言外之意是，不要写太复杂的SQL，你能写复杂的SQL 你肯定也能通过PHP实现。
-
-参考：https://cloud.tencent.com/developer/article/1004367
-
-19、数据库中的事务是什么？
-
-事务（transaction）是作为一个单元的一组有序的数据库操作。如果组中的所有操作都成功，则认为事务成功，即使只有一个操作失败，事务也不成功。如果所有操作完成，
-
-事务则提交，其修改将作用于所有其他数据库进程。如果一个操作失败，则事务将回滚，该事务所有操作的影响都将取消。
-
-20、写一个函数，尽可能高效的从一个标准URL中取出文件的扩展名
-
-会 写正则最好。我反正不会正则，需要用的时候就百度。
-
-21、参数为多个日期时间的数组，返回离当前时间最近的那个时间
-
-遍历数组，求当前时间差，和第一个进行对比，小于第一个交换位置。最后取第一个即可。
-
-22、echo、print、print_r的区别
-
-这三个放在一起，回答的点在于，print_r是函数，echo、print是结构语言。
-
-至于他们具体的区别参考：https://www.cnblogs.com/xiaotaoing/p/6687368.html
-
-23、http协议的header中有哪些key及含义
-
-这个问题，很难。一会半会说不清楚。如果做过PHP restful 接口开发，也踩过这里面的坑，那应该是可以答出来常用的几个KEY的。
-
-参考：https://blog.csdn.net/u014175572/article/details/54861813
-
-24、二叉树前中后遍历代码
-
-1.层序遍历
-2.先序遍历
-3.中序遍历
-4.后序遍历
-
-参考：https://blog.csdn.net/wk199351/article/details/65936001
-
-25、PHP的数组和C语言的数组结构上有何区别？
-
-但从PHP来讲，考的是PHP数组的实现。可以简单的认为，PHP的数组是hash桶+十字链表（实际上是数列Array，列表List，散列表/关联数组/字典Hashtable的聚合体）。优点是查询效率很高，遍历很方便，缺点是，占内存较多。（还是空间换时间的思路，毕竟现在内存又不值钱）
-
-C语言的数组，就是定长定类型的数列。
-
-26、Redis的跳跃表怎么实现的
-
-跳跃表(skiplist)是一种有序数据结构，它通过在每个节点中维持多个指向其他节点的指针，从而达到快速访问节点的目的。
-
-参考：https://blog.csdn.net/universe_ant/article/details/51134020
-
-27、哈希是什么？hash冲突后，数据怎么存？
-
-28、聚簇索引，聚集索引的区别？
-
-29、B+Tree是怎么进行搜索的
-
-30、数组和hash的区别是什么？
-
-31、写个函数，判断下面扩号是否闭合，左右对称即为闭合： ((()))，)(())，(())))，(((((())，(()())，()()
-
-32、 找出数组中不重复的值[1,2,3,3,2,1,5]
-
-用普通方法，肯定很容易的。
-
-33、32题你的时间复杂度是多少？有的情况下，你写了个算法，然后面试官会让你把你的算法的时间复杂度表达式写出来
-
-34、PHP的的这种弱类型变量是怎么实现的？
-
-考zval的，PHP的八种类型，本质只有一个结构。
-
-参考：https://blog.csdn.net/ohmygirl/article/details/41542445
-
-35、在HTTP通讯过程中，是客户端还是服务端主动断开连接？
-
-三次握手和四次挥手，以及他们每步的状态。
-
-这个问题最好能一步到位回答的全面的。一般都是有客户端告诉服务端，我这边东西发完了，可以断连接了么。但是如果客户端发完FIN服务端没有回复，就会重试，直到超过超时时间，就断了。服务端也一样，超过时间，服务端就断了。
-
-36、PHP中发起http请求有哪几种方式？它们有何区别？
-
-GET
-POST
-HEAD
-PUT
-DELETE
-OPTIONS
-TRACE
-CONNECT
-
-37、有一颗二叉树，写代码找出来从根节点到flag节点的最短路径并打印出来，flag节点有多个。比如下图这个树中的6和14是flag节点，请写代码打印8、3、6 和 8、10、14两个路径
-
- 
-
-
-
-典型的二叉搜索树。大学数据结构的基础题。
-
-参考：https://blog.csdn.net/BaiHuaXiu123/article/details/52488443
-
-38、有两个文件文件，大小都超过了1G，一行一条数据，每行数据不超过500字节，两文件中有一部分内容是完全相同的，请写代码找到相同的行，并写到新文件中。PHP最大允许内内为255M。
-
-将文件拆分成若干个小文件，根据内容计算hash值，分散到不同文件。
-
-39、请写出自少两个支持回调处理的PHP函数，并自己实现一个支持回调的PHP函数
-
-array_map,array_filter, array_walk
-
-40、请写出自少两个获取指定文件夹下所有文件的方法（代码或思路）。
-
-核心方法是scandir,核心思想是递归。
-
-41、请写出自少三种截取文件名后缀的方法或函数（PHP原生函数和自己实现函数均可）
-
-echo substr(strrchr($file, '.'), 1);
- 
-echo substr($file, strrpos($file, '.')+1);
- 
-$arr=explode('.', $file);
-echo $arr[count($arr)-1];
- 
-$arr=explode('.', $file);
-echo end($arr);
- 
-echo strrev(explode('.', strrev($file))[0]);
- 
-echo pathinfo($file)['extension'];
- 
-echo pathinfo($file, PATHINFO_EXTENSION);
-42、PHP如何实现不用自带的cookie函数为客户端下发cookie。对于分布式系统，如何来保存session值。
-
-这个题有点绕。考的还是COOKIE和SESSION的基础知识。服务端通过set-cookie命令来通知客户端保存cookie。
-
-只要按照domain path 过期时间等规则 用header函数就可以实现。
-
-分布式系统session，集中处理。按我们公司的架构，为了实现高可用和高容灾，提供一个分布式的验签服务。具体的可以看下redis的分布式服务架构。
-
-43、请用SHELL统计5分钟内，nginx日志里访问最多的URL地址，对应的IP是哪些？
-
-44、写一段shell脚本实现备份mysql指定库（如test)到指定文件夹并打包，并删除30天前的备份，然后将新的备份推送到远端服务器，完成后送邮件通知。
-
-45、mysql数据库中innodb和myisam引擎的区别
-
-区别主要在数据和索引的存储结构和存储方式上，以及对于事务的支持。
-
-参考：https://blog.csdn.net/chajinglong/article/details/56666771
-
-46、从用户在浏览器中输入网址并回车，到看到完整的见面，中间都经历了哪些过程。
-
-入门问题。这个问题有一个很大的坑，面试官可能会从这个问题下手问你一大堆问题。
-
-以PHP为例：通常最简单的回答，从用户的电脑找到最近的DNS服务，然后解析到对应的IP 然后双方开始HTTP连接，然后发送请求信息，服务器拿到请求信息就开始准备回应的信息，中间要经过nginx转发到frstCGI(PHP-FPM),然后PHP开始解析框架，解析请求头部，找到对应的API，该查数据库查数据，该组装HTML组装HTML，完事了就重新返回给用户。用户拿到返回数据，浏览器开始渲染页面，JS开始加载。
-
-47、如何分析一条sql语句的性能。
-
-explain，具体的请百度。（基本很少用性能分析语句。MYSQL的表设计上尽量冗余一部分字段，避免在MYSQL里处理大量的逻辑运算。我们是做PHP服务开发的，mysql语句能简单尽量简单。逻辑运算的地方可以在PHP里做。）
-
-48、ping一个服务器ping不通，用哪个命令跟踪路由包？
-
-linux:traceroute,windows:tracert
-49、$a=[0,1,2,3]; $b=[1,2,3,4,5]; $a+=$b; var_dump($a)等于多少？
-
-基础问题。本质还是考PHP数组的结构和特点。
-
-结果是01235。PHP用数字索引和STRING索引差别还是很大的
-
-参考：http://www.jb51.net/article/38593.htm
-
-50、$a=[1,2,3]; foreach($a as &$v){} foreach($a as $v){} var_dump($a)等于多少;
-
-122
-此处有一坑。foreach 完之后，$index , $value 并不会消失保留最后一次赋值。
-这里的第一次foreach之后，数组中最后一个元素变成引用，引用变量 $v 继续存在且指向数组的最后一个元素。第二次遍历，因为遍历变量名是 $v , 所以等于说每次遍历都将此次遍历的值修改成最后元素的值，直至到遍历最后一个元素（引用元素），因为此时数组的最后一个元素已被修改成上一个元素的值，最后一次赋值就是 自己==自己。 故最后一个等于倒数第二个
-
-https://learnku.com/articles/7001/php-ray-foreach-and-references-thunder
-
-51、数据库中的存放了用户ID,扣费很多行，redis中存放的是用户的钱包，现在要写一个脚本，将数据库中的扣费记录同步到redis中，每5分钟执行一次。请问要考虑哪些问题？
-
-思路：生产者和消费者模式。这个问题也没有说其他的状态，比如数据库的数据会实时增加么？redis中每个钱包是否有其他服务在读取或者写入啊。什么的。数据库和REDIS放一起，要么考数据一致性，要么考出现锁，导致效率降低。
-
-52、MYSQL主从服务器，如果主服务器是innodb引擎,从服务器是myisam引擎，在实际应用中，会遇到什么问题？
-
-不知道，没用过，为什么这么设计？故意给自己找不愉快？
-
-53、linux中进程信号有哪些？
-
-kill -l 很少用
-
-54、redis的底层实现
-
-面试官这么样问你，你就反问他，你要的底层实现是字段的设计？内存分配管理？网络模型？数据同步？还是分布式的实现？（TIPS:面试就是两个人的博弈。面试官给出一个描述不清晰的问题，我们没必要回答。让他把问题讲清楚再思考怎么回复）
-
-参考：https://cloud.tencent.com/developer/article/1004377
-
-这篇文章 要多读几遍。
-
-55、异步模型
-
-问清楚是IO异步模型。还是AJAX这类的异步请求模型。差别非常大的。
-
-参考：https://cloud.tencent.com/developer/article/1005481
-
-狗东某风控研发必考题。
-
-56、10g文件，用php查看它的行数
-
-粗暴一点的方法 ini_set('memory_limit','-1'); 先把当前内存限制解除了 然后直接逐行统计。时间会非常的久。
-
-有更好的方法请留言。
-
-57、有10亿条订单数据，属于1000个司机的，请取出订单量前20的司机
-
-（TIPS）不要中招。不要用常用思路来处理，10亿数据 你再怎么优化，全表求和，都是要死人的。
-
-我们从设计上解决这个问题。只有一千个司机。我们可以做个简单哈希，分库分表，%求余数。保证这一千个司机分在一千个表里，每个人有每个人的单独表。引擎用MYSAIM，求表中数据的总数，效率飞快，遍历一千张表，求最大前二十即可。
-
-58、设计一个微信红包的功能
-
-没做过。其实题目表达不清楚。如果做过微信公众号开发，知道微信事件模型的XML数据结构，应该会好做一点。
-
-59、根据access.log文件统计最近5秒的qps，并以如下格式显示，01 1000（难点在01序号）
-
-tail -f access.log | awk -F '[' '{print $2}' | awk '{print $1}' | uniq -c
-参考：https://blog.csdn.net/dong_007_007/article/details/78330337
-
-60、php7性能为什么提升这么高
-
-不逼逼，直接参考：http://www.laruence.com/php-internal
-
-鸟哥的文章要多读，多读。
-
-61、遍历一个多维数组
-
-递归。array_map传入一个回调函数。
-
-62、有这样一个字符串abcdefgkbcdefab......随机长度，写一个函数来求bcde在这个字符串中出现的次数
-
-substr_count（）；
-
-63、有一个1G大小的一个文件，里面每一行是一个词，词的大小不超过16个字节，内存限制大小是1M。返回频数最高的100个词
-
-方法太多了，但是实现起来 各有各的问题。
-
-我可能只会用HASH映射做。其他的，不会。
-
-参考：第64题。
-
-64、十道海量数据处理面试题与十个方法大总结
-
-> https://blog.csdn.net/v_JULY_v/article/details/6279498
-65、php进程模型，php怎么支持多个并发
-
-守护进程模型（需要知道php-fpm的各种配置了）
-
-参考：https://www.jianshu.com/p/542935a3bfa8
-
-66、nginx的进程模型，怎么支持多个并发
-
-这个三言两语说不清楚。
-
-参考：https://www.zhihu.com/question/22062795
-
-67、php-fpm各配置含义，fpm的daemonize模式
-
-php-fpm 的配置并不多，常用的就更少了。
-
-参考：http://www.4wei.cn/archives/1002061
-
-static - 子进程的数量是固定的（pm.max_children）
-ondemand - 进程在有需求时才产生（当请求时，与 dynamic 相反，pm.start_servers 在服务启动时即启动
-dynamic - 子进程的数量在下面配置的基础上动态设置：pm.max_children，pm.start_servers，pm.min_spare_servers，pm.max_spare_servers
-68、让你实现一个简单的架构，并保持高可用，两个接口，一个上传一条文本，一个获取上传的内容，你怎么来设计？要避免单机房故障，同时要让代码层面无感。
-
-参考：分布式架构设计必备CAP原理。
-
-69、两台mysql服务器，其中一台挂了，怎么让业务端无感切换，并保证正常情况下讲台服务器的数据是一致的
-
-不是核心业务的话，先停写，把备机拉起来，查看两台机器的日志，进行数据补偿，开写。
-
-如果是核心业务的话，现在所有的写操作都在正常的状态机器上。把好的这台机器的备机拉起来，当主机。
-
-以上全是应急操作。实际上数据库的容灾设计要复杂的多。
-
-面试官要是问你，备机的数据不一致怎么办，你要勇敢怼回去，你们每秒多少写入操作。按照百万级表，每秒1000的写入效率，正常的设计是，分布在2台机器上每台500。这个级别的数据同步，出现差异的概率 可以忽略不计的。有一台出现问题，另一台也可以抗住。
-
-（正常的操作，还是先停写，等数据一致，切换，开写。我们公司搞这些切换都是在凌晨4.00左右，核心业务的每秒写操作，只有十几个。前后耽搁不到20秒）。
-
-70、http协议具体的定义
-
-这种题 有是很难回答的。太宽泛了，我们面试早就不问这种问题了。
-
-参考：日本人写的《图解HTTP》
-
-71、什么是锁，怎么解决锁的问题
-
-计算机原理学的，生产者消费者模型，银行家模型，都可以解决锁的问题。
-
-72、rand与mt_rand的区别
-
-我实习的时候遇到这个坑。
-
-说是mt_rand比rand快4倍。
-
-在随机数区间不大的情况下并没有很大的效率差距。但是出现重复数的几率，rand要比mt_rand高很多。
-
-73、mysql事务隔离是怎么实现的
-
-通过各种行锁表锁，各种乐观锁悲观锁，排他锁实现的呀。
-
-74、mysql的锁怎么实现的
-
-https://blog.csdn.net/alexdamiao/article/details/52049993
-
-https://www.cnblogs.com/luyucheng/p/6297752.html
-
-https://blog.csdn.net/tangkund3218/article/details/47704527
-
-75、对称加密和非对称加密的方式
-
-对称加密：我们俩共用一个秘钥，你加密，我解密。
-
-非对称加密：我给你一个公钥，你加密完了，我还能有我的私钥把密文解开。但是你没有我的私钥。
-
-扩展：椭圆加密算法。
-
-76、10瓶水，其中一瓶有毒，小白鼠喝完有毒的水之后,会在24小时后死亡,问:最少用几只小白鼠可以在24小时后找到具体是哪一瓶水有毒。
-
-四只
-
-二进制问题。薛定谔的老鼠。
-
-一只老鼠有两个状态，死活，对应01。假设老鼠的个数为A，则有2^A>=10; A=4；
-
-思路很简单，十瓶药编号：0,1,10,11....1001;
-
-0不喝。第一只老鼠喝所有个位是1的：13579，第二只喝十位是1的，第三只和百位是1的，第四只喝千位是1的。
-
-24小时后，看下死了的是1，活着的是0。按老鼠的顺序乖乖站好……假如第一只和第三只死了，那就是0101，就是5 有问题。
-
-77、redis是如何进行同步的，同步的方式，同步回滚怎么办，数据异常怎么办，同时会问MYSQL的同步方式和相关异常情况
-
-redis 集群主从同步的简单原理
-
-　　Redis的复制功能是基于内存快照的持久化策略基础上的，也就是说无论你的持久化策略选择的是什么，只要用到了Redis的复制功能，就一定会有内存快照发生。
-
-　　当Slave启动并连接到Master之后，它将主动发送一个SYNC命令( 首先Master会启动一个后台进程，将数据快照保存到文件中[rdb文件] Master 会给Slave 发送一个
-
-Ping命令来判断Slave的存活状态 当存活时 Master会将数据文件发送给Slave 并将所有写命令发送到Slave )。
-
-　　Slave首先会将数据文件保存到本地 之后再将 数据 加载到内存中。
-
-　　当第一次链接 或者是 故障后 重新连接 都会先判断Slave的存活状态 在做全部数据的同步 ， 之后只会同步Master的写操作(将命令发送给Slave)
-
-问题：
-
-　　当 Master 同步数据时 若数据量较大 而Master本身只会启用一个后台进程 来对多个Slave进行同步 ， 这样Master就会压力过大 ， 而且Slave 恢复的时间也会很慢！
-
-redis 主从复制的优点：
-
-  (1)在一个Redis集群中，master负责写请求，slave负责读请求，这么做一方面通过将读请求分散到其他机器从而大大减少了master服务器的压力，另一方面slave专注于提供
-读服务从而提高了响应和读取速度。
-
-　　(2)在一个Redis集群中，如果master宕机，slave可以介入并取代master的位置，因此对于整个Redis服务来说不至于提供不了服务，这样使得整个Redis服务足够安全。
-
-　　(3)水平增加Slave机器可以提高性能
-
-参考：
-
-https://blog.csdn.net/hxpjava1/article/details/78347890/
-https://www.cnblogs.com/zhao-blog/p/6131524.html
-78、怎么解决跨域
-
-JSONP
-添加响应头，允许跨域
-代理的方式
-79、json和xml区别,各有什么优缺点
-
-（1）可读性方面：基本相同，XML的可读性比较好；
-
-（2）可扩展性方面：都具有良好的扩展性；
-
-（3）编码难度方面：相对而言，JSON的编码比较容易；
-
-（4）解码难度：JSON的解码难度基本为零，XML需要考虑子节点和父节点；
-
-（5）数据体积方面：JSON相对于XML来讲，数据体积小，传递的速度比较快；
-
-（6）数据交互方面：JSON与javascript的交互更加方便，更容易解析处理，更好的数据交互；
-
-（7）数据描述方面：XML对数据描述性比较好；
-
-（8）传输速度方面：JSON的速度远远快于XML。
-
-参考：https://blog.csdn.net/java19880223/article/details/20054111
-
-80、Trait优先级
-
-在trait继承中，优先顺序依次是：来自当前类的成员覆盖了 trait 的方法，而 trait 则覆盖了被继承的方法
-
-81、a引用b，报错c里面类重复定义，循环引用会出现什么问题
-
-82、下面员工3的薪水大于其主管的薪水，一条SQL找到薪水比下属低的主管
-
-id	username	salary	pid
-1	a	3000	null
-2	b	8000	null
-3	c	5000	1
-4	d	6000	3
-SELECT a.*, b.*
-FROM `user` as a
-LEFT JOIN `user` as b ON a.pid = b.id AND a.salary > b.salary
-WHERE b.id > 0;
-82、在一个坐标系内有一个N个点组成的多边形,现在有一个坐标点,写代码或思路来判断这个点是否处于多边形内
-
-83、数据库如果出现了死锁,你怎么排查,怎么判断出现了死锁?
-
-https://www.cnblogs.com/huanyou/p/5775965.html
-
-84、写一个一个程序来查找最长子串
-
-http://www.jb51.net/article/128449.htm
-
-85、分析一个问题:php-fpm的日志正常,但客户端却超时了,你认为可能是哪里出了问题,怎么排查?
-
-检查nginx log，请求是否达到nginx 和是否正常转发给 php-fpm
-
-86、nginx的工作流程是什么样的,可以画图描述
-
-87、进程间通信方式有哪些
-
-1)管道
-管道分为有名管道和无名管道
-无名管道是一种半双工的通信方式,数据只能单向流动,而且只能在具有亲缘关系的进程间使用.进程的亲缘关系一般指的是父子关系。无明管道一般用于两个不同进程之间的通信。当一个进程创建了一个管道,并调用fork创建自己的一个子进程后,父进程关闭读管道端,子进程关闭写管道端,这样提供了两个进程之间数据流动的一种方式。
-有名管道也是一种半双工的通信方式,但是它允许无亲缘关系进程间的通信。
-
-2)信号量
-信号量是一个计数器,可以用来控制多个线程对共享资源的访问.,它不是用于交换大批数据,而用于多线程之间的同步.它常作为一种锁机制,防止某进程在访问资源时其它进程也访问该资源.因此,主要作为进程间以及同一个进程内不同线程之间的同步手段.
-
-3)信号
-信号是一种比较复杂的通信方式,用于通知接收进程某个事件已经发生.
-
-4)消息队列
-消息队列是消息的链表,存放在内核中并由消息队列标识符标识.消息队列克服了信号传递信息少,管道只能承载无格式字节流以及缓冲区大小受限等特点.消息队列是UNIX下不同进程之间可实现共享资源的一种机制,UNIX允许不同进程将格式化的数据流以消息队列形式发送给任意进程.对消息队列具有操作权限的进程都可以使用msget完成对消息队列的操作控制.通过使用消息类型,进程可以按任何顺序读信息,或为消息安排优先级顺序.
-
-5)共享内存
-共享内存就是映射一段能被其他进程所访问的内存,这段共享内存由一个进程创建,但多个进程都可以访问.共享内存是最快的IPC(进程间通信)方式,它是针对其它进程间通信方式运行效率低而专门设计的.它往往与其他通信机制,如信号量,配合使用,来实现进程间的同步与通信.
-
-6)套接字：可用于不同及其间的进程通信
-
-88、主从复制，从服务器会读取到主服务器正在回滚的数据吗？主数据库写成功，从服务器因为一些原因写失败，最后会出现什么情况？主从复制如果键冲突怎么办？
-
-不会；主从数据不一致；正常是不会出现这种情景，具体看情况，是否可以修复，恢复到之前的时间点，然后追回同步。
-
-89、事务有几种隔离级别？事务的隔离级别是怎么实现的?
-
-读未提交（read-uncommitted）
-不可重复读（read-committed）
-可重复读（repeatable-read）
-串行化（serializable）
-https://www.cnblogs.com/huanongying/p/7021555.html
-
-90、什么是B+树,请画b+树的结构
-
-https://blog.csdn.net/qq_23217629/article/details/52510485
-
-91、mysql中的字符集，客户端与数据库不一致，怎么办? MYSQL中字符串到显示到界面,字符转换的过程是怎样的？数据库中的字符集是latin1,你现在将utf8的字符串存到latin1字符集的数据库表,你能将utf8的字符串存进去吗？假如你说能存,追问:能否恢复?假如能,那怎么恢复?
-
-92、写一段代码，找到所有子集合，如[a,b,c]的子集合有{},{a},{b},{c},{ab},{ac},{abc}
-
-93、['a'=>200,'b'=>100,'c'=>100],写一个自定义排序函数，按值降序,如果值一样，按键排序
-
-冒泡排序
-
-94、设计一个缓存系统，可以定期或空间占满之后自动删除长期不用的数据，不能使用用遍历。
-
-我当时的答案是用链表来存,缓存命中就将该缓存移到链表头,然后链表尾就都是冷数据了。
-我记得之前是在哪里看过这个设计,但我忘记在连接了,请知道朋友的把连接贴上来。
-
-95、==和===的区别，写出以下输出："aa"==1,"bb"==0，1=="1"
-
-== 等于，不需要对比数据类型
-=== 全等，需要对比类型
-false, true, true
-
-96、一个排序好的数组,将它从中间任意一个位置切分成两个数组,然后交换它们的位置并合并，合并后新数组元素如:20,21,22,25,30,1,2,3,5,6,7,8,15,18,19,写一个查询函数来查找某个值是否存在。
-
-97、设计一个树形结构，再写一个函数对它进行层序遍历
-
-98、'$var'和"$var"的区别
-
-双引号串中的内容可以被解释而且替换，而单引号串中的内容总被认为是普通字符。
-
-在单引号串中甚至反斜杠也失去了他的扩展含义（除了插入反斜杠\和插入单引号\'）。所以，当你想在字串中进行变量代换和包 含\n（换行符）等转义序列时，你应该使用双引号。单引号串可以用在其他任何地方，脚本中使用单引号串处理速度会更快些。
-
-99、self和static的区别
-
-static：如果在子类中重写了父类中的static方法、属性，父类就会去访问了子类的static方法
-
-self: 是类内指针，不管子类有没有重写过父类中的方法、属性都指向本类的静态方法、属性
-
-100、PHP的协程以及用途
-
-http://www.laruence.com/2015/05/28/3038.html
-
-https://blog.csdn.net/gavin_new/article/details/54603490
-
-101、描述autoload的机制
-
-https://blog.csdn.net/zhihua_w/article/details/52723402
-
-102、mysql中字段类型各占几个字节：smallint、int、bigint、datetime、varchar(8)
-
-smallint 2字节
-int 4字节
-bigint 8字节
-datetime 8字节
-varchar(8) 8*3字节
-http://www.jb51.net/article/55853.htm
-
-103、哪些属性唯一确定一条TCP连接
-
-104、myisam和innodb的区别，为什么myisam比innodb快，myisam和innodb的索引数据结构是什么样的?innodb主键索引和非主键索引的区别?其索引上存放的数据是什么样的？
-
-区别主要在数据和索引的存储结构和存储方式上，以及对于事务的支持。
-
-参考：https://blog.csdn.net/chajinglong/article/details/56666771
-
-105、断开TCP连接时，timewait状态会出现在发起分手的一端还是被分手的一端
-
-为什么建立TCP连接需要三次握手？
-原因：为了应对网络中存在的延迟的重复数组的问题
-例子：
-假设client发起连接的连接请求报文段在网络中没有丢失，而是在某个网络节点长时间滞留了，导致延迟到达server。本来这是一个已经失效的连接报文，但是server接收到这个连接报文之后，误认为client发起了新的连接，于是向client发送确认报文段。此时因为没有了连接的3次握手，client不会对server的确认报文作出回应，也不会向server发送数据，server就以为连接已经建立，一直在空等client的数据，这样server的这一部分网络资源就被浪费了。
-
-为什么断开TCP连接需要进行四次握手 ？
-因为TCP连接是全双工的网络协议，允许同时通信的双方同时进行数据的收发，同样也允许收发两个方向的连接被独立关闭，以避免client数据发送完毕，向server发送FIN关闭连接，而server还有发送到client的数据没有发送完毕的情况。所以关闭TCP连接需要进行四次握手，每次关闭一个方向上的连接需要FIN和ACK两次握手。
-
-TIME_WAIT状态的意义
-
-在TCP连接中，当被动关闭连接的一方(图中client)发送的FIN报文到达时，被动关闭连接的一方会发送ACK确认报文，并且进入TIME_WAIT状态，并且等待2MSL时间段(MSL:maximum segment life)。这么做有下述两个原因：
-
-被动关闭连接的一方(图中的server)在一段时间内没有收到对方的ACK确认数据包，会重新发送FIN数据包，因而主动关闭连接的一方需要停留在等待状态以处理对方重新发送的FIN数据包。否则他会回应一个RST数据包给被动关闭连接的一方，使得对方莫名其妙。
-
-在TIME_WAIT状态下，不允许应用程序在当前ip和端口上和之前通信的client(这个client的ip和端口号不变)建立一个新的连接。这样就能避免新的连接收到之前的ip和端口一致的连接残存在网络中的数据包。这也是TIME_WAIT状态的等待时间被设置为2MSL的原因，以确保网络上当前连接两个方向上尚未接收的TCP报文已经全部消失。
-
-https://www.cnblogs.com/zhoudayang/p/6012257.html
-
-106、AWK各种数据分析考得非常多，要多练习，题目不再一一写了
-
-107、redis中集合、有序集合、hyperLog、hash的数据结构是啥样的
-
-key value
-
-108、描述一下:一个请求到达nginx的全部处理过程（nginx自身会调用哪些逻辑）、然后怎么与php通信，中间的流程是什么样的等等？
-
-https://www.jianshu.com/p/df89b530db89
-
-https://blog.csdn.net/xiajun07061225/article/details/9309273
-
-109、nginx和php-fpm的相关配置,随便问里面各种参数啥意思
-
-php-fpm可以通过tcp socket和unix socket两种方式实现。
-
-https://blog.csdn.net/koastal/article/details/52303316
-
-110、假如有一张地图,如下图,"-"代表海洋、"+"代表陆地,用你最擅长的方式,取出陆地的坐标。
-
---++----++--+++---
--++++----+++++++--
--+++----++++------
------++------++++-
----++++++-----+++-
------+++------+++-
-比如上图在数组中表示成,1表示成陆地,0表示海洋:
-
-[
-    [0,0,1,1,0,0,0,1,1....],
-    [0,1,1,1.....],
-]
-写个算法取出所有陆地的坐标,并按块放到一起,如地图上左上角第一个陆地的坐标是:
-
-[
-    [0,2],[0,3],
-    [1,1],[1,2],[1,3],[1,4],
-    [2,1],[2,2],[2,3]
-]
-111、Jsonp的实现原理，你还知道哪些跨域方式？
-
-JSONP
-添加响应头，允许跨域
-代理的方式
-112、如果某个博客通过判断 referer 方式来进行图片防盗链，如何破解？
-
-curl 设置来源地址来欺骗对方服务器验证
-
-113、简述 mysql 查询优化的本质，并举2个例子
-
-114、设计一个秒杀系统，如何保证商品不超卖？
-
-https://blog.csdn.net/zhoudaxia/article/details/38067003
-
-115、单例模式的优点是什么？抽象类是什么？ 还了解哪些设计模式？
-
-单例模式又称为职责模式，它用来在程序中创建一个单一功能的访问点，通俗地说就是实例化出来的对象是唯一的。
-所有的单例模式至少拥有以下三种公共元素：
-
-它们必须拥有一个构造函数，并且必须被标记为private
-它们拥有一个保存类的实例的静态成员变量
-它们拥有一个访问这个实例的公共的静态方法
-单例类不能再其它类中直接实例化，只能被其自身实例化。它不会创建实例副本，而是会向单例类内部存储的实例返回一个引用。
-抽象的类不能被实例化。任何一个类，如果它里面至少有一个方法是被声明为抽象的，那么这个类就必须被声明为抽象的。被定义为抽象的方法只是声明了其调用方式（参数），不能定义其具体的功能实现。
-
-https://www.cnblogs.com/kangxl/p/6347179.html
-
-工厂模式
-适配器模式
-
-116、斗地主中，地主比农民得到王炸的概率多多少？
-
-# php面试相关
-
-## tip
-
-这个文档只是一个提纲，以及一些可能的考点或者demo代码。列出了大概的技术栈，每一个点都需要花更多的时间去深入钻研，万不能只看一点点皮毛就去面试。而应该在广泛学习的基础上，通过文档里的每一个点引出无数个思维方向，从而在大脑里形成一个自己的知识树，明白自己的欠缺，不断学习，丰富自己的技术栈。
 
 ## redis
-
+```
 Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库，并提供多种语言的API。
 
 redis包括string(字符串)、list(链表)、set(集合)、zset(sorted set --有序集合)和hashs（哈希类型）。这些数据类型都 支持push/pop、add/remove及取交集并集和差集及更丰富的操作，而且这些操作都是原子性的。
 
-#### php中reids的操作
+ php中reids的操作
 
-```php
 // from 菜鸟runoob
 // 从代码中以点带面，在什么样的场景中会运用到
 
@@ -2573,8 +1870,8 @@ $redis->save();
 ```
 
 ## mysql
-
-#### mysql优化怎么做的？
+```
+ mysql优化怎么做的？
 
 1. 设计角度：存储引擎的选择，字段类型选择，范式
 
@@ -2586,7 +1883,7 @@ $redis->save();
 
 5. 从硬件上升级数据库服务器。
 
-#### sql注入是什么及如何预防sql注入？
+ sql注入是什么及如何预防sql注入？
 
 SQL注入攻击指的是用户或者黑客通过构建特殊的输入作为参数传入我们的Web应用程序端，而这些输入大都是SQL语法里的一些组合，通过执行SQL语句进而执行攻击者所要的操作，其主要原因是程序员没有细致地过滤用户输入的数据，致使非法数据侵入系统而造成的。因此我们在做开发过程中一定要预防sql注入，主要从两方面着手：
 
@@ -2594,7 +1891,7 @@ SQL注入攻击指的是用户或者黑客通过构建特殊的输入作为参�
 
 2、通过addslashes或者mysql_real_escape_string这两个函数对用户输入的值进行转义处理，把一些特殊的字符转义掉。
 
-#### 预处理
+ 预处理
 
 预处理语句用于执行多个相同的 SQL 语句，并且执行效率更高。
 
@@ -2614,7 +1911,6 @@ SQL注入攻击指的是用户或者黑客通过构建特殊的输入作为参�
 
 预处理语句针对**SQL注入**是非常有用的，因为参数值发送后使用不同的协议，保证了数据的合法性。
 
-```php
 $stmt = $conn->prepare("INSERT INTO MyGuests (firstname, lastname, email) VALUES (?, ?, ?)");
 $stmt->bind_param("sss", $firstname, $lastname, $email);
 
@@ -2625,17 +1921,17 @@ $email = "john@example.com";
 $stmt->execute();
 
 $stmt->close();
-```
 
-#### mysql索引
+ mysql索引
 
 - **非常重要！**
 
 了解InnoDB和Myisam，B+tree,聚簇索引等等
 [InnoDB索引原理详解](https://www.cnblogs.com/shijingxiang/articles/4743324.html)
+```
 
 ## MongoDB
-
+```
 MongoDB 是一个介于关系数据库和非关系数据库之间的产品，是非关系数据库当中功能最丰富，最像关系数据库的。它支持的数据结构非常松散，是类似json的bson格式，因此可以存储比较复杂的数据类型。Mongo最大的特点是它支持的查询语言非常强大，其语法有点类似于面向对象的查询语言，几乎可以实现类似关系数据库单表查询的绝大部分功能，而且还支持对数据建立索引。
 
 SQL术语/概念|MongoDB术语/概念|解释/说明
@@ -2648,7 +1944,6 @@ index|index|索引
 table joins| |表连接,MongoDB不支持
 primary key|primary key|主键,MongoDB自动将_id字段设置为主键
 
-```php
 <?php
 // from runoob
 $m = new MongoClient(); // 连接默认主机和端口为：mongodb://localhost:27017
@@ -2677,15 +1972,13 @@ $collection->update(array("title"=>"MongoDB"), array('$set'=>array("title"=>"Mon
 // 删除文档
 $collection->remove(array("title"=>"MongoDB 教程"), array("justOne" => true));
 ?>
-```
 
 ## composer
-
+```
 Composer 是 PHP5.3以上 的一个依赖管理工具。它允许你声明项目所依赖的代码库，它会在你的项目中为你安装他们。
 
-#### 创建一个 composer.json 文件
+ 创建一个 composer.json 文件
 
-```json
 {
     "require": {
         "monolog/monolog": "1.2.*"
@@ -2694,8 +1987,8 @@ Composer 是 PHP5.3以上 的一个依赖管理工具。它允许你声明项目
 ```
 
 ## php web相关
-
-#### cookie与session的区别
+```
+ cookie与session的区别
 
 1. cookie数据存放在客户的浏览器上，session数据放在服务器上。
 
@@ -2705,16 +1998,16 @@ Composer 是 PHP5.3以上 的一个依赖管理工具。它允许你声明项目
 
 4. 单个cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。
 
-#### get和post的区别
+ get和post的区别
 1. get是从服务器上获取数据，post是向服务器传送数据。
 2. get是把参数数据队列加到提交表单的ACTION属性所指的URL中，值和表单内各个字段一一对应，在URL中可以看到。post是通过HTTP post机制，将表单内各个字段与其内容放置在HTML HEADER内一起传送到ACTION属性所指的URL地址。用户看不到这个过程。
 3. get传送的数据量较小，不能大于2KB。post传送的数据量较大，一般被默认为不受限制。4.. get安全性非常低，post安全性较高。但是执行效率却比Post方法好。
 
-#### php在储存session以什么形式存在
+ php在储存session以什么形式存在
 
 PHP为session的存储提供了三种方式: 文件/ 内存/ 自定义存储,默认是使用文件存储.在访问量大的网站上采用这种方式就不大合 适,因为这样会导致大量的输入输出的冗余.我们可以在php.ini更改配置文件或者php脚本中通过相应的函数来设置session文件的存储类型来改变session文件的存储形式
 
-#### xss攻击怎么防止
+ xss攻击怎么防止
   
 XSS又称CSS，全称Cross SiteScript(跨站脚本攻击)， XSS攻击类似于SQL注入攻击，是Web程序中常见的漏洞，XSS属于被动式且用于客户端的攻击方式，所以容易被忽略其危害性。其原理是攻击者向有XSS漏洞的网站中输入(传入)恶意的HTML代码，当用户浏览该网站时，这段HTML代码会自动执行，从而达到攻击的目的。如，盗取用户Cookie信息、破坏页面结
 
@@ -2734,14 +2027,14 @@ XSS又称CSS，全称Cross SiteScript(跨站脚本攻击)， XSS攻击类似于S
 php防止XSS跨站脚本攻击的方法：是针对非法的HTML代码包括单双引号等，使用htmlspecialchars()函数。
 
 
-#### [静态化如何实现的](https://blog.csdn.net/qq_39618306/article/details/79014438)
+ [静态化如何实现的](https://blog.csdn.net/qq_39618306/article/details/79014438)
 这里要说的静态化指的是页面静态化，也即生成实实在在的静态文件，也即不需要查询数据库就可以直接从文件中获取数据，指的是真静态。它的实现方式主要有两种：
 
 - 一种是我们在添加信息入库的时候就生成的静态文件，也称为模板替换技术，这种主要用在后台，用于一些基本上很少变化的信息上，在添加信息的时候使用添加的信息来替换制定好的模板中的内容，达到生成静态文件的目的，这样在前台访问该信息时，可以直接从生成好的静态文件中获取信息，如一些CMS系统。
 
 - 另外一种是用户在访问我们的页面时先判断是否有对应的缓存文件存在，如果存在就读缓存，不存在就读数据库，同时生成缓存文件。这种实现的主要原理是基于PHP中的ob缓冲技术来实现的，当没有静态文件时，从数据库中读取，读取的数据使用OB缓存，使用相关的函数从OB缓冲中读取数据，写入到文件中，形成静态文件。当然这个过程中要考虑静态文件的缓存周期问题，我们可以根据文件的最后修改时间和当前时间及设定的缓存时间来定时更新缓存文件。
 
-#### 如何处理负载、高并发
+ 如何处理负载、高并发
 从低成本、高性能和高扩张性的角度来说有如下处理方案：
 
 1. HTML静态化
@@ -2762,29 +2055,31 @@ Apache的最大并发连接为1500，只能增加服务器，可以从硬件上�
 - 知识点： [反向代理](https://www.cnblogs.com/Anker/p/6056540.html)
 
 ## 服务器
-
+```
 心中有概念，然后足够的实际操作。
 
-#### Apache
+ Apache
 
 [百度百科介绍](https://baike.baidu.com/item/apache/6265)
 
-#### Nginx
+ Nginx
 
 [百度百科介绍](https://baike.baidu.com/item/nginx/3817705)
+```
 
 ## php特性
 
-#### PHP 的垃圾收集机制是怎样的
+```
+ PHP 的垃圾收集机制是怎样的
 php作为脚本语言是页面结束即释放变量所占内存的。 当一个 PHP线程结束时，当前占用的所有内存空间都会被销毁，当前程序中所有对象同时被销毁。GC进程一般都跟着每起一个SESSION而开始运行的.gc目的是为了在session文件过期以后自动销毁删除这些文件.在PHP中，没有任何变量指向这个对象时，这个对象就成为垃圾。PHP会将其在内存中销毁；这是PHP的GC垃圾处理机制，防止内存溢出。 执行这些函数也可以起到回收作用__destruct /unset/mysql_close /fclose php对session有明确的gc处理时间设定session.gc_maxlifetime 如果说有垃圾，那就是整体的程序在框架使用中，会多次调用同一文件等等造成的非单件模式等。所以在出来的时候，必要的用_once引用，在声明类的时候使用单件模式。还有简化逻辑等等。
 
-#### zval
+ zval
 
 [内存管理](https://www.jianshu.com/p/63a381a7f70c)
 
 [垃圾回收机制](http://php.net/manual/zh/features.gc.php)
 
-#### cgi、fastcgi、php-fpm
+ cgi、fastcgi、php-fpm
 
 - **cgi**
 早期的web server只可以处理简单的静态web文件，但是随着技术的发展出现动态语言如PHP，Python。PHP语言交给PHP解析器进行处理，但是处理之后如何和web server进行通信呢？
@@ -2797,7 +2092,7 @@ FastCGI是用来提高CGI性能的，FastCGI每次处理完请求之后不会关
 - **PHP-FPM**
 PHP-FPM(FastCGI Process Manager：FastCGI进程管理器)是一个实现了Fastcgi的程序，并且提供进程管理的功能。进程包括master进程和worker进程。master进程只有一个，负责监听端口，接受来自web server的请求。worker进程一般会有多个，每个进程中会嵌入一个PHP解析器，进程PHP代码的处理。
 
-#### php.ini中的safe_mode 影响
+ php.ini中的safe_mode 影响
 **Warning
 本特性已自 PHP 5.3.0 起废弃并将自 PHP 5.4.0 起移除。**
 
@@ -2813,7 +2108,7 @@ PHP-FPM(FastCGI Process Manager：FastCGI进程管理器)是一个实现了Fastc
 
 受影响的函数变量以及配置命令达到40个
 
-#### php的设计模式
+ php的设计模式
 
 1. **单例模式**
 一个类在整个应用中，只有一个对象实例的设计模式
@@ -2834,10 +2129,11 @@ PHP-FPM(FastCGI Process Manager：FastCGI进程管理器)是一个实现了Fastc
 
 5. 策略模式：
 此算法是从复杂类提取的，因而可以方便地替换。
+```
 
 ## php语法
-
-#### Include和require的区别
+```
+ Include和require的区别
 
 require函数通常放在PHP程序的最前面，在PHP程序执行之前，就会先读取require指定引入的文件，使它变成PHP程序网页的一部分。
 
@@ -2851,7 +2147,7 @@ require一个文件存在错误的话，那么程序就会中断执行，并显�
 
 其它区别：include有返回值，而require没有。
 
-#### PHP的变量类型
+ PHP的变量类型
 
 **四种标量类型**
 
@@ -2875,32 +2171,34 @@ require一个文件存在错误的话，那么程序就会中断执行，并显�
 
 2. NULL（NULL）：表示一个变量没有值。NULL 类型唯一可能的值就是 NULL。
 
-#### 单引号与双引号的区别
+ 单引号与双引号的区别
 1. 单引号内部的变量不会执行， 双引号会执行
 
 2. 单引号解析速度比双引号快。
 
 3. 单引号只能解析部分特殊字符，双引号可以解析所有特殊字符。
 
-## php扩展
+```
 
-#### GD库
+## php扩展
+```
+GD库
 
 图像处理扩展
 [GD 和图像处理 函数](http://php.net/manual/zh/ref.image.php)
 
-#### yaf
+ yaf
 [Yet Another Framework](http://php.net/manual/zh/book.yaf.php)
 
-#### curl
+ curl
 
 [Client URL](http://php.net/manual/zh/book.curl.php)
 
-#### mysqli
+ mysqli
 
 [mysql增强版](http://php.net/manual/zh/book.mysqli.php)
 
-## php7
+php7
 
 [php7新特性](http://www.runoob.com/w3cnote/php7-new-features.html)
 
@@ -2908,20 +2206,17 @@ require一个文件存在错误的话，那么程序就会中断执行，并显�
 
 由于日常使用中存在大量同时使用三元表达式和 isset()的情况，NULL 合并运算符使得变量存在且值不为NULL， 它就会返回自身的值，否则返回它的第二个操作数。
 
-```php
 <?php
 // 如果 $_GET['user'] 不存在返回 'nobody'，否则返回 $_GET['user'] 的值
 $username = $_GET['user'] ?? 'nobody';
 // 类似的三元运算符
 $username = isset($_GET['user']) ? $_GET['user'] : 'nobody';
 ?>
-```
 
 - <=> 太空船操作符（组合比较符）
 
 太空船操作符用于比较两个表达式。当a大于、等于或小于b时它分别返回-1、0或1。
 
-```php
 <?php
 // 整型
 echo 1 <=> 1; // 0
@@ -2938,11 +2233,9 @@ echo "a" <=> "a"; // 0
 echo "a" <=> "b"; // -1
 echo "b" <=> "a"; // 1
 ?>
-```
 
 - 通过 define() 定义常量数组
 
-```php
 <?php
 define('ANIMALS', [
     'dog',
@@ -2952,28 +2245,27 @@ define('ANIMALS', [
 
 echo ANIMALS[1]; // 输出 "cat"
 ?>
-```
 
 - 整除
 
 新增了整除函数 intdiv()
 
-```php
 <?php
 var_dump(intdiv(10, 3));
 // 输出结果： int(3)
 ?>
+
 ```
 
 ## php优化
-
+```
 [48条高效率的PHP优化写法](https://www.awaimai.com/1050.html)
 
-## 操作系统相关
+操作系统相关
 
 操作系统是本科计算机中可以说是非常重要的课程，一定要认真复习。
 
-#### linux常用命令及工具
+ linux常用命令及工具
 `ps aux` 查看进程pid等常用
 `grep` 过滤，-E支持表达式
 `curl` 发起一次请求
@@ -2984,17 +2276,18 @@ var_dump(intdiv(10, 3));
 `contab` 定时任务工具
 ……
 
-#### 进程各个状态
+ 进程各个状态
 
 [进程的状态和转换详解](https://blog.csdn.net/qwe6112071/article/details/70473905)
+```
 
 ## 网络相关
-
+```
 [TCP/IP - 百度百科](https://baike.baidu.com/item/TCP/IP%E5%8D%8F%E8%AE%AE)
 
 [HTTP协议详解](http://www.cnblogs.com/ranyonsue/p/5984001.html)
 
-#### http状态码
+ http状态码
 
 **12345法则**
 - 1** 消息
@@ -3009,19 +2302,18 @@ var_dump(intdiv(10, 3));
 404 not found 找不到请求的网页。
 - 5** 服务器错误
 500 Internal Server Error 服务器内部错误，例如php代码错误
+```
 
-#### http版本
-
-##### 1.0
-
+## http版本
+```
+1.0
 - 无状态、无连接。
 HTTP1.0规定浏览器和服务器保持短暂的连接，浏览器的每次请求都需要与服务器建立一个TCP连接，服务器处理完成后立即断开TCP连接（无连接），服务器不跟踪每个客户端也不记录过去的请求（无状态）。
 
 - 队头阻塞
 HTTP1.0规定下一个请求必须在前一个请求响应到达之前才能发送。假设前一个请求响应一直不到达，那么下一个请求就不发送，同样的后面的请求也给阻塞了。
 
-##### 1.1
-
+1.1
 - 长连接
 HTTP1.1增加了一个Connection字段，通过设置Keep-Alive可以保持HTTP连接不断开，避免了每次客户端与服务器请求都要重复建立释放建立TCP连接，提高了网络的利用率。如果客户端想关闭HTTP连接，可以在请求头中携带Connection: false来告知服务器关闭请求。
 
@@ -3031,8 +2323,7 @@ HTTP1.1增加了一个Connection字段，通过设置Keep-Alive可以保持HTTP�
 - 新的字段
 如cache-control，支持断点传输，以及增加了Host字段（使得一个服务器能够用来创建多个Web站点）。
 
-##### 2.0
-
+2.0
 - 二进制分帧
 HTTP2.0通过在应用层和传输层之间增加一个二进制分帧层，突破了HTTP1.1的性能限制、改进传输性能。
 
@@ -3045,8 +2336,7 @@ HTTP2.0使用encoder来减少需要传输的header大小，通讯双方各自cac
 - 服务器推送
 服务器除了对最初请求的响应外，服务器还可以额外的向客户端推送资源，而无需客户端明确的请求。
 
-#### http和https的区别
-
+http和https的区别
 ||http|https|
 -|-|-
 端口|80|443
@@ -3058,9 +2348,10 @@ HTTPS 约等于 HTTP+SSL
 相对安全/SEO排名更高
 - 缺点
 证书需要申请，服务器资源占用更高，连接建立需要传送证书，速度更慢.
+```
 
-#### TCP/IP
-
+## TCP/IP
+```
 [四层模型及OSI七层参考模型](https://blog.csdn.net/guoguo527/article/details/52078962)
 
 [三次握手四次挥手](https://www.cnblogs.com/Jessy/p/3535612.html)
@@ -3077,90 +2368,4 @@ HTTPS 约等于 HTTP+SSL
 ……一段时间后……
 服务端：我的东西传完了，可以关闭了(last-ack)
 客户端：收到关闭通知，你也可以关闭了(time-wait)
-
-## 算法相关
-```
-各种数据结构，栈图树；各种算法，动态规划balabala
-
-中等难度算法题在解答基础上提高速度，高级算法题能够有思路，不求ac，至少通过一部分。
-```
-
-## Phpstudy升级到Mysql8
-```
-
-下载
-下载安装包mysql8.0,如果你想要下载其它版本可以选择：mysql历史版本地址。
-
-将phpstudy的mysql目录重命名为Mysqlbak。
-
-然后把下载好的新版本的mysql解压到这个目录里。我的是F:\phpStudy\MySQL
-
-安装
-编辑my.ini文件，下载的mysql8默认是没有my.ini的，复制原来的(Mysqlbak目录下的)一份my.ini到mysql目录下，注意Mysql8的新特性和配置，原来的my.ini是不能直接用的。需要改下，比如修改后我的my.ini
-[mysql]
-# 设置mysql客户端默认字符集
-default-character-set=utf8mb4
- 
-[mysqld]
-# 设置3306端口
-port =3306
-# 设置mysql的安装目录
-basedir="F:\phpStudy\MySQL\"
-#存放数据的目录
-datadir="F:\phpStudy\MySQL\data"
-# 允许最大连接数
-max_connections=20
-# 服务端使用的字符集默认为8比特编码的latin1字符集
-character-set-server=utf8mb4
-collation-server = utf8mb4_unicode_ci
-# 创建新表时将使用的默认存储引擎
-default-storage-engine=INNODB
-#认证方式(如果这里不修改，会新版的密码认证，会连接不了数据库的，并且要放到mysqld下)
-default_authentication_plugin = mysql_native_password
-
-启动
-接下来我们来启动下 MySQL 数据库：
-
-以管理员身份打开 cmd 命令行工具（可以到C盘system32下的cmd.exe右键管理员运行），切换目录：
-
-我的是在F盘，先转到F盘先，然后再初始化MYSQL
-C:\Users\Administrator>F:
-
-F:\>cd F:\phpStudy\MySQL\bin
-
-F:\phpStudy\MySQL\bin>mysqld --initialize --console
-
-如果安装成功后，会出现mysql密码了比如上面我的是：+HVW8Qi(RT/d
-
-然后继续安装
-mysqld install
-
-启动服务器
-net start mysql
-phpStudy自带的mysql是5.5版本的，无法启动 mysql了 这是为什么？？？ 
-
-原因是phpStudy为我们注册了一个MySQL服务，而我们用mysql -install命令安装Mysql的时候注册 了一个MySQL所以问题来了，两者冲突了。解决办法 很简单，打开CMD命令输入 sc delete MySQL 　
-
-启动成功后，输入密码登录
-
-注意：
-
-因为mysql8.0的密码加密方式跟之前的保存方式不一样，所以要转码，Navicat 或 phpstudy才能连接得
-
-更改密码：
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '这里输入你的密码自行修改';
-
-到此mysql8更新成功，接下来测试下phpstudy启动服务试下：
-先停掉Mysql服务：net stop mysql
-
-切换到phpstydy客户度界面，我重启服务看下
-
- OK
-```
- 
-## phpStudy2018 升级mysql版本，解决启动问题
-```
-点击phpStudy->其他选项菜单->服务管理器->MySQL->安装服务，点击phpStudy->其他选项菜单->服务管理器->打开服务管理->MySQL->安装服务
-
-应该有个MySQL和MySQLa，mysqla既然是phpstudy帮你注册的服务，那你自己mysqld -install的注册的服务是mysql。执行sc delete mysql,再启动phpstudy就好了。假如phpstudy安装失败的话，记得要把执行sc delete mysql。skip-grant-tables，这个是跳过验证的，自己设置密码吧。
 ```
