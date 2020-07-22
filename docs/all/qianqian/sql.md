@@ -1,4 +1,93 @@
 <TOC />
+## Oracle expdp导出导入数据
+```
+-- 切换权限
+su - oracle
+
+-- 导出数据(注意去除日志等无用的表)
+expdp  root/123456@10.120.82.1/smz directory=exp_dir dumpfile=smz_2207_%U.dmp logfile=smz_2207.log exclude=table:\"in \(\'ATTENDANCEPUSH\' ,\'OPERATELOG\' ,\'ZJUPLOADRECORD\',\'UPLOADLOG\' \)\" owner=root compression=data_only parallel=4 cluster=N
+
+-- 进入要导入数据的服务器
+ssh 192.168.10.128
+
+-- 切换权限
+su - oracle
+
+-- 进去oracle命令行
+sqlplus / as sysdba
+
+-- 删除用户
+DROP USER c##root CASCADE;
+
+-- 删除表空间
+DROP TABLESPACE root INCLUDING CONTENTS AND DATAFILES;
+
+-- 创建表空间
+create tablespace root
+logging 
+datafile '/home/oracle/oracledatabase/app/admin/MIGRANTWORK/root.dbf'
+size 5000m 
+autoextend on 
+next 50m 
+extent management local;
+
+-- 创建用户，授权
+create user c##root identified by 123456 default tablespace root; 
+
+-- 用户授予目录权限
+grant read,write on directory c701 to c##root;
+
+-- 用户授权数据库操作权限
+GRANT CREATE ANY VIEW,DROP ANY VIEW,CONNECT,RESOURCE,CREATE SESSION,DBA TO c##root;
+
+-- 退出sql操作命令
+exit
+
+-- 导入数据(注意磁盘空间是否足够)
+impdp c##root/123456 directory=c701 dumpfile=smz_2207_01.dmp,smz_2207_02.dmp,smz_2207_03.dmp,smz_2207_04.dmp,smz_2207_05.dmp,smz_2207_06.dmp remap_schema=root:c##root  TRANSFORM=segment_attributes:n;
+
+-- 问题：删除用户时出现ORA-01940: cannot drop a user that is currently connected
+-- 查询是否有用户连接数据库
+select username,sid,serial#,paddr from v$session where username='C##HNPRD';
+select saddr,sid,serial#,paddr,username,status from v$session where username is not null;
+-- 关闭这些连接
+alter system kill session '2664,38155';
+-- 删除用户和表空间
+DROP USER c##root CASCADE;
+DROP TABLESPACE root INCLUDING CONTENTS AND DATAFILES;
+
+-- 问题：删除表空间发现磁盘空间没增加
+-- 查看空间发现临时表文件大，怀疑被缓存，重启解决
+du -h --max-depth=1 /home/oracle/oracledatabase
+-- 重启oracle
+sqlplus / as sysdba
+shutdown immediate
+startup
+
+-- 问题：导入数据提示找不到文件
+-- 将文件放到提示中的目录即可 mv /dmp/* /home/oracle/dump/
+impdp c##hnprd/E2r201800 directory=c701 dumpfile=smz_a20200720_01.dmp,smz_a20200720_02.dmp,smz_a20200720_03.dmp,smz_a20200720_04.dmp,smz_a20200720_05.dmp,smz_a20200720_06.dmp remap_schema=hnprd:c##hnprd  TRANSFORM=segment_attributes:n;
+
+-- 问题：磁盘空间被占用满
+-- 归档日志目录
+/home/oracle/oracledatabase/app/product/11.2.0/dbhome_1/dbs
+-- 删除归档日志
+cd /home/oracle/oracledatabase/app/product/11.2.0/dbhome_1/dbs 
+rm -rf arch1_26* 
+
+-- 脚本：定时删除归档日志
+#/bin/bash
+cd /home/oracle/oracledatabase/app/product/11.2.0/dbhome_1/dbs
+find ./ -mtime +1 -name "arch1_*.dbf" -exec rm -rf {} \;
+
+-- 错误：xshell窗口挂了，导致导入数据库终止
+-- 使用screen挂在后台
+yun install screen
+screen -R oracle(关闭xshell后重新执行该命令则可进入挂起的后台)
+执行导入命令
+```
+
+
 ## Oracle expdp导出数据
 Oracle EXPDP导出数据
 上一章介绍了EXP导出数据，在数据量较大的情况下，由于导出的效率较低，所以EXPDP是Oracle 10g开始引入的数据泵技术，数据泵技术是在数据库之间或者在数据库与操作系统之间传输数据的工具。

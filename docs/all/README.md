@@ -68,8 +68,8 @@ meta:
 ## [Markdown](/all/qianqian/Markdown/)  
 > Markdown
 
-## [sql](/all/qianqian/sql/)  
-> sql
+## [Sql](/all/qianqian/Sql/)  
+> Sql
 
 ## [News](/all/qianqian/News/)  
 > News
