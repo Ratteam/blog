@@ -459,6 +459,21 @@ location / {
         proxy_send_timeout      300; 
         proxy_read_timeout      300;    
 }
+设置php
+location ~ \.php?.*$ {
+                root           $wwwroot;
+                fastcgi_pass   127.0.0.1:9000;
+                fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+                fastcgi_connect_timeout 36000;
+                fastcgi_send_timeout 36000;
+                fastcgi_read_timeout 36000;
+                fastcgi_buffer_size 64k;
+                fastcgi_buffers 4 64k;
+                fastcgi_busy_buffers_size 128k;
+                fastcgi_temp_file_write_size 128k;
+                include        fastcgi_params;
+        }
+
 ```
 
 ## apache服务超时处理phpstudy+apache+php
@@ -2368,4 +2383,40 @@ HTTPS 约等于 HTTP+SSL
 ……一段时间后……
 服务端：我的东西传完了，可以关闭了(last-ack)
 客户端：收到关闭通知，你也可以关闭了(time-wait)
+```
+
+## 报错：yii updateByPk 报错查询数据表 "specialaccount" 时，不会提供列 "Id" 的值
+```
+表中有两个主键，去掉一个就行了
+```
+
+## 插入数据报错SQLSTATE[HY000]: General error: 1 OCIStmtExecute: ORA-00001: unique constraint (C##HNPRD.SYS_C00112597)
+```
+-- 查看最大的id
+select max(to_number(id)) from attendance;
+-- 查看最大的序列
+select SEQ_ATTENDANCE_ID.nextval from dual;
+-- 删除序列 SEQ_ATTENDANCE_ID
+DROP SEQUENCE SEQ_ATTENDANCE_ID;
+-- 重建序列 SEQ_ATTENDANCE_ID（将START WITH 69500000改为超过最大的id）
+CREATE SEQUENCE  "SEQ_ATTENDANCE_ID"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 69500000 CACHE 10;
+
+oracle修改序列当前值
+很多时候，我们都会用到oracle序列，那么我们怎么修改序列的当前值呢？
+
+首先我们可以查看当前序列值是多少，如下：
+
+select 序列名.nextval from dual;
+
+比方说我现在查出来值是10，那么我要把当前值改成8，那么可以这么改：
+
+alter sequence 序列名 increment by -2;
+
+如果我需要把当前值改成15，那么可以这么改：
+
+alter sequence 序列名 increment by 5;
+
+上述是通过修改当前序列增量长度间隔值，用于修改当前序列值，增加1或-1或n或-n，当修改好当前值之后，记得一定要把序列增量改回来，改为1：
+
+alter sequence 序列名 increment by 1;
 ```

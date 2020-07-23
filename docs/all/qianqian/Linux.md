@@ -1,4 +1,334 @@
 <TOC />
+
+## Linux虚拟机添加新硬盘
+```
+一、在vmwarre添加新硬盘，忽略，可以看原文。
+二、虚拟机中windows对于虚拟的磁盘的挂载
+方法比较的简单，和在实际的电脑中操作一样，只要在“设备管理器”中将新建的虚拟磁盘进行分区格式化后即可正常使用
+基于windows中设置较为简单，故而没有截图
+1、右击“我的电脑”－“管理”－“磁盘管理”，然后会看到新分配的磁盘没有分区
+2、右键“新加卷”（未分区的磁盘），选择“新建”，按照向导，一步步，选择硬盘分区模式、格式化硬盘即可使用
+三、虚拟机中Linux对于虚拟的磁盘的挂载
+1、使用“fdisk -l”的命令查看当前系统的分区（如果刚才设置VMware--setting的时候运行了系统，则会出现下图情况：没有识别到新的磁盘即sdb），解决办法，重启虚拟机：shutdown -r now
+ 
+ 2、如果执行第一步的时候是关闭虚拟机中的系统的，则使用“fdisk -l 命令(root 用户)的时候则会出现新的磁盘sdb（不过提示未分区）
+ 
+ 
+ 
+3、对新建的磁盘进行分区及格式化的工作：
+输入 fdisk  /dev/sdb
+终端会提示：Command （m for help）：
+ 
+ 
+ 
+4、在上一步骤的基础上输入：m  则会出现下列的提示：
+ 
+ 
+ 
+5、然后根据提示输入：n
+会出现下面的提示，依次输入p 和 1 即可
+接着便会提示卷的起始地址和结束地址，都保持默认按回车的即可（意思是只分一个区）
+ 
+ 
+ 
+6、输入“w”保存并推出
+ 
+ 
+7、再次使用 “fdisk -l ”这个命令来查看会发现出现了/dev/sdb1（说明已经完成了分区工作）
+ 
+ 
+ 8、对新建的分区进行格式化：格式化成ext3的文件系统即可
+Mkfs.ext3 /dev/sdb1
+或者下面的那个 : Mkfs  -t ext3 /dev/sdb1
+出现Proceed anyway？（y，n）时，这时输入“Y”回车。    
+ 
+ 
+9、下面便是对于分好区的/dev/sdb1 这一个分区进行挂载及访问
+9、1手动挂载：使用mount /dev/sdb1  /要挂载的目录（自己自定义）
+访问时：cd  /挂载的目录   即可对其进行存储和访问
+ 如:
+格式化完成后，我们要做的就是对新硬盘设定挂载点,可以新建目录，例如：mkdir /newdisk然后把新硬盘挂载到这个位置：mount /dev/sdb1 /newdisk 挂载好了
+，查看一下：df 
+ 
+(我这个是sdb)
+9、2自动挂载：修改/etc/fstab即可
+使用vim /etc/fstab打开配置的文件，然后将下面的一行文字添加即可
+/dev/sdb1       /newdisk （这个挂载的目录你自己设置即可）      ext3    defaults       0       0
+
+```
+
+## 使用linux分割较大的日志文件，查看日志
+```
+在排查项目问题的时候，日志文件是很有参考价值的。但是如果项目运行时间比较久，产生的日志可能是海量的，如果需要查看较大日志文件就会很麻烦，我们可以使用linux提供的split命令，将较大的日志文件切割为小文件，方便我们查看日志文件，进行问题的定位。
+1.切割文件
+1）使用split分割大文件
+原文件为图所
+命令按照行数分割 分割后的文件自动加上后缀名 --verbose参数显示进度。
+##$ split -l 50000 mgr-0618.log new-file_1 --verbose
+如果所示：![默认生成的新文件以字母排序]
+-d参数为新生成的文件使用数字的后缀。如图：
+
+2:）按照字节大小进行分割
+命令：split -b 40m mgr-0618.log -d newfile_ --verbose
+![以每个文件40mb分割，]
+
+3）合并文件
+命令：cat newfile_* > catfile.log
+![合并之后的文件和原文件大小是相同的]
+
+```
+
+## ssh 登录时常出现的几种错误以及解决方法（Linux）
+```
+1.SSH连接时出现Connection refused,如下：
+报错如下：
+ssh: connect to host 123.123.123.111 port 22: Connection refused
+
+通常是由于22端口未打开、ssh服务未启动或防火墙禁止22端口等原因引起的
+
+解决方法：
+
+【1】启动服务，设置防火墙步骤如下：
+
+<1>.进入该服务器（本地登陆）
+
+<2>.查看ssh服务是否启动
+systemctl status sshd
+
+如未启动
+systemctl start sshd
+
+<3>.查看端口是否打开
+netstat -lnput |grep :22
+
+如未打开,再次启动sshd
+
+<4>测试网络的联通性
+ping www.baidu.com (ping外网)
+
+如果ping不通，就检查dns
+
+如果dns无问题，就说明是网络原因，看服务器的网线是否连接或是否有问题
+
+<5>如果能连接外网，就查看服务器的防火墙规则,并开放ssh服务的22号端口（如防火墙未放行ssh的端口）
+
+iptables -L
+
+[1]直接打开端口：
+iptables -I INPUT -p tcp --dport 22 -j ACCEPT
+
+[2]永久打开端口
+
+打开防火墙配置文件：
+vim /etc/sysconfig/iptables
+
+在iptables文件内容中追加
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
+
+保存配置文件后，重启防火墙:
+service iptables restart（centos6）
+systemctl restart iptables(centos7)
+
+2.SSH连接时出现Host key verification failed
+报错如下：
+Host key verification failed
+
+通常是由于访问使用的公钥与服务器记录的差异引起的
+
+ssh服务会把每个曾经访问过计算机或服务器的公钥（public key），记录在~/.ssh/known_hosts
+当下次访问曾经访问过的计算机或服务器时，ssh就会核对公钥，如果和上次记录的不同，OpenSSH会发出警告。
+而ssh对主机的public_key的检查是有等级的，根据等级执行不同的策略。（StrictHostKeyChecking就是配置等级的参数）
+
+[1]StrictHostKeyChecking=no
+
+最不安全的级别，提示最少，应在相对安全的内网测试时使用。（当连接的服务器的公钥在本地不存在，就会自动添加到文件（默认是known_hosts）中，并且给出警告。
+
+[2]StrictHostKeyChecking=ask
+
+默认的级别。如果连接的服务器的公钥和本地的known_hosts文件中不匹配，就给出提示（Host key verification failed），并拒绝登录。
+
+[3]StrictHostKeyChecking=yes
+
+最安全的级别，如果连接的服务器的公钥和本地的known_hosts文件中的不匹配，就拒绝连接，不会提示详细信息。
+
+解决方法 :
+
+【1】可更改安全选择最低的安全级别。在.ssh/config或/etc/ssh/ssh_config）中配置：
+
+StrictHostKeyChecking no
+UserKnownHostsFile /dev/null
+
+(将knownhostfile设为/dev/null)，为了方便使用在known_hosts中了）
+
+【2】删除对应ip的在known_hosts相关信息
+
+vim /.ssh/known_hosts
+
+
+
+【3】直接删除known_hosts文件
+rm known_hosts
+
+3.SSH公私钥正确的情况下免密登录失败
+有的时候我们经常会遇到：在服务器上配置ssh公钥后，一段时间可以免密码登录，后来登录时，每次都提示要输入密码。这时我们可以删除known_hosts，重新把id_rsa.pub添加到服务器~/.ssh/authorized_keys下。 如果这个办法也不行，我们（首先考虑是权限问题）要查看日志。
+
+/var/log/auth.log日志中报错如下：
+coffeeserver sshd[6761]: Authentication refused: bad ownership or modes for directory /root/.ssh
+
+/var/log/secure日志中报错如下：
+Authentication refused: bad ownership or modes for directory /root/.ssh
+
+这些日志都告诉了我们/root/.ssh的目录的权限的配置出现了（权限应为700）
+
+解决方法：
+
+【1】更改目录及文件权限
+
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+
+4.SSH连接时密码正确，登陆失败，出现Permission denied, please try again
+报错如下：
+Password authentication failed
+或
+Permission denied, please try again
+
+通常是由于/etc/ssh/sshd_config的PasswordAuthentication或PermitRootLogin参数的配置引起的
+
+补充：
+还有特殊一种情况，你要连接的这台服务器的ip地址与你局域网中的某台电脑的ip地址一致，造成冲突。(这种情况，无论怎么改都会失败，会让你怀疑自己。解决方法只能是一方改IP或关闭其中一方，先解决冲突问题)
+
+解决方法：
+
+【1】修改相关配置文件
+
+<1>查看本服务器和电脑的防火墙设置，是否打开ssh服务，22端口（一般都是打开的）
+如果服务不是打开的要将服务启动，防火墙开放22端口（配置规则看本文目录第1条中）
+
+<2>编辑sshd_config文件
+
+vim /etc/ssh/sshd_config
+
+将PasswordAuthentication前面的#号去掉
+将PasswordAuthentication 设为yes
+
+<3> 重启sshd服务
+
+/etc/init.d/sshd restart (centos6)
+systemctl restart sshd(centos7)
+
+【2】修改相关配置文件
+
+<1>基本上与上一个方法相同，但编辑sshd_config文件的另一个参数
+
+vim /etc/ssh/sshd_config
+
+将PermitRootLogin前面的#号去掉
+将PermitRootLogin设为yes
+
+<2>重启sshd服务
+
+/etc/init.d/sshd restart (centos6)
+systemctl restart sshd(centos7)
+
+5.SSH连接时出现Permission denied, please try againssh_exchange_identification: read: Connection reset by peer
+报错如下：
+Permission denied, please try againssh_exchange_identification: read: Connection reset by peer
+
+原因是由于所访问的服务器启用了tcp_wrapper,拒绝接受该ip或网段发起访问的服务，可能是限制了ip或是网段
+
+解决方法：
+
+【1】修改发起访问端的ip或网段
+
+该方法在无法进入被访问端服务器时使用，但可用率不高，因为大多少情况下是对网段进行限制并开放某些IP。
+
+建议联系 系统管理员解除限制或放开该IP或网段
+
+<1>查看本机的ip或网段
+
+ip a
+
+<2>修改一个正在使用的网卡的配置文件
+
+例如：
+
+vim /etc/sysconfig/network-scripts/ifcfg-eth0
+(重点修改IPADDR，NETMASK，GATEWAY，将其修改为新网段的IP)
+
+TYPE=Ethernet
+BOOTPROTO=none
+DEFROUTE=yes
+NAME=eth0
+DEVICE=eth0
+ONBOOT=yes
+IPADDR=10.10.10.10
+NETMASK=255.255.254.0
+GATEWAY=10.10.10.254
+DNS1=.8.8.8.8
+
+<3> 重启网卡
+
+service network restart(centos6)
+systemctl restart network(centos7)
+
+【2】进入被访问端解除限制或放开IP
+
+<1>进入/etc/hosts.allow中进行修改
+
+(123.123.123.123此处代表发起访问端的IP)
+
+vim /etc/hosts.allow
+
+追加
+sshd:123.123.123.123:allow
+
+或仅注释一行
+#sshd:123.123.123.123:deny
+
+或注释所有规则，并添加
+sshd:all:allow
+
+更多的设置方法如下：
+https://blog.csdn.net/GX_1_11_real/article/details/89452719
+
+6.连接服务器时，提示要输入密码，成功推送过公钥到服务器后，再次连接仍提示要输入密码
+
+```
+
+## 为什么ssh一关闭，程序就不再运行了？
+```
+问题描述
+当SSH远程连接到服务器上,然后运行一个程序,eg: ./test.sh, 然后把终端开闭（切断SSH连接）之后,发现该程序中断.
+原因
+主要元凶: 挂断信号(SIGHUP) 信号
+概念介绍
+在Linux/Unix中，有这样几个概念：
+进程组(process group): 一个或多个进程的集合,每一个进程组有唯一一个进程组ID,即进程组长进程的ID.
+会话期(session): 一个或多个进程组的集合,有唯一一个会话期首进程(session leader). 会话期ID为首进程的ID.
+会话期可以有一个单独的控制终端(controlling terminal).
+与控制终端连接的会话期首进程叫做控制进程(controlling process).
+当前与终端交互的进程称为前台进程组.
+其余进程组称为后台进程组.
+根据POSIX.1定义: 挂断信号(SIGHUP)默认的动作是终止程序。
+解释
+当终端接口检测到网络连接断开, 将挂断信号发送给控制进程(会话期首进程).
+如果会话期首进程终止,则该信号发送到该会话期前台进程组.
+一个进程退出导致一个孤儿进程组产生时, 如果任意一个孤儿进程组进程处于STOP状态, 发送 SIGHUP 和 SIGCONT 信号到该进程组中所有进程.
+孤儿进程参照
+结论
+因此当网络断开或终端窗口关闭后, 也就是SSH断开以后, 控制进程收到 SIGHUP 信号退出, 会导致该会话期内其他进程退出.
+简而言之: 就是 ssh 打开以后, bash等都是他的子程序, 一旦ssh关闭, 系统将所有相关进程杀掉!! 导致一旦ssh关闭, 执行中的任务就取消了.
+相关问题
+为什么守护程序就算是 ssh 打开的, 关闭ssh也不会影响其运行？
+因为他们的程序特殊, 比如httpd –k start运行这个以后, 他不属于sshd这个进程组, 而是单独的进程组, 所以就算关闭了ssh, 和他也没有任何关系!
+使用后台运行命令 & 能否将程序摆脱ssh进程组控制? 即关闭 ssh, 后台程序能否继续运行?
+只要是ssh 打开执行的一般命令，不是守护程序，无论加不加&，一旦关闭ssh，系统就会用SIGHUP终止.
+如何解决方案
+在远端开启 tmux , 在 tmux 里运行程序, 此时运行的程序属于 tmux 的进程组, 不属于 ssh 进程组.
+使用 nohup 命令
+```
+
 ## Linux 常用命令集合
 ```
 系统信息
