@@ -1,6 +1,11 @@
 <TOC />
 # game
 
+## godot Scene file '' appears to be invalid/corrupt
+```
+删除.import文件夹
+```
+
 ## 像素修仙传开发指南 
 
 ## 工具集

@@ -1,5 +1,284 @@
 <TOC />
 
+## 报错：yii updateByPk 报错查询数据表 "specialaccount" 时，不会提供列 "Id" 的值
+```
+表中有两个主键，去掉一个就行了
+```
+
+## 插入数据报错SQLSTATE[HY000]: General error: 1 OCIStmtExecute: ORA-00001: unique constraint (C##HNPRD.SYS_C00112597)
+```
+-- 查看最大的id
+select max(to_number(id)) from attendance;
+-- 查看最大的序列
+select SEQ_ATTENDANCE_ID.nextval from dual;
+-- 删除序列 SEQ_ATTENDANCE_ID
+DROP SEQUENCE SEQ_ATTENDANCE_ID;
+-- 重建序列 SEQ_ATTENDANCE_ID（将START WITH 69500000改为超过最大的id）
+CREATE SEQUENCE  "SEQ_ATTENDANCE_ID"  MINVALUE 1 
+MAXVALUE 9999999999999999999999999999 
+INCREMENT BY 1 START WITH 69500000 CACHE 10;
+
+oracle修改序列当前值
+很多时候，我们都会用到oracle序列，那么我们怎么修改序列的当前值呢？
+
+首先我们可以查看当前序列值是多少，如下：
+select 序列名.nextval from dual;
+
+比方说我现在查出来值是10，那么我要把当前值改成8，那么可以这么改：
+alter sequence 序列名 increment by -2;
+
+如果我需要把当前值改成15，那么可以这么改：
+alter sequence 序列名 increment by 5;
+
+上述是通过修改当前序列增量长度间隔值，用于修改当前序列值，增加1或-1或n或-n，
+当修改好当前值之后，记得一定要把序列增量改回来，改为1：
+alter sequence 序列名 increment by 1;
+```
+
+## Nginx 的超时 timeout 配置详解
+```
+Nginx 处理的每个请求均有相应的超时设置。
+如果做好这些超时时间的限定，判定超时后资源被释放。
+用来处理其他的请求，以此提升 Nginx 的性能。
+
+keepalive_timeout
+
+HTTP 是一种无状态协议，客户端向服务器发送一个 TCP 请求，服务端响应完毕后断开连接。
+如果客户端向服务器发送多个请求，每个请求都要建立各自独立的连接以传输数据。
+HTTP 有一个 KeepAlive 模式，它告诉 webserver 在处理完一个请求后保持这个 TCP 连接的打开状态。
+若接收到来自客户端的其它请求，服务端会利用这个未被关闭的连接，而不需要再建立一个连接。
+
+KeepAlive 在一段时间内保持打开状态，它们会在这段时间内占用资源。占用过多就会影响性能。
+
+Nginx 使用 keepalive_timeout 来指定 KeepAlive 的超时时间（timeout）。
+指定每个 TCP 连接最多可以保持多长时间。
+Nginx 的默认值是 75 秒，有些浏览器最多只保持 60 秒，所以可以设定为 60 秒。
+若将它设置为 0，就禁止了 keepalive 连接。
+通常 keepalive_timeout 应该比 client_body_timeout(见下文)大。
+
+配置段: http, server, location
+
+keepalive_timeout 60s;
+
+client_body_timeout
+
+指定客户端与服务端建立连接后发送 request body 的超时时间。
+如果客户端在指定时间内没有发送任何内容，Nginx 返回 HTTP 408（Request Timed Out）。
+
+配置段: http, server, location
+
+client_body_timeout 20s;
+
+client_header_timeout
+
+客户端向服务端发送一个完整的 request header 的超时时间。
+如果客户端在指定时间内没有发送一个完整的 request header，Nginx 返回 HTTP 408（Request Timed Out）。
+
+配置段: http, server, location
+
+client_header_timeout 10s;
+
+send_timeout
+
+服务端向客户端传输数据的超时时间
+根据转发的应用服务可以配置 proxy_send_timeout、uwsgi_send_timeout、fastcgi_send_timeout（见下文）。
+
+配置段:http, server, location
+
+send_timeout 30s;
+Default: 
+
+send_timeout 60s;
+
+Context: http, server, location
+
+设置将响应传输到客户端的超时时间。 仅在两个连续的写操作之间设置超时，
+
+而不是整个响应的传递。 如果客户端在此时间内未收到任何信息，则连接将关闭。
+
+client_header_timeout
+
+接收客户端 header 超时， 默认 60s, 如果 60s 内没有收到完整的 http 包头， 返回 408
+
+Syntax: client_header_timeout time;
+
+Default: 
+
+client_header_timeout 60s;
+
+Context: http, server
+
+定义读取客户端请求标头的超时。 如果客户端在此时间内未传输整个标头，
+
+408（请求超时）错误返回给客户端。
+
+client_body_timeout
+
+接收客户端 body 超时， 默认 60s, 如果连续的 60s 内没有收到客户端的 1 个字节， 返回 408
+
+Syntax: client_body_timeout time;
+
+Default: 
+
+client_body_timeout 60s;
+
+Context: http, server, location
+
+定义读取客户端请求正文的超时。 超时仅在两次连续读取操作之间的一段时间内设置，而不用于整个请求主体的传输。
+
+如果客户在这段时间内没有传输任何内容，
+
+408（请求超时）错误返回给客户端。
+
+lingering_timeout
+
+可以理解为 TCP 连接关闭时的 SO_LINGER 延时设置，默认 5s
+
+Syntax: lingering_timeout time;
+
+Default: 
+
+lingering_timeout 5s;
+
+Context: http, server, location
+
+当lingering_close有效时，此伪指令指定更多客户端数据到达的最大等待时间。 如果在此期间未收到数据
+
+连接已关闭。 否则，将读取并忽略数据，并且nginx开始再次等待更多数据。
+
+重复“ wait-read-ignore”周期，但不超过lingering_time指令指定的周期。
+ 
+resolver_timeout
+
+域名解析超时，默认 30s
+
+Syntax: resolver_timeout time;
+
+Default: 
+
+resolver_timeout 30s;
+
+Context: http, server, location
+
+设置名称解析超时，例如：
+
+resolver_timeout 5s;
+
+proxy_connect_timeout
+
+nginx 与 upstream server 的连接超时时间，默认为 60s；根据应用不同可配置 uwsgi_send_timeout/fascgi_send_timeout/proxy_send_timeout
+
+Syntax: proxy_connect_timeout time;
+
+Default: 
+
+proxy_connect_timeout 60s;
+
+Context: http, server, location
+
+定义用于与代理服务器建立连接的超时。 请注意，此超时通常不能超过75秒。
+
+proxy_read_timeout
+
+nginx 接收 upstream server 数据超时， 默认 60s, 如果连续的 60s 内没有收到 1 个字节， 连接关闭；根据应用不同可配置 uwsgi_send_timeout/fascgi_send_timeout/proxy_send_timeout
+
+Syntax: proxy_read_timeout time;
+
+Default: 
+
+proxy_read_timeout 60s;
+
+Context: http, server, location
+
+定义用于从代理服务器读取响应的超时。 仅在两个连续的读取操作之间设置超时，
+
+而不是整个响应的传递。 如果代理服务器在此时间内未传输任何内容，则连接将关闭。
+
+proxy_send_timeout
+
+nginx 发送数据至 upstream server 超时， 默认 60s, 如果连续的 60s 内没有发送 1 个字节， 连接关闭；根据应用不同可配置 uwsgi_send_timeout/fascgi_send_timeout/proxy_send_timeout。
+
+Syntax: proxy_send_timeout time;
+
+Default: 
+
+proxy_send_timeout 60s;
+
+Context: http, server, location
+
+设置用于将请求传输到代理服务器的超时。 仅在两个连续的写操作之间设置超时，
+
+不用于传输整个请求。 如果代理服务器无法记录
+```
+
+## nginx命令
+```
+`ps -A | grep nginx`    -查看nginx是否启动
+
+`/application/nginx/sbin/nginx -t` –检查语法
+
+`/application/nginx/sibn/nginx -s reload` —平滑加载配置文件(建议使用这个)
+
+`/application/nginx/sbin/nginx` —启动nginx服务 
+```
+
+## nginx报错
+```
+**nginx: [alert] kill(1668, 1) failed (3: No such process)**
+没有启动nginx服务，执行/app/nginx/sbin/nginx，开启nginx服务后解决
+
+**上传文件nginx报错**
+上传接口直接显示ngnix报错
+日志显示：缺失某个文件夹
+将文件夹创建即可
+```
+
+## Base64编码为什么会使数据量变大？
+```
+Base64编码的思想是是采用64个基本的ASCII码字符对数据进行重新编码。
+它将需要编码的数据拆分成字节数组。
+以3个字节为一组。按顺序排列24位数据，再把这24位数据分成4组，即每组6位。
+再在每组的的最高位前补两个0凑足一个字节。
+这样就把一个3字节为一组的数据重新编码成了4个字节。
+当所要编码的数据的字节数不是3的整倍数，也就是说在分组时最后一组不够3个字节。
+这时在最后一组填充1到2个0字节。并在最后编码完成后在结尾添加1到2个"="。
+（ 注BASE64字符表：ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/）
+
+从以上编码规则可以得知，通过Base64编码，原来的3个字节编码后将成为4个字节，
+即字节增加了33.3%，数据量相应变大。所以20M的数据通过Base64编码后大小大概为20M*133.3%=26.67M。
+```
+
+## png转jpg(将png转为jpg后图片大小将减少一位数)
+```
+// png转jpg
+    public function PngChangeJpg($src_path)
+    {
+		$src_path = '.'.$src_path;
+        // 图片不存在不做处理
+        if(!file_exists($src_path)){
+            return $src_path;
+        }
+        $info = getimagesize($src_path);
+		$src_original_width = $info[0];
+		$src_original_height = $info[1];
+		$mime = $info['mime'];
+        $type = substr(strrchr($mime, '/'), 1);
+        $baseImgPath = str_replace($type,'',$src_path);
+        // 图片不是png不做处理
+        if($type!='png'){
+            return $src_path;
+        }
+		$res = imagecreatefrompng($src_path);
+		$new_path = $baseImgPath.'jpg';
+        $res = imagejpeg($res, $new_path);
+        if ($res) {
+			return $new_path;
+        } else {
+			return $src_path;
+        }
+    } 
+```
+
 ## Phpstudy升级到Mysql8
 ```
 下载
@@ -2384,230 +2663,3 @@ HTTPS 约等于 HTTP+SSL
 服务端：我的东西传完了，可以关闭了(last-ack)
 客户端：收到关闭通知，你也可以关闭了(time-wait)
 ```
-
-## 报错：yii updateByPk 报错查询数据表 "specialaccount" 时，不会提供列 "Id" 的值
-```
-表中有两个主键，去掉一个就行了
-```
-
-## 插入数据报错SQLSTATE[HY000]: General error: 1 OCIStmtExecute: ORA-00001: unique constraint (C##HNPRD.SYS_C00112597)
-```
--- 查看最大的id
-select max(to_number(id)) from attendance;
--- 查看最大的序列
-select SEQ_ATTENDANCE_ID.nextval from dual;
--- 删除序列 SEQ_ATTENDANCE_ID
-DROP SEQUENCE SEQ_ATTENDANCE_ID;
--- 重建序列 SEQ_ATTENDANCE_ID（将START WITH 69500000改为超过最大的id）
-CREATE SEQUENCE  "SEQ_ATTENDANCE_ID"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 69500000 CACHE 10;
-
-oracle修改序列当前值
-很多时候，我们都会用到oracle序列，那么我们怎么修改序列的当前值呢？
-
-首先我们可以查看当前序列值是多少，如下：
-
-select 序列名.nextval from dual;
-
-比方说我现在查出来值是10，那么我要把当前值改成8，那么可以这么改：
-
-alter sequence 序列名 increment by -2;
-
-如果我需要把当前值改成15，那么可以这么改：
-
-alter sequence 序列名 increment by 5;
-
-上述是通过修改当前序列增量长度间隔值，用于修改当前序列值，增加1或-1或n或-n，当修改好当前值之后，记得一定要把序列增量改回来，改为1：
-
-alter sequence 序列名 increment by 1;
-```
-## Nginx 的超时 timeout 配置详解
-Nginx 处理的每个请求均有相应的超时设置。如果做好这些超时时间的限定，判定超时后资源被释放，用来处理其他的请求，以此提升 Nginx 的性能。
-
-keepalive_timeout
-
-HTTP 是一种无状态协议，客户端向服务器发送一个 TCP 请求，服务端响应完毕后断开连接。
-
-如果客户端向服务器发送多个请求，每个请求都要建立各自独立的连接以传输数据。
-
-HTTP 有一个 KeepAlive 模式，它告诉 webserver 在处理完一个请求后保持这个 TCP 连接的打开状态。若接收到来自客户端的其它请求，服务端会利用这个未被关闭的连接，而不需要再建立一个连接。
-
-KeepAlive 在一段时间内保持打开状态，它们会在这段时间内占用资源。占用过多就会影响性能。
-
-Nginx 使用 keepalive_timeout 来指定 KeepAlive 的超时时间（timeout）。指定每个 TCP 连接最多可以保持多长时间。Nginx 的默认值是 75 秒，有些浏览器最多只保持 60 秒，所以可以设定为 60 秒。若将它设置为 0，就禁止了 keepalive 连接。通常 keepalive_timeout 应该比 client_body_timeout(见下文)大。
-
-### 配置段: http, server, location
-
-keepalive_timeout 60s;
-
-client_body_timeout
-
-指定客户端与服务端建立连接后发送 request body 的超时时间。如果客户端在指定时间内没有发送任何内容，Nginx 返回 HTTP 408（Request Timed Out）。
-
-### 配置段: http, server, location
-
-client_body_timeout 20s;
-
-client_header_timeout
-
-客户端向服务端发送一个完整的 request header 的超时时间。如果客户端在指定时间内没有发送一个完整的 request header，Nginx 返回 HTTP 408（Request Timed Out）。
-
-### 配置段: http, server, location
-
-client_header_timeout 10s;
-
-send_timeout
-
-服务端向客户端传输数据的超时时间，根据转发的应用服务可以配置 proxy_send_timeout、uwsgi_send_timeout、fastcgi_send_timeout（见下文）。
-
-### 配置段:http, server, location
-
-send_timeout 30s;
-Default: 
-
-send_timeout 60s;
-
-Context: http, server, location
-
-Sets a timeout for transmitting a response to the client. The timeout is set only between two successive write operations,
-
-not for the transmission of the whole response. If the client does not receive anything within this time, the connection is closed.
-
-
- 
-client_header_timeout
-
-接收客户端 header 超时， 默认 60s, 如果 60s 内没有收到完整的 http 包头， 返回 408
-
-Syntax: client_header_timeout time;
-
-Default: 
-
-client_header_timeout 60s;
-
-Context: http, server
-
-Defines a timeout for reading client request header. If a client does not transmit the entire header within this time,
-
-the 408 (Request Time-out) error is returned to the client.
-
-client_body_timeout
-
-接收客户端 body 超时， 默认 60s, 如果连续的 60s 内没有收到客户端的 1 个字节， 返回 408
-
-Syntax: client_body_timeout time;
-
-Default: 
-
-client_body_timeout 60s;
-
-Context: http, server, location
-
-Defines a timeout for reading client request body. The timeout is set only for a period between two successive read operations, not for the transmission of the whole request body.
-
-If a client does not transmit anything within this time,
-
-the 408 (Request Time-out) error is returned to the client.
-
-lingering_timeout
-
-可以理解为 TCP 连接关闭时的 SO_LINGER 延时设置，默认 5s
-
-Syntax: lingering_timeout time;
-
-Default: 
-
-lingering_timeout 5s;
-
-Context: http, server, location
-
-When lingering_close is in effect, this directive specifies the maximum waiting time for more client data to arrive. If data are not received during this time,
-
-the connection is closed. Otherwise, the data are read and ignored, and nginx starts waiting for more data again.
-
-The “wait-read-ignore” cycle is repeated, but no longer than specified by the lingering_time directive.
-
-
- 
-resolver_timeout
-
-域名解析超时，默认 30s
-
-Syntax: resolver_timeout time;
-
-Default: 
-
-resolver_timeout 30s;
-
-Context: http, server, location
-
-Sets a timeout for name resolution, for example:
-
-resolver_timeout 5s;
-
-proxy_connect_timeout
-
-nginx 与 upstream server 的连接超时时间，默认为 60s；根据应用不同可配置 uwsgi_send_timeout/fascgi_send_timeout/proxy_send_timeout
-
-Syntax: proxy_connect_timeout time;
-
-Default: 
-
-proxy_connect_timeout 60s;
-
-Context: http, server, location
-
-Defines a timeout for establishing a connection with a proxied server. It should be noted that this timeout cannot usually exceed 75 seconds.
-
-proxy_read_timeout
-
-nginx 接收 upstream server 数据超时， 默认 60s, 如果连续的 60s 内没有收到 1 个字节， 连接关闭；根据应用不同可配置 uwsgi_send_timeout/fascgi_send_timeout/proxy_send_timeout
-
-Syntax: proxy_read_timeout time;
-
-Default: 
-
-proxy_read_timeout 60s;
-
-Context: http, server, location
-
-Defines a timeout for reading a response from the proxied server. The timeout is set only between two successive read operations,
-
-not for the transmission of the whole response. If the proxied server does not transmit anything within this time, the connection is closed.
-
-proxy_send_timeout
-
-nginx 发送数据至 upstream server 超时， 默认 60s, 如果连续的 60s 内没有发送 1 个字节， 连接关闭；根据应用不同可配置 uwsgi_send_timeout/fascgi_send_timeout/proxy_send_timeout。
-
-Syntax: proxy_send_timeout time;
-
-Default: 
-
-proxy_send_timeout 60s;
-
-Context: http, server, location
-
-Sets a timeout for transmitting a request to the proxied server. The timeout is set only between two successive write operations,
-
-not for the transmission of the whole request. If the proxied server does not rec
-
-## nginx命令
-`ps -A | grep nginx`    -查看nginx是否启动
-
-`/application/nginx/sbin/nginx -t` –检查语法
-
-`/application/nginx/sibn/nginx -s reload` —平滑加载配置文件(建议使用这个)
-
-`/application/nginx/sbin/nginx` —启动nginx服务 
-
-
-## nginx报错
-
-**nginx: [alert] kill(1668, 1) failed (3: No such process)**
-没有启动nginx服务，执行/app/nginx/sbin/nginx，开启nginx服务后解决
-
-**上传文件nginx报错**
-上传接口直接显示ngnix报错
-日志显示：缺失某个文件夹
-将文件夹创建即可
-
-

@@ -1,5 +1,114 @@
 <TOC />
 
+
+## js 图片转base64的方式(两种)
+```
+方式一：Blob和FileReader 对象(生成jpg，jpg的文件较小)
+实现原理：
+使用xhr请求图片,并设置返回的文件类型为Blob对象[xhr.responseType = "blob"]
+使用FileReader 对象接收blob
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>js 图片转base64方式</title>
+</head>
+<body>
+  <p id="container1"></p>
+  <script>
+    getBase64("https://z649319834.github.io/Learn_Example/video_track/webvtt.jpg")
+    function getBase64(imgUrl) {
+      window.URL = window.URL || window.webkitURL;
+      var xhr = new XMLHttpRequest();
+      xhr.open("get", imgUrl, true);
+      // 至关重要
+      xhr.responseType = "blob";
+      xhr.onload = function () {
+        if (this.status == 200) {
+          //得到一个blob对象
+          var blob = this.response;
+          console.log("blob", blob)
+          // 至关重要
+          let oFileReader = new FileReader();
+          oFileReader.onloadend = function (e) {
+            let base64 = e.target.result;
+            console.log("方式一》》》》》》》》》", base64)
+          };
+          oFileReader.readAsDataURL(blob);
+          //====为了在页面显示图片，可以删除====
+          var img = document.createElement("img");
+          img.onload = function (e) {
+            window.URL.revokeObjectURL(img.src); // 清除释放
+          };
+          let src = window.URL.createObjectURL(blob);
+          img.src = src
+          document.getElementById("container1").appendChild(img);
+          //====为了在页面显示图片，可以删除====
+ 
+        }
+      }
+      xhr.send();
+    }
+  </script>
+</body>
+</html>
+方式二：canvas.toDataURL()方法(生成png，因为是png所以文件大，base64较大)
+实现原理：
+使用canvas.toDataURL()方法
+需要解决图片跨域问题 image.crossOrigin = '';
+使用了Jquery库的$.Deferred()方法
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>js 图片转base64方式</title>
+</head>
+<body>
+<p id="container2"></p>
+  <script src="https://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script>
+    let imgSrc = "https://z649319834.github.io/Learn_Example/video_track/webvtt.jpg";
+ 
+    //width、height调用时传入具体像素值，控制大小 ,不传则默认图像大小
+    function getBase64Image(img, width, height) {
+      var canvas = document.createElement("canvas");
+      canvas.width = width ? width : img.width;
+      canvas.height = height ? height : img.height;
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      var dataURL = canvas.toDataURL();
+      return dataURL;
+    }
+    function getCanvasBase64(img) {
+      var image = new Image();
+      //至关重要
+      image.crossOrigin = '';
+      image.src = img;
+      //至关重要
+      var deferred = $.Deferred();
+      if (img) {
+        image.onload = function () {
+          deferred.resolve(getBase64Image(image));//将base64传给done上传处理
+          document.getElementById("container2").appendChild(image);
+        }
+        return deferred.promise();//问题要让onload完成后再return sessionStorage['imgTest']
+      }
+    }
+    getCanvasBase64(imgSrc)
+      .then(function (base64) {
+        console.log("方式二》》》》》》》》》",base64);
+      }, function (err) {
+        console.log(err);
+      });
+  </script>
+</body>
+</html>
+```
+
 ## js 日期加一天或者减一天，最简单方法
 ```
 通过计算一天的时间戳是多少进行换算：(new Date(new Date().getTime()-86400000)).Format("yyyy-MM-dd hh:mm:ss")
