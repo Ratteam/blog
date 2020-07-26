@@ -35,199 +35,297 @@ alter sequence 序列名 increment by 5;
 alter sequence 序列名 increment by 1;
 ```
 
-## Nginx 的超时 timeout 配置详解
+## Nginx配置详解
 ```
-Nginx 处理的每个请求均有相应的超时设置。
-如果做好这些超时时间的限定，判定超时后资源被释放。
-用来处理其他的请求，以此提升 Nginx 的性能。
+; 代理内网服务7095到外网通过8200端口访问(7095_att.conf)
+server {
+    listen       8200;
+    #server_name  eemed.net www-test.ememed.net www.ememed.net;
+    server_name_in_redirect  off;
+    charset utf-8;
+    access_log  8200.access.log   main;
+    error_log  logs/8200.error.log;
+    set $wwwroot /usr/local/nginx/html;
+    root $wwwroot;
+    index index.html index.htm index.php;
+    #error_page  404              /404.html;
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarder-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_pass http://127.0.0.1:7095;       
+    }
+    # redirect server error pages to the static page /50x.html
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+            root   html;
+    }
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #include common.conf;
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+}
 
-keepalive_timeout
+; yum源配置(7020_yum.conf)
+server {
+    listen       7020;
+    server_name_in_redirect  off;
+    charset utf-8;
+    access_log  www.access.log  main;
+    error_log  logs/www.error.log;
+    set  $wwwroot /home/data/installfile/base;
+    root $wwwroot;
+    index index.html index.htm index.php;
+    location / {
+        root /home/data/installfile/base;
+        index index.html index.html;
+        autoindex on;
+        autoindex_exact_size off;
+        autoindex_localtime on;
+    }
+    #error_page  404              /404.html;
+    # redirect server error pages to the static page /50x.html
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+            root   html;
+    }
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    location ~ \.php?.*$ {
+        root           $wwwroot;
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        fastcgi_connect_timeout 240;
+        fastcgi_send_timeout 240;
+        fastcgi_read_timeout 240;
+        fastcgi_buffer_size 64k;
+        fastcgi_buffers 4 64k;
+        fastcgi_busy_buffers_size 128k;
+        fastcgi_temp_file_write_size 128k;
+        include        fastcgi_params;
+    }
+    location ~* \.(gif|jpg|jpeg|png|bmp|swf|otf|svg|eot|ttf|woff)$
+    {
+        root                  $wwwroot;
+        expires               30d;
+    }
+    location ~* \.(js|css)?$
+    {
+        root                  $wwwroot;
+        expires               1d;
+    }
+    #include common.conf;
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    location ~ /\.ht {
+        deny  all;
+    }
+}
 
-HTTP 是一种无状态协议，客户端向服务器发送一个 TCP 请求，服务端响应完毕后断开连接。
-如果客户端向服务器发送多个请求，每个请求都要建立各自独立的连接以传输数据。
-HTTP 有一个 KeepAlive 模式，它告诉 webserver 在处理完一个请求后保持这个 TCP 连接的打开状态。
-若接收到来自客户端的其它请求，服务端会利用这个未被关闭的连接，而不需要再建立一个连接。
+; 本地nginx默认配置(7021_nginx.conf)
+server {
+    listen       7201;
+    server_name_in_redirect  off;
+    charset utf-8;
+    access_log  www.access.log   main;
+    error_log  logs/www.error.log;
+    set $wwwroot /usr/local/nginx/html;
+    root $wwwroot;
+    index index.html index.htm index.php;
+    #error_page  404              /404.html;
+    location ~* ^/attachments/.*.(php|php5)$ {
+        deny all;
+    }
+    location / {
+    root $wwwroot;
+        #   try_files  $uri /index.php?$args;
+        #index index.php index.html index.htm;
+        #站点的rewrite在这里写
+        #rewrite ^/(\w+)\.html$ /$1.php;
+        #rewrite ^/(\w+)/(\w+)$ /$1/$2.php;
+    }
+    # redirect server error pages to the static page /50x.html
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+            root   html;
+    }
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    location ~ \.php?.*$ {
+        root           $wwwroot;
+        #fastcgi_pass unix:/tmp/php-cgi.sock
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        fastcgi_connect_timeout 240;
+        fastcgi_send_timeout 240;
+        fastcgi_read_timeout 240;
+        fastcgi_buffer_size 64k;
+        fastcgi_buffers 4 64k;
+        fastcgi_busy_buffers_size 128k;
+        fastcgi_temp_file_write_size 128k;
+        include        fastcgi_params;
+    }
+    location ~* \.(gif|jpg|jpeg|png|bmp|swf|otf|svg|eot|ttf|woff)$
+    {
+        root                  $wwwroot;
+        expires               30d;
+    }
+    location ~* \.(js|css)?$
+    {
+        root                  $wwwroot;
+        expires               1d;
+    }
+    #include common.conf;
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    location ~ /\.ht {
+        deny  all;
+    }
+}
 
-KeepAlive 在一段时间内保持打开状态，它们会在这段时间内占用资源。占用过多就会影响性能。
+; nginx的https的80配置(80_www.conf)
+server {
+    listen       80;
+    server_name baidu.com;
+    rewrite ^(.*)$ https://${server_name}$1 permanent;
+}
 
-Nginx 使用 keepalive_timeout 来指定 KeepAlive 的超时时间（timeout）。
-指定每个 TCP 连接最多可以保持多长时间。
-Nginx 的默认值是 75 秒，有些浏览器最多只保持 60 秒，所以可以设定为 60 秒。
-若将它设置为 0，就禁止了 keepalive 连接。
-通常 keepalive_timeout 应该比 client_body_timeout(见下文)大。
+; nginx的https的443配置(443_www.conf)
+server {
+    listen       443 ssl;
+    charset utf-8;
+    access_log  www.access.log  main;
+    error_log  logs/www.error.log;
+    #set $wwwroot /home/data/update;
+    set $wwwroot  /usr/local/nginx/html;
+    root $wwwroot;
+    index index.html index.htm index.php;
+    server_name baidu.com;
+    #error_page  404              /404.html;
+    ssl_certificate   3923894_baidu.com.pem;
+    ssl_certificate_key  3923894_baidu.com.key;
+    ssl_session_timeout 5m;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
+    location / {
+        client_max_body_size 1000M;
+        proxy_pass http://127.0.0.1:7090;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarder-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_buffer_size 1000k;
+        proxy_buffers 24 1000k;
+        proxy_busy_buffers_size 1000k;  
+        proxy_connect_timeout   300; 
+        proxy_send_timeout      300; 
+        proxy_read_timeout      300;    
+    }
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+            root   html;
+    }
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #include common.conf;
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    location ~ /\.ht {
+        deny  all;
+    }
+}
 
-配置段: http, server, location
+; nginx.conf
+http {
+    include mime.types;
+    server_names_hash_bucket_size 512;
+    default_type application/octet-stream;
+    sendfile on;
+    keepalive_timeout 65;
+    tcp_nodelay on;
+    client_header_timeout 15;
+    client_body_timeout 15;
+    send_timeout 25;
+    include vhosts/*.conf;
+}
 
-keepalive_timeout 60s;
+; keepalive_timeout 60s;
+该参数用于设置客户端连接保持会话的超时时间，超过这个时间服务器会关闭该连接
 
-client_body_timeout
+; client_body_timeout 20s;
+该参数用于设置读取客户端请求主体数据的超时时间，如果超时客户端还没有发送完整的主体数据。 
+服务器将返回 "Request time out (408)" 错误
 
-指定客户端与服务端建立连接后发送 request body 的超时时间。
-如果客户端在指定时间内没有发送任何内容，Nginx 返回 HTTP 408（Request Timed Out）。
+; client_header_timeout 10s;
+该参数用于设置读取客户端请求头数据的超时时间，如果超时客户端还没有发送完整的 header 数据。 
+服务器将返回 "Request time out (408)" 错误
 
-配置段: http, server, location
+; send_timeout 30s;
+用于指定响应客户端的超时时间，如果超过这个时间，客户端没有任何活动，Nginx 将会关闭连接
+根据转发的应用服务可以配置 proxy_send_timeout、uwsgi_send_timeout、fastcgi_send_timeout
 
-client_body_timeout 20s;
-
-client_header_timeout
-
-客户端向服务端发送一个完整的 request header 的超时时间。
-如果客户端在指定时间内没有发送一个完整的 request header，Nginx 返回 HTTP 408（Request Timed Out）。
-
-配置段: http, server, location
-
-client_header_timeout 10s;
-
-send_timeout
-
-服务端向客户端传输数据的超时时间
-根据转发的应用服务可以配置 proxy_send_timeout、uwsgi_send_timeout、fastcgi_send_timeout（见下文）。
-
-配置段:http, server, location
-
-send_timeout 30s;
-Default: 
-
-send_timeout 60s;
-
-Context: http, server, location
-
-设置将响应传输到客户端的超时时间。 仅在两个连续的写操作之间设置超时，
-
-而不是整个响应的传递。 如果客户端在此时间内未收到任何信息，则连接将关闭。
-
-client_header_timeout
-
-接收客户端 header 超时， 默认 60s, 如果 60s 内没有收到完整的 http 包头， 返回 408
-
-Syntax: client_header_timeout time;
-
-Default: 
-
-client_header_timeout 60s;
-
-Context: http, server
-
-定义读取客户端请求标头的超时。 如果客户端在此时间内未传输整个标头，
-
-408（请求超时）错误返回给客户端。
-
-client_body_timeout
-
-接收客户端 body 超时， 默认 60s, 如果连续的 60s 内没有收到客户端的 1 个字节， 返回 408
-
-Syntax: client_body_timeout time;
-
-Default: 
-
-client_body_timeout 60s;
-
-Context: http, server, location
-
-定义读取客户端请求正文的超时。 超时仅在两次连续读取操作之间的一段时间内设置，而不用于整个请求主体的传输。
-
-如果客户在这段时间内没有传输任何内容，
-
-408（请求超时）错误返回给客户端。
-
-lingering_timeout
-
+; lingering_timeout 5s;
 可以理解为 TCP 连接关闭时的 SO_LINGER 延时设置，默认 5s
-
-Syntax: lingering_timeout time;
-
-Default: 
-
-lingering_timeout 5s;
-
-Context: http, server, location
-
 当lingering_close有效时，此伪指令指定更多客户端数据到达的最大等待时间。 如果在此期间未收到数据
-
 连接已关闭。 否则，将读取并忽略数据，并且nginx开始再次等待更多数据。
-
 重复“ wait-read-ignore”周期，但不超过lingering_time指令指定的周期。
- 
-resolver_timeout
 
+; tcp_nodelay 
+默认情况下当数据发送时，内核并不会马上发送，可能会等待更多的字节组成一个数据包，这样可以提高 I/O 性能。
+但是，在每次只发送很少字节的业务场景中，使用 tcp_nodelay 功能，等待时间会比较长
+ 
+; resolver_timeout 30s;
 域名解析超时，默认 30s
 
-Syntax: resolver_timeout time;
-
-Default: 
-
-resolver_timeout 30s;
-
-Context: http, server, location
-
-设置名称解析超时，例如：
-
-resolver_timeout 5s;
-
-proxy_connect_timeout
-
-nginx 与 upstream server 的连接超时时间，默认为 60s；根据应用不同可配置 uwsgi_send_timeout/fascgi_send_timeout/proxy_send_timeout
-
-Syntax: proxy_connect_timeout time;
-
-Default: 
-
-proxy_connect_timeout 60s;
-
-Context: http, server, location
-
+; proxy_connect_timeout 60s;
 定义用于与代理服务器建立连接的超时。 请注意，此超时通常不能超过75秒。
 
-proxy_read_timeout
-
-nginx 接收 upstream server 数据超时， 默认 60s, 如果连续的 60s 内没有收到 1 个字节， 连接关闭；根据应用不同可配置 uwsgi_send_timeout/fascgi_send_timeout/proxy_send_timeout
-
-Syntax: proxy_read_timeout time;
-
-Default: 
-
-proxy_read_timeout 60s;
-
-Context: http, server, location
-
+; proxy_read_timeout 60s;
 定义用于从代理服务器读取响应的超时。 仅在两个连续的读取操作之间设置超时，
-
 而不是整个响应的传递。 如果代理服务器在此时间内未传输任何内容，则连接将关闭。
 
-proxy_send_timeout
-
-nginx 发送数据至 upstream server 超时， 默认 60s, 如果连续的 60s 内没有发送 1 个字节， 连接关闭；根据应用不同可配置 uwsgi_send_timeout/fascgi_send_timeout/proxy_send_timeout。
-
-Syntax: proxy_send_timeout time;
-
-Default: 
-
-proxy_send_timeout 60s;
-
-Context: http, server, location
-
+; proxy_send_timeout 60s;
 设置用于将请求传输到代理服务器的超时。 仅在两个连续的写操作之间设置超时，
-
 不用于传输整个请求。 如果代理服务器无法记录
+
 ```
 
 ## nginx命令
 ```
-`ps -A | grep nginx`    -查看nginx是否启动
-
-`/application/nginx/sbin/nginx -t` –检查语法
-
-`/application/nginx/sibn/nginx -s reload` —平滑加载配置文件(建议使用这个)
-
-`/application/nginx/sbin/nginx` —启动nginx服务 
+-- 查看nginx是否启动
+ps -A | grep nginx  
+-- 检查语法
+application/nginx/sbin/nginx -t 
+-- 平滑加载配置文件(建议使用这个)
+application/nginx/sibn/nginx -s reload 
+-- 启动nginx服务 
+application/nginx/sbin/nginx 
 ```
 
 ## nginx报错
 ```
-**nginx: [alert] kill(1668, 1) failed (3: No such process)**
+; nginx: [alert] kill(1668, 1) failed (3: No such process)
 没有启动nginx服务，执行/app/nginx/sbin/nginx，开启nginx服务后解决
 
-**上传文件nginx报错**
+; 上传文件nginx报错
 上传接口直接显示ngnix报错
 日志显示：缺失某个文件夹
 将文件夹创建即可
@@ -250,7 +348,7 @@ Base64编码的思想是是采用64个基本的ASCII码字符对数据进行重�
 
 ## png转jpg(将png转为jpg后图片大小将减少一位数)
 ```
-// png转jpg
+    // png转jpg
     public function PngChangeJpg($src_path)
     {
 		$src_path = '.'.$src_path;
@@ -612,147 +710,6 @@ pm.max_spare_servers = 3
 另外一个需要注意的指令"request_terminate_timeout"，它决定php-fpm进程的连接/发送和读取的时间。
 如果设置过小很容易出现"502 Bad Gateway" 和 “504  Gateway  Time-out”。
 默认为0，就是说没有启用，不加限制，但是这种设置前提是你的php-fpm足够健康，这个需要根据实际情况加以限定。
-```
-
-## nginx的https的443配置
-```
-server {
-    listen       443 ssl;
-    charset utf-8;
-    access_log  www.access.log  main;
-    error_log  logs/www.error.log;
-    #set $wwwroot /home/data/update;
-    set $wwwroot  /usr/local/nginx/html;
-    root $wwwroot;
-    index index.html index.htm index.php;
-    server_name baidu.com;
-    #error_page  404              /404.html;
-    ssl_certificate   3923894_baidu.com.pem;
-    ssl_certificate_key  3923894_baidu.com.key;
-    ssl_session_timeout 5m;
-    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
-    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-    ssl_prefer_server_ciphers on;
-    location / {
-        client_max_body_size 1000M;
-        proxy_pass http://127.0.0.192:7090;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarder-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_buffer_size 1000k;
-        proxy_buffers 24 1000k;
-        proxy_busy_buffers_size 1000k;  
-        proxy_connect_timeout   300; 
-        proxy_send_timeout      300; 
-        proxy_read_timeout      300;    
-    }
-    # redirect server error pages to the static page /50x.html
-    #
-    error_page   500 502 503 504  /50x.html;
-    location = /50x.html {
-            root   html;
-    }
-
-    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
-    #
-    #location ~ \.php$ {
-    #    proxy_pass   http://127.0.0.1;
-    #}
-
-    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
-    #
-
-    #include common.conf;
-
-    # deny access to .htaccess files, if Apache's document root
-    # concurs with nginx's one
-    #
-    location ~ /\.ht {
-        deny  all;
-    }
-}
-```
-
-## nginx服务超时处理centos7+nginx+php
-```
-什么是连接超时
-举个例子，某饭店请了服务员招待顾客，但是现在饭店不景气，因此要解雇掉一些服务员。
-这里的服务员就相当于 Nginx 服务建立的连接
-当服务器建立的连接没有接收处理请求时，可以在指定的时间内让它超时自动退出
-
-连接超时的作用
-将无用的连接设置为尽快超时，可以保护服务器的系统资源（CPU、内存、磁盘）
-当连接很多时，及时断掉那些建立好的但又长时间不做事的连接，以减少其占用的服务器资源
-如果黑客攻击，会不断地和服务器建立连接，因此设置连接超时以防止大量消耗服务器的资源
-如果用户请求了动态服务，则 Nginx 就会建立连接，请求 FastCGI 服务以及后端 MySQL 服务。
-设置连接超时，使得在用户容忍的时间内返回数据
-
-连接超时存在的问题
-服务器建立新连接是要消耗资源的，因此，连接超时时间不宜设置得太短。
-否则会造成并发很大，导致服务器瞬间无法响应用户的请求
-有些 PHP 站点会希望设置成短连接，因为 PHP 程序建立连接消耗的资源和时间相对要少些
-有些 Java 站点会希望设置成长连接，因为 Java 程序建立连接消耗的资源和时间要多一些。
-这时由语言的运行机制决定的
-
-设置连接超时
-keepalive_timeout ：
-该参数用于设置客户端连接保持会话的超时时间，超过这个时间服务器会关闭该连接
-client_header_timeout ：
-该参数用于设置读取客户端请求头数据的超时时间，如果超时客户端还没有发送完整的 header 数据。
-服务器将返回 "Request time out (408)" 错误
-client_body_timeout ：
-该参数用于设置读取客户端请求主体数据的超时时间，如果超时客户端还没有发送完整的主体数据。
-服务器将返回 "Request time out (408)" 错误
-send_timeout ：
-用于指定响应客户端的超时时间，如果超过这个时间，客户端没有任何活动，Nginx 将会关闭连接
-tcp_nodelay ：
-默认情况下当数据发送时，内核并不会马上发送，可能会等待更多的字节组成一个数据包，这样可以提高 I/O 性能。
-但是，在每次只发送很少字节的业务场景中，使用 tcp_nodelay 功能，等待时间会比较长
-
-http {
-include mime.types;
-server_names_hash_bucket_size 512;
-default_type application/octet-stream;
-sendfile on;
-keepalive_timeout 65;
-tcp_nodelay on;
-client_header_timeout 15;
-client_body_timeout 15;
-send_timeout 25;
-include vhosts/*.conf;
-}
-
-设置nginx代理超时
-location / {
-        client_max_body_size 1000M;
-		proxy_pass http://127.0.0.192:7090;
-		proxy_set_header Host $host;
-		proxy_set_header X-Real-IP $remote_addr;
-		proxy_set_header X-Forwarder-For $proxy_add_x_forwarded_for;
-		proxy_set_header X-Forwarded-Proto $scheme;
-		proxy_buffer_size 1000k;
-		proxy_buffers 24 1000k;
-		proxy_busy_buffers_size 1000k;  
-		proxy_connect_timeout   300; 
-        proxy_send_timeout      300; 
-        proxy_read_timeout      300;    
-}
-设置php
-location ~ \.php?.*$ {
-                root           $wwwroot;
-                fastcgi_pass   127.0.0.1:9000;
-                fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-                fastcgi_connect_timeout 36000;
-                fastcgi_send_timeout 36000;
-                fastcgi_read_timeout 36000;
-                fastcgi_buffer_size 64k;
-                fastcgi_buffers 4 64k;
-                fastcgi_busy_buffers_size 128k;
-                fastcgi_temp_file_write_size 128k;
-                include        fastcgi_params;
-        }
-
 ```
 
 ## apache服务超时处理phpstudy+apache+php
