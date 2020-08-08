@@ -1125,6 +1125,19 @@ HTTP 状态码用来告诉客户端，发生了什么事情，状态码位于响
 |504|Gateway Timeout|代理或网关超时(等待另一服务器响应超时)|###**|
 ```
 
+### [如何返回一个301重定向](https://stackoverflow.com/questions/7324645/php-header-redirect-301-what-are-the-implications) 
+```
+**[WARNING]** 一定当心设置 301 后脚本会继续执行，不要认为下面不会执行，必要时使用 `die` or `exit`
+301的作用是搜索引擎将为/ option-a而不是/ option-x编制索引。
+这可能是一件好事，因为/ option-x对于搜索索引而言是不可访问的，因此可能会对索引产生积极影响。仅当您明智地使用它时;
+
+重定向后放入exit（）; 停止执行脚本的其余部分
+
+header("HTTP/1.1 301 Moved Permanently"); 
+header("Location: /option-a"); 
+exit();
+```
+
 ### [301](https://zh.wikipedia.org/wiki/HTTP_301) 什么意思 [404](https://zh.wikipedia.org/wiki/HTTP_404) 呢?
 ```
 301 Move Permanently 是HTTP协议中的一个状态码（Status Code）。
@@ -2649,6 +2662,3158 @@ PHP_FUNCTION(test) {
 只不过相比于zval *, 直接存储zval, 我们可以省掉一次指针解引用, 从而提高缓存友好性.
 其实PHP7的性能, 我们并没有引入什么新的技术模式, 不过就是主要来自, 持续不懈的降低内存占用, 
 提高缓存友好性, 降低执行的指令数的这些原则而来的, 可以说PHP7的重构就是这三个原则.
+```
+
+### [内存管理](https://www.jianshu.com/p/63a381a7f70c)
+```
+https://www.jianshu.com/p/63a381a7f70c
+1） 操作系统直接管理着内存，所以操作系统也需要进行内存管理，
+计算机中通常都有内存管理单元(MMU) 用于处理CPU对内存的访问。
+2） 应用程序无法直接调用物理内存， 只能向系统申请内存。
+向操作系统申请内存空间会引发系统调用。
+系统调用会将CPU从用户态切换到内核。
+为了减少系统调用开销。通常在用户态进行内存管理。 申请大块内存备用。
+使用完的内存不马上释放，将内存复用，避免多次内存申请和释放所带来性能消耗。
+3） PHP不需要显示内存管理，由Zend引擎进行管理。
+
+PHP内存限制
+1）php.ini中的默认32MB
+memory_limit = 32M
+
+2）动态修改内存
+ini_set ("memory_limit", "128M")
+
+3）获取目前内存占用
+memory_get_usage() : 获取PHP脚本所用的内存大小
+memory_get_peak_usage() ：返回当前脚本到目前位置所占用的内存峰值。
+
+学习内存管理的目的
+了解PHP如何占用内存，可以避免不必要的内存浪费。
+
+PHP中的内存管理###
+包含：
+1）足够内存
+2）可用内存获取部分内存
+3）使用后的内存，是否销毁还是重新分配
+
+PHP内存管理器
+
+接口层，是一些宏定义。
+**堆层 heap **
+_zend_mm_heap
+
+初始化内存，调用 zend_mm_startup
+PHP内存管理维护三个列表:
+1)小块内存列表 free_buckets
+2)大块内存列表 large_free_buckets
+3)剩余内存列表 rest_buckets
+
+两个HashTable 结构，难点是查找和计算内存地址
+1)free_buckets
+Hash函数为：
+
+#define ZEND_MM_BUCKET_INDEX(true_size) ((true_size>>ZEND_MM_ALIGNMENT_LOG2)-(ZEND_MM_ALIGNED_MIN_HEADER_SIZE>>ZEND_MM_ALIGNMENT_LOG2))
+2)large_free_buckets
+Hash函数为：
+
+#define ZEND_MM_LARGE_BUCKET_INDEX(S) zend_mm_high_bit(S)
+    static inline unsigned int zend_mm_high_bit(size_t _size){
+       ..//省略若干不同环境的实现
+      unsignedint n =0;
+      while(_size !=0) { 
+        _size = _size >>1; n++;}
+        return n-1;
+    }
+
+存储层 storage
+
+内存分配的方式对堆层透明化，实现存储层和heap层的分离。
+不同的内存分配方案， 有对应的处理函数。
+内存的申请
+
+PHP底层对内存的管理， 围绕着小块内存列表（free_buckets）、 大块内存列表（large_free_buckets）和
+ 剩余内存列表（rest_buckets）三个列表来分层进行的
+
+ZendMM向系统进行的内存申请，并不是有需要时向系统即时申请， 而是由ZendMM的最底层（heap层）
+先向系统申请一大块的内存，通过对上面三种列表的填充， 建立一个类似于内存池的管理机制。 
+在程序运行需要使用内存的时候，ZendMM会在内存池中分配相应的内存供使用。 
+这样做的好处是避免了PHP向系统频繁的内存申请操作
+
+ZendMM对内存分配的处理步骤：
+
+1）内存检查；
+2）命中缓存，找到内存块，调至步骤5；
+3）在ZendMM管理的heap层存储中搜索合适大小的内存块, 是在三种列表中小到大进行的，找到block后，调至步骤5；
+4）步骤3未找到内存，则使用 ZEND_MM_STORAGE_ALLOC 申请新内存块 （至少为ZEND_MM_SEG_SIZE）,进行步骤6
+
+5）使用zend_mm_remove_from_free_list函数将已经使用block节点在zend_mm_free_block中移除;
+6） 内存分配完毕，对zend_mm_heap结构中的各种标识型变量进行维护，包括large_free_buckets， peak，size等;
+7） 返回分配的内存地址;
+
+PHP内存管理器
+内存的销毁
+
+ZendMM在内存销毁的处理上采用与内存申请相同的策略，当程序unset一个变量或者是其他的释放行为时， 
+ZendMM并不会直接立刻将内存交回给系统，而是只在自身维护的内存池中将其重新标识为可用， 
+按照内存的大小整理到上面所说的三种列表（small,large,free）之中，以备下次内存申请时使用。
+
+ZendMM将内存块以整理收回到zend_mm_heap的方式，回收到内存池中。
+程序使用的所有内存，将在进程结束时统一交还给系统。
+
+垃圾回收
+
+自动回收内存的过程叫垃圾收集。PHP提供了语言层的垃圾回收机制，让程序员不必过分关心程序内存分配。
+
+PHP5.3之前
+引用计数方式的内存动态管理。
+
+PHP中所有的变量都是以zval变量的形式存在。
+
+变量引用计数变为0时，PHP将在内存中销毁这个变量。只是这里的垃圾并不能称之为垃圾。
+并且PHP在一个生命周期结束后就会释放此进程/线程所占的内容，这种方式决定了PHP在前期不需要过多考虑内存的泄露问题。
+
+PHP5.3的垃圾回收
+
+引入垃圾收集机制的目的是为了打破引用计数中的循环引用，从而防止因为这个而产生的内存泄露。 
+垃圾收集机制基于PHP的动态内存管理而存在。PHP5.3为引入垃圾收集机制，在变量存储的基本结构上有一些变动.
+
+struct _zval_struct {
+  /* Variable information */ 
+  zvalue_value value;/* value */ 
+  zend_uint refcount__gc; 
+  zend_uchar type;/* active type */ 
+  zend_uchar is_ref__gc;
+};
+添加了 __gc 以用于新的垃圾回收机制。
+
+PHP5.3中的垃圾回收算法——Concurrent Cycle Collection in Reference Counted Systems
+
+PHP5.3的垃圾回收算法仍然以引用计数为基础，但是不再是使用简单计数作为回收准则，
+而是使用了一种同步回收算法，这个算法由IBM的工程师在论文Concurrent Cycle Collection in Reference Counted Systems中提出。
+论文较复杂， 列出一些大体描述。
+首先PHP会分配一个固定大小的“根缓冲区”，这个缓冲区用于存放固定数量的zval，这个数量默认是10,000，
+如果需要修改则需要修改源代码Zend/zend_gc.c中的常量GC_ROOT_BUFFER_MAX_ENTRIES然后重新编译。
+由上文我们可以知道，一个zval如果有引用，要么被全局符号表中的符号引用，要么被其它表示复杂类型的zval中的符号引用。
+因此在zval中存在一些可能根（root）。这里我们暂且不讨论PHP是如何发现这些可能根的，
+这是个很复杂的问题，总之PHP有办法发现这些可能根zval并将它们投入根缓冲区。
+当根缓冲区满额时，PHP就会执行垃圾回收，此回收算法如下：
+1、对每个根缓冲区中的根zval按照深度优先遍历算法遍历所有能遍历到的zval，并将每个zval的refcount减1，
+同时为了避免对同一zval多次减1（因为可能不同的根能遍历到同一个zval），每次对某个zval减1后就对其标记为“已减”。
+2、再次对每个缓冲区中的根zval深度优先遍历，如果某个zval的refcount不为0，则对其加1，否则保持其为0。
+3、清空根缓冲区中的所有根（注意是把这些zval从缓冲区中清除而不是销毁它们），然后销毁所有refcount为0的zval，并收回其内存。
+如果不能完全理解也没有关系，只需记住PHP5.3的垃圾回收算法有以下几点特性：
+1、并不是每次refcount减少时都进入回收周期，只有根缓冲区满额后在开始垃圾回收。
+2、可以解决循环引用问题。
+3、可以总将内存泄露保持在一个阈值以下。
+
+PHP5.2与PHP5.3垃圾回收算法的性能比较
+
+PHP Manual中的相关章节：http://docs.php.net/manual/zh/features.gc.performance-considerations.php
+
+首先是内存泄露试验，下面直接引用PHP Manual中的实验代码和试验结果图：
+
+<?php
+class Foo
+{
+   public $var = '3.1415962654';
+}
+$baseMemory = memory_get_usage();
+for ( $i = 0; $i <= 100000; $i++ )
+{
+   $a = new Foo;
+   $a->self = $a;
+   if ( $i % 500 === 0 )
+   {
+       echo sprintf( '%8d: ', $i ), memory_get_usage() - $baseMemory, "\n";
+   }
+}
+?>
+
+可以看到在可能引发累积性内存泄露的场景下，PHP5.2发生持续累积性内存泄露，
+而PHP5.3则总能将内存泄露控制在一个阈值以下（与根缓冲区大小有关）。
+
+与垃圾回收算法相关的PHP配置
+
+1、可以通过修改php.ini中的zend.enable_gc来打开或关闭PHP的垃圾回收机制，
+也可以通过调用gc_enable()或gc_disable()打开或关闭PHP的垃圾回收机制。
+2、在PHP5.3中即使关闭了垃圾回收机制，PHP仍然会记录可能根到根缓冲区，
+只是当根缓冲区满额时，PHP不会自动运行垃圾回收
+3、当然，任何时候您都可以通过手工调用gc_collect_cycles()函数强制执行内存回收。
+```
+
+### [垃圾回收机制](http://php.net/manual/zh/features.gc.php)
+```
+http://php.net/manual/zh/features.gc.php
+引用计数基本知识
+每个php变量存在一个叫"zval"的变量容器中。一个zval变量容器，除了包含变量的类型和值，
+还包括两个字节的额外信息。第一个是"is_ref"，是个bool值，用来标识这个变量是否是属于引用集合(reference set)。
+通过这个字节，php引擎才能把普通变量和引用变量区分开来，由于php允许用户通过使用&来使用自定义引用，
+zval变量容器中还有一个内部引用计数机制，来优化内存使用。第二个额外字节是"refcount"，
+用以表示指向这个zval变量容器的变量(也称符号即symbol)个数。所有的符号存在一个符号表中，
+其中每个符号都有作用域(scope)，那些主脚本(比如：通过浏览器请求的的脚本)和每个函数或者方法也都有作用域。
+
+回收周期(Collecting Cycles)
+传统上，像以前的 php 用到的引用计数内存机制，无法处理循环的引用内存泄漏。
+然而 5.3.0 PHP 使用文章» 引用计数系统中的同步周期回收
+(Concurrent Cycle Collection in Reference Counted Systems)中的同步算法，来处理这个内存泄漏问题。
+
+对算法的完全说明有点超出这部分内容的范围，将只介绍其中基础部分。首先，我们先要建立一些基本规则，
+如果一个引用计数增加，它将继续被使用，当然就不再在垃圾中。如果引用计数减少到零，所在变量容器将被清除(free)。
+就是说，仅仅在引用计数减少到非零值时，才会产生垃圾周期(garbage cycle)。其次，在一个垃圾周期中，
+通过检查引用计数是否减1，并且检查哪些变量容器的引用次数是零，来发现哪部分是垃圾。
+
+垃圾回收算法
+为避免不得不检查所有引用计数可能减少的垃圾周期，这个算法把所有可能根(possible roots 都是zval变量容器),
+放在根缓冲区(root buffer)中(用紫色来标记，称为疑似垃圾)，这样可以同时确保每个可能的垃圾根(possible garbage root)
+在缓冲区中只出现一次。仅仅在根缓冲区满了时，才对缓冲区内部所有不同的变量容器执行垃圾回收操作。看上图的步骤 A。
+
+在步骤 B 中，模拟删除每个紫色变量。模拟删除时可能将不是紫色的普通变量引用数减"1"，如果某个普通变量引用计数变成0了，
+就对这个普通变量再做一次模拟删除。每个变量只能被模拟删除一次，模拟删除后标记为灰（原文说确保不会对同一个变量容器减两次"1",不对的吧）。
+
+在步骤 C 中，模拟恢复每个紫色变量。恢复是有条件的，当变量的引用计数大于0时才对其做模拟恢复。
+同样每个变量只能恢复一次，恢复后标记为黑，基本就是步骤 B 的逆运算。
+这样剩下的一堆没能恢复的就是该删除的蓝色节点了，在步骤 D 中遍历出来真的删除掉。
+
+算法中都是模拟删除、模拟恢复、真的删除，都使用简单的遍历即可（最典型的深搜遍历）。
+复杂度为执行模拟操作的节点数正相关，不只是紫色的那些疑似垃圾变量。
+
+现在，你已经对这个算法有了基本了解，我们回头来看这个如何与PHP集成。默认的，
+PHP的垃圾回收机制是打开的，然后有个 php.ini 设置允许你修改它：zend.enable_gc。
+
+当垃圾回收机制打开时，每当根缓存区存满时，就会执行上面描述的循环查找算法。
+根缓存区有固定的大小，可存10,000个可能根,当然你可以通过修改PHP源码文件Zend/zend_gc.c中的常量GC_ROOT_BUFFER_MAX_ENTRIES，
+然后重新编译PHP，来修改这个10,000值。当垃圾回收机制关闭时，循环查找算法永不执行，然而，
+可能根将一直存在根缓冲区中，不管在配置中垃圾回收机制是否激活。
+
+当垃圾回收机制关闭时，如果根缓冲区存满了可能根，更多的可能根显然不会被记录。那些没被记录的可能根，
+将不会被这个算法来分析处理。如果他们是循环引用周期的一部分，将永不能被清除进而导致内存泄漏。
+
+即使在垃圾回收机制不可用时，可能根也被记录的原因是，相对于每次找到可能根后检查垃圾回收机制是否打开而言，
+记录可能根的操作更快。不过垃圾回收和分析机制本身要耗不少时间。
+
+除了修改配置zend.enable_gc，也能通过分别调用gc_enable() 和 gc_disable()函数来打开和关闭垃圾回收机制。
+调用这些函数，与修改配置项来打开或关闭垃圾回收机制的效果是一样的。即使在可能根缓冲区还没满时，
+也能强制执行周期回收。你能调用gc_collect_cycles()函数达到这个目的。这个函数将返回使用这个算法回收的周期数。
+
+允许打开和关闭垃圾回收机制并且允许自主的初始化的原因，是由于你的应用程序的某部分可能是高时效性的。
+在这种情况下，你可能不想使用垃圾回收机制。当然，对你的应用程序的某部分关闭垃圾回收机制，是在冒着可能内存泄漏的风险，
+因为一些可能根也许存不进有限的根缓冲区。因此，就在你调用gc_disable()函数释放内存之前，
+先调用gc_collect_cycles()函数可能比较明智。因为这将清除已存放在根缓冲区中的所有可能根，
+然后在垃圾回收机制被关闭时，可留下空缓冲区以有更多空间存储可能根。
+
+性能方面考虑的因素
+在上一节我们已经简单的提到：回收可能根有细微的性能上影响，但这是把PHP 5.2与PHP 5.3比较时才有的。
+尽管在PHP 5.2中，记录可能根相对于完全不记录可能根要慢些，而PHP 5.3中对 PHP run-time 的其他修改减少了这个性能损失。
+
+这里主要有两个领域对性能有影响。第一个是内存占用空间的节省，
+另一个是垃圾回收机制执行内存清理时的执行时间增加(run-time delay)。我们将研究这两个领域。
+
+内存占用空间的节省
+首先，实现垃圾回收机制的整个原因是为了，一旦先决条件满足，通过清理循环引用的变量来节省内存占用。
+在PHP执行中，一旦根缓冲区满了或者调用gc_collect_cycles() 函数时，就会执行垃圾回收。
+在下图中，显示了下面脚本分别在PHP 5.2 和 PHP 5.3环境下的内存占用情况，其中排除了脚本启动时PHP本身占用的基本内存。
+```
+
+### cgi、fastcgi、php-fpm
+```
+https://www.zhihu.com/question/30672017
+- ###*cgi**
+早期的web server只可以处理简单的静态web文件，
+但是随着技术的发展出现动态语言如PHP，Python。PHP语言交给PHP解析器进行处理，
+但是处理之后如何和web server进行通信呢？
+为了解决不同的语言处理器与web server之间的通讯，出现了CGI协议。
+只要按照CGI协议编写程序，就可以实现与语言解析器与web server之间的通讯。
+CGI协议虽然解决了语言解析器和seb server之间通讯的问题，
+但是它的效率很低。因为web server每收到一个请求都会创建一个CGI进程，
+PHP解析器都会解析php.ini文件，初始化环境，请求结束的时候再关闭进程。
+对于每一个创建的CGI进程都会执行这些操作。所以效率很低。
+
+- ###*FastCGI**
+FastCGI是用来提高CGI性能的，FastCGI每次处理完请求之后不会关闭掉进程。
+而是保留这个进程，使这个进程可以处理多个请求。
+这样的话每个请求都不用再重新创建一个进程了。大大提升了处理效率。
+
+- ###*PHP-FPM**
+PHP-FPM(FastCGI Process Manager：FastCGI进程管理器)是一个实现了Fastcgi的程序，
+并且提供进程管理的功能。进程包括master进程和worker进程。master进程只有一个，
+负责监听端口，接受来自web server的请求。worker进程一般会有多个，
+每个进程中会嵌入一个PHP解析器，进程PHP代码的处理。
+```
+
+### php.ini中的safe_mode 影响
+```
+###*Warning
+本特性已自 PHP 5.3.0 起废弃并将自 PHP 5.4.0 起移除。###*
+1)用户输入输出函数（fopen()file()require(),只能用于调用这些函数有相同脚本的拥有者）
+2)创建新文件（限制用户只在该用户拥有目录下创建文件）
+3)用户调用popen()systen()exec()等脚本，只有脚本处在safe_mode_exec_dir配置指令指定的目录中才可能
+4)加强HTTP认证，认证脚本拥有者的UID的划入认证领域范围内，此外启用安全模式下，不会设置PHP_AUTH
+5)mysql服务器所用的用户名必须与调用mysql_connect()的文件的拥有者用户名相同6)
+受影响的函数变量以及配置命令达到40个
+```
+
+### [PSR 是什么，PSR-1, 2, 4, 7](http://psr.phphub.org/)
+```
+https://learnku.com/docs/psr
+1. 概述
+本 PSR 是关于由文件路径 自动载入 对应类的相关规范，
+本规范是可互操作的，可以作为任一自动载入规范的补充，其中包括 [PSR-0]()，此外，
+本 PSR 还包括自动载入的类对应的文件存放路径规范。
+
+关于「能愿动词」的使用
+为了避免歧义，文档大量使用了「能愿动词」，对应的解释如下：
+
+必须 (MUST)：绝对，严格遵循，请照做，无条件遵守；
+一定不可 (MUST NOT)：禁令，严令禁止；
+应该 (SHOULD) ：强烈建议这样做，但是不强求；
+不该 (SHOULD NOT)：强烈不建议这样做，但是不强求；
+可以 (MAY) 和 可选 (OPTIONAL) ：选择性高一点，在这个文档内，此词语使用较少；
+参见：RFC 2119
+
+2. 详细说明
+此处的「类」泛指所有的「Class 类」、「接口」、「traits 可复用代码块」以及其它类似结构。
+
+一个完整的类名需具有以下结构:
+
+\<命名空间>(\<子命名空间>)*\<类名>
+完整的类名 必须 要有一个顶级命名空间，被称为 "vendor namespace"；
+
+完整的类名 可以 有一个或多个子命名空间；
+
+完整的类名 必须 有一个最终的类名；
+
+完整的类名中任意一部分中的下滑线都是没有特殊含义的；
+
+完整的类名 可以 由任意大小写字母组成；
+
+所有类名都 必须 是大小写敏感的。
+
+当根据完整的类名载入相应的文件
+
+完整的类名中，去掉最前面的命名空间分隔符，前面连续的一个或多个命名空间和子命名空间，
+作为「命名空间前缀」，其必须与至少一个「文件基目录」相对应；
+
+紧接命名空间前缀后的子命名空间 必须 与相应的「文件基目录」相匹配，其中的命名空间分隔符将作为目录分隔符。
+
+末尾的类名 必须 与对应的以 .php 为后缀的文件同名。
+
+自动加载器（autoloader）的实现 一定不可 抛出异常、一定不可 触发任一级别的错误信息以及 不应该 有返回值。
+
+3. 例子
+下表展示了符合规范完整类名、命名空间前缀和文件基目录所对应的文件路径。
+
+完整类名	命名空间前缀	文件基目录	文件路径
+\Acme\Log\Writer\File_Writer	Acme\Log\Writer	./acme-log-writer/lib/	./acme-log-writer/lib/File_Writer.php
+\Aura\Web\Response\Status	Aura\Web	/path/to/aura-web/src/	/path/to/aura-web/src/Response/Status.php
+\Symfony\Core\Request	Symfony\Core	./vendor/Symfony/Core/	./vendor/Symfony/Core/Request.php
+\Zend\Acl	Zend	/usr/includes/Zend/	/usr/includes/Zend/Acl.php
+关于本规范的实现，可参阅 相关实例。
+
+注意：实例并 不 属于规范的一部分，且随时 会 有所变动。
+```
+
+### Autoload、Composer 原理 [PSR-4](https://laravel-china.org/topics/2081/psr-specification-psr-4-automatic-loading-specification) 、[原理](https://segmentfault.com/a/1190000014948542)
+```
+PHP 自5.3的版本之后，已经重焕新生，
+命名空间、性状（trait）、闭包、接口、PSR 规范、
+以及 composer 的出现已经让 PHP 变成了一门现代化的脚本语言。
+PHP 的生态系统也一直在演进，而 composer 的出现更是彻底的改变了以往构建 PHP 应用的方式，
+我们可以根据 PHP 的应用需求混合搭配最合适的 PHP 组件。当然这也得益于 PSR 规范的提出。
+
+PHP 自动加载功能
+PSR 规范
+comoposer 的自动加载过程
+composer 源码分析
+一、PHP 自动加载功能
+PHP 自动加载功能的由来
+在 PHP 开发过程中，如果希望从外部引入一个 Class ，通常会使用 include 和 require 方法，
+去把定义这个 Class 的文件包含进来。这个在小规模开发的时候，没什么大问题。
+但在大型的开发项目中，使用这种方式会带来一些隐含的问题：如果一个 PHP 文件需要使用很多其它类，
+那么就需要很多的 require/include 语句，这样有可能会 造成遗漏 或者 包含进不必要的类文件。
+如果大量的文件都需要使用其它的类，那么要保证每个文件都包含正确的类文件肯定是一个噩梦， 
+况且 require或 incloud 的性能代价很大。
+
+PHP5 为这个问题提供了一个解决方案，这就是 类的自动加载(autoload)机制。
+autoload机制 可以使得 PHP 程序有可能在使用类时才自动包含类文件，
+而不是一开始就将所有的类文件include进来，这种机制也称为 Lazy loading (惰性加载)。
+
+总结起来，自动加载功能带来了几处优点：
+
+使用类之前无需 include / require
+使用类的时候才会 include / require 文件，实现了 lazy loading ，避免了 include / require 多余文件。
+无需考虑引入 类的实际磁盘地址 ，实现了逻辑和实体文件的分离。
+PHP 自动加载函数 __autoload()
+从 PHP5 开始，当我们在使用一个类时，如果发现这个类没有加载，
+就会自动运行 __autoload() 函数，这个函数是我们在程序中自定义的，
+在这个函数中我们可以加载需要使用的类。下面是个简单的示例：
+
+<?php
+
+function __autoload($classname) {
+        require_once ($classname . ".class.php");
+}
+在我们这个简单的例子中，我们直接将类名加上扩展名 .class.php 构成了类文件名，然后使用 require_once 将其加载。
+
+从这个例子中，我们可以看出 __autoload 至少要做三件事情：
+
+根据类名确定类文件名；
+确定类文件所在的磁盘路径；
+将类从磁盘文件中加载到系统中。
+第三步最简单，只需要使用 include / require 即可。要实现第一步，第二步的功能，
+必须在开发时约定类名与磁盘文件的映射方法，只有这样我们才能根据类名找到它对应的磁盘文件。
+当有大量的类文件要包含的时候，我们只要确定相应的规则，然后在 __autoload() 函数中，
+将类名与实际的磁盘文件对应起来，就可以实现 lazy loading 的效果 。
+如果想详细的了解关于 autoload 自动加载的过程，可以查看手册资料：PHP autoload函数说明
+__autoload() 函数存在的问题
+如果在一个系统的实现中，如果需要使用很多其它的类库，这些类库可能是由不同的开发人员编写的， 
+其类名与实际的磁盘文件的映射规则不尽相同。这时如果要实现类库文件的自动加载，
+就必须 在 __autoload() 函数中将所有的映射规则全部实现，这样的话 __autoload() 函数有可能会非常复杂，
+甚至无法实现。最后可能会导致 __autoload() 函数十分臃肿，这时即便能够实现，
+也会给将来的维护和系统效率带来很大的负面影响。
+那么问题出现在哪里呢？问题出现在 __autoload() 是全局函数只能定义一次 ，不够灵活，
+所以所有的类名与文件名对应的逻辑规则都要在一个函数里面实现，造成这个函数的臃肿。
+那么如何来解决这个问题呢？答案就是使用一个 __autoload调用堆栈 ，
+不同的映射关系写到不同的 __autoload函数 中去，然后统一注册统一管理，这个就是 PHP5 引入的 SPL Autoload 。
+SPL Autoload
+SPL是 Standard PHP Library(标准PHP库)的缩写。它是 PHP5 引入的一个扩展标准库，
+包括 spl autoload 相关的函数以及各种数据结构和迭代器的接口或类。
+spl autoload 相关的函数具体可见 php中spl_autoload
+<?php
+
+// __autoload 函数
+//
+// function __autoload($class) {
+//     include 'classes/' . $class . '.class.php';
+// }
+
+
+function my_autoloader($class) {
+    include 'classes/' . $class . '.class.php';
+}
+
+spl_autoload_register('my_autoloader');
+
+
+// 定义的 autoload 函数在 class 里
+
+// 静态方法
+class MyClass {
+  public static function autoload($className) {
+    // ...
+  }
+}
+
+spl_autoload_register(array('MyClass', 'autoload'));
+
+// 非静态方法
+class MyClass {
+  public function autoload($className) {
+    // ...
+  }
+}
+
+$instance = new MyClass();
+spl_autoload_register(array($instance, 'autoload'));
+
+spl_autoload_register() 就是我们上面所说的__autoload调用堆栈，我们可以向这个函数注册多个我们自己的 autoload() 函数，
+当 PHP 找不到类名时，PHP就会调用这个堆栈，然后去调用自定义的 autoload() 函数，
+实现自动加载功能。如果我们不向这个函数输入任何参数，那么就会默认注册 spl_autoload() 函数。
+
+二、PSR 规范
+与自动加载相关的规范是 PSR4，在说 PSR4 之前先介绍一下 PSR 标准。PSR 标准的发明和推出组织是：
+PHP-FIG，它的网站是：www.php-fig.org。由几位开源框架的开发者成立于 2009 年，从那开始也选取了很多其他成员进来，
+虽然不是 “官方” 组织，但也代表了社区中不小的一块。组织的目的在于：以最低程度的限制，来统一各个项目的编码规范，
+避免各家自行发展的风格阻碍了程序员开发的困扰，于是大伙发明和总结了 PSR，PSR 是 PHP Standards Recommendation 的缩写，
+截止到目前为止，总共有 14 套 PSR 规范，其中有 7 套PSR规范已通过表决并推出使用，分别是：
+
+PSR-0 自动加载标准（已废弃，一些旧的第三方库还有在使用）
+PSR-1 基础编码标准
+
+PSR-2 编码风格向导
+
+PSR-3 日志接口
+
+PSR-4 自动加载的增强版，替换掉了 PSR-0
+
+PSR-6 缓存接口规范
+
+PSR-7 HTTP 消息接口规范
+
+具体详细的规范标准可以查看PHP 标准规范
+
+PSR4 标准
+2013 年底，PHP-FIG 推出了第 5 个规范——PSR-4。
+
+PSR-4 规范了如何指定文件路径从而自动加载类定义，同时规范了自动加载文件的位置。
+
+1）一个完整的类名需具有以下结构：
+\<命名空间>\<子命名空间>\<类名>
+
+完整的类名必须要有一个顶级命名空间，被称为 "vendor namespace"；
+完整的类名可以有一个或多个子命名空间；
+完整的类名必须有一个最终的类名；
+完整的类名中任意一部分中的下滑线都是没有特殊含义的；
+完整的类名可以由任意大小写字母组成；
+所有类名都必须是大小写敏感的。
+2）根据完整的类名载入相应的文件
+完整的类名中，去掉最前面的命名空间分隔符，前面连续的一个或多个命名空间和子命名空间，
+作为「命名空间前缀」，其必须与至少一个「文件基目录」相对应；
+紧接命名空间前缀后的子命名空间 必须 与相应的「文件基目录」相匹配，其中的命名空间分隔符将作为目录分隔符。
+末尾的类名必须与对应的以 .php 为后缀的文件同名。
+自动加载器（autoloader）的实现一定不可抛出异常、一定不可触发任一级别的错误信息以及不应该有返回值。
+3) 例子
+PSR-4风格
+
+类名：ZendAbc 
+命名空间前缀：Zend 
+文件基目录：/usr/includes/Zend/ 
+文件路径：/usr/includes/Zend/Abc.php
+类名：SymfonyCoreRequest 
+命名空间前缀：SymfonyCore 
+文件基目录：./vendor/Symfony/Core/ 
+文件路径：./vendor/Symfony/Core/Request.php
+目录结构
+
+-vendor/
+| -vendor_name/
+| | -package_name/
+| | | -src/
+| | | | -ClassName.php       # Vendor_Name\Package_Name\ClassName
+| | | -tests/
+| | | | -ClassNameTest.php   # Vendor_Name\Package_Name\ClassNameTest
+Composer自动加载过程
+Composer 做了哪些事情
+你有一个项目依赖于若干个库。
+其中一些库依赖于其他库。
+你声明你所依赖的东西。
+Composer 会找出哪个版本的包需要安装，并安装它们（将它们下载到你的项目中）。
+例如，你正在创建一个项目，需要做一些单元测试。你决定使用 phpunit 。为了将它添加到你的项目中，
+你所需要做的就是在 composer.json 文件里描述项目的依赖关系。
+
+ {
+   "require": {
+     "phpunit/phpunit":"~6.0",
+   }
+ }
+然后在 composer require 之后我们只要在项目里面直接 use phpunit 的类即可使用。
+
+执行 composer require 时发生了什么
+composer 会找到符合 PR4 规范的第三方库的源
+将其加载到 vendor 目录下
+初始化顶级域名的映射并写入到指定的文件里
+（如：'PHPUnit\\Framework\\Assert' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert.php'）
+
+写好一个 autoload 函数，并且注册到 spl_autoload_register()里
+题外话：现在很多框架都已经帮我们写好了顶级域名映射了，我们只需要在框架里面新建文件，
+在新建的文件中写好命名空间，就可以在任何地方 use 我们的命名空间了。
+
+Composer 源码分析
+下面我们通过对源码的分析来看看 composer 是如何实现 PSR4标准 的自动加载功能。
+
+很多框架在初始化的时候都会引入 composer 来协助自动加载的，
+以 Laravel 为例，它入口文件 index.php 第一句就是利用 composer 来实现自动加载功能。
+
+启动
+<?php
+  define('LARAVEL_START', microtime(true));
+
+  require __DIR__ . '/../vendor/autoload.php';
+去 vendor 目录下的 autoload.php ：
+
+<?php
+  require_once __DIR__ . '/composer' . '/autoload_real.php';
+
+  return ComposerAutoloaderInit7b790917ce8899df9af8ed53631a1c29::getLoader();
+这里就是 Composer 真正开始的地方了
+
+Composer自动加载文件
+首先，我们先大致了解一下Composer自动加载所用到的源文件。
+
+autoload_real.php: 自动加载功能的引导类。
+
+composer 加载类的初始化(顶级命名空间与文件路径映射初始化)和注册(spl_autoload_register())。
+ClassLoader.php : composer 加载类。
+
+composer 自动加载功能的核心类。
+autoload_static.php : 顶级命名空间初始化类，
+
+用于给核心类初始化顶级命名空间。
+autoload_classmap.php : 自动加载的最简单形式，
+
+有完整的命名空间和文件目录的映射；
+autoload_files.php : 用于加载全局函数的文件，
+
+存放各个全局函数所在的文件路径名；
+autoload_namespaces.php : 符合 PSR0 标准的自动加载文件，
+
+存放着顶级命名空间与文件的映射；
+autoload_psr4.php : 符合 PSR4 标准的自动加载文件，
+
+存放着顶级命名空间与文件的映射；
+autoload_real 引导类
+在 vendor 目录下的 autoload.php 文件中我们可以看出，
+程序主要调用了引导类的静态方法 getLoader() ，我们接着看看这个函数。
+
+<?php
+    public static function getLoader()
+    {
+      if (null !== self::$loader) {
+          return self::$loader;
+      }
+
+      spl_autoload_register(
+        array('ComposerAutoloaderInit7b790917ce8899df9af8ed53631a1c29', 'loadClassLoader'), true, true
+      );
+
+      self::$loader = $loader = new \Composer\Autoload\ClassLoader();
+
+      spl_autoload_unregister(
+        array('ComposerAutoloaderInit7b790917ce8899df9af8ed53631a1c29', 'loadClassLoader')
+      );
+
+      $useStaticLoader = PHP_VERSION_ID >= 50600 && !defined('HHVM_VERSION');
+
+      if ($useStaticLoader) {
+          require_once __DIR__ . '/autoload_static.php';
+
+          call_user_func(
+          \Composer\Autoload\ComposerStaticInit7b790917ce8899df9af8ed53631a1c29::getInitializer($loader)
+          );
+
+      } else {
+          $map = require __DIR__ . '/autoload_namespaces.php';
+          foreach ($map as $namespace => $path) {
+              $loader->set($namespace, $path);
+          }
+
+          $map = require __DIR__ . '/autoload_psr4.php';
+          foreach ($map as $namespace => $path) {
+              $loader->setPsr4($namespace, $path);
+          }
+
+          $classMap = require __DIR__ . '/autoload_classmap.php';
+          if ($classMap) {
+              $loader->addClassMap($classMap);
+          }
+      }
+
+      /***********************注册自动加载核心类对象********************/
+      $loader->register(true);
+
+      /***********************自动加载全局函数********************/
+      if ($useStaticLoader) {
+          $includeFiles = Composer\Autoload\ComposerStaticInit7b790917ce8899df9af8ed53631a1c29::$files;
+      } else {
+          $includeFiles = require __DIR__ . '/autoload_files.php';
+      }
+
+      foreach ($includeFiles as $fileIdentifier => $file) {
+          composerRequire7b790917ce8899df9af8ed53631a1c29($fileIdentifier, $file);
+      }
+
+      return $loader;
+    }
+我把自动加载引导类分为 5 个部分。
+
+第一部分——单例
+第一部分很简单，就是个最经典的单例模式，自动加载类只能有一个。
+
+<?php
+  if (null !== self::$loader) {
+      return self::$loader;
+  }
+第二部分——构造ClassLoader核心类
+第二部分 new 一个自动加载的核心类对象。
+
+<?php
+  /***********************获得自动加载核心类对象********************/
+  spl_autoload_register(
+    array('ComposerAutoloaderInit7b790917ce8899df9af8ed53631a1c29', 'loadClassLoader'), true, true
+  );
+
+  self::$loader = $loader = new \Composer\Autoload\ClassLoader();
+
+  spl_autoload_unregister(
+    array('ComposerAutoloaderInit7b790917ce8899df9af8ed53631a1c29', 'loadClassLoader')
+  );
+loadClassLoader()函数：
+
+<?php
+public static function loadClassLoader($class)
+{
+    if ('Composer\Autoload\ClassLoader' === $class) {
+        require __DIR__ . '/ClassLoader.php';
+    }
+}
+从程序里面我们可以看出，composer 先向 PHP 自动加载机制注册了一个函数，
+这个函数 require 了 ClassLoader 文件。成功 new 出该文件中核心类 ClassLoader() 后，又销毁了该函数。
+
+第三部分 —— 初始化核心类对象
+<?php
+  /***********************初始化自动加载核心类对象********************/
+  $useStaticLoader = PHP_VERSION_ID >= 50600 && !defined('HHVM_VERSION');
+  if ($useStaticLoader) {
+     require_once __DIR__ . '/autoload_static.php';
+
+     call_user_func(
+       \Composer\Autoload\ComposerStaticInit7b790917ce8899df9af8ed53631a1c29::getInitializer($loader)
+     );
+  } else {
+      $map = require __DIR__ . '/autoload_namespaces.php';
+      foreach ($map as $namespace => $path) {
+         $loader->set($namespace, $path);
+      }
+
+      $map = require __DIR__ . '/autoload_psr4.php';
+      foreach ($map as $namespace => $path) {
+         $loader->setPsr4($namespace, $path);
+      }
+
+      $classMap = require __DIR__ . '/autoload_classmap.php';
+      if ($classMap) {
+          $loader->addClassMap($classMap);
+      }
+    }
+    
+这一部分就是对自动加载类的初始化，主要是给自动加载核心类初始化顶级命名空间映射。
+
+初始化的方法有两种：
+
+  1. 使用 autoload_static 进行静态初始化；
+  2. 调用核心类接口初始化。
+
+autoload_static 静态初始化 ( PHP >= 5.6 )
+静态初始化只支持 PHP5.6 以上版本并且不支持 HHVM 虚拟机。我们深入 
+autoload_static.php 这个文件发现这个文件定义了一个用于静态初始化的类，
+名字叫 ComposerStaticInit7b790917ce8899df9af8ed53631a1c29，仍然为了避免冲突而加了 hash 值。这个类很简单：
+
+<?php
+  class ComposerStaticInit7b790917ce8899df9af8ed53631a1c29{
+     public static $files = array(...);
+     public static $prefixLengthsPsr4 = array(...);
+     public static $prefixDirsPsr4 = array(...);
+     public static $prefixesPsr0 = array(...);
+     public static $classMap = array (...);
+
+    public static function getInitializer(ClassLoader $loader)
+    {
+      return \Closure::bind(function () use ($loader) {
+          $loader->prefixLengthsPsr4
+                          = ComposerStaticInit7b790917ce8899df9af8ed53631a1c29::$prefixLengthsPsr4;
+
+          $loader->prefixDirsPsr4
+                          = ComposerStaticInit7b790917ce8899df9af8ed53631a1c29::$prefixDirsPsr4;
+
+          $loader->prefixesPsr0
+                          = ComposerStaticInit7b790917ce8899df9af8ed53631a1c29::$prefixesPsr0;
+
+          $loader->classMap
+                          = ComposerStaticInit7b790917ce8899df9af8ed53631a1c29::$classMap;
+
+      }, null, ClassLoader::class);
+  }
+这个静态初始化类的核心就是 getInitializer() 函数，它将自己类中的顶级命名空间映射给了 ClassLoader 类。
+值得注意的是这个函数返回的是一个匿名函数，为什么呢？原因就是 ClassLoader类 中的 
+prefixLengthsPsr4 、prefixDirsPsr4等等变量都是 private的。
+利用匿名函数的绑定功能就可以将这些 private 变量赋给 ClassLoader 类 里的成员变量。
+
+关于匿名函数的绑定功能。
+
+接下来就是命名空间初始化的关键了。
+
+classMap（命名空间映射）
+<?php
+  public static $classMap = array (
+      'App\\Console\\Kernel'
+              => __DIR__ . '/../..' . '/app/Console/Kernel.php',
+
+      'App\\Exceptions\\Handler'
+              => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
+
+      'App\\Http\\Controllers\\Auth\\ForgotPasswordController'
+              => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ForgotPasswordController.php',
+
+      'App\\Http\\Controllers\\Auth\\LoginController'
+              => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/LoginController.php',
+
+      'App\\Http\\Controllers\\Auth\\RegisterController'
+              => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/RegisterController.php',
+  ...)
+直接命名空间全名与目录的映射，简单粗暴，也导致这个数组相当的大。
+
+PSR4 标准顶级命名空间映射数组：
+<?php
+  public static $prefixLengthsPsr4 = array(
+      'p' => array (
+        'phpDocumentor\\Reflection\\' => 25,
+    ),
+      'S' => array (
+        'Symfony\\Polyfill\\Mbstring\\' => 26,
+        'Symfony\\Component\\Yaml\\' => 23,
+        'Symfony\\Component\\VarDumper\\' => 28,
+        ...
+    ),
+  ...);
+
+  public static $prefixDirsPsr4 = array (
+      'phpDocumentor\\Reflection\\' => array (
+        0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
+        1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+        2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+    ),
+       'Symfony\\Polyfill\\Mbstring\\' => array (
+        0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
+    ),
+      'Symfony\\Component\\Yaml\\' => array (
+        0 => __DIR__ . '/..' . '/symfony/yaml',
+    ),
+  ...)
+PSR4 标准顶级命名空间映射用了两个数组，第一个是用命名空间第一个字母作为前缀索引，
+然后是 顶级命名空间，但是最终并不是文件路径，而是 顶级命名空间的长度。为什么呢？
+
+因为 PSR4 标准是用顶级命名空间目录替换顶级命名空间，所以获得顶级命名空间的长度很重要。
+
+具体说明这些数组的作用：
+
+假如我们找 Symfony\Polyfill\Mbstring\example 这个命名空间，通过前缀索引和字符串匹配我们得到了
+
+<?php
+    'Symfony\\Polyfill\\Mbstring\\' => 26,
+这条记录，键是顶级命名空间，值是命名空间的长度。
+拿到顶级命名空间后去 $prefixDirsPsr4数组 获取它的映射目录数组：(注意映射目录可能不止一条)
+
+<?php
+  'Symfony\\Polyfill\\Mbstring\\' => array (
+              0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
+          )
+然后我们就可以将命名空间 Symfony\\Polyfill\\Mbstring\\example 前26个字符
+替换成目录 __DIR__ . '/..' . '/symfony/polyfill-mbstring ，
+我们就得到了__DIR__ . '/..' . '/symfony/polyfill-mbstring/example.php，
+先验证磁盘上这个文件是否存在，如果不存在接着遍历。如果遍历后没有找到，则加载失败。
+
+ClassLoader 接口初始化（ PHP < 5.6 ）
+如果PHP版本低于 5.6 或者使用 HHVM 虚拟机环境，那么就要使用核心类的接口进行初始化。
+
+<?php
+    // PSR0 标准
+    $map = require __DIR__ . '/autoload_namespaces.php';
+    foreach ($map as $namespace => $path) {
+       $loader->set($namespace, $path);
+    }
+
+    // PSR4 标准
+    $map = require __DIR__ . '/autoload_psr4.php';
+    foreach ($map as $namespace => $path) {
+       $loader->setPsr4($namespace, $path);
+    }
+
+    $classMap = require __DIR__ . '/autoload_classmap.php';
+    if ($classMap) {
+       $loader->addClassMap($classMap);
+    }
+PSR4 标准的映射
+autoload_psr4.php 的顶级命名空间映射
+
+<?php
+    return array(
+    'XdgBaseDir\\'
+        => array($vendorDir . '/dnoegel/php-xdg-base-dir/src'),
+
+    'Webmozart\\Assert\\'
+        => array($vendorDir . '/webmozart/assert/src'),
+
+    'TijsVerkoyen\\CssToInlineStyles\\'
+        => array($vendorDir . '/tijsverkoyen/css-to-inline-styles/src'),
+
+    'Tests\\'
+        => array($baseDir . '/tests'),
+
+    'Symfony\\Polyfill\\Mbstring\\'
+        => array($vendorDir . '/symfony/polyfill-mbstring'),
+    ...
+    )
+PSR4 标准的初始化接口:
+
+<?php
+    public function setPsr4($prefix, $paths)
+    {
+        if (!$prefix) {
+            $this->fallbackDirsPsr4 = (array) $paths;
+        } else {
+            $length = strlen($prefix);
+            if ('\\' !== $prefix[$length - 1]) {
+                throw new \InvalidArgumentException(
+                  "A non-empty PSR-4 prefix must end with a namespace separator."
+                );
+            }
+            $this->prefixLengthsPsr4[$prefix[0]][$prefix] = $length;
+            $this->prefixDirsPsr4[$prefix] = (array) $paths;
+        }
+    }
+总结下上面的顶级命名空间映射过程：
+
+( 前缀 -> 顶级命名空间，顶级命名空间 -> 顶级命名空间长度 )
+( 顶级命名空间 -> 目录 )
+这两个映射数组。具体形式也可以查看下面的 autoload_static 的 、prefixDirsPsr4 。
+
+命名空间映射
+autoload_classmap：
+
+<?php
+public static $classMap = array (
+    'App\\Console\\Kernel'
+        => __DIR__ . '/../..' . '/app/Console/Kernel.php',
+
+    'App\\Exceptions\\Handler'
+        => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
+    ...
+)
+addClassMap:
+
+<?php
+    public function addClassMap(array $classMap)
+    {
+        if ($this->classMap) {
+            $this->classMap = array_merge($this->classMap, $classMap);
+        } else {
+            $this->classMap = $classMap;
+        }
+    }
+自动加载核心类 ClassLoader 的静态初始化到这里就完成了！
+
+其实说是5部分，真正重要的就两部分——初始化与注册。初始化负责顶层命名空间的目录映射，注册负责实现顶层以下的命名空间映射规则。
+
+第四部分 —— 注册
+讲完了 Composer 自动加载功能的启动与初始化，经过启动与初始化，
+自动加载核心类对象已经获得了顶级命名空间与相应目录的映射，也就是说，
+如果有命名空间 'App\Console\Kernel，我们已经可以找到它对应的类文件所在位置。那么，它是什么时候被触发去找的呢？
+
+这就是 composer 自动加载的核心了，我们先回顾一下自动加载引导类：
+
+ public static function getLoader()
+ {
+    /***************************经典单例模式********************/
+    if (null !== self::$loader) {
+        return self::$loader;
+    }
+    
+    /***********************获得自动加载核心类对象********************/
+    spl_autoload_register(array('ComposerAutoloaderInit
+    7b790917ce8899df9af8ed53631a1c29', 'loadClassLoader'), true, true);
+    
+    self::$loader = $loader = new \Composer\Autoload\ClassLoader();
+    
+    spl_autoload_unregister(array('ComposerAutoloaderInit
+    7b790917ce8899df9af8ed53631a1c29', 'loadClassLoader'));
+
+    /***********************初始化自动加载核心类对象********************/
+    $useStaticLoader = PHP_VERSION_ID >= 50600 && 
+    !defined('HHVM_VERSION');
+    
+    if ($useStaticLoader) {
+        require_once __DIR__ . '/autoload_static.php';
+
+        call_user_func(\Composer\Autoload\ComposerStaticInit
+        7b790917ce8899df9af8ed53631a1c29::getInitializer($loader));
+  
+    } else {
+        $map = require __DIR__ . '/autoload_namespaces.php';
+        foreach ($map as $namespace => $path) {
+            $loader->set($namespace, $path);
+        }
+
+        $map = require __DIR__ . '/autoload_psr4.php';
+        foreach ($map as $namespace => $path) {
+            $loader->setPsr4($namespace, $path);
+        }
+
+        $classMap = require __DIR__ . '/autoload_classmap.php';
+        if ($classMap) {
+            $loader->addClassMap($classMap);
+        }
+    }
+
+    /***********************注册自动加载核心类对象********************/
+    $loader->register(true);
+
+    /***********************自动加载全局函数********************/
+    if ($useStaticLoader) {
+        $includeFiles = Composer\Autoload\ComposerStaticInit
+        7b790917ce8899df9af8ed53631a1c29::$files;
+    } else {
+        $includeFiles = require __DIR__ . '/autoload_files.php';
+    }
+    
+    foreach ($includeFiles as $fileIdentifier => $file) {
+        composerRequire
+        7b790917ce8899df9af8ed53631a1c29($fileIdentifier, $file);
+    }
+
+    return $loader;
+} 
+现在我们开始引导类的第四部分：注册自动加载核心类对象。我们来看看核心类的 register() 函数：
+
+public function register($prepend = false)
+{
+    spl_autoload_register(array($this, 'loadClass'), true, $prepend);
+}
+其实奥秘都在自动加载核心类 ClassLoader 的 loadClass() 函数上：
+
+public function loadClass($class)
+    {
+        if ($file = $this->findFile($class)) {
+            includeFile($file);
+
+            return true;
+        }
+    }
+这个函数负责按照 PSR 标准将顶层命名空间以下的内容转为对应的目录，
+也就是上面所说的将 'App\Console\Kernel 中' Console\Kernel 这一段转为目录，
+至于怎么转的在下面 “运行”的部分讲。核心类 ClassLoader 将 loadClass() 函数注册到PHP SPL中的 spl_autoload_register() 里面去。
+这样，每当PHP遇到一个不认识的命名空间的时候，PHP会自动调用注册到 spl_autoload_register 里面的 loadClass() 函数，然后找到命名空间对应的文件。
+
+全局函数的自动加载
+Composer 不止可以自动加载命名空间，还可以加载全局函数。怎么实现的呢？把全局函数写到特定的文件里面去，
+在程序运行前挨个 require就行了。这个就是 composer 自动加载的第五步，加载全局函数。
+
+if ($useStaticLoader) {
+    $includeFiles = Composer\Autoload\ComposerStaticInit7b790917ce8899df9af8ed53631a1c29::$files;
+} else {
+    $includeFiles = require __DIR__ . '/autoload_files.php';
+}
+foreach ($includeFiles as $fileIdentifier => $file) {
+    composerRequire7b790917ce8899df9af8ed53631a1c29($fileIdentifier, $file);
+}
+跟核心类的初始化一样，全局函数自动加载也分为两种：静态初始化和普通初始化，静态加载只支持PHP5.6以上并且不支持HHVM。
+
+静态初始化：
+ComposerStaticInit7b790917ce8899df9af8ed53631a1c29::$files：
+
+public static $files = array (
+'0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
+'667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
+...
+);
+普通初始化
+autoload_files:
+
+$vendorDir = dirname(dirname(__FILE__));
+$baseDir = dirname($vendorDir);
+    
+return array(
+'0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => $vendorDir . '/symfony/polyfill-mbstring/bootstrap.php',
+'667aeda72477189d0494fecd327c3641' => $vendorDir . '/symfony/var-dumper/Resources/functions/dump.php',
+   ....
+);
+其实跟静态初始化区别不大。
+
+加载全局函数
+class ComposerAutoloaderInit7b790917ce8899df9af8ed53631a1c29{
+  public static function getLoader(){
+      ...
+      foreach ($includeFiles as $fileIdentifier => $file) {
+        composerRequire7b790917ce8899df9af8ed53631a1c29($fileIdentifier, $file);
+      }
+      ...
+  }
+}
+
+function composerRequire7b790917ce8899df9af8ed53631a1c29($fileIdentifier, $file)
+ {
+    if (empty(\$GLOBALS['__composer_autoload_files'][\$fileIdentifier])) {
+        require $file;
+
+        $GLOBALS['__composer_autoload_files'][$fileIdentifier] = true;
+    }
+}
+第五部分 —— 运行
+到这里，终于来到了核心的核心—— composer 自动加载的真相，命名空间如何通过 composer 转为对应目录文件的奥秘就在这一章。
+前面说过，ClassLoader 的 register() 函数将 loadClass() 函数注册到 PHP 的 SPL 函数堆栈中，
+每当 PHP 遇到不认识的命名空间时就会调用函数堆栈的每个函数，直到加载命名空间成功。所以 loadClass() 函数就是自动加载的关键了。
+
+看下 loadClass() 函数:
+
+public function loadClass($class)
+{
+    if ($file = $this->findFile($class)) {
+        includeFile($file);
+
+        return true;
+    }
+}
+
+public function findFile($class)
+{
+    // work around for PHP 5.3.0 - 5.3.2 https://bugs.php.net/50731
+    if ('\\' == $class[0]) {
+        $class = substr($class, 1);
+    }
+
+    // class map lookup
+    if (isset($this->classMap[$class])) {
+        return $this->classMap[$class];
+    }
+    if ($this->classMapAuthoritative) {
+        return false;
+    }
+
+    $file = $this->findFileWithExtension($class, '.php');
+
+    // Search for Hack files if we are running on HHVM
+    if ($file === null && defined('HHVM_VERSION')) {
+        $file = $this->findFileWithExtension($class, '.hh');
+    }
+
+    if ($file === null) {
+        // Remember that this class does not exist.
+        return $this->classMap[$class] = false;
+    }
+
+    return $file;
+}
+我们看到 loadClass() ，主要调用 findFile() 函数。findFile() 在解析命名空间的时候主要分为两部分：
+classMap 和 findFileWithExtension() 函数。classMap 很简单，直接看命名空间是否在映射数组中即可。
+麻烦的是 findFileWithExtension() 函数，这个函数包含了 PSR0 和 PSR4 标准的实现。
+还有个值得我们注意的是查找路径成功后 includeFile() 仍然是外面的函数，
+并不是 ClassLoader 的成员函数，原理跟上面一样，
+防止有用户写 $this 或 self。还有就是如果命名空间是以\开头的，要去掉\然后再匹配。
+
+看下 findFileWithExtension 函数：
+
+private function findFileWithExtension($class, $ext)
+{
+    // PSR-4 lookup
+    $logicalPathPsr4 = strtr($class, '\\', DIRECTORY_SEPARATOR) . $ext;
+    
+    $first = $class[0];
+    if (isset($this->prefixLengthsPsr4[$first])) {
+        foreach ($this->prefixLengthsPsr4[$first] as $prefix => $length) {
+            if (0 === strpos($class, $prefix)) {
+                foreach ($this->prefixDirsPsr4[$prefix] as $dir) {
+                    if (file_exists($file = $dir . DIRECTORY_SEPARATOR . substr($logicalPathPsr4, $length))) {
+                        return $file;
+                    }
+                }
+            }
+        }
+    }
+
+    // PSR-4 fallback dirs
+    foreach ($this->fallbackDirsPsr4 as $dir) {
+        if (file_exists($file = $dir . DIRECTORY_SEPARATOR . $logicalPathPsr4)) {
+            return $file;
+        }
+    }
+    
+    // PSR-0 lookup
+    if (false !== $pos = strrpos($class, '\\')) {
+        // namespaced class name
+        $logicalPathPsr0 = substr($logicalPathPsr4, 0, $pos + 1)
+            . strtr(substr($logicalPathPsr4, $pos + 1), '_', DIRECTORY_SEPARATOR);
+    } else {
+        // PEAR-like class name
+        $logicalPathPsr0 = strtr($class, '_', DIRECTORY_SEPARATOR) . $ext;
+    }
+    
+    if (isset($this->prefixesPsr0[$first])) {
+        foreach ($this->prefixesPsr0[$first] as $prefix => $dirs) {
+            if (0 === strpos($class, $prefix)) {
+                foreach ($dirs as $dir) {
+                    if (file_exists($file = $dir . DIRECTORY_SEPARATOR . $logicalPathPsr0)) {
+                        return $file;
+                    }
+                }
+            }
+        }
+    }
+    
+    // PSR-0 fallback dirs
+    foreach ($this->fallbackDirsPsr0 as $dir) {
+        if (file_exists($file = $dir . DIRECTORY_SEPARATOR . $logicalPathPsr0)) {
+            return $file;
+        }
+    }
+    
+    // PSR-0 include paths.
+    if ($this->useIncludePath && $file = stream_resolve_include_path($logicalPathPsr0)) {
+        return $file;
+    }
+}
+最后小结
+我们通过举例来说下上面代码的流程：
+
+如果我们在代码中写下 new phpDocumentor\Reflection\Element()，PHP 会通过 SPL_autoload_register 
+调用 loadClass -> findFile -> findFileWithExtension。步骤如下：
+
+将 \ 转为文件分隔符/，加上后缀php，变成 $logicalPathPsr4, 即 phpDocumentor/Reflection//Element.php;
+利用命名空间第一个字母p作为前缀索引搜索 prefixLengthsPsr4 数组，查到下面这个数组：
+        p' => 
+            array (
+                'phpDocumentor\\Reflection\\' => 25,
+                'phpDocumentor\\Fake\\' => 19,
+          )
+遍历这个数组，得到两个顶层命名空间 phpDocumentor\Reflection\ 和 phpDocumentor\Fake\
+在这个数组中查找 phpDocumentor\Reflection\Element，找出 phpDocumentor\Reflection\ 这个顶层命名空间并且长度为25。
+在prefixDirsPsr4 映射数组中得到phpDocumentor\Reflection\ 的目录映射为：
+    'phpDocumentor\\Reflection\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+        ),
+遍历这个映射数组，得到三个目录映射；
+查看 “目录+文件分隔符//+substr(&dollar;logicalPathPsr4, &dollar;length)”文件是否存在，存在即返回。这里就是
+'__DIR__/../phpdocumentor/reflection-common/src + substr(phpDocumentor/Reflection/Element.php,25)'
+如果失败，则利用 fallbackDirsPsr4 数组里面的目录继续判断是否存在文件
+以上就是 composer 自动加载的原理解析！
+```
+
+### 异常处理
+```
+PHP 异常处理
+异常用于在指定的错误发生时改变脚本的正常流程。
+
+异常是什么
+PHP 5 提供了一种新的面向对象的错误处理方法。
+
+异常处理用于在指定的错误（异常）情况发生时改变脚本的正常流程。这种情况称为异常。
+
+当异常被触发时，通常会发生：
+
+当前代码状态被保存
+代码执行被切换到预定义（自定义）的异常处理器函数
+根据情况，处理器也许会从保存的代码状态重新开始执行代码，终止脚本执行，或从代码中另外的位置继续执行脚本
+我们将展示不同的错误处理方法：
+
+异常的基本使用
+创建自定义的异常处理器
+多个异常
+重新抛出异常
+设置顶层异常处理器
+注释：异常应该仅仅在错误情况下使用，而不应该用于在一个指定的点跳转到代码的另一个位置。
+
+异常的基本使用
+当异常被抛出时，其后的代码不会继续执行，PHP 会尝试查找匹配的 "catch" 代码块。
+
+如果异常没有被捕获，而且又没用使用 set_exception_handler() 作相应的处理的话，
+那么将发生一个严重的错误（致命错误），并且输出 "Uncaught Exception" （未捕获异常）的错误消息。
+
+让我们尝试抛出一个异常，同时不去捕获它：
+
+<?php
+// 创建一个有异常处理的函数
+function checkNum($number)
+{
+    if($number>1)
+    {
+        throw new Exception("Value must be 1 or below");
+    }
+    return true;
+}
+ 
+// 触发异常
+checkNum(2);
+?>
+上面的代码会得到类似这样的一个错误：
+
+Fatal error: Uncaught exception 'Exception' with message 'Value must be 1 or below' 
+in /www/runoob/test/test.php:7 Stack trace: #0 /www/runoob/test/test.php(13): 
+checkNum(2) #1 {main} thrown in /www/runoob/test/test.php on line 7
+Try、throw 和 catch
+要避免上面实例中出现的错误，我们需要创建适当的代码来处理异常。
+
+适当的处理异常代码应该包括：
+
+Try - 使用异常的函数应该位于 "try" 代码块内。如果没有触发异常，
+则代码将照常继续执行。但是如果异常被触发，会抛出一个异常。
+Throw - 里规定如何触发异常。每一个 "throw" 必须对应至少一个 "catch"。
+Catch - "catch" 代码块会捕获异常，并创建一个包含异常信息的对象。
+让我们触发一个异常：
+
+<?php
+// 创建一个有异常处理的函数
+function checkNum($number)
+{
+    if($number>1)
+    {
+        throw new Exception("变量值必须小于等于 1");
+    }
+        return true;
+}
+    
+// 在 try 块 触发异常
+try
+{
+    checkNum(2);
+    // 如果抛出异常，以下文本不会输出
+    echo '如果输出该内容，说明 $number 变量';
+}
+// 捕获异常
+catch(Exception $e)
+{
+    echo 'Message: ' .$e->getMessage();
+}
+?>
+上面代码将得到类似这样一个错误：
+
+Message: 变量值必须小于等于 1
+实例解释：
+上面的代码抛出了一个异常，并捕获了它：
+
+创建 checkNum() 函数。它检测数字是否大于 1。如果是，则抛出一个异常。
+在 "try" 代码块中调用 checkNum() 函数。
+checkNum() 函数中的异常被抛出。
+"catch" 代码块接收到该异常，并创建一个包含异常信息的对象 ($e)。
+通过从这个 exception 对象调用 $e->getMessage()，输出来自该异常的错误消息。
+然而，为了遵循 "每个 throw 必须对应一个 catch" 的原则，可以设置一个顶层的异常处理器来处理漏掉的错误。
+
+创建一个自定义的 Exception 类
+创建自定义的异常处理程序非常简单。我们简单地创建了一个专门的类，
+当 PHP 中发生异常时，可调用其函数。该类必须是 exception 类的一个扩展。
+
+这个自定义的 customException 类继承了 PHP 的 exception 类的所有属性，您可向其添加自定义的函数。
+
+我们开始创建 customException 类：
+
+<?php
+class customException extends Exception
+{
+    public function errorMessage()
+    {
+        // 错误信息
+        $errorMsg = '错误行号 '.$this->getLine().' in '.$this->getFile()
+        .': <b>'.$this->getMessage().'</b> 不是一个合法的 E-Mail 地址';
+        return $errorMsg;
+    }
+}
+ 
+$email = "someone@example...com";
+ 
+try
+{
+    // 检测邮箱
+    if(filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE)
+    {
+        // 如果是个不合法的邮箱地址，抛出异常
+        throw new customException($email);
+    }
+}
+ 
+catch (customException $e)
+{
+//display custom message
+echo $e->errorMessage();
+}
+?>
+这个新的类是旧的 exception 类的副本，外加 errorMessage() 函数。正因为它是旧类的副本，
+因此它从旧类继承了属性和方法，我们可以使用 exception 类的方法，比如 getLine()、getFile() 和 getMessage()。
+
+实例解释：
+上面的代码抛出了一个异常，并通过一个自定义的 exception 类来捕获它：
+
+customException() 类是作为旧的 exception 类的一个扩展来创建的。这样它就继承了旧的 exception 类的所有属性和方法。
+创建 errorMessage() 函数。如果 e-mail 地址不合法，则该函数返回一条错误消息。
+把 $email 变量设置为不合法的 e-mail 地址字符串。
+执行 "try" 代码块，由于 e-mail 地址不合法，因此抛出一个异常。
+"catch" 代码块捕获异常，并显示错误消息。
+多个异常
+可以为一段脚本使用多个异常，来检测多种情况。
+
+可以使用多个 if..else 代码块，或一个 switch 代码块，或者嵌套多个异常。
+这些异常能够使用不同的 exception 类，并返回不同的错误消息：
+
+<?php
+class customException extends Exception
+{
+    public function errorMessage()
+    {
+        // 错误信息
+        $errorMsg = '错误行号 '.$this->getLine().' in '.$this->getFile()
+        .': <b>'.$this->getMessage().'</b> 不是一个合法的 E-Mail 地址';
+        return $errorMsg;
+    }
+}
+ 
+$email = "someone@example.com";
+ 
+try
+{
+    // 检测邮箱
+    if(filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE)
+    {
+        // 如果是个不合法的邮箱地址，抛出异常
+        throw new customException($email);
+    }
+    // 检测 "example" 是否在邮箱地址中
+    if(strpos($email, "example") !== FALSE)
+    {
+        throw new Exception("$email 是 example 邮箱");
+    }
+}
+catch (customException $e)
+{
+    echo $e->errorMessage();
+}
+catch(Exception $e)
+{
+    echo $e->getMessage();
+}
+?>
+实例解释：
+上面的代码测试了两种条件，如果其中任何一个条件不成立，则抛出一个异常：
+
+customException() 类是作为旧的 exception 类的一个扩展来创建的。这样它就继承了旧的 exception 类的所有属性和方法。
+创建 errorMessage() 函数。如果 e-mail 地址不合法，则该函数返回一个错误消息。
+把 $email 变量设置为一个字符串，该字符串是一个有效的 e-mail 地址，但包含字符串 "example"。
+执行 "try" 代码块，在第一个条件下，不会抛出异常。
+由于 e-mail 含有字符串 "example"，第二个条件会触发异常。
+"catch" 代码块会捕获异常，并显示恰当的错误消息。
+如果 customException 类抛出了异常，但没有捕获 customException，仅仅捕获了 base exception，则在那里处理异常。
+
+重新抛出异常
+有时，当异常被抛出时，您也许希望以不同于标准的方式对它进行处理。可以在一个 "catch" 代码块中再次抛出异常。
+
+脚本应该对用户隐藏系统错误。对程序员来说，系统错误也许很重要，但是用户对它们并不感兴趣。
+为了让用户更容易使用，您可以再次抛出带有对用户比较友好的消息的异常：
+
+<?php
+class customException extends Exception
+{
+    public function errorMessage()
+    {
+        // 错误信息
+        $errorMsg = $this->getMessage().' 不是一个合法的 E-Mail 地址。';
+        return $errorMsg;
+    }
+}
+ 
+$email = "someone@example.com";
+ 
+try
+{
+    try
+    {
+        // 检测 "example" 是否在邮箱地址中
+        if(strpos($email, "example") !== FALSE)
+        {
+            // 如果是个不合法的邮箱地址，抛出异常
+            throw new Exception($email);
+        }
+    }
+    catch(Exception $e)
+    {
+        // 重新抛出异常
+        throw new customException($email);
+    }
+}
+catch (customException $e)
+{
+    // 显示自定义信息
+    echo $e->errorMessage();
+}
+?>
+实例解释：
+上面的代码检测在邮件地址中是否含有字符串 "example"。如果有，则再次抛出异常：
+
+customException() 类是作为旧的 exception 类的一个扩展来创建的。这样它就继承了旧的 exception 类的所有属性和方法。
+创建 errorMessage() 函数。如果 e-mail 地址不合法，则该函数返回一个错误消息。
+把 $email 变量设置为一个字符串，该字符串是一个有效的 e-mail 地址，但包含字符串 "example"。
+"try" 代码块包含另一个 "try" 代码块，这样就可以再次抛出异常。
+由于 e-mail 包含字符串 "example"，因此触发异常。
+"catch" 代码块捕获到该异常，并重新抛出 "customException"。
+捕获到 "customException"，并显示一条错误消息。
+如果在当前的 "try" 代码块中异常没有被捕获，则它将在更高层级上查找 catch 代码块。
+
+设置顶层异常处理器
+set_exception_handler() 函数可设置处理所有未捕获异常的用户定义函数。
+
+<?php
+function myException($exception)
+{
+    echo "<b>Exception:</b> " , $exception->getMessage();
+}
+ 
+set_exception_handler('myException');
+ 
+throw new Exception('Uncaught Exception occurred');
+?>
+以上代码的输出如下所示：
+
+Exception: Uncaught Exception occurred
+在上面的代码中，不存在 "catch" 代码块，而是触发顶层的异常处理程序。应该使用此函数来捕获所有未被捕获的异常。
+
+异常的规则
+需要进行异常处理的代码应该放入 try 代码块内，以便捕获潜在的异常。
+每个 try 或 throw 代码块必须至少拥有一个对应的 catch 代码块。
+使用多个 catch 代码块可以捕获不同种类的异常。
+可以在 try 代码块内的 catch 代码块中抛出（再次抛出）异常。
+简而言之：如果抛出了异常，就必须捕获它。
+```
+
+### [如何 foreach 迭代对象](https://secure.php.net/manual/zh/class.iterator.php)
+```
+Iterator（迭代器）接口
+(No version information available, might only be in Git)
+
+简介
+可在内部迭代自己的外部迭代器或类的接口。
+
+接口摘要
+Iterator extends Traversable {
+/* 方法 */
+abstract public current ( void ) : mixed
+abstract public key ( void ) : scalar
+abstract public next ( void ) : void
+abstract public rewind ( void ) : void
+abstract public valid ( void ) : bool
+}
+预定义迭代器
+PHP 已经提供了一些用于日常任务的迭代器。 详细列表参见 SPL 迭代器。
+
+范例
+Example #1 基本用法
+
+这个例子展示了使用 foreach 时，迭代器方法的调用顺序。
+
+<?php
+class myIterator implements Iterator {
+    private $position = 0;
+    private $array = array(
+        "firstelement",
+        "secondelement",
+        "lastelement",
+    );  
+
+    public function __construct() {
+        $this->position = 0;
+    }
+
+    function rewind() {
+        var_dump(__METHOD__);
+        $this->position = 0;
+    }
+
+    function current() {
+        var_dump(__METHOD__);
+        return $this->array[$this->position];
+    }
+
+    function key() {
+        var_dump(__METHOD__);
+        return $this->position;
+    }
+
+    function next() {
+        var_dump(__METHOD__);
+        ++$this->position;
+    }
+
+    function valid() {
+        var_dump(__METHOD__);
+        return isset($this->array[$this->position]);
+    }
+}
+
+$it = new myIterator;
+
+foreach($it as $key => $value) {
+    var_dump($key, $value);
+    echo "\n";
+}
+?>
+以上例程的输出类似于：
+
+string(18) "myIterator::rewind"
+string(17) "myIterator::valid"
+string(19) "myIterator::current"
+string(15) "myIterator::key"
+int(0)
+string(12) "firstelement"
+
+string(16) "myIterator::next"
+string(17) "myIterator::valid"
+string(19) "myIterator::current"
+string(15) "myIterator::key"
+int(1)
+string(13) "secondelement"
+
+string(16) "myIterator::next"
+string(17) "myIterator::valid"
+string(19) "myIterator::current"
+string(15) "myIterator::key"
+int(2)
+string(11) "lastelement"
+
+string(16) "myIterator::next"
+string(17) "myIterator::valid"
+Table of Contents
+Iterator::current — 返回当前元素
+Iterator::key — 返回当前元素的键
+Iterator::next — 向前移动到下一个元素
+Iterator::rewind — 返回到迭代器的第一个元素
+Iterator::valid — 检查当前位置是否有效
+```
+
+### [如何数组化操作对象 `$obj[key];`](https://secure.php.net/manual/zh/class.arrayaccess.php)
+```
+ArrayAccess（数组式访问）接口
+(No version information available, might only be in Git)
+
+简介
+提供像访问数组一样访问对象的能力的接口。
+
+接口摘要
+ArrayAccess {
+/* 方法 */
+abstract public offsetExists ( mixed $offset ) : boolean
+abstract public offsetGet ( mixed $offset ) : mixed
+abstract public offsetSet ( mixed $offset , mixed $value ) : void
+abstract public offsetUnset ( mixed $offset ) : void
+}
+Example #1 Basic usage
+
+<?php
+class obj implements arrayaccess {
+    private $container = array();
+    public function __construct() {
+        $this->container = array(
+            "one"   => 1,
+            "two"   => 2,
+            "three" => 3,
+        );
+    }
+    public function offsetSet($offset, $value) {
+        if (is_null($offset)) {
+            $this->container[] = $value;
+        } else {
+            $this->container[$offset] = $value;
+        }
+    }
+    public function offsetExists($offset) {
+        return isset($this->container[$offset]);
+    }
+    public function offsetUnset($offset) {
+        unset($this->container[$offset]);
+    }
+    public function offsetGet($offset) {
+        return isset($this->container[$offset]) ? $this->container[$offset] : null;
+    }
+}
+
+$obj = new obj;
+var_dump(isset($obj["two"]));
+var_dump($obj["two"]);
+unset($obj["two"]);
+var_dump(isset($obj["two"]));
+$obj["two"] = "A value";
+var_dump($obj["two"]);
+$obj[] = 'Append 1';
+$obj[] = 'Append 2';
+$obj[] = 'Append 3';
+print_r($obj);
+?>
+以上例程的输出类似于：
+
+bool(true)
+int(2)
+bool(false)
+string(7) "A value"
+obj Object
+(
+    [container:obj:private] => Array
+        (
+            [one] => 1
+            [three] => 3
+            [two] => A value
+            [0] => Append 1
+            [1] => Append 2
+            [2] => Append 3
+        )
+
+)
+Table of Contents
+ArrayAccess::offsetExists — 检查一个偏移位置是否存在
+ArrayAccess::offsetGet — 获取一个偏移位置的值
+ArrayAccess::offsetSet — 设置一个偏移位置的值
+ArrayAccess::offsetUnset — 复位一个偏移位置的值
+```
+
+### yield 是什么，说个使用场景 [yield](https://www.oschina.net/translate/cooperative-multitasking-using-coroutines-in-php)
+```
+PHP5.5一个比较好的新功能是实现对生成器和协同程序的支持。对于生成器，
+PHP的文档和各种其他的博客文章（就像这一个或这一个）已经有了非常详细的讲解。
+协同程序相对受到的关注就少了，所以协同程序虽然有很强大的功能但也很难被知晓，解释起来也比较困难。
+
+这篇文章指导你通过使用协同程序来实施任务调度，通过实例实现对技术的理解。我将在前三节做一个简单的背景介绍。
+如果你已经有了比较好的基础，可以直接跳到“协同多任务处理”一节。
+ 
+生成器
+生成器最基本的思想也是一个函数，这个函数的返回值是依次输出，而不是只返回一个单独的值。或者，换句话说，
+生成器使你更方便的实现了迭代器接口。下面通过实现一个xrange函数来简单说明：
+
+<?php
+function xrange($start, $end, $step = 1) {
+    for ($i = $start; $i <= $end; $i += $step) {
+        yield $i;
+    }
+}
+foreach (xrange(1, 1000000) as $num) {
+    echo $num, "\n";
+}
+
+上面这个xrange（）函数提供了和PHP的内建函数range()一样的功能。但是不同的是range()函数返回的
+是一个包含属组值从1到100万的数组（注：请查看手册）。而xrange（）函数返回的是依次输出这些值的一个迭代器，
+而且并不会真正以数组形式计算。
+
+这种方法的优点是显而易见的。它可以让你在处理大数据集合的时候不用一次性的加载到内存中。
+甚至你可以处理无限大的数据流。
+
+当然，也可以不同通过生成器来实现这个功能，而是可以通过继承Iterator接口实现。
+通过使用生成器实现起来会更方便，而不用再去实现iterator接口中的5个方法了。
+
+生成器为可中断的函数
+要从生成器认识协同程序，理解它们内部是如何工作的非常重要：生成器是可中断的函数，在它里面，yield构成了中断点。 
+
+紧接着上面的例子，如果你调用xrange(1,1000000)的话，xrange()函数里代码没有真正地运行。
+相反，PHP只是返回了一个实现了迭代器接口的 生成器类实例： 
+
+<?php
+$range = xrange(1, 1000000);
+var_dump($range); // object(Generator)#1
+var_dump($range instanceof Iterator); // bool(true)
+
+你对某个对象调用迭代器方法一次，其中的代码运行一次。例如，如果你调用$range->rewind(),
+那么xrange()里的代码运行到控制流 第一次出现yield的地方。在这种情况下，
+这就意味着当$i=$start时yield $i才运行。传递给yield语句的值是使用$range->current()获取的。
+ 
+为了继续执行生成器中的代码，你必须调用$range->next()方法。这将再次启动生成器，直到yield语句出现。
+因此，连续调用next()和current()方法 你将能从生成器里获得所有的值，直到某个点没有再出现yield语句。
+对xrange()来说，这种情形出现在$i超过$end时。在这中情况下， 控制流将到达函数的终点，因此将不执行任何代码。
+一旦这种情况发生，vaild()方法将返回假，这时迭代结束。
+ 
+协程
+协程给上面功能添加的主要东西是回送数据给生成器的能力。这将把生成器到调用者的单向通信转变为两者之间的双向通信。
+通过调用生成器的send()方法而不是其next()方法传递数据给协程。下面的logger()协程是这种通信如何运行的例子：
+
+<?php
+function logger($fileName) {
+    $fileHandle = fopen($fileName, 'a');
+    while (true) {
+        fwrite($fileHandle, yield . "\n");
+    }
+}
+
+$logger = logger(__DIR__ . '/log');
+$logger->send('Foo');
+$logger->send('Bar')
+
+正如你能看到，这儿yield没有作为一个语句来使用，而是用作一个表达式。即它有一个返回值。
+yield的返回值是传递给send()方法的值。 在这个例子里，yield将首先返回"Foo",然后返回"Bar"。
+
+上面的例子里yield仅作为接收者。混合两种用法是可能的，即既可接收也可发送。接收和发送通信如何进行的例子如下：
+
+<?php
+function gen() {
+    $ret = (yield 'yield1');
+    var_dump($ret);
+    $ret = (yield 'yield2');
+    var_dump($ret);
+}
+$gen = gen();
+var_dump($gen->current());    // string(6) "yield1"
+var_dump($gen->send('ret1')); // string(4) "ret1"   (the first var_dump in gen)
+                              // string(6) "yield2" (the var_dump of the ->send() return value)
+var_dump($gen->send('ret2')); // string(4) "ret2"   (again from within gen)
+                              // NULL               (the return value of ->send())
+马上理解输出的精确顺序有点困难，因此确定你知道为什按照这种方式输出。我愿意特别指出的有两点：
+第一点，yield表达式两边使用 圆括号不是偶然。由于技术原因（虽然我已经考虑为赋值增加一个异常，就像Python那样），圆括号是必须的。
+第二点，你可能已经注意到 调用current()之前没有调用rewind()。如果是这么做的，那么已经隐含地执行了rewind操作。
+ 
+多任务协作
+如果阅读了上面的logger()例子，那么你认为“为了双向通信我为什么要使用协程呢？ 为什么我不能只用常见的类呢？”，
+你这么问完全正确。上面的例子演示了基本用法，然而上下文中没有真正的展示出使用协程的优点。
+这就是列举许多协程例子的理由。正如上面介绍里提到的，协程是非常强大的概念，
+不过这样的应用很稀少而且常常十分复杂。给出一些简单而真实的例子很难。
+
+在这篇文章里，我决定去做的是使用协程实现多任务协作。我们尽力解决的问题是你想并发地运行多任务(或者“程序”）。
+不过处理器在一个时刻只能运行一个任务（这篇文章的目标是不考虑多核的）。
+因此处理器需要在不同的任务之间进行切换，而且总是让每个任务运行 “一小会儿”。
+ 
+多任务协作这个术语中的“协作”说明了如何进行这种切换的：它要求当前正在运行的任务自动把控制传回给调度器，
+这样它就可以运行其他任务了。这与“抢占”多任务相反，抢占多任务是这样的：调度器可以中断运行了一段时间的任务，
+不管它喜欢还是不喜欢。协作多任务在Windows的早期版本（windows95)和Mac OS中有使用，不过它们后来都切换到使用抢先多任务了。
+理由相当明确：如果你依靠程序自动传回 控制的话，那么坏行为的软件将很容易为自身占用整个CPU，不与其他任务共享。 
+
+这个时候你应当明白协程和任务调度之间的联系：yield指令提供了任务中断自身的一种方法，然后把控制传递给调度器。
+因此协程可以运行多个其他任务。更进一步来说，yield可以用来在任务和调度器之间进行通信。
+
+我们的目的是 对 “任务”用更轻量级的包装的协程函数:
+
+<?php
+class Task {
+    protected $taskId;
+    protected $coroutine;
+    protected $sendValue = null;
+    protected $beforeFirstYield = true;
+    public function __construct($taskId, Generator $coroutine) {
+        $this->taskId = $taskId;
+        $this->coroutine = $coroutine;
+    }
+    public function getTaskId() {
+        return $this->taskId;
+    }
+    public function setSendValue($sendValue) {
+        $this->sendValue = $sendValue;
+    }
+    public function run() {
+        if ($this->beforeFirstYield) {
+            $this->beforeFirstYield = false;
+            return $this->coroutine->current();
+        } else {
+            $retval = $this->coroutine->send($this->sendValue);
+            $this->sendValue = null;
+            return $retval;
+        }
+    }
+    public function isFinished() {
+        return !$this->coroutine->valid();
+    }
+}
+
+一个任务是用 任务ID标记一个协程。使用setSendValue()方法，你可以指定哪些值将被发送到下次的恢复（在之后你会了解到我们需要这个）。 
+run()函数确实没有做什么，除了调用send()方法的协同程序。要理解为什么添加beforeFirstYieldflag，需要考虑下面的代码片段：
+
+<?php
+function gen() {
+    yield 'foo';
+    yield 'bar';
+}
+$gen = gen();
+var_dump($gen->send('something'));
+// As the send() happens before the first yield there is an implicit rewind() call,
+// so what really happens is this:
+$gen->rewind();
+var_dump($gen->send('something'));
+// The rewind() will advance to the first yield (and ignore its value), the send() will
+// advance to the second yield (and dump its value). Thus we loose the first yielded value!
+通过添加 beforeFirstYieldcondition 我们可以确定 first yield 的值 被返回。
+ 
+调度器现在不得不比多任务循环要做稍微多点了，然后才运行多任务：
+
+<?php
+class Scheduler {
+    protected $maxTaskId = 0;
+    protected $taskMap = []; // taskId => task
+    protected $taskQueue;
+    public function __construct() {
+        $this->taskQueue = new SplQueue();
+    }
+    public function newTask(Generator $coroutine) {
+        $tid = ++$this->maxTaskId;
+        $task = new Task($tid, $coroutine);
+        $this->taskMap[$tid] = $task;
+        $this->schedule($task);
+        return $tid;
+    }
+    public function schedule(Task $task) {
+        $this->taskQueue->enqueue($task);
+    }
+    public function run() {
+        while (!$this->taskQueue->isEmpty()) {
+            $task = $this->taskQueue->dequeue();
+            $task->run();
+            if ($task->isFinished()) {
+                unset($this->taskMap[$task->getTaskId()]);
+            } else {
+                $this->schedule($task);
+            }
+        }
+    }
+}
+
+newTask()方法（使用下一个空闲的任务id）创建一个新任务，然后把这个任务放入任务映射数组里。
+接着它通过把任务放入任务队列里来实现对任务的调度。接着run()方法扫描任务队列，运行任务。
+如果一个任务结束了，那么它将从队列里删除，否则它将在队列的末尾再次被调度。
+让我们看看下面具有两个简单（并且没有什么意义）任务的调度器： 
+
+<?php
+function task1() {
+    for ($i = 1; $i <= 10; ++$i) {
+        echo "This is task 1 iteration $i.\n";
+        yield;
+    }
+}
+function task2() {
+    for ($i = 1; $i <= 5; ++$i) {
+        echo "This is task 2 iteration $i.\n";
+        yield;
+    }
+}
+$scheduler = new Scheduler;
+$scheduler->newTask(task1());
+$scheduler->newTask(task2());
+$scheduler->run();
+两个任务都仅仅回显一条信息，然后使用yield把控制回传给调度器。输出结果如下：
+This is task 1 iteration 1.
+This is task 2 iteration 1.
+This is task 1 iteration 2.
+This is task 2 iteration 2.
+This is task 1 iteration 3.
+This is task 2 iteration 3.
+This is task 1 iteration 4.
+This is task 2 iteration 4.
+This is task 1 iteration 5.
+This is task 2 iteration 5.
+This is task 1 iteration 6.
+This is task 1 iteration 7.
+This is task 1 iteration 8.
+This is task 1 iteration 9.
+This is task 1 iteration 10.
+
+输出确实如我们所期望的：对前五个迭代来说，两个任务是交替运行的，接着第二个任务结束后，只有第一个任务继续运行。
+ 
+与调度器之间通信
+既然调度器已经运行了，那么我们就转向日程表的下一项：任务和调度器之间的通信。
+我们将使用进程用来和操作系统会话的同样的方式来通信：系统调用。我们需要系统调用的理由是操作系统与进程相比它处在不同的权限级别上。
+因此为了执行特权级别的操作（如杀死另一个进程），就不得不以某种方式把控制传回给内核，这样内核就可以执行所说的操作了。
+再说一遍，这种行为在内部是通过使用中断指令来实现的。过去使用的是通用的int指令，如今使用的是更特殊并且更快速的syscall/sysenter指令。
+
+我们的任务调度系统将反映这种设计：不是简单地把调度器传递给任务（这样久允许它做它想做的任何事），
+我们将通过给yield表达式传递信息来与系统调用通信。这儿yield即是中断，也是传递信息给调度器（和从调度器传递出信息）的方法。
+ 
+为了说明系统调用，我将对可调用的系统调用做一个小小的封装：
+
+<?php
+class SystemCall {
+    protected $callback;
+    public function __construct(callable $callback) {
+        $this->callback = $callback;
+    }
+    public function __invoke(Task $task, Scheduler $scheduler) {
+        $callback = $this->callback; // Can't call it directly in PHP :/
+        return $callback($task, $scheduler);
+    }
+}
+
+它将像其他任何可调用那样(使用_invoke)运行，不过它要求调度器把正在调用的任务和自身传递给这个函数。
+为了解决这个问题 我们不得不微微的修改调度器的run方法：
+
+<?php
+public function run() {
+    while (!$this->taskQueue->isEmpty()) {
+        $task = $this->taskQueue->dequeue();
+        $retval = $task->run();
+        if ($retval instanceof SystemCall) {
+            $retval($task, $this);
+            continue;
+        }
+        if ($task->isFinished()) {
+            unset($this->taskMap[$task->getTaskId()]);
+        } else {
+            $this->schedule($task);
+        }
+    }
+}
+
+第一个系统调用除了返回任务ID外什么都没有做：
+
+<?php
+function getTaskId() {
+    return new SystemCall(function(Task $task, Scheduler $scheduler) {
+        $task->setSendValue($task->getTaskId());
+        $scheduler->schedule($task);
+    });
+}
+
+这个函数确实设置任务id为下一次发送的值，并再次调度了这个任务。由于使用了系统调用，所以调度器不能自动调用任务，
+我们需要手工调度任务（稍后你将明白为什么这么做）。要使用这个新的系统调用的话，我们要重新编写以前的例子：
+
+<?php
+function task($max) {
+    $tid = (yield getTaskId()); // <-- here's the syscall!
+    for ($i = 1; $i <= $max; ++$i) {
+        echo "This is task $tid iteration $i.\n";
+        yield;
+    }
+}
+$scheduler = new Scheduler;
+$scheduler->newTask(task(10));
+$scheduler->newTask(task(5));
+$scheduler->run();
+
+这段代码将给出与前一个例子相同的输出。注意系统调用同其他任何调用一样正常地运行，
+不过预先增加了yield。要创建新的任务，然后再杀死它们的话，需要两个以上的系统调用：  
+
+<?php
+function newTask(Generator $coroutine) {
+    return new SystemCall(
+        function(Task $task, Scheduler $scheduler) use ($coroutine) {
+            $task->setSendValue($scheduler->newTask($coroutine));
+            $scheduler->schedule($task);
+        }
+    );
+}
+function killTask($tid) {
+    return new SystemCall(
+        function(Task $task, Scheduler $scheduler) use ($tid) {
+            $task->setSendValue($scheduler->killTask($tid));
+            $scheduler->schedule($task);
+        }
+    );
+}
+
+killTask函数需要在调度器里增加一个方法：
+
+<?php
+public function killTask($tid) {
+    if (!isset($this->taskMap[$tid])) {
+        return false;
+    }
+    unset($this->taskMap[$tid]);
+    // This is a bit ugly and could be optimized so it does not have to walk the queue,
+    // but assuming that killing tasks is rather rare I won't bother with it now
+    foreach ($this->taskQueue as $i => $task) {
+        if ($task->getTaskId() === $tid) {
+            unset($this->taskQueue[$i]);
+            break;
+        }
+    }
+    return true;
+}
+
+用来测试新功能的微脚本：  
+
+<?php
+function childTask() {
+    $tid = (yield getTaskId());
+    while (true) {
+        echo "Child task $tid still alive!\n";
+        yield;
+    }
+}
+function task() {
+    $tid = (yield getTaskId());
+    $childTid = (yield newTask(childTask()));
+    for ($i = 1; $i <= 6; ++$i) {
+        echo "Parent task $tid iteration $i.\n";
+        yield;
+        if ($i == 3) yield killTask($childTid);
+    }
+}
+
+$scheduler = new Scheduler;
+$scheduler->newTask(task());
+$scheduler->run();
+ 这段代码将打印以下信息：
+Parent task 1 iteration 1.
+Child task 2 still alive!
+Parent task 1 iteration 2.
+Child task 2 still alive!
+Parent task 1 iteration 3.
+Child task 2 still alive!
+Parent task 1 iteration 4.
+Parent task 1 iteration 5.
+Parent task 1 iteration 6.
+```
+
+### 如何获取客户端 IP 和服务端 IP 地址
+```
+[客户端 IP](https://stackoverflow.com/questions/3003145/how-to-get-the-client-ip-address-in-php)    
+这是获取IP地址的更短，更简洁的方法：
+
+function get_ip_address(){
+    foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
+        if (array_key_exists($key, $_SERVER) === true){
+            foreach (explode(',', $_SERVER[$key]) as $ip){
+                $ip = trim($ip); // just to be safe
+
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false){
+                    return $ip;
+                }
+            }
+        }
+    }
+}
+
+您的代码似乎已经很完整了，我看不到其中的任何可能的错误（除了常见的IP警告），validate_ip()尽管如此，我还是将功能更改为依赖过滤器扩展：
+
+public function validate_ip($ip)
+{
+    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false)
+    {
+        return false;
+    }
+
+    self::$ip = sprintf('%u', ip2long($ip)); // you seem to want this
+
+    return true;
+}
+
+此外，您的HTTP_X_FORWARDED_FOR代码段可以通过以下方式简化：
+
+// check for IPs passing through proxies
+if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+{
+    // check if multiple ips exist in var
+    if (strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',') !== false)
+    {
+        $iplist = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        
+        foreach ($iplist as $ip)
+        {
+            if ($this->validate_ip($ip))
+                return $ip;
+        }
+    }
+    
+    else
+    {
+        if ($this->validate_ip($_SERVER['HTTP_X_FORWARDED_FOR']))
+            return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    }
+}
+对此：
+
+// check for IPs passing through proxies
+if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+{
+    $iplist = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        
+    foreach ($iplist as $ip)
+    {
+        if ($this->validate_ip($ip))
+            return $ip;
+    }
+}
+
+您可能还需要验证IPv6地址。
+
+[服务端 IP](https://stackoverflow.com/questions/5800927/how-to-identify-server-ip-address-in-php)
+$_SERVER['SERVER_ADDR'];
+$_SERVER['SERVER_PORT'];
+
+如果您使用的是PHP 5.3或更高版本，则可以执行以下操作：
+$host= gethostname();
+$ip = gethostbyname($host);
+
+了解代理透传 实际IP 的概念
+1.基于代理(七层负载均衡)情况下 透传客户端的真实IP
+环境:
+10.0.0.5 proxy_node1 一级代理
+10.0.0.6 proxy_node2 二级代理
+10.0.0.7 proxy_node3 三级代理
+10.0.0.8 webserver 真实节点
+域名:ip.cheng.com 解析 --> 10.0.0.5
+
+1.一级代理proxy_node1 Nginx配置如下:
+
+[root@lb01 conf.d]# cat proxy_ip.cheng.com.conf 
+server {
+	listen 80;
+	server_name ip.cheng.com;
+
+	location / {
+	proxy_pass http://10.0.0.6;
+	proxy_http_version 1.1;
+	proxy_set_header Host $http_host;
+	proxy_set_header X-Real-IP $remote_addr;
+	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;	
+	}
+}
+
+2.二级代理proxy_node2 Nginx配置如下:
+
+[root@lb02 conf.d]# cat proxy_ip.cheng.com.conf 
+server {
+	listen 80;
+	server_name ip.cheng.com;
+
+	location / {
+	proxy_pass http://10.0.0.7;
+	proxy_http_version 1.1;
+	proxy_set_header Host $http_host;
+	proxy_set_header X-Real-IP $remote_addr;
+	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;	
+	}
+}
+
+3.三级代理proxy_node3 Nginx配置如下:
+
+[root@web01 conf.d]# cat proxy_ip.cheng.com.conf 
+server {
+	listen 80;
+	server_name ip.cheng.com;
+
+	location / {
+	proxy_pass http://10.0.0.8;
+	proxy_http_version 1.1;
+	proxy_set_header Host $http_host;
+	proxy_set_header X-Real-IP $remote_addr;
+	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;	
+	}
+}
+
+4.WebServer Nginx配置如下:
+
+[root@web02 conf.d]# cat proxy_ip.cheng.com.conf 
+server {
+	listen 80;
+	server_name ip.cheng.com;
+	root /code;
+
+	location / {
+	index index.php index.html;
+	}
+
+	location ~ \.php$ {
+	fastcgi_pass 127.0.0.1:9000;
+	fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+	include fastcgi_params;
+	}
+}
+
+5.测试方式一，通过如下页面获取真实IP，或查看 phpinfo() 函数中的 HTTP_X_FORWARDED_FOR
+
+[root@web02 code]# cat index.php 
+<?php
+	$ip = getenv("HTTP_X_FORWARDED_FOR");
+	echo "X_FORWARDED_FOR: $ip";
+?>
+
+6.测试方式二，通过查看日志测试
+
+2.Nginx RealIP获取真实IP
+使用nginx Realip_module获取多级代理下的客户端真实IP地址,在真实Web节点上配置，配置信息如下：
+
+[root@web02 conf.d]# cat proxy_ip.cheng.com.conf 
+server {
+	listen 80;
+	server_name ip.cheng.com;
+	root /code;
+	set_real_ip_from 10.0.0.5;
+	set_real_ip_from 10.0.0.6;
+	set_real_ip_from 10.0.0.7;
+	real_ip_header   X-Forwarded-For;
+	real_ip_recursive on;
+
+	location / {
+	index index.php index.html;
+	}
+
+	location ~ \.php$ {
+	fastcgi_pass 127.0.0.1:9000;
+	fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+	include fastcgi_params;
+	}
+}
+
+最终结果是"10.0.0.1 - - "GET /index.php HTTP/1.1" 200 "10.0.0.5, 10.0.0.6"
+10.0.0.5，10.0.0.6都出现在set_real_ip_from中，仅仅10.0.0.1没出现，那么他就被认为是用户的ip地址，同时会被赋值到 $remote_addr变量中。
+
+获取真实IP总结：
+forwarded-for：可以获取到用户的真实IP地址。
+nginx realip：程序无需改动，直接使用remote_addr变量即可获取真实IP地址，但需要知道所有沿途经过的IP地址或IP段
+```
+
+### 如何开启 PHP 异常提示
+```
+php.ini 开启 `display_errors` 设置 `error_reporting` 等级
+
+运行时，使用 `ini_set(k, v);` 动态设置
+
+PHP打开错误提示和关闭错误提示的方法
+找到php的配置文件，也就是php.ini
+
+在文件中查找 ‘display_errors’   查找到 display_errors = Off 或者 display_errors = On，
+Off为关闭错误提示，On为打开错误提示，根据需求修改即可。
+
+也可在php文件中加入以下代码
+
+复制代码
+//禁用错误报告
+error_reporting(0);
+//报告运行时错误
+error_reporting(E_ERROR | E_WARNING | E_PARSE);
+//报告所有错误
+error_reporting(E_ALL);
+```
+
+### 如何获取扩展安装路径
+```
+`phpinfo();` 页面查找 `extension_dir`
+
+命令行 `php -i |grep extension_dir`
+
+运行时 `echo ini_get('extension_dir');`
+```
+
+### 字符串、数字比较大小的原理，注意 0 开头的8进制、0x 开头16进制
+```
+字符串比较大小，从左(高位)至右，逐个字符 ASCII 比较
+```
+
+### BOM 头是什么，怎么除去
+```
+`0xEF`,`0xBB`,`0xBF`
+WINDOWS自带的记事本，在保存一个以 UTF-8 编码的文件时，会在文件开始的地方插入三个不可见的字符（0xEF 0xBB 0xBF，即BOM）。
+它是一串隐藏的字符，用于让记事本等编辑器识别这个文件是否以UTF-8编码。对于一般的文本文件，
+这样并不会产生什么麻烦。但对于 PHP来说，BOM是个大麻烦。
+PHP并不会忽略BOM，所以在读取、包含或者引用这些文件时，会把 BOM 作为该文件开头正文的一部分。
+根据嵌入式语言的特点，这串字符将被直接执行（显示）出来。由此造成即使页面的 top padding 设置为0，
+也无法让整个网页紧贴浏览器顶部，因为在html一开头有这3个字符呢！
+而且 BOM 是内容输入，如果没有开启缓冲区输出的时候，BOM 会影响 header 函数的使用，
+因为在header之前不能有任何有效的内容输出，BOM也算是有效内容输出。
+去掉BOM的方法，建议使用专业的代码编辑器工具来处理 例如 Notepad++ 或者 EditPlus 
+在新建和保存以及转换编码的功能内都会有无 BOM的格式选择。
+
+[检测、去除](https://stackoverflow.com/questions/10290849/how-to-remove-multiple-utf-8-bom-sequences-before-doctype)
+you would use the following code to remove utf8 bom
+
+//Remove UTF8 Bom
+
+function remove_utf8_bom($text)
+{
+    $bom = pack('H*','EFBBBF');
+    $text = preg_replace("/^$bom/", '', $text);
+    return $text;
+}
+```
+
+### 什么是 MVC 
+```
+MVC 即 Model、View、Controller 即模型、视图、控制器。
+
+在 web 项目中 View 层是界面，Controller 层是业务逻辑，Model 层是数据库访问。
+
+MVC 要实现的目标是将软件用户界面和业务逻辑分离以使代码可扩展性、可复用性、可维护性、灵活性加强。
+
+控制器的作用就是这么简单， 用来将不同的View和不同的Model组织在一起，顺便替双方传递消息，仅此而已。
+
+组成MVC的三个模式分别是组合模式、策咯模式、观察者模式，MVC在软件开发中发挥的威力，最终离不开这三个模式的默契配合。
+```
+
+### Memcached 与 Redis 区别
+```
+Redis和Memcache 都是基于内存的数据存储系统。Memcached是高性能分布式内存缓存服务，
+其本质上就是一个内存key-value数据库。Redis是一个开源的key-value存储系统。与Memcached类似，
+Redis将大部分数据存储在内存中，支持的数据类型包括：字符串、哈希表、链表、集合、有序集合以及基于这些数据类型的相关操作。
+那么，Memcache与Redis有什么区别呢？
+
+1、数据操作不同
+与Memcached仅支持简单的key-value结构的数据记录不同，Redis支持的数据类型要丰富得多。
+Memcached基本只支持简单的key-value存储，不支持枚举，不支持持久化和复制等功能。
+Redis支持服务器端的数据操作相比Memcached来说，拥有更多的数据结构和并支持更丰富的数据操作，
+支持list、set、sorted set、hash等众多数据结构，还同时提供了持久化和复制等功能。
+
+而通常在Memcached里，使用者需要将数据拿到客户端来进行类似的修改再set回去，
+这大大增加了网络IO的次数和数据体积。在Redis中，这些复杂的操作通常和一般的GET/SET一样高效。
+所以，如果需要缓存能够支持更复杂的结构和操作， Redis会是更好的选择。
+
+2、内存管理机制不同
+在Redis中，并不是所有的数据都一直存储在内存中的。这是和Memcached相比一个最大的区别。
+当物理内存用完时，Redis可以将一些很久没用到的value交换到磁盘。Redis只会缓存所有的key的信息，
+如果Redis发现内存的使用量超过了某一个阀值，将触发swap的操作，Redis根据“swappability = age*log(size_in_memory)”
+计算出哪些key对应的value需要swap到磁盘。然后再将这些key对应的value持久化到磁盘中，同时在内存中清除。
+这种特性使得Redis可以保持超过其机器本身内存大小的数据。
+
+而Memcached默认使用Slab Allocation机制管理内存，其主要思想是按照预先规定的大小，
+将分配的内存分割成特定长度的块以存储相应长度的key-value数据记录，以完全解决内存碎片问题。
+
+从内存利用率来讲，使用简单的key-value存储的话，Memcached的内存利用率更高。
+而如果Redis采用hash结构来做key-value存储，由于其组合式的压缩，其内存利用率会高于Memcached。
+
+3、性能不同
+由于Redis只使用单核，而Memcached可以使用多核，所以平均每一个核上Redis在存储小数据时比Memcached性能更高。
+而在100k以上的数据中，Memcached性能要高于Redis，虽然Redis也在存储大数据的性能上进行了优化，但是比起Memcached，还是稍有逊色。
+
+4、集群管理不同
+Memcached是全内存的数据缓冲系统，Redis虽然支持数据的持久化，但是全内存毕竟才是其高性能的本质。
+作为基于内存的存储系统来说，机器物理内存的大小就是系统能够容纳的最大数据量。
+如果需要处理的数据量超过了单台机器的物理内存大小，就需要构建分布式集群来扩展存储能力。
+
+Memcached本身并不支持分布式，因此只能在客户端通过像一致性哈希这样的分布式算法来实现Memcached的分布式存储。
+相较于Memcached只能采用客户端实现分布式存储，Redis更偏向于在服务器端构建分布式存储。
+```
+
+### redis
+```
+Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库，并提供多种语言的API。
+
+redis包括string(字符串)、list(链表)、set(集合)、zset(sorted set --有序集合)和hashs（哈希类型）。
+这些数据类型都 支持push/pop、add/remove及取交集并集和差集及更丰富的操作，而且这些操作都是原子性的。
+
+php中reids的操作
+
+// from 菜鸟runoob
+// 从代码中以点带面，在什么样的场景中会运用到
+
+// 配置连接的IP、端口、以及相应的数据库
+$server = array(
+‘host’     => ’127.0.0.1′,
+‘port’     => 6379,
+‘database’ => 15
+);
+$redis = new Client($server);
+
+// 普通set/get操作
+$redis->set(‘library’, ‘predis’);
+$retval = $redis->get(‘library’);
+echo $retval; //显示 ‘predis’
+
+$redis->exists(‘foo’);//true
+
+// del 删除
+$redis->del(‘foo’);//true
+
+// hset/hget 存取hash表的数据
+$redis->hset(‘hash1′,’key1′,’v1′); //将key为’key1′ value为’v1′的元素存入hash1表
+$redis->hset(‘hash1′,’key2′,’v2′);
+$redis->hget(‘hash1′,’key1′);  //取出表’hash1′中的key ‘key1′的值,返回’v1′
+
+// 同步保存服务器数据到磁盘
+$redis->save();
+```
+
+## Yii2中的依赖注入
+```
+ 基本概念
+1.依赖倒置（反转）原则（DIP）：一种软件架构设计的原则（抽象概念，是一种思想）
+在面向对象编程领域中，依赖反转原则（Dependency inversion principle，DIP）是指一种特定的解耦
+（传统的依赖关系创建在高层次上，而具体的策略设置则应用在低层次的模块上）形式，
+使得高层次的模块不依赖于低层次的模块的实现细节，依赖关系被颠倒（反转），从而使得低层次模块依赖于高层次模块的需求抽象。
+
+该原则规定：
+    1.高层次的模块不应该依赖于低层次的模块，两者都应该依赖于抽象接口。
+    2.抽象接口不应该依赖于具体实现。而具体实现则应该依赖于抽象接口。
+
+在上图中，高层对象A依赖于底层对象B的实现；图2中，把高层对象A对底层对象的需求抽象为一个接口A，
+底层对象B实现了接口A，这就是依赖反转。
+该原则颠倒了一部分人对于面向对象设计的认识方式。如高层次和低层次对象都应该依赖于相同的抽象接口。
+它转换了依赖，高层模块不依赖于低层模块的实现，而低层模块依赖于高层模块定义的接口。通俗的讲，就是高层模块定义接口，低层模块负责实现。
+
+2.控制反转（IoC）：一种反转流、依赖和接口的方式（DIP的具体实现方式，一种设计原则）
+控制反转（Inversion of Control，缩写为IoC），是面向对象编程中的一种设计原则，可以用来减低计算机代码之间的耦合度。
+其中最常见的方式叫做依赖注入（Dependency Injection，简称DI），还有一种方式叫“依赖查找”（Dependency Lookup）。
+通过控制反转，对象在被创建的时候，由一个调控系统内所有对象的外界实体，将其所依赖的对象的引用传递给它。也可以说，依赖被注入到对象中。
+
+参考：https://segmentfault.com/a/1190000010788354
+ 入口文件
+> 文件位置：web\index.php
+
+//定义全局变量
+defined('YII_DEBUG') or define('YII_DEBUG', true);
+defined('YII_ENV') or define('YII_ENV', 'dev');
+
+//composer自动加载代码机制，可参考 https://segmentfault.com/a/1190000010788354
+require(__DIR__ . '/../vendor/autoload.php');
+
+//1.引入工具类Yii
+//2.注册自动加载函数
+//3.生成依赖注入中使用到的容器
+require(__DIR__ . '/../vendor/yiisoft/yii2/Yii.php');
+
+//加载应用配置
+$config = require(__DIR__ . '/../config/web.php');
+
+//生成应用并运行
+(new yii\web\Application($config))->run();
+
+参考：https://segmentfault.com/a/1190000011823699
+```
+
+### 依赖注入实现原理
+```
+这篇文章主要介绍了PHP依赖注入原理与用法,简单讲述了依赖注入的概念、
+原理并结合实例形式分析了php实现与使用依赖注入的相关操作技巧,需要的朋友可以参考下
+ 
+本文实例讲述了PHP依赖注入原理与用法。分享给大家供大家参考，具体如下：
+
+依然是来自到喜啦的一道面试题，你知道什么是依赖注入吗？
+
+依赖注入（DI）的概念虽然听起来很深奥，但是如果你用过一些新兴的php框架的话，
+对于DI一定不陌生，因为它们多多少少都用到了依赖注入来处理类与类之间的依赖关系。
+
+php中传递依赖关系的三种方案
+其实要理解DI，首先要明白在php中如何传递依赖关系。
+
+第一种方案，也是最不可取的方案，就是在A类中直接用new关键词来创建一个B类，如下代码所示：
+
+<?php
+class A
+{
+  public function __construct()
+  {
+    $b = new B();
+  }
+}
+为什么这种方案不可取呢？因为这样的话，A与B就耦合在了一起，也就是说A类无法脱离B类工作。
+
+第二种方案就是在A类的方法中传入需要的B类，如下代码所示：
+
+<?php
+class A
+{
+  public function __construct(B $b)
+  {
+  }
+}
+这种方法比第一种方案有了改进，A类不必与B类捆绑在一起，只要传入的类满足A类的需求，也可以是C类，也可以是D类等等。
+
+但是这种方案的弊端在于如果A类依赖的类较多，参数列表会很长，容易发生混乱。
+
+第三种方案是使用set方法传入，如下代码所示：
+
+<?php
+class A
+{
+  public function setB(B $b)
+  {
+    $this->b = $b;
+  }
+}
+这种方案同样存在和第二种方案一样的弊端，当依赖的类增多时，我们需要些很多很多的set方法。
+
+这时我们在想如果有一个专门的类（或者说一个容器）可以帮我们管理这些依赖关系就好了。
+
+一个简单的依赖注入的例子
+如下代码来自twittee：
+
+<?php
+class Container {
+ private $s=array();
+ function __set($k, $c) { $this->s[$k]=$c; }
+ function __get($k) { return $this->s[$k]($this); }
+}
+有了container类之后我们可以怎样管理A与B之间的依赖关系呢，用代码说话吧：
+
+<?php
+class A
+{
+  private $container;
+  public function __construct(Container $container)
+  {
+    $this->container = $container;
+  }
+  public function doSomeThing()
+  {
+    //do something which needs class B
+    $b = $this->container->getB();
+    //to do
+  }
+}
+再将B类注入到容器类中：
+
+$c = new Container();
+$c->setB(new B());
+还可以传入一个匿名函数，这样B类就不会在传入时就立即实例化，而是在真正调用时才完成实例化的工作：
+
+$c = new Container();
+$c->setB(function (){
+  return new B();
+});
+这里举的只是一个很简单的例子，在实际中，容器类要考虑的有很多，比如延迟加载等等。
+```
+
+### 如何异步执行命令
+```
+客户端与服务器端是通过HTTP协议进行连接通讯，客户端发起请求，服务器端接收到请求后执行处理，并返回处理结果。
+有时服务器需要执行很耗时的操作，这个操作的结果并不需要返回给客户端。
+但因为php是同步执行的，所以客户端需要等待服务处理完才可以进行下一步。
+因此对于耗时的操作适合异步执行，服务器接收到请求后，处理完客户端需要的数据就返回，再异步在服务器执行耗时的操作。
+
+1.使用Ajax 与 img 标记
+原理，服务器返回的html中插入Ajax 代码或 img 标记，img的src为需要执行的程序。
+优点：实现简单，服务端无需执行任何调用
+缺点：在执行期间，浏览器会一直处于loading状态，因此这种方法并不算真正的异步调用。
+$.get("doRequest.php", { name: "fdipzone"} );
+<img src="doRequest.php?name=fdipzone">
+
+2.使用popen
+使用popen执行命令，语法：
+// popen — 打开进程文件指针  
+resource popen ( string $command , string $mode )
+pclose(popen('php /home/fdipzone/doRequest.php &', 'r'));
+优点：执行速度快
+缺点：
+1）.只能在本机执行
+2）.不能传递大量参数
+3）.访问量高时会创建很多进程
+
+3.使用curl
+设置curl的超时时间 CURLOPT_TIMEOUT 为1 （最小为1），因此客户端需要等待1秒
+<?php 
+$ch = curl_init(); 
+$curl_opt = array( 
+  CURLOPT_URL, 'http://www.example.com/doRequest.php'
+  CURLOPT_RETURNTRANSFER,1, 
+  CURLOPT_TIMEOUT,1 
+); 
+curl_setopt_array($ch, $curl_opt); 
+curl_exec($ch); 
+curl_close($ch); 
+?>
+
+4.使用fsockopen
+fsockopen是最好的，缺点是需要自己拼接header部分。
+<?php 
+$url = 'http://www.example.com/doRequest.php'; 
+$param = array( 
+  'name'=>'fdipzone', 
+  'gender'=>'male', 
+  'age'=>30 
+); 
+doRequest($url, $param); 
+function doRequest($url, $param=array()){ 
+  $urlinfo = parse_url($url); 
+  $host = $urlinfo['host']; 
+  $path = $urlinfo['path']; 
+  $query = isset($param)? http_build_query($param) : ''; 
+  $port = 80; 
+  $errno = 0; 
+  $errstr = ''; 
+  $timeout = 10; 
+  $fp = fsockopen($host, $port, $errno, $errstr, $timeout); 
+  $out = "POST ".$path." HTTP/1.1\r\n"; 
+  $out .= "host:".$host."\r\n"; 
+  $out .= "content-length:".strlen($query)."\r\n"; 
+  $out .= "content-type:application/x-www-form-urlencoded\r\n"; 
+  $out .= "connection:close\r\n\r\n"; 
+  $out .= $query; 
+  fputs($fp, $out); 
+  fclose($fp); 
+} 
+?>
+注意：当执行过程中，客户端连接断开或连接超时，都会有可能造成执行不完整，因此需要加上
+ignore_user_abort(true); // 忽略客户端断开 
+set_time_limit(0);    // 设置执行不超时
+```
+
+### 模板引擎是什么，解决什么问题、实现原理（Smarty、Twig、Blade）
+```
+PHP的模板引擎smarty原理是什么（整理）
+目录
+一、总结
+一句话总结：其实所有的模板引擎的工作原理是差不多的，无非就是在php程序里面
+用正则匹配将模板里面的标签替换为php代码从而将两者混合为一个php的混编文件，然后执行这个混编文件。
+1、smarty模板引擎的主要作用是什么？
+2、smarty的两个函数的主要作用是什么？
+3、我们模板中没有php代码，我们只用了{$name}和{$age}就能把对应的变量给展示了出来，是为什么呢？
+4、smarty模板引擎里面的display函数的最核心的操作是什么？
+二、PHP的模板引擎smarty原理浅谈
+三、Smarty模板执行原理
+ 
+>  一、总结（点击显示或隐藏总结内容）
+一句话总结：其实所有的模板引擎的工作原理是差不多的，无非就是在php程序里面
+用正则匹配将模板里面的标签替换为php代码从而将两者混合为一个php的混编文件，然后执行这个混编文件。
+
+1、smarty模板引擎的主要作用是什么？
+smarty模板技术，可以让数据和视图进行分离，让视图中不能直接出现php代码。
+这样的话，让前段页面的开发和后台数据的开发，可以双管齐下，同时进行了。
+
+2、smarty的两个函数的主要作用是什么？
+smarty模板的使用比较简单，主要有两个非常核心的函数。一个是assign()，
+把模板中要使用的数据进行预赋值，一个是display()，用来解析和展示最后的视图模板。
+
+使用的简单代码如下：
+include_once "Smarty.class.php";//引入smarty类
+$smarty = new Smarty;//创建smarty对象
+$smarty->assign("name","zhangmiao");//赋值，以备模板中使用
+$smarty->assign("age","18");
+$smarty->display('index.tpl');//引入模板，展示视图页面
+ 
+3、我们模板中没有php代码，我们只用了{$name}和{$age}就能把对应的变量给展示了出来，是为什么呢？
+然后，我们一看smarty编译后的文件是这样的：
+
+<h1>测试模板1</h1>
+我的名字是：<?php echo $this->var["name"]; ?><br/>
+我的年纪是：<?php echo $this->var["age"]; ?><br/>
+原来如此，最终还是变成了含有php代码的模板，但是这个模板中把标签转成php代码的工作，我们交给了smarty模板引擎来完成的。
+
+那到底smarty模板引擎是怎么把模板里面的非php代码的标签，转变成被最终可以解析执行的php代码的呢？
+
+主要思路是：替换。
+
+分成了两步：
+
+　　1、用过assign函数把要解析的标签变量赋值
+
+　　2、通过display函数把标签替换成对象的php变量
+
+我们根据这个思路，自己也写了个简易版的smarty模板引擎，算是多smarty模板引擎设计原理的一种理解。
+但是只能解析单个变量的标签，其他标签均没有处理。核心代码如下：
+
+//获取模板源文件，用来替换
+$template_content = file_get_contents($template_path);
+
+$pattern = array(
+    '/\{\s*\$([a-zA-Z][a-zA-Z0-9_]*)\s*\}/i'
+);
+$replace = array(
+    '<?php echo $this->var["${1}"]; ?>'
+);
+//用正则去替换模板源文件中的变量符号{$varname}
+$res = preg_replace($pattern,$replace,$template_content);
+//编译后文件写入某个目录
+file_put_contents($template_c_path,$res);
+
+4、smarty模板引擎里面的display函数的最核心的操作是什么？
+替换
+
+把标签的内容替换成php的内容
+例如把
+<h1>测试模板1</h1>
+我的名字是：{$name}<br/>
+我的年纪是：{$age}<br/>
+替换为：
+
+<h1>测试模板1</h1>
+我的名字是：<?php echo $this->var["name"]; ?><br/>
+我的年纪是：<?php echo $this->var["age"]; ?><br/>
+
+二、PHP的模板引擎smarty原理浅谈
+　　mvc是开发中的一个伟大的思想，使得开发代码有了更加清晰的层次，让代码分为了三层各施其职、
+无论是对代码的编写以及后期的阅读和维护，都提供了很大的便利。
+
+　　我们在php开发中，视图层view是不允许有php代码来操作数据库之类的来获取数据的，
+我们一般都会在控制器层controller，就已经把视图层要展示的数据准备好，方便视图层直接用来展示。
+
+　　smarty模板技术，可以让数据和视图进行分离，让视图中不能直接出现php代码。
+这样的话，让前段页面的开发和后台数据的开发，可以双管齐下，同时进行了。
+
+　　
+
+　　smarty模板的使用比较简单，主要有两个非常核心的函数。一个是assign()，
+把模板中要使用的数据进行预赋值，一个是display()，用来解析和展示最后的视图模板。
+
+　　使用的简单代码如下：
+include_once "Smarty.class.php";//引入smarty类
+$smarty = new Smarty;//创建smarty对象
+$smarty->assign("name","zhangmiao");//赋值，以备模板中使用
+$smarty->assign("age","18");
+$smarty->display('index.tpl');//引入模板，展示视图页面
+
+我们看下模板源代码是这样的：
+<h1>测试模板1</h1>
+我的名字是：{$name}<br/>
+我的年纪是：{$age}<br/>
+浏览器页面是这样的：
+
+疑问：我们模板中没有php代码，我们只用了{$name}和{$age}就能把对应的变量给展示了出来，是什么鬼呢？
+
+然后，我们一看smarty编译后的文件是这样的：
+
+<h1>测试模板1</h1>
+我的名字是：<?php echo $this->var["name"]; ?><br/>
+我的年纪是：<?php echo $this->var["age"]; ?><br/>
+原来如此，最终还是变成了含有php代码的模板，但是这个模板中把标签转成php代码的工作，我们交给了smarty模板引擎来完成的。
+
+那到底smarty模板引擎是怎么把模板里面的非php代码的标签，转变成被最终可以解析执行的php代码的呢？
+
+主要思路是：替换。
+
+分成了两步：
+
+　　1、用过assign函数把要解析的标签变量赋值
+
+　　2、通过display函数把标签替换成对象的php变量
+
+我们根据这个思路，自己也写了个简易版的smarty模板引擎，算是多smarty模板引擎设计原理的一种理解。
+但是只能解析单个变量的标签，其他标签均没有处理。代码如下：
+
+class MySmarty{
+
+    //模板存放路径
+    public $template = './template/';
+    //编译后模板路径
+    public $template_c = './template_c/';
+
+    //存放变量的数组,通过assign函数赋值
+    public $var = array();
+
+
+    //变量赋值
+    public function assign($vkey,$value){
+        if($vkey != ""){
+            $this->var[$vkey] = $value;//把要模板中解析的数据压入数组
+        }
+    }
+
+    //模板中变量替换
+    public function display($path){
+        $template_path = $this->template.$path;
+        $template_c_path = $this->template_c.$path.".php";
+        if(!file_exists($template_path)){
+            return false;
+        }
+
+        //只有解析后的模板文件不存在或者模板源文件有新的改动的情况下 重新解析模板       
+        if(!file_exists($template_c_path) || filemtime($template_path)>filemtime($template_c_path)){
+            //获取模板源文件，用来替换
+            $template_content = file_get_contents($template_path);
+
+            $pattern = array(
+                '/\{\s*\$([a-zA-Z][a-zA-Z0-9_]*)\s*\}/i'
+            );
+            $replace = array(
+                '<?php echo $this->var["${1}"]; ?>'
+            );
+            //用正则去替换模板源文件中的变量符号{$varname}
+            $res = preg_replace($pattern,$replace,$template_content);
+            //编译后文件写入某个目录
+            file_put_contents($template_c_path,$res);
+        }
+        //引入编译后文件，其实就是执行了那个php文件的代码
+        include_once $template_c_path;
+
+    }
+}
+ 
+我们调用自己的assign和display放入引入，也能正常解析使用啦
+
+三、Smarty模板执行原理
+为了实现程序的业务逻辑和内容表现页面的分离从而提高开发速度，php 引入了模板引擎的概念，
+php 模板引擎里面最流行的可以说是smarty了，smarty因其功能强大而且速度快而被广大php web开发者所认可。
+本文将记录一下smarty模板引擎的工作执行原理，算是加深一下理解。
+
+其实所有的模板引擎的工作原理是差不多的，无非就是在php程序里面
+用正则匹配将模板里面的标签替换为php代码从而将两者混合为一个php的混编文件，
+然后执行这个混编文件。基本上就是这么回事儿了。下面以smarty为例说下这个过程。
+
+例如文章页面：http://www.phpernote.com/article.php?id=795
+
+一般处理过程是这样的：
+
+html模板页面部分代码（article.html）：
+
+<body>
+<div>{subject}</div>
+<div>{content}</div>
+</body>
+php页面逻辑部分代码：
+
+$subject='smarty视频教程分享';
+$content='smarty视频教程分享，下面是具体的下载地址，有需要的朋友可以看看，对smarty模板讲解的非常详细，作者粗略看了一下目录，真是详细到细枝末节该......';
+$str=file_get_contents('article.html');
+$str=str_replace('{subject}',$subject,$str);
+$str=str_replace('{content}',$content,$str);
+echo $str;
+使用面向对象技术实现模板功能的封装代码如下：
+
+<?php
+class Template{
+    //属性
+    public $vars;                        //保存要替换的标记和数据的内容
+    public $left_delimiter='{*';        //左分隔符
+    public $right_delimiter='*}';        //右分隔符
+    //方法
+    public function assign($key,$value){
+        $this->vars[$key]=$value;
+    }
+    public function display($file){//file表示模板名
+        $str=file_get_contents($file);//从模板中读取多有内容，并将内容放入$str中
+        foreach ($this->vars as $key => $value){ //$key 键名（模板标记） $value 值
+            $str=str_replace($this->left_delimiter.$key.$this->right_delimiter, $value, $str);
+        }
+        echo $str;
+        //file_put_contents('bak.html', $str);
+    }
+}
+注意：assign(‘name’,’zhangsan’)；这句的时候其实还没有进行数据替换，而是把传入的数据保存在vars[]中，当display的时候才进行数据替换。
+
+smarty的处理过程：
+
+1、 smarty将php源文件，首先编译成中间文件
+
+2、 如果启用缓存，再根据编译文件生成缓存文件
+
+3、 之后每次访问都会访问编译文件
+
+如果启用缓存文件而且有缓存文件并且缓存文件没有过期，则直接访问缓存文件（先不考虑缓存的时候的流程）
+编译文件里时间戳记录模板文件修改时间，如果模板被修改过就可以检测到，然后重新编译。
+
+（编译是把静态内容保存起来，动态内容根据传入的参数不同而不同）
+
+读取编译文件省去了读取模板文件，和字符串替换的时间，所以可以更快。
+
+第一次请求article.php时候编译，产生编译文件，在编译文件里。
+
+第二次请求article.php的时候，判断模板文件是否改变，如果模板文件已改变，
+那么去读取模板文件，然后再编译，如果没有改变，则去读取编译文件，编译文件最终输出；
+
+缓存默认是关闭的；缓存是把数据彻底的存在缓存文件里，直到缓存文件过期才会重新来缓存；
+所以说smarty在一些实时性特别强的网站里不是特别合适；
+
+对于以上文字可以抽象的理解为下面的一幅图，读者自己去体会吧！
+
+考虑缓存：
+在smarty程序里，判断是否开启了缓存文件，并且缓存文件没有过期，，就去找缓存文件，
+如果没有开启缓存文件，就去判断模板文件，如果缓存文件已过期，也是去判断模板文件。
+```
+
+### 如何实现链式操作 `$obj->w()->m()->d();`
+```
+在php中有很多字符串函数，例如要先过滤字符串收尾的空格，再求出其长度，一般的写法是：
+
+strlen(trim($str))
+
+如果要实现类似js中的链式操作，比如像下面这样应该怎么写？
+
+$str->trim()->strlen()
+
+下面分别用三种方式来实现：
+
+方法一、使用魔法函数__call结合call_user_func来实现
+思想：首先定义一个字符串类StringHelper，构造函数直接赋值value，然后链式调用trim()和strlen()函数，通过在调用的魔法函数__call()中使用call_user_func来处理调用关系，实现如下：
+class StringHelper
+{
+  private $value;
+  function __construct($value)
+  {
+    $this->value = $value;
+  }
+  function __call($function, $args){
+    $this->value = call_user_func($function, $this->value, $args[0]);
+    return $this;
+  }
+  function strlen() {
+    return strlen($this->value);
+  }
+}
+$str = new StringHelper(" sd f 0");
+echo $str->trim('0')->strlen();
+
+终端执行脚本：
+php test.php
+
+方法二、使用魔法函数__call结合call_user_func_array来实现
+
+class StringHelper
+{
+  private $value;
+  function __construct($value)
+  {
+    $this->value = $value;
+  }
+  function __call($function, $args){
+    array_unshift($args, $this->value);
+    $this->value = call_user_func_array($function, $args);
+    return $this;
+  }
+  function strlen() {
+    return strlen($this->value);
+  }
+}
+$str = new StringHelper(" sd f 0");
+echo $str->trim('0')->strlen();
+
+说明：
+array_unshift(array,value1,value2,value3...)
+array_unshift() 函数用于向数组插入新元素。新数组的值将被插入到数组的开头。
+call_user_func()和call_user_func_array都是动态调用函数的方法，区别在于参数的传递方式不同。
+
+方法三、不使用魔法函数__call来实现
+只需要修改_call()为trim()函数即可：
+
+public function trim($t)
+{
+  $this->value = trim($this->value, $t);
+  return $this;
+}
+
+重点在于，返回$this指针，方便调用后者函数。
+```
+
+### Xhprof 、Xdebug 性能调试工具使用
+```
+php调试方式： https://blog.csdn.net/kikajack/article/details/81014804
+
+PHP 后端开发之调试方法： https://blog.csdn.net/f786587718/article/details/90603514
+
+//输出日志内容到文件
+$fp = fopen('./php.log', '测试');
+fwrite($fp, print_r($content, true));
+fclose($fp);
+ 
+//输出对象到文件，追加方式写入
+file_put_contents("/php.log", var_export($objects,true), FILE_APPEND);
+```
+
+### 索引数组 `[1, 2]` 与关联数组 `['k1'=>1, 'k2'=>2]` 有什么区别
+```
+/*
+	 *关联数组与索引数组的区别
+	 */
+ 
+	/*
+	 *创建一个索引数组，索引数组的键是“0”，值是“苹果”
+         *带有数字索引的数组。 
+         */ 
+	$fruit=array("苹果","香蕉");  
+	// print_r($fruit); 
+ 
+	//索引数组有三种赋值方式
+	$arr = array[0]='苹果';
+	$arr = array('0' => '苹果', '1' => '香蕉' );
+	$arr = array('苹果');
+ 
+	//请创建一个数组变量arr,并尝试创建一个索引数组，键是0，值是苹果  
+	$arr1=array(0=>'a');
+	// unset ($arr1); //销毁变量 
+	if(isset($arr1)){ //isset — 检测变量是否已设置并且非 NULL $arr1 = NULL;
+		//var_dump($arr1);
+	}else{
+		echo '未设置';
+	}  
+ 
+	//用for与foreach可以访问到数组里面的元素，因for比较容易下面只举使用foreach的例子，
+	$fruit=array('苹果','香蕉','菠萝');
+	//for和foreach的遍历
+	for($i=0; $i < count($fruit) ; $i++){ 
+	  	echo "数字是：$i"."的值是:".$fruit[$i]." <br>";
+	}  
+	foreach($fruit as $key=>$value){  
+	    echo '<br>第'.$key.'值是：'.$value;  
+	} 
+        for($x=0;$x<count($arrlength);$x++) {}
+ 
+ 
+ 
+ 
+	/*
+	 *创建一个关联数组，关联数组的键“orange”，值是“橘子”
+         *带有指定键的数组
+        */  
+	$fruit=array('orange'=>'橘子');  
+	echo $fruit['orange'];
+        foreach($age as $x=>$v) {
+        $arr[$k]['name'] = $v['name'];
+    }
+```
+
+### [缓存的使用方式、场景](https://zhuanlan.zhihu.com/p/40091810)
+```
+为什么使用缓存
+
+提升性能：使用缓存可以跳过数据库查询，分布式系统中可以跳过多次网络开销。在读多写少的场景下，可以有效的提高性能，降低数据库等系统的压力。
+
+缓存的适用场景
+
+1.数据不需要强一致性
+
+2.读多写少，并且读取得数据重复性较高
+
+缓存的正确打开方式
+
+1.Cache Aside 同时更新缓存和数据库
+
+2.Read/Write Through 先更新缓存，缓存负责同步更新数据库
+
+3.Write Behind Caching 先更新缓存，缓存负责异步更新数据库
+
+下面具体分析每种模式
+
+一、Cache Aside 更新模式
+
+这是最常用的缓存模式了，具体的流程是：
+
+读取：应用程序先从 cache 取数据，取到后成功返回；没有得到，则从数据库中取数据，成功后，放到缓存中。
+
+更新：先把数据存到数据库中，再清理缓存使其失效。
+
+
+
+
+不过这种模式有几个变种：
+
+第一，如果先更新数据库再更新缓存。假设两个并发更新操作，数据库先更新的反而后更新缓存，数据库后更新的反而先更新缓存。这样就会造成数据库和缓存中的数据不一致，应用程序中读取的都是脏数据。
+
+第二，先删除缓存再更新数据库。假设一个更新操作先删除了缓存，一个读操作没有命中缓存，从数据库中取出数据并且更新回缓存，再然后更新操作完成数据库更新。这时数据库和缓存中的数据是不一致的，应用程序中读取的都是原来的数据。
+
+第三，先更新数据库再删除缓存。假设一个读操作没有命中缓存，然后读取数据库的老数据。同时有一个并发更新操作，在读操作之后更新了数据库并清空了缓存。此时读操作将之前从数据库中读取出的老数据更新回了缓存。这时数据库和缓存中的数据也是不一致的。
+
+但是一般情况下，缓存用于读多写少的场景，所以第三种这种情况其实是小概率会出现的。
+
+二、Read/Write Through 更新模式
+
+Read Through 模式就是在查询操作中更新缓存，缓存服务自己来加载。
+
+Write Through 模式和 Read Through 相仿，不过是在更新数据时发生。当有数据更新的时候，如果没有命中缓存，直接更新数据库，然后返回。如果命中了缓存，则更新缓存，然后由缓存自己更新数据库（这是一个同步操作）。
+
+
+三、Write Behind Caching 更新模式
+
+Write Behind Caching 更新模式就是在更新数据的时候，只更新缓存，不更新数据库，而我们的缓存会异步地批量更新数据库。但其带来的问题是，数据不是强一致性的，而且可能会丢失。
+
+
+总结，三种缓存模式的优缺点：
+
+Cache Aside 更新模式实现起来比较简单，最常用，实时性也高，但是需要应用需要关注核实加载数据进入缓存 。
+
+Read/Write Through 更新模式只需要维护一个缓存，对应用屏蔽掉了缓存的细节，实时性也高。但是实现起来要复杂一些。
+
+Write Behind Caching 吞吐量很高，多次操作可以合并。但是数据可能会丢失，例如系统断电等，实现起来最复杂。
+```
+
+## 实践篇
+```
+### 给定二维数组，根据某个字段排序
+### 如何判断上传文件类型，如：仅允许 jpg 上传
+### 不使用临时变量交换两个变量的值 `$a=1; $b=2;`  =>  `$a=2; $b=1;`
+### strtoupper 在转换中文时存在乱码，你如何解决？```php echo strtoupper('ab你好c'); ```
+### Websocket、Long-Polling、Server-Sent Events(SSE) 区别
+### "Headers already sent" 错误是什么意思，如何避免
+```
+
+## 算法篇
+```
+### 快速排序（手写）
+### 冒泡排序（手写）
+### 二分查找（了解）
+### 查找算法 KMP（了解）
+### 深度、广度优先搜索（了解）
+### LRU 缓存淘汰算法（了解，Memcached 采用该算法）
+```
+
+## 数据结构篇（了解）
+```
+### 堆、栈特性
+### 队列
+### 哈希表
+### 链表
+```
+
+## 对比篇
+### Cookie 与 Session 区别
+```
+cookie数据存放在客户的浏览器上，session数据放在服务器上。
+cookie不是很安全，别人可以分析存放在本地的COOKIE并进行COOKIE欺骗，考虑到安全应当使用session。
+session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能，
+考虑到减轻服务器性能方面，应当使用COOKIE。
+单个cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。
+```
+### `GET` 与 `POST` 区别
+```
+### get和post的区别
+```
+1. get是从服务器上获取数据，post是向服务器传送数据。
+2. get是把参数数据队列加到提交表单的ACTION属性所指的URL中，
+值和表单内各个字段一一对应，在URL中可以看到。
+post是通过HTTP post机制，将表单内各个字段与其内容放置在HTML HEADER内
+一起传送到ACTION属性所指的URL地址。用户看不到这个过程。
+3. get传送的数据量较小，不能大于2KB。post传送的数据量较大，
+一般被默认为不受限制。
+4. get安全性非常低，post安全性较高。但是执行效率却比Post方法好。
+```
+
+ 15. GET 与 POST 请求方式区别
+
+|GET|POST|
+|-|-|
+|后退按钮/刷新无害|数据会被重新提交|
+|数据长度限制/URL长度2048字符|长度无限制|
+|数据可见/安全性差|不可见/更安全|
+|可以被缓存|不可以被缓存|
+|书签可收藏|书签不可收藏|
 ```
 
 ## 报错：yii updateByPk 报错查询数据表 "specialaccount" 时，不会提供列 "Id" 的值
