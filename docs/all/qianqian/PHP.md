@@ -27390,89 +27390,62 @@ java处理大数据，依靠他先天的优势，可以方便的使用连接池�
 ### 了解 PHP 扩展开发
 ```
 https://www.cnblogs.com/tosser/p/11564818.html
-什么是 PHP 扩展
 
-通俗说，PHP 扩展是增强 PHP 语言功能的插件。PHP 提供了编程语言的语法，比如分支、循环、函数、类等，这些是 PHP 本身所提供的。在某些情况下需要在 PHP 语言的基础上进行扩展，那么就需要通过 PHP 底层提供的数据结构和接口来开发 PHP 扩展，从而来补充或扩展 PHP 语言，使之更加的强大。当然了，PHP 本身就已经集成了一些基本的、强大的、优秀的 PHP 扩展。
+什么是 PHP 扩展
+通俗说，PHP 扩展是增强 PHP 语言功能的插件。PHP 提供了编程语言的语法，比如分支、循环、函数、类等，
+这些是 PHP 本身所提供的。在某些情况下需要在 PHP 语言的基础上进行扩展，
+那么就需要通过 PHP 底层提供的数据结构和接口来开发 PHP 扩展，从而来补充或扩展 PHP 语言，
+使之更加的强大。当然了，PHP 本身就已经集成了一些基本的、强大的、优秀的 PHP 扩展。
 
 PHP 扩展的好处
-
-从上面的了解得知，PHP 扩展可以在 PHP 原有的基础上来扩展 PHP 的功能，使之更为的强大。另一方面，PHP 扩展可以通过“插件式”的方式来管理和维护 PHP 的功能，如果将全部的功能整合到 PHP 语言中，PHP 想必会过于臃肿，且又不够灵活。而有了扩展，就解决了这样的问题。
+从上面的了解得知，PHP 扩展可以在 PHP 原有的基础上来扩展 PHP 的功能，使之更为的强大。
+另一方面，PHP 扩展可以通过“插件式”的方式来管理和维护 PHP 的功能，如果将全部的功能整合到 PHP 语言中，
+PHP 想必会过于臃肿，且又不够灵活。而有了扩展，就解决了这样的问题。
 
 PHP 扩展的存在形式
-
 在 Linux 系统下，PHP 扩展以 .so 文件存在，在 Windows 下以 .dll 文件存在。
 
- 
-
- 
-
 什么时候使用 PHP 扩展
-
-单独的使用 PHP 语言并不能满足所有的开发，比如在项目中使用 Redis 或 MongoDB 时，就需要相应的 PHP 扩展，来增强 PHP 语言，让 PHP 可以来操作 Redis 或者 MongoDB，以完成更加功能强大的项目。
-
- 
-
- 
+单独的使用 PHP 语言并不能满足所有的开发，比如在项目中使用 Redis 或 MongoDB 时，就需要相应的 PHP 扩展，
+来增强 PHP 语言，让 PHP 可以来操作 Redis 或者 MongoDB，以完成更加功能强大的项目。
 
 什么时候开发自己的 PHP 扩展
-
-开发自己的 PHP 扩展是必须的么？其实不是。通常情况下，作为一个 PHPer 是不需要自己开发 PHP 扩展的，但是某些情况下可能是必须要开发 PHP 扩展的。比如，我就遇到了这样的问题。合作的第三方提供了 Windows 下的动态链接库文件（.dll 文件，非 COM 的 DLL 文件），而我又没有找到如何在 PHP 下加载调用 DLL 文件的方式，因此我需要写 PHP 扩展，通过 PHP 的扩展来加载和调用第三方提供的 DLL 文件。
-
- 
-
- 
+开发自己的 PHP 扩展是必须的么？其实不是。通常情况下，作为一个 PHPer 是不需要自己开发 PHP 扩展的，
+但是某些情况下可能是必须要开发 PHP 扩展的。比如，我就遇到了这样的问题。
+合作的第三方提供了 Windows 下的动态链接库文件（.dll 文件，非 COM 的 DLL 文件），
+而我又没有找到如何在 PHP 下加载调用 DLL 文件的方式，因此我需要写 PHP 扩展，
+通过 PHP 的扩展来加载和调用第三方提供的 DLL 文件。
 
 开发自己的 PHP 扩展
-
-在前面我已经提到了我遇到的问题，合作的第三方提供了 Windows 下的动态链接库文件，而我又没有找到 PHP 下加载和调用 DLL 文件的方式，因此决定自己编写 PHP 扩展来加载和调用第三方提供的 DLL 文件中的导出函数。以下，就是我对于搭建开发 PHP 扩展环境和编译 PHP 扩展源码的记录。
-
- 
+在前面我已经提到了我遇到的问题，合作的第三方提供了 Windows 下的动态链接库文件，
+而我又没有找到 PHP 下加载和调用 DLL 文件的方式，
+因此决定自己编写 PHP 扩展来加载和调用第三方提供的 DLL 文件中的导出函数。
+以下，就是我对于搭建开发 PHP 扩展环境和编译 PHP 扩展源码的记录。
 
 准备工具
-
-首先说明一点，DLL 文件只能在 Windows 系统上运行，Linux 系统上是无法进行运行的。那么，我们这个扩展是不考虑 Linux 系统的，只考虑 Windows 系统即可。因此，准备的开发工具是 VS2015。起初，我在网上查找了一些资料，很多资料中都写到，在 Windows 下开发 PHP 扩展需要安装 CygWin，经过我自己的学习，可以告诉大家“不需要”。当然了，我们的扩展只在 Windows 系统上运行，如果需要在 Linux 系统上运行，是否需要 Cygwin 我就不得而知了。当然了，其他版本的 VS 也应该是可以的，只是我只测试了 VS2015 罢了。
-
- 
+首先说明一点，DLL 文件只能在 Windows 系统上运行，Linux 系统上是无法进行运行的。
+那么，我们这个扩展是不考虑 Linux 系统的，只考虑 Windows 系统即可。
+因此，准备的开发工具是 VS2015。起初，我在网上查找了一些资料，很多资料中都写到，
+在 Windows 下开发 PHP 扩展需要安装 CygWin，经过我自己的学习，可以告诉大家“不需要”。
+当然了，我们的扩展只在 Windows 系统上运行，如果需要在 Linux 系统上运行，是否需要 Cygwin 我就不得而知了。
+当然了，其他版本的 VS 也应该是可以的，只是我只测试了 VS2015 罢了。
 
 下载 PHP 的源代码
-
 除了需要安装 VS2015 以外，还需要下载 PHP 的源码，我下载的源码是 PHP 7.2 的源码。
-
 下载 PHP 源码的地址是：https://windows.php.net/download/
-
- 
-
 打开该地址后，下载如下图所示的源代码：
-
-
-
- 
-
 在这里，下载 PHP 7.2 的源码，并注意在源码下面有一个 VC15 x64 的字样。
-
- 
-
 下载完的的文件为：php-7.2.20-src.zip
-
 下载完源码进行解压，解压后的目录为：php-7.2.20-src
-
- 
-
-下载源码并不是一件复杂的事情，但是页面中有多个版本的源码可供下载，选择哪个有时也是比较纠结的问题，这里就下载 php7.2 的源码，因为我本地使用的就是 php7.2 的环境。
-
+下载源码并不是一件复杂的事情，但是页面中有多个版本的源码可供下载，选择哪个有时也是比较纠结的问题，
+这里就下载 php7.2 的源码，因为我本地使用的就是 php7.2 的环境。
 
 创建扩展
-
 进入 php-7.2.20-src\ext 目录下，在该目录下有一个名为 ext_skel_win32.php 的文件，在命令行中执行：
 
 1 php ext_skel_win32.php --extname=loaddll
 其中，loaddll 是要创建的扩展的名称。想要成功执行该命令，需要将 PHP 的可执行程序添加到环境变量中。
-
- 
-
 执行情况如下：
-
-复制代码
 λ php ext_skel_win32.php --extname=loaddll
 Creating directory loaddll
 FIND: Parameter format not correct
@@ -27483,10 +27456,7 @@ chmod: missing operand after ‘755’
 Try 'chmod --help' for more information.
 Creating basic files: config.m4 config.w32 .gitignore loaddll.c php_loaddll.h CREDITS EXPERIMENTAL tests/001.phpt loaddll.php [done].
 
-
 To use your new extension, you will have to execute the following steps:
-
-
 1.  $ cd ..
 2.  $ vi ext/loaddll/config.m4
 3.  $ ./buildconf
@@ -27496,163 +27466,70 @@ To use your new extension, you will have to execute the following steps:
 7.  $ vi ext/loaddll/loaddll.c
 8.  $ make
 
-
 Repeat steps 3-6 until you are satisfied with ext/loaddll/config.m4 and
 step 6 confirms that your module is compiled into PHP. Then, start writing
 code and repeat the last two steps as often as necessary.
-复制代码
 看到如上的输出提示，则说明我们创建的 PHP 扩展生成成功了。以上输出如下所示：
-
-
 
 此时，在 \ext 目录下生成了 loaddll 的目录，该目录是生成出的 PHP 的扩展模板，可以在模板的基础上进行开发。
 
- 
-
 使用 VS2015 创建扩展项目
-
 打开 VS2015，我这里使用的是 VS2015，其他开发环境没有进行测试。
-
 在 VS2015 中选择 “文件” -> “新建” -> “从现有代码创建项目”，来创建 PHP 扩展的解决方案，如下图：
-
-
-
 选择了 “从现有代码创建项目” 后，会出现创建项目的向导，如下图：
-
-
-
 直接点击 “下一步”，到如下图：
-
-
-
 在此步骤，选择刚才生成的扩展模板的目录，然后填入项目名称，这里是“loaddll”，点击“下一步”，到达如下图：
-
-
-
 此步骤选择DLL项目，点击下一步，到达如下图：
-
-
-
 直接点击“下一步”，到达如下图：
-
-
-
 点击“完成”，等待 VS2015 开始创建项目。
-
- 
-
 配置编译选项并编译项目
-
 在 VS2015 生成项目完毕后，切换项目为 “Release”和“x64”的选项，如下图：
-
-
-
 切换完成后，在项目上右键选择“属性”，如下图：
-
-
-
 修改配置类型为 DLL，这样生成的目标文件扩展名自动变为 .dll，如下图所示：
-
-
-
 选择“配置属性” -> “C/C++” -> “常规”，在“附加包含目录”中点击“编辑”来添加相关的目录，如下图：
-
-
-
 这里需要包含的目录包括如下图的几个目录：
-
-
-
 这里主要是添加了 PHP 源码的几个目录，因为编译 PHP 扩展的源码时需要 PHP 的底层内核数据结构进行支持，因此需要包含以上的目录。
-
- 
-
 选择“配置属性” -> “C/C++” -> “预处理器”，在“预处理器定义”中点击“编辑”来添加相关预处理指令，如下图：
-
-
-
-在预处理中，HAVE_LOADDLL 中的 LOADDLL 是扩展的名称，COMPILE_DL_LOADDLL 中的 LOADDLL 同样也是扩展的名称，这个名称与最开始生成扩展模板时的名称应该一致。
-
- 
+在预处理中，HAVE_LOADDLL 中的 LOADDLL 是扩展的名称，COMPILE_DL_LOADDLL 中的 LOADDLL 同样也是扩展的名称，
+这个名称与最开始生成扩展模板时的名称应该一致。
 
 编译源代码
-
-把 php-7.2.20-src\win32\build\ 目录下的 config.w32.h.in 复制到 php-7.2.20-src\main\ 目录下，并重命名为 config.w32.h，这个 .h 文件在编译时是需要的，但是在 php-7.2.20-src\main\ 下并没有该文件，因此需要自己手动进行复制。
-
- 
-
+把 php-7.2.20-src\win32\build\ 目录下的 config.w32.h.in 复制到 php-7.2.20-src\main\ 目录下，
+并重命名为 config.w32.h，这个 .h 文件在编译时是需要的，但是在 php-7.2.20-src\main\ 下并没有该文件，因此需要自己手动进行复制。
 在 config.w32.h 中增加如下代码
-
 1 #define PHP_COMPILER_ID "VC15" 
 注意这里的 VC15 ，在下载源代码的时候，我们已经见到过这个标识了。
-
- 
-
 接着，从 PHP 的安装目录中复制 php7ts.lib 文件到 loaddll 目录下，注意，是从PHP 的安装目录中，而不是 PHP 源代码的目录中。
-
- 
-
-php7ts.lib 在目录 php7.2.10\dev 目录下，我使用的是 wamp64 下的 php7.2.10，大家自己使用对应的 .lib 文件即可，当然，这个 .lib 文件也必须是 php7.2 的，因为我们下载的是 php7.2 的源码。
-
- 
-
+php7ts.lib 在目录 php7.2.10\dev 目录下，我使用的是 wamp64 下的 php7.2.10，
+大家自己使用对应的 .lib 文件即可，当然，这个 .lib 文件也必须是 php7.2 的，因为我们下载的是 php7.2 的源码。
 在项目的 resource Files 下添加 php7ts.lib 文件，添加该文件就比较简单了，同样是右键添加即可。
-
- 
-
 按下 F7 生成解决方案，如图：
-
-
-
 看到“成功 1 个”文件以后，在目录 \php-7.2.20-src\ext\loaddll\x64\Release 下会生成一个 loaddll.dll 文件，这个文件就是我们的 PHP 扩展文件。
 
- 
-
 PHP 扩展的安装与测试
-
-将VS2015 生成 loaddll.dll 重命名为 php_loaddll.dll ，将其拷贝到 PHP 环境的扩展中，我的路径是 php\php7.2.10\ext，想必熟悉 PHP 的应该都会添加 PHP 扩展。如下图：
-
-
-
+将VS2015 生成 loaddll.dll 重命名为 php_loaddll.dll ，将其拷贝到 PHP 环境的扩展中，
+我的路径是 php\php7.2.10\ext，想必熟悉 PHP 的应该都会添加 PHP 扩展。如下图：
 在 php.ini 文件中增加配置，如下图：
-
-
-
 使用 php -m 来查看是否有 loaddll.dll 模块，如下图：
-
-
-
 phpinfo 查看，如下图：
-
-
-
 通过上面可以看出，我们的 PHP 扩展已经正常安装了，接下来就需要测试我们的扩展是否可以运行了。
-
- 
-
 在 PHP 源码目录下 php-7.2.20-src\ext\loaddll\ 有一个 loaddll.php 的测试文件，在命令行下进行执行该命令：
-
 1 php loaddll.php
 输出内容如下：
-
 1 λ php loaddll.php
 2 Functions available in the test extension:
 3 confirm_loaddll_compiled
 4 
 5 Congratulations! You have successfully modified ext/loaddll/config.m4. Module loaddll is now compiled into PHP.
 如下图：
-
-
-
 看到如上输出，说明该扩展的模板编译成功，可以继续开发实际的扩展模块了。
-
- 
-
 总结
-
-很多时候，学习编程的第一步就是搭建环境，而往往搭建环境的过程中由于步骤过于复杂，而资料又没有傻瓜化的详细步骤，导致很多想要学习或入门的程序员连第一步都无法踏出。对于开发 PHP 扩展而言也是一样的。
-
-如何通过 PHP 扩展来让 PHP 程序可以直接调用 DLL 中的函数，除了需要掌握 C 语言的知识以外，还需要掌握 Windows 程序设计的知识，本文就不再讨论了，因为有 C 语言的知识和 Windows 程序设计的知识，在 PHP 扩展中调用 DLL 并非难事。
+很多时候，学习编程的第一步就是搭建环境，而往往搭建环境的过程中由于步骤过于复杂，
+而资料又没有傻瓜化的详细步骤，导致很多想要学习或入门的程序员连第一步都无法踏出。
+对于开发 PHP 扩展而言也是一样的。
+如何通过 PHP 扩展来让 PHP 程序可以直接调用 DLL 中的函数，除了需要掌握 C 语言的知识以外，
+还需要掌握 Windows 程序设计的知识，本文就不再讨论了，因为有 C 语言的知识和 Windows 程序设计的知识，
+在 PHP 扩展中调用 DLL 并非难事。
 ```
 
 ### 熟练掌握 C/C++
@@ -27661,253 +27538,152 @@ phpinfo 查看，如下图：
 ### 查看 CPU、内存、时间、系统版本等信息
 ```
 CentOS查看系统信息
-
 一：查看CPU
-
 more /proc/cpuinfo | grep "model name"
-
 grep "model name" /proc/cpuinfo
-
 如果觉得需要看的更加舒服
-
 grep "model name" /proc/cpuinfo | cut -f2 -d:
-
-
-
 怎么样，linux的命令就要这样熟悉。
-
 二：查看内存
-
 grep MemTotal /proc/meminfo
-
 grep MemTotal /proc/meminfo | cut -f2 -d:
-
 free -m |grep "Mem" | awk '{print $2}'
-
 三：查看cpu是32位还是64位
-
 查看CPU位数(32 or 64)
-
 #getconf LONG_BIT
-
 #echo $HOSTTYPE
-
 #uname -a
-
 四：查看当前linux的版本
-
 #more /etc/RedHat-release
-
-      #cat /etc/redhat-release
-
+#cat /etc/redhat-release
 五：查看内核版本
-
 #uname -r
-
 #uname -a
-
- 
-
 六：查看当前时间
-
 date
-
 七：查看硬盘和分区
-
 df -h
-
- 
-
- 
-
-
-
- 
-
 fdisk -l
-
 也可以查看分区
-
 du -sh
-
 可以看到全部占用的空间
-
 du /etc -sh
-
 可以看到这个目录的大小
-
 八：查看安装的软件包
-
 查看系统安装的时候装的软件包
-
 cat -n /root/install.log
-
 more /root/install.log | wc -l
-
 查看现在已经安装了那些软件包
-
 rpm -qa
-
 rpm -qa | wc -l
-
 yum list installed | wc -l
-
 不过很奇怪，我通过rpm，和yum这两种方式查询的安装软件包，数量并不一样。没有找到原因。
-
 九：查看键盘布局
-
 cat /etc/sysconfig/keyboard
-
 cat /etc/sysconfig/keyboard | grep KEYTABLE | cut -f2 -d=
-
 十：查看selinux情况
-
 sestatus
-
 sestatus | cut -f2 -d:
-
 cat /etc/sysconfig/selinux
-
 十一：查看ip，mac地址
-
 在ifcfg-eth0 文件里你可以看到mac，网关等信息。
-
 ifconfig
-
 cat /etc/sysconfig/network-scripts/ifcfg-eth0 | grep IPADDR
-
 cat /etc/sysconfig/network-scripts/ifcfg-eth0 | grep IPADDR | cut -f2 -d=
-
 ifconfig eth0 |grep "inet addr:" |awk '{print $2}'|cut -c 6-
-
 ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'
-
 查看网关
-
 cat /etc/sysconfig/network
-
 查看dns
-
 cat /etc/resolv.conf
-
 十二：查看默认语言
-
 echo $LANG $LANGUAGE
-
 cat /etc/sysconfig/i18n
-
 十三：查看所属时区和是否使用UTC时间
-
 cat /etc/sysconfig/clock
-
 十四：查看主机名
-
 hostname
-
 cat /etc/sysconfig/network
-
 修改主机名就是修改这个文件，同时最好也把host文件也修改
 ```
 
 ### find 、grep 查找文件
 ```
 查找命令：find & grep
-区别：(1) find命令是根据文件的属性进行查找，如文件名，文件大小，所有者，所属组，是否为空，访问时间，修改时间等。 
-
-           (2) grep是根据文件的内容进行查找，会对文件的每一行按照给定的模式(patter)进行匹配查找。
-
+区别：
+(1) find命令是根据文件的属性进行查找，如文件名，文件大小，所有者，所属组，是否为空，访问时间，修改时间等。 
+(2) grep是根据文件的内容进行查找，会对文件的每一行按照给定的模式(patter)进行匹配查找。
 一.find命令
+基本格式：find  path [options]
+1.按照文件名查找
+(1)find /etc -name httpd.conf　　#在/etc目录下文件httpd.conf
+(2)find /etc -name '*srm*'　　#使用通配符*(0或者任意多个)。表示在/etc目录下查找文件名中含有字符串‘srm’的文件
+(3)find . -name 'srm*' 　　#表示当前目录下查找文件名开头是字符串‘srm’的文件
 
-　　　　基本格式：find  path [options]
+2.按照文件特征查找 　　　　
+(1)find / -amin -10 　　# 查找在系统中最后10分钟访问的文件(access time)
+(2)find / -atime -2　　 # 查找在系统中最后48小时访问的文件
+(3)find / -empty 　　# 查找在系统中为空的文件或者文件夹
+(4)find / -group cat 　　# 查找在系统中属于group为cat的文件
+(5)find / -mmin -5 　　# 查找在系统中最后5分钟里修改过的文件(modify time)
+(6)find / -mtime -1 　　#查找在系统中最后24小时里修改过的文件
+(7)find / -user fred 　　#查找在系统中属于fred这个用户的文件
+(8)find / -size +10000c　　#查找出大于10000000字节的文件(c:字节，w:双字，k:KB，M:MB，G:GB)
+(9)find / -size -1000k 　　#查找出小于1000KB的文件
 
-　　　　1.按照文件名查找
-
-　　　　　　(1)find /etc -name httpd.conf　　#在/etc目录下文件httpd.conf
-　　　　　　(2)find /etc -name '*srm*'　　#使用通配符*(0或者任意多个)。表示在/etc目录下查找文件名中含有字符串‘srm’的文件
-　　　　　　(3)find . -name 'srm*' 　　#表示当前目录下查找文件名开头是字符串‘srm’的文件
-
-　　　　2.按照文件特征查找 　　　　
-
-　　　　　　(1)find / -amin -10 　　# 查找在系统中最后10分钟访问的文件(access time)
-　　　　　　(2)find / -atime -2　　 # 查找在系统中最后48小时访问的文件
-　　　　　　(3)find / -empty 　　# 查找在系统中为空的文件或者文件夹
-　　　　　　(4)find / -group cat 　　# 查找在系统中属于group为cat的文件
-　　　　　　(5)find / -mmin -5 　　# 查找在系统中最后5分钟里修改过的文件(modify time)
-　　　　　　(6)find / -mtime -1 　　#查找在系统中最后24小时里修改过的文件
-　　　　　　(7)find / -user fred 　　#查找在系统中属于fred这个用户的文件
-　　　　　　(8)find / -size +10000c　　#查找出大于10000000字节的文件(c:字节，w:双字，k:KB，M:MB，G:GB)
-　　　　　　(9)find / -size -1000k 　　#查找出小于1000KB的文件
-
-　　　　3.使用混合查找方式查找文件
-
-　　　　　参数有： ！，-and(-a)，-or(-o)。
-
-　　　　　　(1)find /tmp -size +10000c -and -mtime +2 　　#在/tmp目录下查找大于10000字节并在最后2分钟内修改的文件
-   　　   　　 (2)find / -user fred -or -user george 　　#在/目录下查找用户是fred或者george的文件文件
-   　　   　　 (3)find /tmp ! -user panda　　#在/tmp目录中查找所有不属于panda用户的文件
+3.使用混合查找方式查找文件
+参数有： ！，-and(-a)，-or(-o)。
+(1)find /tmp -size +10000c -and -mtime +2 　　#在/tmp目录下查找大于10000字节并在最后2分钟内修改的文件
+(2)find / -user fred -or -user george 　　#在/目录下查找用户是fred或者george的文件文件
+(3)find /tmp ! -user panda　　#在/tmp目录中查找所有不属于panda用户的文件
     　　  
 
 二、grep命令
+基本格式：grep [options]
+1.主要参数
 
-　　　  基本格式：grep [options]
+[options]主要参数：
+－c：只输出匹配行的计数。
+－i：不区分大小写
+－h：查询多文件时不显示文件名。
+－l：查询多文件时只输出包含匹配字符的文件名。
+－n：显示匹配行及行号。
+－s：不显示不存在或无匹配文本的错误信息。
+－v：显示不包含匹配文本的所有行。
 
- 　　　 1.主要参数
+pattern正则表达式主要参数：
+\： 忽略正则表达式中特殊字符的原有含义。
+^：匹配正则表达式的开始行。
+$: 匹配正则表达式的结束行。
+\<：从匹配正则表达 式的行开始。
+\>：到匹配正则表达式的行结束。
+[ ]：单个字符，如[A]即A符合要求 。
+[ - ]：范围，如[A-Z]，即A、B、C一直到Z都符合要求 。
+.：所有的单个字符。
+* ：有字符，长度可以为0。
 
-　　　　[options]主要参数：
-　　　　－c：只输出匹配行的计数。
-　　　　－i：不区分大小写
-　　　　－h：查询多文件时不显示文件名。
-　　　　－l：查询多文件时只输出包含匹配字符的文件名。
-　　　　－n：显示匹配行及行号。
-　　　　－s：不显示不存在或无匹配文本的错误信息。
-　　　　－v：显示不包含匹配文本的所有行。
+2.实例　 　　　　　
+(1)grep 'test' d*　　#显示所有以d开头的文件中包含 test的行
+(2)grep ‘test’ aa bb cc 　　 #显示在aa，bb，cc文件中包含test的行
+(3)grep ‘[a-z]\{5\}’ aa 　　#显示所有包含每行字符串至少有5个连续小写字符的字符串的行
+(4)grep magic /usr/src　　#显示/usr/src目录下的文件(不含子目录)包含magic的行
+(5)grep -r magic /usr/src　　#显示/usr/src目录下的文件(包含子目录)包含magic的行
+(6)grep -w pattern files ：只匹配整个单词，而不是字符串的一部分(如匹配’magic’，而不是’magical’)
+(7)grep -n 8080 文件（确定8080字段在文件中的行数）
+(8)grep -n -i "ggpush" 文件 （确定ggpush在文件中的行数并且忽略大小写）
+(9)grep 'ggpush' *.cnf （匹配当前目录下所有后缀为cnf文件含有过滤字段的内容）
 
-　　　　pattern正则表达式主要参数：
-　　　　\： 忽略正则表达式中特殊字符的原有含义。
-　　　　^：匹配正则表达式的开始行。
-　　　　$: 匹配正则表达式的结束行。
-　　　　\<：从匹配正则表达 式的行开始。
-　　　　\>：到匹配正则表达式的行结束。
-　　　　[ ]：单个字符，如[A]即A符合要求 。
-　　　　[ - ]：范围，如[A-Z]，即A、B、C一直到Z都符合要求 。
-　　　　.：所有的单个字符。
-　　　　* ：有字符，长度可以为0。
+详细使用参见：http://www.cnblogs.com/end/archive/2012/02/21/2360965.html
 
-　　　　2.实例　 　　　　　
-
-　　             (1)grep 'test' d*　　#显示所有以d开头的文件中包含 test的行
-
-　                (2)grep ‘test’ aa bb cc 　　 #显示在aa，bb，cc文件中包含test的行
-
-　                (3)grep ‘[a-z]\{5\}’ aa 　　#显示所有包含每行字符串至少有5个连续小写字符的字符串的行
-
-　                (4)grep magic /usr/src　　#显示/usr/src目录下的文件(不含子目录)包含magic的行
-
-　                (5)grep -r magic /usr/src　　#显示/usr/src目录下的文件(包含子目录)包含magic的行
-
-　                (6)grep -w pattern files ：只匹配整个单词，而不是字符串的一部分(如匹配’magic’，而不是’magical’)
-
-　                (7)grep -n 8080 文件（确定8080字段在文件中的行数）
-
-　                (8)grep -n -i "ggpush" 文件 （确定ggpush在文件中的行数并且忽略大小写）
-
-　                (9)grep 'ggpush' *.cnf （匹配当前目录下所有后缀为cnf文件含有过滤字段的内容）
-
-　　　　　详细使用参见：http://www.cnblogs.com/end/archive/2012/02/21/2360965.html
-
-　　(1)grep 'test' d*　　#显示所有以d开头的文件中包含 test的行
-　  (2)grep ‘test’ aa bb cc 　　 #显示在aa，bb，cc文件中包含test的行
-　  (3)grep ‘[a-z]\{5\}’ aa 　　#显示所有包含每行字符串至少有5个连续小写字符的字符串的行
-　  (4)grep magic /usr/src　　#显示/usr/src目录下的文件(不含子目录)包含magic的行
-　  (5)grep -r magic /usr/src　　#显示/usr/src目录下的文件(包含子目录)包含magic的行
-　  (6)grep -w pattern files ：只匹配整个单词，而不是字符串的一部分(如匹配’magic’，而不是’magical’)
-
-　  (7)grep -n 8080 文件（确定8080字段在文件中的行数）
-
-　  (8)grep -n -i "ggpush" 文件（确定ggpush在文件中的行数并且忽略大小写）
-
-　  (9)grep 'ggpush' *.cnf （匹配当前目录下所有后缀为cnf文件含有过滤字段的内容）
-
+(1)grep 'test' d*　　#显示所有以d开头的文件中包含 test的行
+(2)grep ‘test’ aa bb cc 　　 #显示在aa，bb，cc文件中包含test的行
+(3)grep ‘[a-z]\{5\}’ aa 　　#显示所有包含每行字符串至少有5个连续小写字符的字符串的行
+(4)grep magic /usr/src　　#显示/usr/src目录下的文件(不含子目录)包含magic的行
+(5)grep -r magic /usr/src　　#显示/usr/src目录下的文件(包含子目录)包含magic的行
+(6)grep -w pattern files ：只匹配整个单词，而不是字符串的一部分(如匹配’magic’，而不是’magical’)
+(7)grep -n 8080 文件（确定8080字段在文件中的行数）
+(8)grep -n -i "ggpush" 文件（确定ggpush在文件中的行数并且忽略大小写）
+(9)grep 'ggpush' *.cnf （匹配当前目录下所有后缀为cnf文件含有过滤字段的内容）
 ```
 
 
@@ -27916,254 +27692,177 @@ cat /etc/sysconfig/network
 ```
 参考资料：
 http://man.linuxde.net/awk
-
 http://www.cnblogs.com/chengmo/archive/2013/01/17/2865479.html
-
 http://bbs.chinaunix.net/thread-691456-1-1.html
+awk是一种编程语言，用于在linux/unix下对文本和数据进行处理。
+数据可以来自标准输入(stdin)、一个或多个文件，或其它命令的输出。
+它支持用户自定义函数和动态正则表达式等先进功能，是linux/unix下的一个强大编程工具。
+它在命令行中使用，但更多是作为脚本来使用。awk有很多内建的功能，比如数组、函数等，
+这是它和C语言的相同之处，灵活性是awk做大的优势。
 
- 
-
-       awk是一种编程语言，用于在linux/unix下对文本和数据进行处理。数据可以来自标准输入(stdin)、一个或多个文件，或其它命令的输出。它支持用户自定义函数和动态正则表达式等先进功能，是linux/unix下的一个强大编程工具。它在命令行中使用，但更多是作为脚本来使用。awk有很多内建的功能，比如数组、函数等，这是它和C语言的相同之处，灵活性是awk做大的优势。
-
-       awk还提供了一系列内置的运算函数（如log、sqr、cos、sin等）和一些用于对字符串进行操作（运算）的函数（如length、substr等等）。这些函数的引用大大的提高了awk的运算功能。作为对条件转移指令的一部分，关系判断是每种程序设计语言都具备的功能，awk也不例外，awk中允许进行多种测试，作为样式匹配，还提供了模式匹配表达式~（匹配）和~!（不匹配）。作为对测试的一种扩充，awk也支持用逻辑运算符。
-
+awk还提供了一系列内置的运算函数（如log、sqr、cos、sin等）和一些用于对字符串进行操作（运算）的函数（如length、substr等等）。
+这些函数的引用大大的提高了awk的运算功能。作为对条件转移指令的一部分，关系判断是每种程序设计语言都具备的功能，
+awk也不例外，awk中允许进行多种测试，作为样式匹配，还提供了模式匹配表达式~（匹配）和~!（不匹配）。
+作为对测试的一种扩充，awk也支持用逻辑运算符。
 
 awk命令格式
-
 awk [options] 'script' var=value file(s) 
-
 awk [options] -f scriptfile var=value file(s)
 
 option有以下选择：
-
 -F fs：fs为分隔符，可以是字符串也可以是正则表达式，这个作用就是制定分隔符
-
 -v：赋值一个用户定义变量，将外部变量传递给awk。VAR=10000 echo | awk -v VARIABLE=$VAR '{ print VARIABLE }'
 或者：
-
 var1="aaa" 
-
 var2="bbb" 
-
 echo | awk '{ print v1,v2 }' v1=$var1 v2=$var2
 变量之间用空格分隔作为awk的命令行参数跟随在BEGIN、{}和END语句块之后。
-
-
 script脚本的结构
-
 awk 'BEGIN{ commands } pattern { commands } END{ commands }'
-
-awk脚本通常由：BEGIN语句块、能够使用模式匹配的通用语句块、END语句块3部分组成，这三个部分是可选的。任意一个部分都可以不出现在脚本中，脚本通常是被单引号或双引号中，例如： awk 'BEGIN{ i=0 } { i++ } END{ print i }' filename
-
+awk脚本通常由：BEGIN语句块、能够使用模式匹配的通用语句块、END语句块3部分组成，
+这三个部分是可选的。任意一个部分都可以不出现在脚本中，脚本通常是被单引号或双引号中，
+例如： awk 'BEGIN{ i=0 } { i++ } END{ print i }' filename
 第一步：执行BEGIN{ commands }语句块中的语句； 
-
-第二步：从文件或标准输入(stdin)读取一行，然后执行pattern{ commands }语句块，它逐行扫描文件，从第一行到最后一行重复这个过程，直到文件全部被读取完毕。 
-
+第二步：从文件或标准输入(stdin)读取一行，然后执行pattern{ commands }语句块，它逐行扫描文件，
+从第一行到最后一行重复这个过程，直到文件全部被读取完毕。 
 第三步：当读至输入流末尾时，执行END{ commands }语句块。
-
-
-        BEGIN语句块在awk开始从输入流中读取行之前被执行，这是一个可选的语句块，比如变量初始化、打印输出表格的表头等语句通常可以写在BEGIN语句块中。 END语句块在awk从输入流中读取完所有的行之后即被执行，比如打印所有行的分析结果这类信息汇总都是在END语句块中完成，它也是一个可选语句块。 pattern语句块中的通用命令是最重要的部分，它也是可选的。如果没有提供pattern语句块，则默认执行{ print }，即打印每一个读取到的行，awk读取的每一行都会执行该语句块。print中双引号里的内容是直接打印的。pattern语句块类似一个循环体，会对文件中的每一行进行迭代。
-
-
+BEGIN语句块在awk开始从输入流中读取行之前被执行，这是一个可选的语句块，
+比如变量初始化、打印输出表格的表头等语句通常可以写在BEGIN语句块中。 
+END语句块在awk从输入流中读取完所有的行之后即被执行，
+比如打印所有行的分析结果这类信息汇总都是在END语句块中完成，它也是一个可选语句块。 
+pattern语句块中的通用命令是最重要的部分，它也是可选的。如果没有提供pattern语句块，
+则默认执行{ print }，即打印每一个读取到的行，awk读取的每一行都会执行该语句块。
+print中双引号里的内容是直接打印的。pattern语句块类似一个循环体，会对文件中的每一行进行迭代。
 awk的内置变量
-
 $n 当前记录的第n个字段，比如n为1表示第一个字段，n为2表示第二个字段。 
-
 $0 这个变量包含执行过程中当前行的文本内容。
-
 FILENAME 当前输入文件的名。
-
 FS 字段分隔符（默认是任何空格）。
-
 NF 表示字段数，在执行过程中对应于当前的字段数。
-
 NR 表示记录数，在执行过程中对应于当前的行号。 
-
 OFMT 数字的输出格式（默认值是%.6g）。
-
 OFS 输出字段分隔符（默认值是一个空格）。 
-
 ORS 输出记录分隔符（默认值是一个换行符）。
-
 RS 记录分隔符（默认是一个换行符）。
-
 使用print $NF可以打印出一行中的最后一个字段，使用$(NF-1)则是打印倒数第二个字段，其他以此类推。
-
-统计文件中的行数：awk 'END{ print NR }' filename。这里只使用了END语句块，在读入每一行的时，awk会将NR更新为对应的行号，当到达最后一行NR的值就是最后一行的行号，所以END语句块中的NR就是文件的行数。
-
+统计文件中的行数：awk 'END{ print NR }' filename。这里只使用了END语句块，在读入每一行的时，
+awk会将NR更新为对应的行号，当到达最后一行NR的值就是最后一行的行号，所以END语句块中的NR就是文件的行数。
 一个每一行中第一个字段值累加：awk 'BEGIN{ sum=0; print "总和：" } { print $1"+"; sum+=$1 } END{ print "等于"; print sum }' 
 
-
 awk的运算
-
 和普通语言的运算一样，||&&，只有~匹配正则表达式，~！不匹配正则表达式。
-
-awk中next语句使用：在循环逐行匹配，如果遇到next，就会跳过当前行，直接忽略下面语句。而进行下一行匹配。next语句一般用于多行合并。当记录行号除以2余1，就跳过当前行。下面的print NR,$0也不会执行。下一行开始，程序有开始判断NR%2值。这个时候记录行号是：2 ，就会执行下面语句块：'print NR,$0'
-
+awk中next语句使用：在循环逐行匹配，如果遇到next，就会跳过当前行，直接忽略下面语句。
+而进行下一行匹配。next语句一般用于多行合并。当记录行号除以2余1，就跳过当前行。
+下面的print NR,$0也不会执行。下一行开始，程序有开始判断NR%2值。
+这个时候记录行号是：2 ，就会执行下面语句块：'print NR,$0'
 打印偶数行：awk 'NR%2==1{next}{print NR,$0;}' awktext.txt
-
 awktext.txt中的内容如下：
-
-
-
 将包含有aa的行跳过：awk '/^aa/{next;}{print "\t"$0;}' awktest.txt
-
 结果：
-
-
-
- 
-
 awk中允许用如下方式将结果输出到一个文件：
-
 echo | awk '{printf("hello word!n") > "datafile"}' 或 echo | awk '{printf("hello word!n") >> "datafile"}'
-
-      在linux awk的while、do-while和for语句中允许使用break,continue语句来控制流程走向，也允许使用exit这样的语句来退出。break中断当前正在执行的循环并跳到循环外执行下一条语句。if 是流程选择用法。awk中，流程控制语句，语法结构，与c语言类型。每条命令语句后面可以用;分号结尾。
-
+在linux awk的while、do-while和for语句中允许使用break,continue语句来控制流程走向，也允许使用exit这样的语句来退出。break中断当前正在执行的循环并跳到循环外执行下一条语句。if 是流程选择用法。awk中，流程控制语句，语法结构，与c语言类型。每条命令语句后面可以用;分号结尾。
 awk 'BEGIN{ 
-
 test=100; 
-
 total=0; 
-
 while(i<=test){ 
-
 total+=i; 
-
 i++; 
-
 } 
-
 print total; 
-
 }'
 
-
 awk数组
-
-        数组是awk的灵魂，处理文本中最不能少的就是它的数组处理。因为数组索引（下标）可以是数字和字符串在awk中数组叫做关联数组(associative arrays)。awk 中的数组不必提前声明，也不必声明大小。数组元素用0或空字符串来初始化，这根据上下文而定。字符串和数字都可以做数组下标。
-
+数组是awk的灵魂，处理文本中最不能少的就是它的数组处理。
+因为数组索引（下标）可以是数字和字符串在awk中数组叫做关联数组(associative arrays)。
+awk 中的数组不必提前声明，也不必声明大小。数组元素用0或空字符串来初始化，这根据上下文而定。
+字符串和数字都可以做数组下标。
 { for(item in array) {print array[item]}; } #输出的顺序是随机的 
-
 { for(i=1;i<=len;i++) {print array[i]}; } #Len是数组的长度
 得到数组长度：awk 'BEGIN{info="it is a test";lens=split(info,tA," ");print length(tA),lens;}'
 删除数组：delete array[key]可以删除，对应数组key的，序列值。
-
 awk中有一些字符串的处理函数，使用的话可以查询。
-
 打开外部文件（close用法）：
-
 awk 'BEGIN{while("cat /etc/passwd"|getline){print $0;};close("/etc/passwd");}'
-
 逐行读取外部文件(getline使用方法）：
-
 awk 'BEGIN{while(getline < "/etc/passwd"){print $0;};close("/etc/passwd");}'
-
 awk 'BEGIN{print "Enter your name:";getline name;print name;}'
-
 调用外部应用程序(system使用方法）：
-
 awk 'BEGIN{b=system("ls -al");print b;}'
-
-
 awk应用例子
-
 单双引号的差别是:shell对单引号中的内容不解释,直接传给awk,而对双引号中的内容解释后再传给awk.
-
 1、 awk '/101/'   file             显示文件file中包含101的匹配行。
-      awk '/101/,/105/'  file       显示文件file中包含101到105的匹配行。
-
-      awk '$1 == 5'   file            显示文件file中第一字段值为5的行。
-
-      awk '$1 == "CT"'  file        显示文件file中第一字段值为CT的行。注意必须带双引号
-      awk '$1 * $2 >100 '   file    显示文件file中第一字段值和第二字段值乘积大于100的行。
-
-      awk '$2 >5 && $2<=15'   file    显示文件file中第2字段值大于5同时小于15的行。
-
+awk '/101/,/105/'  file       显示文件file中包含101到105的匹配行。
+awk '$1 == 5'   file            显示文件file中第一字段值为5的行。
+awk '$1 == "CT"'  file        显示文件file中第一字段值为CT的行。注意必须带双引号
+awk '$1 * $2 >100 '   file    显示文件file中第一字段值和第二字段值乘积大于100的行。
+awk '$2 >5 && $2<=15'   file    显示文件file中第2字段值大于5同时小于15的行。
 2、 awk '{print NR,NF,$1,$NF,}' file   显示文件file的当前记录号、域数和每一行的第一个和最后一个域。
-      awk '/aa/ {print $1,$2 + 10}' file    显示文件file的匹配行的第一、二个域加10。
-      awk '/aa/ {print $1$2}'  file           找出匹配的行，在输出 等同于下面语句
-      awk '/aa/ {print $1 $2}' file     显示文件file的匹配行的第一、二个域，但显示时域中间没有分隔符。
+awk '/aa/ {print $1,$2 + 10}' file    显示文件file的匹配行的第一、二个域加10。
+awk '/aa/ {print $1$2}'  file           找出匹配的行，在输出 等同于下面语句
+awk '/aa/ {print $1 $2}' file     显示文件file的匹配行的第一、二个域，但显示时域中间没有分隔符。
 3、 df | awk '$4>1000000 '         通过管道符获得输入，如：显示第4个域满足条件的行。
 4、 awk -F “|” '{print $1}'   file      按照新的分隔符“|”进行操作。
-      awk  'BEGIN { FS="[: \t|]" }
-     {print $1,$2,$3}'    file               通过设置输入分隔符（FS="[: \t|]"）修改输入分隔符。
-
-     Sep="|"
-     awk -F $Sep '{print $1}'  file          按照环境变量Sep的值做为分隔符。   
-     awk -F '[ :\t|]' '{print $1}' file          按照正则表达式的值做为分隔符，这里代表空格、:、TAB、|同时做为分隔符。
-     awk -F '[][]'    '{print $1}' file          按照正则表达式的值做为分隔符，这里代表[、]
-
+awk  'BEGIN { FS="[: \t|]" }
+{print $1,$2,$3}'    file               通过设置输入隔符（FS="[: \t|]"）修改输入分隔符。
+Sep="|"
+awk -F $Sep '{print $1}'  file          按照环境变量Sep的值做为分隔符。   
+awk -F '[ :\t|]' '{print $1}' file          按照正则表达式的值做为分隔符，这里代表空格、:、TAB、|同时做为分隔符。
+awk -F '[][]'    '{print $1}' file          按照正则表达式的值做为分隔符，这里代表[、]
 5、awk -f awkfile              file 通过文件awkfile的内容依次进行控制。
-     cat awkfile
-     /101/{print "\047 Hello! \047"} --遇到匹配行以后打印 ' Hello! '.\047代表单引号。
-     {print $1,$2}                               --因为没有模式控制，打印每一行的前两个域。
+cat awkfile
+/101/{print "\047 Hello! \047"} --遇到匹配行以后打印 ' Hello! '.\047代表单引号。
+{print $1,$2}                               --因为没有模式控制，打印每一行的前两个域。
 6、awk '$1 ~ /101/ {print $1}' file             显示文件中第一个域匹配101的行（记录）。
 7、awk   'BEGIN { OFS="%"} {print $1,$2}'    file         通过设置输出分隔符（OFS="%"）修改输出格式。
 8、取得文件第一个域的最大值
-
-     awk   'BEGIN { max=100 ;print "max=" max}             BEGIN 表示在处理任意行之前进行的操作。
-     {max=($1 >max ?$1:max); print $1,"Now max is "max}' file 
+awk   'BEGIN { max=100 ;print "max=" max}             BEGIN 表示在处理任意行之前进行的操作。
+{max=($1 >max ?$1:max); print $1,"Now max is "max}' file 
 9、  awk '/tom/ {wage=$2+$3; printf wage}' file             找到匹配行后为变量wage赋值并打印该变量。
 10、awk '/tom/ {count++;} 
-         END {print "tom was found "count" times"}' file             END表示在所有输入行处理完后进行处理。
-
+END {print "tom was found "count" times"}' file             END表示在所有输入行处理完后进行处理。
 11、在awk中调用系统变量必须用单引号，如果是双引号，则表示字符串
-      Flag=abcd
-      awk '{print '$Flag'}'   结果为abcd
-      awk '{print  "$Flag"}'   结果为$Flag
-
+Flag=abcd
+awk '{print '$Flag'}'   结果为abcd
+awk '{print  "$Flag"}'   结果为$Flag
 12、比如以下这个例子：
-  　  a.sh脚本内容
-　　CPU_MIN=90
-　　cat aa|awk "{print $CPU_MIN,$1}"
-
-　　执行时带个参数：a.sh  1234
-　　如果按你的说法应该显示： 90  1234
-　　但实际上只显示90，为什么$1的值没有取到，是否应该和awk本身的变量定义有冲突。如果不使用中间变量，这个1234如何传递到awk中？
-
-　　$1是awk的特殊变量，不应该被shell解释。可以这样：
-　　cat aa|awk "{print $CPU_MIN,\$1}"
-
+a.sh脚本内容
+CPU_MIN=90
+cat aa|awk "{print $CPU_MIN,$1}"
+执行时带个参数：a.sh  1234
+如果按你的说法应该显示： 90  1234
+但实际上只显示90，为什么$1的值没有取到，是否应该和awk本身的变量定义有冲突。如果不使用中间变量，这个1234如何传递到awk中？
+$1是awk的特殊变量，不应该被shell解释。可以这样：
+cat aa|awk "{print $CPU_MIN,\$1}"
 ```
 
 ### 自己编译过 PHP 吗？如何打开 readline 功能
 ```
 手动编译PHP开发环境
-这是一篇来自深夜加班的手稿
 
 问题复盘
 你有没有遇到过这样的情况，部署了集成环境，每次添加扩展的时候，总是需要找一堆的配置文件的位置（其实很多人都能熟练使用集成环境）
-
 你有没有遇到过这样的情况，去面试，面试官问你:有没有自己手动编译过环境? 你却回答 我一般都使用集成环境
-
-你有没有遇到过这样的问题，本来自己的服务器配置就很low（有的甚至使用的是vps）基本上使用lnmp或者bt或者其他等等集成环境 但是他们的优缺点十分明显
-
+你有没有遇到过这样的问题，本来自己的服务器配置就很low（有的甚至使用的是vps）
+基本上使用lnmp或者bt或者其他等等集成环境 但是他们的优缺点十分明显
 这可能就是我现在需要手动编译环境的理由吧
-
 部署环境及配置
 linux centos 7.3
 阿里云香港轻量级应用服务器 34/月
 购买推荐链接:https://promotion.aliyun.com/ntms/yunparter/invite.html?userCode=4jm8fecv
-
 目标环境
 php 7.2
 mysql 5.7.2
 nginx 1.1.8
-
 安装部署环境开始
 考虑到纯净安装. 所以首先我们需要一台干净的服务器（为了这个 我把博客的全部东西干掉了直接导致服务器停运24小时）
-
 首先我们确定安装目录
-
 我是在根目录部署了www目录直接使用命令
-
 mkdir -p /www/{lnmp,web,source} `
 这里创建的 www
 /lnmp存放安装软件
 /web 存放程序代码
 /source 存放安装软件
-
 首先安装PHP
 PHP下载网址:
 http://am1.php.net/distributions/php-7.2.1.tar.gz
@@ -28171,45 +27870,30 @@ http://am1.php.net/distributions/php-7.2.1.tar.gz
 
 一、更换yum源
 这对我们很重要，因为centos 内部的源一般都是国外的站点，我使用的是阿里云的服务器 所以这里我也是用阿里云的yum源
-
 yum源的地址在
-
 /etc/yum.repos.d/
 将下面的默认Centos-Base.repo 进行备份
-
 mv /etc/yum.repos.d/Centos-Base.repo.bak
 进入阿里云的镜像地址:http://mirrors.aliyun.com/
-
 在阿里云的镜像地址找到自己对应的版本然后使用wget 进行下载
-
 没有wget的，提前使用yum 安装一个
-
 然后依次执行以下命令
-
 yum clean all
 yum makecache
 yum update
 然后在裸机上面安装必要的扩展
-
-
 yum -y install wget vim pcre pcre-devel openssl openssl-devel libicu-devel gcc gcc-c++ autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel ncurses ncurses-devel curl curl-devel krb5-devel libidn libidn-devel openldap openldap-devel nss_ldap jemalloc-devel cmake boost-devel bison automake libevent libevent-devel gd gd-devel libtool* libmcrypt libmcrypt-devel mcrypt mhash libxslt libxslt-devel readline readline-devel gmp gmp-devel libcurl libcurl-devel openjpeg-devel
 上面安装的都是必要的一些扩展
-
 我们还可以使用yum 对系统的内核进行更新
-
 yum install epel-release -y // 此步骤可以省略
+
 安装PHP
 首先切换到我们的www/lnmp目录下
-
 然后使用tar -zxvf php-7.2.1.tar.gz 进行解压
-
 解压完毕之后 我们进入 解压过的目录
-
 设置变量并开始源码编译：
-
 cp -frp /usr/lib64/libldap* /usr/lib/
 这里我们使用的是自定义的目录所以编译配置也需要改变
-
 ./configure --prefix=/www/source/php \
 --with-config-file-path=/www/source/php/etc \
 --enable-fpm \
@@ -28255,32 +27939,21 @@ cp -frp /usr/lib64/libldap* /usr/lib/
 --with-ldap=shared \
 --without-gdbm
 此处重点要考
-
 php7.2 去掉了很多原先php5 - php7.0的扩展 如之前的加密扩展
 mcrypt 还有很多 这里我就不一一举例了
-
 编译完毕之后，我们进行下一步
-
 make -j 4 && make install
 接下来需要等待大约10-20分钟 这个根据我们的服务器而定 如果觉得慢我们可以使用
-
 make -j 8 && make install
 上面两条命令都可以使用
-
 接下来配置php.ini 文件:
-
 cp php.ini-development /www/source/php/ect/php.ini
-
 cp /www/source/php/etc/php-fpm.conf.default /www/source/php/etc/php-fpm.conf
-
 cp /www/source/php/etc/php-fpm.d/www.conf.default /www/source/php/etc/php-fpm.d/www.conf
-
 上述是我的配置文件地址，如果你出现错误 或者找不到文件位置，请按照你自己配置的文件安装目录进行查询
 也可以使用 find 查询
-
 配置php.ini
 我直接贴出我修改的一些配置 仅供参考 可以根据个人情况进行调整
-
 expose_php = Off
 short_open_tag = ON
 max_execution_time = 30
@@ -28296,31 +27969,23 @@ opcache.enable_cli=1
 disable_functions = passthru,exec,system,chroot,chgrp,chown,shell_exec,proc_open,proc_get_status,popen,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru
 配置www.conf (此处为配置php-fpm 可略)
 到了这一步的时候 我们需要建立对应的用户www
-
 groupadd www
 useradd -g www www
 然后创建存放 php-cgi.sock 的目录
-
 mkdir /var/run/www/
 chown -R www:www /var/run/www
 然后配置www.conf文件
-
- vim /www/source/php/etc/php-fpm.d/www.conf
+vim /www/source/php/etc/php-fpm.d/www.conf
 配置详解
-
 slowlog = var/log/slow.log
 listen = /var/run/www/php-cgi.sock
 其他的都不需要改变
-
 然后配置php-fpm.conf
-
 pid = /usr/local/php/var/run/php-fpm.pid
 至此php7已经安装完成。说明：禁用php函数，如果程序需要这些函数，可以取消禁止，新手建议忽略此步骤。
-
 创建system系统单元文件php-fpm启动脚本：
 vim /usr/lib/systemd/system/php-fpm.service
 直接 编写
-
 [Unit]
 Description=The PHP FastCGI Process Manager
 After=syslog.target network.target
@@ -28339,11 +28004,8 @@ systemctl enable php-fpm.service
 systemctl restart php-fpm.service
 配置全局变量
 接下来我们就已经配置完毕了试一试php-v
-
 是不是突然报错 ， 没有php 不要慌
-
 这是因为我们没有把PHP 加入全局变量的原因
-
 vim /etc/profile
 // 最后一行加入
 PATH=$PAHT:/www/source/php/bin
@@ -28358,9 +28020,7 @@ Zend Engine v3.2.0, Copyright (c) 1998-2017 Zend Technologies
 with Zend OPcache v7.2.1, Copyright (c) 1999-2017, by Zend Technologies
 安装mysql
 实现我们需要安装mysql 安装的一些依赖 这个大多都是使用yum安装 可以直接百度
-
 // 我这边直接使用
-
 yum install -y gcc gcc-c++ make sudo autoconf libtool-ltdl-devel gd-devel \
         freetype-devel libxml2-devel libjpeg-devel libpng-devel \
         openssl-devel curl-devel patch libmcrypt-devel \
@@ -28373,21 +28033,14 @@ useradd -r mysql -g mysql
 下载必要的包
 安装mysql5.6的时候就已经使用cmake了 我们这里使用mysql 5.7
 还需要安装一个boost的包
-
-
 wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.20.tar.gz
-
 wget --no-check-certificate http://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz
 
 然后解压mysql 5.7
 进入mysql5.7目录
-
 然后将 我们下载的 boots 包 移动到 解压完毕的mysql文件夹内部
-
 然后我们新建一个 configure 文件夹 接下来我们将在该文件夹内 完成整套编译工作
-
 然后贴出我的配置
-
 cmake .. -DBUILD_CONFIG=mysql_release \
 -DINSTALL_LAYOUT=STANDALONE \
 -DCMAKE_BUILD_TYPE=RelWithDebInfo \
@@ -28406,15 +28059,11 @@ cmake .. -DBUILD_CONFIG=mysql_release \
 -DWITH_DEBUG=OFF \
 -DWITH_BOOST=..
 关于这些配置命令的名称 网络上都有介绍 我就不过多的讲述了
-
 如果出现编译失败 那么 一定要删除当前目录下的
 rm -rf CMakeCache.txt 文件
-
 当我们编译完成之后 执行
-
 make && make install
 接下来就是耐心等待20分钟左右
-
 初始化数据库
 新建数据库文件夹以及日志文件夹，并更改用户为mysql:
 mkdir /www/source/mysql/mysql_data
@@ -28435,17 +28084,14 @@ basedir=/www/source/mysql/
 socket=/www/source/mysql/mysql_data/mysql.sock
 // 需要手动建立mysql.sock,并赋值读写执行权限
 chmod -R 777 mysql.sock
-
 初始化数据库
 /var/mysql/bin/mysqld  --initialize --user=mysql
 去查看刚刚创建的文件夹内 是否存在生成的文件
-
 配置启动文件及环境变更
 配置启动文件
 cp /var/mysql/support-files/mysql.server /etc/init.d/mysqld
 修改启动文件
 vim /etc/init.d/mysqld
-
 # 找到如下二行：
 basedir=
 datadir=
@@ -28453,42 +28099,31 @@ datadir=
 basedir=/www/source/mysql/
 datadir=/www/source/mysql/mysql_data/
 启动mysql
-
 /etc/init.d/mysqld start
 可以看到提示，已经成功启动。当然你也可以使用systemctl来启动MySQL，但执行后，不会有任何提示。
-
 systemctl start mysqld
 然后我们将mysql 加入全局变量
-
 这次我试了很多方式 但是没有成功 所以 我直接建立了一个软链
-
 当我们执行某命令的时候 服务器首先去看/user/bin这个文件夹
-
 ln -s /www/source/mysql/bin /usr/bin
 修改mysql 密码
 从mysql5.7开始 mysql不在支持空密码登录 所以我们直接查看密码
-
 cat /www/source/mysql/log/error.log |grep 'A temporary password'
 2019-07-13T06:28:23.096812Z 1 [Note] A temporary password is generated for root@localhost: wa&sk371_,US
 后面的就是我们的mysql 密码了
-
 然后我们直接使用mysql登录进去
-
 mysql> alter user 'root'@'localhost' identified by 'your_password';
 ok！！！！
 
 安装nginx
 准备工作
 安装nginx 的时候 我们首先还需要安装3个依赖包
-
 pcre：在使用 nginx 的 rewrite 模块的时候，需要有pcre库的支持
 openssl：在使用ssl功能时，需要有 openssl库的支持
 zlib：在使用gzip模块时，需要有zlib库的支持。
 而这三个模块都是我们常用的，所以这3个依赖包还是要安装的。
-
 1、安装pcre
 首先下载这个包
-
 wget https://jaist.dl.sourceforge.net/project/pcre/pcre/8.36/pcre-8.36.tar.gz
 tar -zxvf pcre-8.36.tar.gz
 cd pcre-8.36
@@ -28508,218 +28143,80 @@ CFLAGS="-O3 -fPIC" ./configure
 make && make install
 编译nginx
 因为nginx的命令有很多 我们可以使用
-
 ./configure --help
 这里我推荐使用
-
 ./configure --user=www --group=www --prefix=/www/source/nginx --with-pcre=/www/lnmp/pcre-8.36 --with-zlib=/www/lnmp/zlib-1.2.11 --with-openssl=/www/lnmp/openssl-1.1.0k
 上面的命令是和我们下载的pcre以及openssl and zlib要关联上的 具体看你的配置
-
 执行完毕之后 我们执行
-
 make && make install
 // 然后
 ll /www/source/
 下面存在nginx 说明我们安装成功
-
 然后我们使用
-
 cd /www/source/nginx/conf
-
 到这里的时候我们基本上已经安装完毕
-
 本次手动编译nginx+php+mysql 就到这里
-
-关于nginx的配置 和 php的问题
-
-请继续关注我的博客
-
-学习不是一件幸福的事情 只是面对这繁华人生 我们更希望能拥有一技之长
 ```
 
 ### 如何查看 PHP 进程的内存、CPU 占用
 ```
 1. 查看内存使用情况
 观察你程序的内存使用能够让你更好的优化你的代码。
-PHP 是有垃圾回收机制的，而且有一套很复杂的内存管理机制。你可以知道你的脚本所使用的内存情况。要知道当前内存使用情况，你可以使用?memory_get_usage() 函数，如果你想知道使用内存的峰值，你可以调用memory_get_peak_usage() 函数。
-
-1
-
-2
-
-3
-
-4
-
-5
-
-6
-
-7
-
-8
-
-9
-
-10
-
-11
-
-12
-
-13
-
-14
-
-15
-
-16
-
-17
-
-18
-
-19
-
-20
-
+PHP 是有垃圾回收机制的，而且有一套很复杂的内存管理机制。你可以知道你的脚本所使用的内存情况。
+要知道当前内存使用情况，你可以使用?memory_get_usage() 函数，如果你想知道使用内存的峰值，
+你可以调用memory_get_peak_usage() 函数。
 echo "Initial: ".memory_get_usage()." bytes \n";
-
 /* 输出
-
 Initial: 361400 bytes
-
 */
 
 // 使用内存
-
 for ($i = 0; $i < 100000; $i++) {
-
 $array []= md5($i);
-
 }
 
 // 删除一半的内存
-
 for ($i = 0; $i < 100000; $i++) {
-
 unset($array[$i]);
-
 }
 
 echo "Final: ".memory_get_usage()." bytes \n";
-
 /* prints
-
 Final: 885912 bytes
-
 */
 
 echo "Peak: ".memory_get_peak_usage()." bytes \n";
-
 /* 输出峰值
-
 Peak: 13687072 bytes
-
 */
 
 2. 查看CPU使用情况
 使用?getrusage() 函数可以让你知道CPU的使用情况。注意，这个功能在Windows下不可用。
-
-1
-
-2
-
-3
-
-4
-
-5
-
-6
-
-7
-
-8
-
-9
-
-10
-
-11
-
-12
-
-13
-
-14
-
-15
-
-16
-
-17
-
-18
-
-19
-
-20
-
-21
-
-22
-
-23
-
 print_r(getrusage());
-
 /* 输出
-
 Array
-
 (
-
 [ru_oublock] => 0
-
 [ru_inblock] => 0
-
 [ru_msgsnd] => 2
-
 [ru_msgrcv] => 3
-
 [ru_maxrss] => 12692
-
 [ru_ixrss] => 764
-
 [ru_idrss] => 3864
-
 [ru_minflt] => 94
-
 [ru_majflt] => 0
-
 [ru_nsignals] => 1
-
 [ru_nvcsw] => 67
-
 [ru_nivcsw] => 4
-
 [ru_nswap] => 0
-
 [ru_utime.tv_usec] => 0
-
 [ru_utime.tv_sec] => 0
-
 [ru_stime.tv_usec] => 6269
-
 [ru_stime.tv_sec] => 0
-
 )
 
 */
-
 这个结构看上出很晦涩，除非你对CPU很了解。下面一些解释：
-
 ru_oublock: 块输出操作
 ru_inblock: 块输入操作
 ru_msgsnd: 发送的message
@@ -28737,31 +28234,36 @@ ru_utime.tv_usec: 用户态时间 (microseconds)
 ru_utime.tv_sec: 用户态时间(seconds)
 ru_stime.tv_usec: 系统内核时间 (microseconds)
 ru_stime.tv_sec: 系统内核时间?(seconds)
-
 ```
 
 ### 如何给 PHP 增加一个扩展
 ```
-PHP取得成功的一个主要原因之一是她拥有大量的可用扩展。web开发者无论有何种需求，这种需求最有可能在PHP发行包里找到。PHP发行包包括支持各种数据库，图形文件格式，压缩，XML技术扩展在内的许多扩展。
-扩展API的引入使PHP3取得了巨大的进展，扩展API机制使PHP开发社区很容易的开发出几十种扩展。现在，两个版本过去了，API仍然和PHP3时的非常相似。扩展主要的思想是：尽可能的从扩展编写者那里隐藏PHP的内部机制和脚本引擎本身，仅仅需要开发者熟悉API。
+PHP取得成功的一个主要原因之一是她拥有大量的可用扩展。web开发者无论有何种需求，这种需求最有可能在PHP发行包里找到。
+PHP发行包包括支持各种数据库，图形文件格式，压缩，XML技术扩展在内的许多扩展。
+扩展API的引入使PHP3取得了巨大的进展，扩展API机制使PHP开发社区很容易的开发出几十种扩展。
+现在，两个版本过去了，API仍然和PHP3时的非常相似。扩展主要的思想是：
+尽可能的从扩展编写者那里隐藏PHP的内部机制和脚本引擎本身，仅仅需要开发者熟悉API。
 
-有两个理由需要自己编写PHP扩展。第一个理由是：PHP需要支持一项她还未支持的技术。这通常包括包裹一些现成的C函数库，以便提供PHP接口。例如，如果一个叫FooBase的数据库已推出市场，你需要建立一个PHP扩展帮助你从PHP里调用FooBase的C函数库。这个工作可能仅由一个人完成，然后被整个PHP社区共享（如果你愿意的话）。第二个不是很普遍的理由是：你需要从性能或功能的原因考虑来编写一些商业逻辑。
-
+有两个理由需要自己编写PHP扩展。第一个理由是：PHP需要支持一项她还未支持的技术。
+这通常包括包裹一些现成的C函数库，以便提供PHP接口。
+例如，如果一个叫FooBase的数据库已推出市场，你需要建立一个PHP扩展帮助你从PHP里调用FooBase的C函数库。
+这个工作可能仅由一个人完成，然后被整个PHP社区共享（如果你愿意的话）。
+第二个不是很普遍的理由是：你需要从性能或功能的原因考虑来编写一些商业逻辑。
 如果以上的两个理由都和你没什么关系，同时你感觉自己没有冒险精神，那么你可以跳过本章。
-
-本章教你如何编写相对简单的PHP扩展，使用一部分扩展API函数。对于大多数打算开发自定义PHP扩展开发者而言，它含概了足够的资料。学习一门编程课程的最好方法之一就是动手做一些极其简单的例子，这些例子正是本章的线索。一旦你明白了基础的东西，你就可以在互联网上通过阅读文挡、原代码或参加邮件列表新闻组讨论来丰富自己。因此，本章集中在让你如何开始的话题。在UNIX下一个叫ext_skel的脚本被用于建立扩展的骨架，骨架信息从一个描述扩展接口的定义文件中取得。因此你需要利用UNIX来建立一个骨架。Windows开发者可以使用Windows ext_skel_win32.php代替ext_skel。
-
+本章教你如何编写相对简单的PHP扩展，使用一部分扩展API函数。对于大多数打算开发自定义PHP扩展开发者而言，它含概了足够的资料。
+学习一门编程课程的最好方法之一就是动手做一些极其简单的例子，这些例子正是本章的线索。
+一旦你明白了基础的东西，你就可以在互联网上通过阅读文挡、原代码或参加邮件列表新闻组讨论来丰富自己。
+因此，本章集中在让你如何开始的话题。在UNIX下一个叫ext_skel的脚本被用于建立扩展的骨架，
+骨架信息从一个描述扩展接口的定义文件中取得。因此你需要利用UNIX来建立一个骨架。
+Windows开发者可以使用Windows ext_skel_win32.php代替ext_skel。
 然而，本章关于用你开发的扩展编译PHP的指导仅涉及UNIX编译系统。本章中所有的对API的解释与UNIX和Windows下开发的扩展都有联系。
-
 当你阅读完这章，你能学会如何
-
 •建立一个简单的商业逻辑扩展。
 •建议个C函数库的包裹扩展，尤其是有些标准C文件操作函数比如fopen()
 快速开始
-本节没有介绍关于脚本引擎基本构造的一些知识，而是直接进入扩展的编码讲解中，因此不要担心你无法立刻获得对扩展整体把握的感觉。假设你正在开发一个网站，需要一个把字符串重复n次的函数。下面是用PHP写的例子：
-
-复制代码代码如下:
-
+本节没有介绍关于脚本引擎基本构造的一些知识，而是直接进入扩展的编码讲解中，
+因此不要担心你无法立刻获得对扩展整体把握的感觉。假设你正在开发一个网站，
+需要一个把字符串重复n次的函数。下面是用PHP写的例子：
 function self_concat($string, $n){
 $result = "";
 for($i = 0; $i < $n; $i++){
@@ -28771,65 +28273,55 @@ return $result;
 }
 self_concat("One", 3) returns "OneOneOne".
 self_concat("One", 1) returns "One".
-
-
-假设由于一些奇怪的原因，你需要时常调用这个函数，而且还要传给函数很长的字符串和大值n。这意味着在脚本里有相当巨大的字符串连接量和内存重新分配过程，以至显著地降低脚本执行速度。如果有一个函数能够更快地分配大量且足够的内存来存放结果字符串，然后把$string重复n次，就不需要在每次循环迭代中分配内存。
-
-为扩展建立函数的第一步是写一个函数定义文件，该函数定义文件定义了扩展对外提供的函数原形。该例中，定义函数只有一行函数原形self_concat() :
-
-复制代码代码如下:
-
+假设由于一些奇怪的原因，你需要时常调用这个函数，而且还要传给函数很长的字符串和大值n。
+这意味着在脚本里有相当巨大的字符串连接量和内存重新分配过程，以至显著地降低脚本执行速度。
+如果有一个函数能够更快地分配大量且足够的内存来存放结果字符串，然后把$string重复n次，
+就不需要在每次循环迭代中分配内存。
+为扩展建立函数的第一步是写一个函数定义文件，该函数定义文件定义了扩展对外提供的函数原形。
+该例中，定义函数只有一行函数原形self_concat() :
 string self_concat(string str, int n)
-
-
 函数定义文件的一般格式是一个函数一行。你可以定义可选参数和使用大量的PHP类型，包括: bool, float, int, array等。
-
 保存为myfunctions.def文件至PHP原代码目录树下。
-
-该是通过扩展骨架(skeleton)构造器运行函数定义文件的时机了。该构造器脚本叫ext_skel，放在PHP原代码目录树的ext/目录下（PHP原码主目录下的README.EXT_SKEL提供了更多的信息）。假设你把函数定义保存在一个叫做myfunctions.def的文件里，而且你希望把扩展取名为myfunctions，运行下面的命令来建立扩展骨架
-
+该是通过扩展骨架(skeleton)构造器运行函数定义文件的时机了。
+该构造器脚本叫ext_skel，放在PHP原代码目录树的ext/目录下（PHP原码主目录下的README.EXT_SKEL提供了更多的信息）。
+假设你把函数定义保存在一个叫做myfunctions.def的文件里，而且你希望把扩展取名为myfunctions，
+运行下面的命令来建立扩展骨架
 复制代码代码如下:
-
 ./ext_skel --extname=myfunctions --proto=myfunctions.de
-
-
-这个命令在ext/目录下建立了一个myfunctions/目录。你要做的第一件事情也许就是编译该骨架，以便编写和测试实际的C代码。编译扩展有两种方法：
-
+这个命令在ext/目录下建立了一个myfunctions/目录。你要做的第一件事情也许就是编译该骨架，
+以便编写和测试实际的C代码。编译扩展有两种方法：
 •作为一个可装载模块或者DSO（动态共享对象）
 •静态编译到PHP
-
 PHP扩展开发导图
-
-因为第二种方法比较容易上手，所以本章采用静态编译。如果你对编译可装载扩展模块感兴趣，可以阅读PHP原代码根目录下的README.SELF-CONTAINED_EXTENSIONS文件。为了使扩展能够被编译，需要修改扩展目录ext/myfunctions/下的config.m4文件。扩展没有包裹任何外部的C库，你需要添加支持–enable-myfunctions配置开关到PHP编译系统里（–with-extension 开关用于那些需要用户指定相关C库路径的扩展）。可以去掉自动生成的下面两行的注释来开启这个配置。
-
+因为第二种方法比较容易上手，所以本章采用静态编译。如果你对编译可装载扩展模块感兴趣，可以阅读PHP原代码根目录下的README.
+SELF-CONTAINED_EXTENSIONS文件。为了使扩展能够被编译，需要修改扩展目录ext/myfunctions/下的config.m4文件。
+扩展没有包裹任何外部的C库，你需要添加支持–enable-myfunctions配置开关到PHP编译系统里
+（–with-extension 开关用于那些需要用户指定相关C库路径的扩展）。
+可以去掉自动生成的下面两行的注释来开启这个配置。
 复制代码代码如下:
-
 ./ext_skel --extname=myfunctions --proto=myfunctions.def
 PHP_ARG_ENABLE(myfunctions, whether to enable myfunctions support,
 [ --enable-myfunctions Include myfunctions support]
-
-
-现在剩下的事情就是在PHP原代码树根目录下运行./buildconf，该命令会生成一个新的配置脚本。通过查看./configure –help输出信息，可以检查新的配置选项是否被包含到配置文件中。现在，打开你喜好的配置选项开关和–enable-myfunctions重新配置一下PHP。最后的但不是最次要的是，用make来重新编译PHP。
-
+现在剩下的事情就是在PHP原代码树根目录下运行./buildconf，该命令会生成一个新的配置脚本。
+通过查看./configure –help输出信息，可以检查新的配置选项是否被包含到配置文件中。
+现在，打开你喜好的配置选项开关和–enable-myfunctions重新配置一下PHP。
+最后的但不是最次要的是，用make来重新编译PHP。
 ext_skel应该把两个PHP函数添加到你的扩展骨架了：打算实现的self_concat()函数和用于检测myfunctions 是否编译到PHP的confirm_myfunctions_compiled()函数。完成PHP的扩展开发后，可以把后者去掉。
 
 复制代码代码如下:
-
 <?php
 print confirm_myfunctions_compiled("myextension");
 ?>
 
 运行这个脚本会出现类似下面的输出：
 复制代码代码如下:
-
 "Congratulations! You have successfully modified ext/myfunctions
 config.m4. Module myfunctions is now compiled into PHP.
-
-另外，ext_skel脚本生成一个叫myfunctions.php的脚本，你也可以利用它来验证扩展是否被成功地编译到PHP。它会列出该扩展所支持的所有函数。
+另外，ext_skel脚本生成一个叫myfunctions.php的脚本，你也可以利用它来验证扩展是否被成功地编译到PHP。
+它会列出该扩展所支持的所有函数。
 现在你学会如何编译扩展了，该是真正地研究self_concat()函数的时候了。
 下面就是ext_skel脚本生成的骨架结构：
 复制代码代码如下:
-
 /* {{{ proto string self_concat(string str, int n)
 */
 PHP_FUNCTION(self_concat)
@@ -28845,17 +28337,20 @@ php_error(E_WARNING, "self_concat: not yet implemented");
 /* }}} */
 
 
-自动生成的PHP函数周围包含了一些注释，这些注释用于自动生成代码文档和vi、Emacs等编辑器的代码折叠。函数自身的定义使用了宏PHP_FUNCTION()，该宏可以生成一个适合于Zend引擎的函数原型。逻辑本身分成语义各部分，取得调用函数的参数和逻辑本身。
+自动生成的PHP函数周围包含了一些注释，这些注释用于自动生成代码文档和vi、Emacs等编辑器的代码折叠。
+函数自身的定义使用了宏PHP_FUNCTION()，该宏可以生成一个适合于Zend引擎的函数原型。
+逻辑本身分成语义各部分，取得调用函数的参数和逻辑本身。
 
 为了获得函数传递的参数，可以使用zend_parse_parameters()API函数。下面是该函数的原型：
 复制代码代码如下:
-
 zend_parse_parameters(int num_args TSRMLS_DC, char *type_spec, …);
-
-第一个参数是传递给函数的参数个数。通常的做法是传给它ZEND_NUM_ARGS()。这是一个表示传递给函数参数总个数的宏。第二个参数是为了线程安全，总是传递TSRMLS_CC宏，后面会讲到。第三个参数是一个字符串，指定了函数期望的参数类型，后面紧跟着需要随参数值更新的变量列表。因为PHP采用松散的变量定义和动态的类型判断，这样做就使得把不同类型的参数转化为期望的类型成为可能。例如，如果用户传递一个整数变量，可函数需要一个浮点数，那么zend_parse_parameters()就会自动地把整数转换为相应的浮点数。如果实际值无法转换成期望类型（比如整形到数组形），会触发一个警告。
-
+第一个参数是传递给函数的参数个数。通常的做法是传给它ZEND_NUM_ARGS()。
+这是一个表示传递给函数参数总个数的宏。第二个参数是为了线程安全，总是传递TSRMLS_CC宏，后面会讲到。
+第三个参数是一个字符串，指定了函数期望的参数类型，后面紧跟着需要随参数值更新的变量列表。
+因为PHP采用松散的变量定义和动态的类型判断，这样做就使得把不同类型的参数转化为期望的类型成为可能。
+例如，如果用户传递一个整数变量，可函数需要一个浮点数，那么zend_parse_parameters()就会自动地把整数转换为相应的浮点数。
+如果实际值无法转换成期望类型（比如整形到数组形），会触发一个警告。
 下表列出了可能指定的类型。我们从完整性考虑也列出了一些没有讨论到的类型。
-
 类型指定符	对应的C类型	描述
 l	long	符号整数
 d	double	浮点数
@@ -28867,10 +28362,11 @@ o	zval *	任何类型的对象
 O	zval *	指定类型的对象。需要提供目标对象的类类型
 z	zval *	无任何操作的zval
 
-为了容易地理解最后几个选项的含义，你需要知道zval是Zend引擎的值容器[1]。无论这个变量是布尔型，字符串型或者其他任何类型，其信息总会包含在一个zval联合体中。本章中我们不直接存取zval，而是通过一些附加的宏来操作。下面的是或多或少在C中的zval, 以便我们能更好地理解接下来的代码。
+为了容易地理解最后几个选项的含义，你需要知道zval是Zend引擎的值容器[1]。
+无论这个变量是布尔型，字符串型或者其他任何类型，其信息总会包含在一个zval联合体中。
+本章中我们不直接存取zval，而是通过一些附加的宏来操作。下面的是或多或少在C中的zval, 以便我们能更好地理解接下来的代码。
 
 复制代码代码如下:
-
 typedef union _zval{
 long lval;
 double dval;
@@ -28882,54 +28378,57 @@ HashTable *ht;
 zend_object_value obj;
 }zval;
 
-
 在我们的例子中，我们用基本类型调用zend_parse_parameters()，以本地C类型的方式取得函数参数的值，而不是用zval容器。
-
 为了让zend_parse_parameters()能够改变传递给它的参数的值，并返回这个改变值，需要传递一个引用。仔细查看一下self_concat()：
 
 复制代码代码如下:
-
 if (zend_parse_parameters(argc TSRMLS_CC, "sl", &str, &str_len, &n) == FAILURE)return;
-
-
-注意到自动生成的代码会检测函数的返回值FAILUER(成功即SUCCESS)来判断是否成功。如果没有成功则立即返回，并且由zend_parse_parameters()负责触发警告信息。因为函数打算接收一个字符串l和一个整数n，所以指定 ”sl” 作为其类型指示符。s需要两个参数，所以我们传递参考char * 和 int (str 和 str_len)给zend_parse_parameters()函数。无论什么时候，记得总是在代码中使用字符串长度str_len来确保函数工作在二进制安全的环境中。不要使用strlen()和strcpy()，除非你不介意函数在二进制字符串下不能工作。二进制字符串是包含有nulls的字符串。二进制格式包括图象文件，压缩文件，可执行文件和更多的其他文件。”l” 只需要一个参数，所以我们传递给它n的引用。尽管为了清晰起见，骨架脚本生成的C变量名与在函数原型定义文件中的参数名一样；这样做不是必须的，尽管在实践中鼓励这样做。
-
+注意到自动生成的代码会检测函数的返回值FAILUER(成功即SUCCESS)来判断是否成功。
+如果没有成功则立即返回，并且由zend_parse_parameters()负责触发警告信息。
+因为函数打算接收一个字符串l和一个整数n，所以指定 ”sl” 作为其类型指示符。
+s需要两个参数，所以我们传递参考char * 和 int (str 和 str_len)给zend_parse_parameters()函数。
+无论什么时候，记得总是在代码中使用字符串长度str_len来确保函数工作在二进制安全的环境中。
+不要使用strlen()和strcpy()，除非你不介意函数在二进制字符串下不能工作。
+二进制字符串是包含有nulls的字符串。二进制格式包括图象文件，压缩文件，可执行文件和更多的其他文件。
+”l” 只需要一个参数，所以我们传递给它n的引用。尽管为了清晰起见，
+骨架脚本生成的C变量名与在函数原型定义文件中的参数名一样；这样做不是必须的，尽管在实践中鼓励这样做。
 回到转换规则中来。下面三个对self_concat()函数的调用使str, str_len和n得到同样的值：
 
 复制代码代码如下:
-
 self_concat("321", 5);
 self_concat(321, "5");
 self_concat("321", "5");
 str points to the string "321", str_len equals 3, and n equals 5.
 str 指向字符串"321"，str_len等于3，n等于5
-
-
-在我们编写代码来实现连接字符串返回给PHP的函数前，还得谈谈两个重要的话题：内存管理、从PHP内部返回函数值所使用的API。
+在我们编写代码来实现连接字符串返回给PHP的函数前，还得谈谈两个重要的话题：
+内存管理、从PHP内部返回函数值所使用的API。
 
 内存管理
-
 用于从堆中分配内存的PHP API几乎和标准C API一样。在编写扩展的时候，使用下面与C对应（因此不必再解释）的API函数：
 复制代码代码如下:
-
 emalloc(size_t size);
 efree(void *ptr);
 ecalloc(size_t nmemb, size_t size);
 erealloc(void *ptr, size_t size);
 estrdup(const char *s);
 estrndup(const char *s, unsigned int length);
-
-在这一点上，任何一位有经验的C程序员应该象这样思考一下：“什么？标准C没有strndup()？”是的，这是正确的，因为GNU扩展通常在Linux下可用。estrndup()只是PHP下的一个特殊函数。它的行为与estrdup()相似，但是可以指定字符串重复的次数（不需要结束空字符），同时是二进制安全的。这是推荐使用estrndup()而不是estrdup()的原因。
-
-在几乎所有的情况下，你应该使用这些内存分配函数。有一些情况，即扩展需要分配在请求中永久存在的内存，从而不得不使用malloc()，但是除非你知道你在做什么，你应该始终使用以上的函数。如果没有使用这些内存函数，而相反使用标准C函数分配的内存返回给脚本引擎，那么PHP会崩溃。
-
-这些函数的优点是：任何分配的内存在偶然情况下如果没有被释放，则会在页面请求的最后被释放。因此，真正的内存泄漏不会产生。然而，不要依赖这一机制，从调试和性能两个原因来考虑，应当确保释放应该释放的内存。剩下的优点是在多线程环境下性能的提高，调试模式下检测内存错误等。
-
-还有一个重要的原因，你不需要检查这些内存分配函数的返回值是否为null。当内存分配失败，它们会发出E_ERROR错误，从而决不会返回到扩展。
+在这一点上，任何一位有经验的C程序员应该象这样思考一下：“什么？标准C没有strndup()？”是的，
+这是正确的，因为GNU扩展通常在Linux下可用。estrndup()只是PHP下的一个特殊函数。
+它的行为与estrdup()相似，但是可以指定字符串重复的次数（不需要结束空字符），
+同时是二进制安全的。这是推荐使用estrndup()而不是estrdup()的原因。
+在几乎所有的情况下，你应该使用这些内存分配函数。有一些情况，即扩展需要分配在请求中永久存在的内存，
+从而不得不使用malloc()，但是除非你知道你在做什么，你应该始终使用以上的函数。
+如果没有使用这些内存函数，而相反使用标准C函数分配的内存返回给脚本引擎，那么PHP会崩溃。
+这些函数的优点是：任何分配的内存在偶然情况下如果没有被释放，则会在页面请求的最后被释放。
+因此，真正的内存泄漏不会产生。然而，不要依赖这一机制，从调试和性能两个原因来考虑，应当确保释放应该释放的内存。
+剩下的优点是在多线程环境下性能的提高，调试模式下检测内存错误等。
+还有一个重要的原因，你不需要检查这些内存分配函数的返回值是否为null。
+当内存分配失败，它们会发出E_ERROR错误，从而决不会返回到扩展。
 
 从PHP函数中返回值
-
-扩展API包含丰富的用于从函数中返回值的宏。这些宏有两种主要风格：第一种是RETVAL_type()形式，它设置了返回值但C代码继续执行。这通常使用在把控制交给脚本引擎前还希望做的一些清理工作的时候使用，然后再使用C的返回声明 ”return” 返回到PHP；后一个宏更加普遍，其形式是RETURN_type()，他设置了返回类型，同时返回控制到PHP。下表解释了大多数存在的宏。
+扩展API包含丰富的用于从函数中返回值的宏。这些宏有两种主要风格：第一种是RETVAL_type()形式，它设置了返回值但C代码继续执行。
+这通常使用在把控制交给脚本引擎前还希望做的一些清理工作的时候使用，然后再使用C的返回声明 ”return” 返回到PHP；
+后一个宏更加普遍，其形式是RETURN_type()，他设置了返回类型，同时返回控制到PHP。下表解释了大多数存在的宏。
 
 设置返回值并且结束函数	设置返回值	宏返回类型和参数
 RETURN_LONG(l)	RETVAL_LONG(l)	整数
@@ -28943,7 +28442,6 @@ RETURN_FALSE	RETVAL_FALSE	返回布尔值false。注意到这个宏没有括号�
 RETURN_RESOURCE(r)	RETVAL_RESOURCE(r)	资源句柄。
 
 完成self_concat()
-
 现在你已经学会了如何分配内存和从PHP扩展函数里返回函数值，那么我们就能够完成self_concat()的编码：
 复制代码代码如下:
 
@@ -29000,32 +28498,38 @@ ThisIsUselessThisIsUseless
 ThisIsUselessThisIsUselessThisIsUseles
 
 实例小结
-你已经学会如何编写一个简单的PHP函数。回到本章的开头，我们提到用C编写PHP功能函数的两个主要的动机。第一个动机是用C实现一些算法来提高性能和扩展功能。前一个例子应该能够指导你快速上手这种类型扩展的开发。第二个动机是包裹三方函数库。我们将在下一步讨论。
+你已经学会如何编写一个简单的PHP函数。回到本章的开头，我们提到用C编写PHP功能函数的两个主要的动机。
+第一个动机是用C实现一些算法来提高性能和扩展功能。前一个例子应该能够指导你快速上手这种类型扩展的开发。
+第二个动机是包裹三方函数库。我们将在下一步讨论。
 
 包裹第三方的扩展
-本节中你将学到如何编写更有用和更完善的扩展。该节的扩展包裹了一个C库，展示了如何编写一个含有多个互相依赖的PHP函数扩展。
+本节中你将学到如何编写更有用和更完善的扩展。该节的扩展包裹了一个C库，
+展示了如何编写一个含有多个互相依赖的PHP函数扩展。
 
 动机
-也许最常见的PHP扩展是那些包裹第三方C库的扩展。这些扩展包括MySQL或Oracle的数据库服务库，libxml2的 XML技术库，ImageMagick 或GD的图形操纵库。
+也许最常见的PHP扩展是那些包裹第三方C库的扩展。这些扩展包括MySQL或Oracle的数据库服务库，
+libxml2的 XML技术库，ImageMagick 或GD的图形操纵库。
 
-在本节中，我们编写一个扩展，同样使用脚本来生成骨架扩展，因为这能节省许多工作量。这个扩展包裹了标准C函数fopen(), fclose(), fread(), fwrite()和 feof().
+在本节中，我们编写一个扩展，同样使用脚本来生成骨架扩展，因为这能节省许多工作量。
+这个扩展包裹了标准C函数fopen(), fclose(), fread(), fwrite()和 feof().
 
-扩展使用一个被叫做资源的抽象数据类型，用于代表已打开的文件FILE*。你会注意到大多数处理比如数据库连接、文件句柄等的PHP扩展使用了资源类型，这是因为引擎自己无法直接“理解”它们。我们计划在PHP扩展中实现的C API列表如下：
+扩展使用一个被叫做资源的抽象数据类型，用于代表已打开的文件FILE*。
+你会注意到大多数处理比如数据库连接、文件句柄等的PHP扩展使用了资源类型，这是因为引擎自己无法直接“理解”它们。
+我们计划在PHP扩展中实现的C API列表如下：
 
 复制代码代码如下:
-
 FILE *fopen(const char *path, const char *mode);
 int fclose(FILE *stream);
 size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
 size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
 int feof(FILE *stream);
-
-
-我们实现这些函数，使它们在命名习惯和简单性上符合PHP脚本。如果你曾经向PHP社区贡献过代码，你被期望遵循一些公共习俗，而不是跟随C库里的API。并不是所有的习俗都写在PHP代码树的CODING_STANDARDS文件里。这即是说，此功能已经从PHP发展的很早阶段即被包含在PHP中，并且与C库API类似。PHP安装已经支持fopen(), fclose()和更多的PHP函数。
+我们实现这些函数，使它们在命名习惯和简单性上符合PHP脚本。如果你曾经向PHP社区贡献过代码，你被期望遵循一些公共习俗，
+而不是跟随C库里的API。并不是所有的习俗都写在PHP代码树的CODING_STANDARDS文件里。
+这即是说，此功能已经从PHP发展的很早阶段即被包含在PHP中，并且与C库API类似。
+PHP安装已经支持fopen(), fclose()和更多的PHP函数。
 以下是PHP风格的API：
 
 复制代码代码如下:
-
 resource file_open(string filename, string mode)
 file_open() //接收两个字符串（文件名和模式），返回一个文件的资源句柄。
 bool file_close(resource filehandle)
@@ -29036,73 +28540,59 @@ bool file_write(resource filehandle, string buffer)
 file_write() //接收一个资源句柄和被写入的字符串，返回真/假指示是否操作成功。
 bool file_eof(resource filehandle)
 file_eof() //接收一个资源句柄，返回真/假指示是否到达文件的尾部。
-
-
 因此，我们的函数定义文件——保存为ext/目录下的myfile.def——内容如下：
 
 复制代码代码如下:
-
 resource file_open(string filename, string mode)
-
 bool file_close(resource filehandle)
-
 string file_read(resource filehandle, int size)
-
 bool file_write(resource filehandle, string buffer)
-
 bool file_eof(resource filehandle)
-
-
 下一步，利用ext_skel脚本在ext./ 原代码目录执行下面的命令：
+
 复制代码代码如下:
-
 ./ext_skel --extname=myfile --proto=myfile.de
-
-然后，按照前一个例子的关于编译新建立脚本的步骤操作。你会得到一些包含FETCH_RESOURCE()宏行的编译错误，这样骨架脚本就无法顺利完成编译。为了让骨架扩展顺利通过编译，把那些出错行[3]注释掉即可。
+然后，按照前一个例子的关于编译新建立脚本的步骤操作。你会得到一些包含FETCH_RESOURCE()宏行的编译错误，
+这样骨架脚本就无法顺利完成编译。为了让骨架扩展顺利通过编译，把那些出错行[3]注释掉即可。
 
 资源
 资源是一个能容纳任何信息的抽象数据结构。正如前面提到的，这个信息通常包括例如文件句柄、数据库连接结构和其他一些复杂类型的数据。
-
 使用资源的主要原因是因为：资源被一个集中的队列所管理，该队列可以在PHP开发人员没有在脚本里面显式地释放时可以自动地被释放。
-
-举个例子，考虑到编写一个脚本，在脚本里调用mysql_connect()打开一个MySQL连接，可是当该数据库连接资源不再使用时却没有调用mysql_close()。在PHP里，资源机制能够检测什么时候这个资源应当被释放，然后在当前请求的结尾或通常情况下更早地释放资源。这就为减少内存泄漏赋予了一个“防弹”机制。如果没有这样一个机制，经过几次web请求后，web服务器也许会潜在地泄漏许多内存资源，从而导致服务器当机或出错。
+举个例子，考虑到编写一个脚本，在脚本里调用mysql_connect()打开一个MySQL连接，
+可是当该数据库连接资源不再使用时却没有调用mysql_close()。
+在PHP里，资源机制能够检测什么时候这个资源应当被释放，然后在当前请求的结尾或通常情况下更早地释放资源。
+这就为减少内存泄漏赋予了一个“防弹”机制。如果没有这样一个机制，经过几次web请求后，web服务器也许会潜在地泄漏许多内存资源，
+从而导致服务器当机或出错。
 
 注册资源类型
 如何使用资源？Zend引擎让使用资源变地非常容易。你要做的第一件事就是把资源注册到引擎中去。使用这个API函数：
-
 int zend_register_list_destructors_ex(rsrc_dtor_func_t ld, rsrc_dtor_func_t pld, char *type_name, int module_number)
+这个函数返回一个资源类型id，该id应当被作为全局变量保存在扩展里，以便在必要的时候传递给其他资源API。
+ld：该资源释放时调用的函数。pld用于在不同请求中始终存在的永久资源，本章不会涉及。
+type_name是一个具有描述性类型名称的字符串，module_number为引擎内部使用，当我们调用这个函数时，
+我们只需要传递一个已经定义好的module_number变量。
 
-这个函数返回一个资源类型id，该id应当被作为全局变量保存在扩展里，以便在必要的时候传递给其他资源API。ld：该资源释放时调用的函数。pld用于在不同请求中始终存在的永久资源，本章不会涉及。type_name是一个具有描述性类型名称的字符串，module_number为引擎内部使用，当我们调用这个函数时，我们只需要传递一个已经定义好的module_number变量。
-
-回到我们的例子中来：我们会添加下面的代码到myfile.c原文件中。该文件包括了资源释放函数的定义，此资源函数被传递给zend_register_list_destructors_ex()注册函数（资源释放函数应该提早添加到文件中，以便在调用zend_register_list_destructors_ex()时该函数已被定义）：
+回到我们的例子中来：我们会添加下面的代码到myfile.c原文件中。该文件包括了资源释放函数的定义，
+此资源函数被传递给zend_register_list_destructors_ex()注册函数（资源释放函数应该提早添加到文件中，
+以便在调用zend_register_list_destructors_ex()时该函数已被定义）：
 
 复制代码代码如下:
-
 static void myfile_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC){
 FILE *fp = (FILE *) rsrc->ptr;
 fclose(fp);
 }
-
 把注册行添加到PHP_MINIT_FUNCTION()后，看起来应该如下面的代码：
-
 复制代码代码如下:
-
 PHP_MINIT_FUNCTION(myfile){
 /* If you have INI entries, uncomment these lines
 ZEND_INIT_MODULE_GLOBALS(myfile, php_myfile_init_globals,NULL);
-
 REGISTER_INI_ENTRIES();
 */
-
 le_myfile = zend_register_list_destructors_ex(myfile_dtor,NULL,"standard-c-file", module_number);
-
 return SUCCESS;
 }
-
 l 注意到le_myfile是一个已经被ext_skel脚本定义好的全局变量。
-
 PHP_MINIT_FUNCTION()是一个先于模块（扩展）的启动函数，是暴露给扩展的一部分API。下表提供可用函数简要的说明。
-
 函数声明宏	语义
 PHP_MINIT_FUNCTION()	当PHP被装载时，模块启动函数即被引擎调用。这使得引擎做一些例如资源类型，注册INI变量等的一次初始化。
 PHP_MSHUTDOWN_FUNCTION()	当PHP完全关闭时，模块关闭函数即被引擎调用。通常用于注销INI条目
@@ -29112,13 +28602,9 @@ PHP_MINFO_FUNCTION()	调用phpinfo()时模块信息函数被呼叫，从而打�
 新建和注册新资源 我们准备实现file_open()函数。当我们打开文件得到一个FILE *，我们需要利用资源机制注册它。下面的主要宏实现注册功能：
 
 复制代码代码如下:
-
 ZEND_REGISTER_RESOURCE(rsrc_result, rsrc_pointer, rsrc_type);
-
 参考表格对宏参数的解释
-
 ZEND_REGISTER_RESOURCE 宏参数
-
 宏参数	参数类型
 rsrc_result	zval *, which should be set with the registered resource information. zval * 设置为已注册资源信息
 rsrc_pointer	Pointer to our resource data. 资源数据指针
@@ -29126,8 +28612,12 @@ rsrc_type	The resource id obtained when registering the resource type. 注册资
 
 文件函数
 现在你知道了如何使用ZEND_REGISTER_RESOURCE()宏，并且准备好了开始编写file_open()函数。还有一个主题我们需要讲述。
-
-当PHP运行在多线程服务器上，不能使用标准的C文件存取函数。这是因为在一个线程里正在运行的PHP脚本会改变当前工作目录，因此另外一个线程里的脚本使用相对路径则无法打开目标文件。为了阻止这种错误发生，PHP框架提供了称作VCWD （virtual current working directory 虚拟当前工作目录）宏，用来代替任何依赖当前工作目录的存取函数。这些宏与被替代的函数具备同样的功能，同时是被透明地处理。在某些没有标准C函数库平台的情况下，VCWD框架则不会得到支持。例如，Win32下不存在chown()，就不会有相应的VCWD_CHOWN()宏被定义。
+当PHP运行在多线程服务器上，不能使用标准的C文件存取函数。
+这是因为在一个线程里正在运行的PHP脚本会改变当前工作目录，因此另外一个线程里的脚本使用相对路径则无法打开目标文件。
+为了阻止这种错误发生，PHP框架提供了称作VCWD （virtual current working directory 虚拟当前工作目录）宏，
+用来代替任何依赖当前工作目录的存取函数。这些宏与被替代的函数具备同样的功能，同时是被透明地处理。
+在某些没有标准C函数库平台的情况下，VCWD框架则不会得到支持。
+例如，Win32下不存在chown()，就不会有相应的VCWD_CHOWN()宏被定义。
 
 VCWD列表
 标准C库	VCWD宏
@@ -29156,7 +28646,6 @@ chown()	VCWD_CHOWN()
 实现file_open()应该非常简单，看起来像下面的样子：
 
 复制代码代码如下:
-
 PHP_FUNCTION(file_open){
 char *filename = NULL;
 char *mode = NULL;
@@ -29174,13 +28663,14 @@ RETURN_FALSE;
 ZEND_REGISTER_RESOURCE(return_value, fp, le_myfile);
 }
 
-你可能会注意到资源注册宏的第一个参数return_value，可此地找不到它的定义。这个变量自动的被扩展框架定义为zval * 类型的函数返回值。先前讨论的、能够影响返回值的RETURN_LONG() 和RETVAL_BOOL()宏确实改变了return_value的值。因此很容易猜到程序注册了我们取得的文件指针fp，同时设置return_value为该注册资源。
+你可能会注意到资源注册宏的第一个参数return_value，可此地找不到它的定义。
+这个变量自动的被扩展框架定义为zval * 类型的函数返回值。
+先前讨论的、能够影响返回值的RETURN_LONG() 和RETVAL_BOOL()宏确实改变了return_value的值。
+因此很容易猜到程序注册了我们取得的文件指针fp，同时设置return_value为该注册资源。
 
 访问资源 需要使用下面的宏访问资源（参看表对宏参数的解释）
 复制代码代码如下:
-
 ZEND_FETCH_RESOURCE(rsrc, rsrc_type, passed_id, default_id, resource_type_name, resource_type);
-
 ZEND_FETCH_RESOURCE 宏参数
 参数	含义
 rsrc	资源值保存到的变量名。它应该和资源有相同类型。
@@ -29192,7 +28682,6 @@ resource_type	注册资源的资源类型id
 
 使用这个宏，我们现在能够实现file_eof()：
 复制代码代码如下:
-
 PHP_FUNCTION(file_eof){
 int argc = ZEND_NUM_ARGS();
 zval *filehandle = NULL;
@@ -29213,13 +28702,11 @@ RETURN_FALSE;
 
 删除一个资源通常使用下面这个宏删除一个资源：
 复制代码代码如下:
-
 int zend_list_delete(int id)
-
-传递给宏一个资源id，返回SUCCESS或者FAILURE。如果资源存在，优先从Zend资源列队中删除，该过程中会调用该资源类型的已注册资源清理函数。因此，在我们的例子中，不必取得文件指针，调用fclose()关闭文件，然后再删除资源。直接把资源删除掉即可。
+传递给宏一个资源id，返回SUCCESS或者FAILURE。如果资源存在，优先从Zend资源列队中删除，该过程中会调用该资源类型的已注册资源清理函数。
+因此，在我们的例子中，不必取得文件指针，调用fclose()关闭文件，然后再删除资源。直接把资源删除掉即可。
 使用这个宏，我们能够实现file_close()：
 复制代码代码如下:
-
 PHP_FUNCTION(file_close){
 int argc = ZEND_NUM_ARGS();
 zval *filehandle = NULL;
@@ -29232,8 +28719,10 @@ RETURN_FALSE;
 RETURN_TRUE;
 }
 
-你肯定会问自己Z_RESVAL_P()是做什么的。当我们使用zend_parse_parameters()从参数列表中取得资源的时候，得到的是zval的形式。为了获得资源id，我们使用Z_RESVAL_P()宏得到id，然后把id传递给zend_list_delete()。
-有一系列宏用于访问存储于zval值（参考表的宏列表）。尽管在大多数情况下zend_parse_parameters()返回与c类型相应的值，我们仍希望直接处理zval，包括资源这一情况。
+你肯定会问自己Z_RESVAL_P()是做什么的。当我们使用zend_parse_parameters()从参数列表中取得资源的时候，得到的是zval的形式。
+为了获得资源id，我们使用Z_RESVAL_P()宏得到id，然后把id传递给zend_list_delete()。
+有一系列宏用于访问存储于zval值（参考表的宏列表）。尽管在大多数情况下zend_parse_parameters()返回与c类型相应的值，
+我们仍希望直接处理zval，包括资源这一情况。
 
 Zval访问宏
 宏	访问对象	C 类型
@@ -29248,11 +28737,12 @@ Z_TYPE, Z_TYPE_P, Z_TYPE_PP	Zval类型	Enumeration (IS_NULL, IS_LONG, IS_DOUBLE,
 Z_OBJPROP, Z_OBJPROP_P, Z_OBJPROP_PP	对象属性hash（本章不会谈到）	HashTable *
 Z_OBJCE, Z_OBJCE_P, Z_OBJCE_PP	对象的类信息	zend_class_entry
 用于访问zval值的宏
-所有的宏都有三种形式：一个是接受zval s，另外一个接受zval *s，最后一个接受zval **s。它们的区别是在命名上，第一个没有后缀，zval *有后缀_P（代表一个指针），最后一个 zval **有后缀_PP（代表两个指针）。
+所有的宏都有三种形式：一个是接受zval s，另外一个接受zval *s，最后一个接受zval **s。
+它们的区别是在命名上，第一个没有后缀，zval *有后缀_P（代表一个指针），
+最后一个 zval **有后缀_PP（代表两个指针）。
 现在，你有足够的信息来独立完成 file_read()和 file_write()函数。这里是一个可能的实现：
 
 复制代码代码如下:
-
 PHP_FUNCTION(file_read){
 int argc = ZEND_NUM_ARGS();
 long size;
@@ -29286,7 +28776,8 @@ RETURN_TRUE;
 }
 
 测试扩展
-你现在可以编写一个测试脚本来检测扩展是否工作正常。下面是一个示例脚本，该脚本打开文件test.txt，输出文件类容到标准输出，建立一个拷贝test.txt.new。
+你现在可以编写一个测试脚本来检测扩展是否工作正常。下面是一个示例脚本，该脚本打开文件test.txt，
+输出文件类容到标准输出，建立一个拷贝test.txt.new。
 复制代码代码如下:
 
 <?php
@@ -29302,17 +28793,20 @@ file_close($fp_out);
 ?>
 
 全局变量
-你可能希望在扩展里使用全局C变量，无论是独自在内部使用或访问php.ini文件中的INI扩展注册标记（INI在下一节中讨论）。因为PHP是为多线程环境而设计，所以不必定义全局变量。PHP提供了一个创建全局变量的机制，可以同时应用在线程和非线程环境中。我们应当始终利用这个机制，而不要自主地定义全局变量。用一个宏访问这些全局变量，使用起来就像普通全局变量一样。
+你可能希望在扩展里使用全局C变量，无论是独自在内部使用或访问php.ini文件中的INI扩展注册标记（INI在下一节中讨论）。
+因为PHP是为多线程环境而设计，所以不必定义全局变量。PHP提供了一个创建全局变量的机制，可以同时应用在线程和非线程环境中。
+我们应当始终利用这个机制，而不要自主地定义全局变量。用一个宏访问这些全局变量，使用起来就像普通全局变量一样。
 
-用于生成myfile工程骨架文件的ext_skel脚本创建了必要的代码来支持全局变量。通过检查php_myfile.h文件，你应当发现类似下面的被注释掉的一节，
+用于生成myfile工程骨架文件的ext_skel脚本创建了必要的代码来支持全局变量。通过检查php_myfile.h文件，
+你应当发现类似下面的被注释掉的一节，
 复制代码代码如下:
-
 ZEND_BEGIN_MODULE_GLOBALS(myfile)
 int global_value;
 char *global_string;
 ZEND_END_MODULE_GLOBALS(myfile)
-
-你可以把这一节的注释去掉，同时添加任何其他全局变量于这两个宏之间。文件后部的几行，骨架脚本自动地定义一个MYFILE_G(v)宏。这个宏应当被用于所有的代码，以便访问这些全局变量。这就确保在多线程环境中，访问的全局变量仅是一个线程的拷贝，而不需要互斥的操作。
+你可以把这一节的注释去掉，同时添加任何其他全局变量于这两个宏之间。文件后部的几行，骨架脚本自动地定义一个MYFILE_G(v)宏。
+这个宏应当被用于所有的代码，以便访问这些全局变量。
+这就确保在多线程环境中，访问的全局变量仅是一个线程的拷贝，而不需要互斥的操作。
 
 为了使全局变量有效，最后需要做的是把myfile.c：
 复制代码代码如下:
@@ -29321,37 +28815,31 @@ ZEND_DECLARE_MODULE_GLOBALS(myfile)
 
 注释去掉。
 
-你也许希望在每次PHP请求的开始初始化全局变量。另外，做为一个例子，全局变量已指向了一个已分配的内存，在每次PHP请求结束时需要释放内存。为了达到这些目的，全局变量机制提供了一个特殊的宏，用于注册全局变量的构造和析构函数（参考表对宏参数的说明）：
+你也许希望在每次PHP请求的开始初始化全局变量。另外，做为一个例子，全局变量已指向了一个已分配的内存，
+在每次PHP请求结束时需要释放内存。为了达到这些目的，全局变量机制提供了一个特殊的宏，
+用于注册全局变量的构造和析构函数（参考表对宏参数的说明）：
 复制代码代码如下:
-
 ZEND_INIT_MODULE_GLOBALS(module_name, globals_ctor, globals_dtor)
-
 表 ZEND_INIT_MODULE_GLOBALS 宏参数
 参数	含义
 module_name	与传递给ZEND_BEGIN_MODULE_GLOBALS()宏相同的扩展名称。
 globals_ctor	构造函数指针。在myfile扩展里，函数原形与void php_myfile_init_globals(zend_myfile_globals *myfile_globals)类似
 globals_dtor	析构函数指针。例如，php_myfile_init_globals(zend_myfile_globals *myfile_globals)
-
 你可以在myfile.c里看到如何使用构造函数和ZEND_INIT_MODULE_GLOBALS()宏的示例。
-
 添加自定义INI指令
-INI文件(php.ini)的实现使得PHP扩展注册和监听各自的INI条目。如果这些INI条目由php.ini、Apache的htaccess或其他配置方法来赋值，注册的INI变量总是更新到正确的值。整个INI框架有许多不同的选项以实现其灵活性。我们涉及一些基本的（也是个好的开端），借助本章的其他材料，我们就能够应付日常开发工作的需要。
-
+INI文件(php.ini)的实现使得PHP扩展注册和监听各自的INI条目。
+如果这些INI条目由php.ini、Apache的htaccess或其他配置方法来赋值，注册的INI变量总是更新到正确的值。
+整个INI框架有许多不同的选项以实现其灵活性。我们涉及一些基本的（也是个好的开端），
+借助本章的其他材料，我们就能够应付日常开发工作的需要。
 通过在PHP_INI_BEGIN()/PHP_INI_END()宏之间的STD_PHP_INI_ENTRY()宏注册PHP INI指令。例如在我们的例子里，myfile.c中的注册过程应当如下：
-
 复制代码代码如下:
-
 PHP_INI_BEGIN()
 STD_PHP_INI_ENTRY("myfile.global_value", "42", PHP_INI_ALL, OnUpdateInt, global_value, zend_myfile_globals, myfile_globals)
 STD_PHP_INI_ENTRY("myfile.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_myfile_globals, myfile_globals)
 PHP_INI_END()
-
-
 除了STD_PHP_INI_ENTRY()其他宏也能够使用，但这个宏是最常用的，可以满足大多数需要（参看表对宏参数的说明）：
 复制代码代码如下:
-
 STD_PHP_INI_ENTRY(name, default_value, modifiable, on_modify, property_name, struct_type, struct_ptr)
-
 STD_PHP_INI_ENTRY 宏参数表
 参数	含义
 name	INI条目名
@@ -29370,37 +28858,31 @@ on_modify	处理INI条目更改的回调函数。你不需自己编写处理程�
 property_name	应当被更新的变量名
 struct_type	变量驻留的结构类型。因为通常使用全局变量机制，所以这个类型自动被定义，类似于zend_myfile_globals。
 struct_ptr	全局结构名。如果使用全局变量机制，该名为myfile_globals。
-
 最后，为了使自定义INI条目机制正常工作，你需要分别去掉PHP_MINIT_FUNCTION(myfile)中的REGISTER_INI_ENTRIES()调用和PHP_MSHUTDOWN_FUNCTION(myfile)中的UNREGISTER_INI_ENTRIES()的注释。
-
 访问两个示例全局变量中的一个与在扩展里编写MYFILE_G(global_value) 和MYFILE_G(global_string)一样简单。
-
 如果你把下面的两行放在php.ini中，MYFILE_G(global_value)的值会变为99。
 复制代码代码如下:
-
 ; php.ini – The following line sets the INI entry myfile.global_value to 99.myfile.global_value = 9
-
 线程安全资源管理宏
 现在，你肯定注意到以TSRM（线程安全资源管理器）开头的宏随处使用。这些宏提供给扩展拥有独自的全局变量的可能，正如前面提到的。
-
-当编写PHP扩展时，无论是在多进程或多线程环境中，都是依靠这一机制访问扩展自己的全局变量。如果使用全局变量访问宏（例如MYFILE_G()宏），需要确保TSRM上下文信息出现在当前函数中。基于性能的原因，Zend引擎试图把这个上下文信息作为参数传递到更多的地方，包括PHP_FUNCTION()的定义。正因为这样，在PHP_FUNCTION()内当编写的代码使用访问宏（例如MYFILE_G()宏）时，不需要做任何特殊的声明。然而，如果PHP函数调用其他需要访问全局变量的C函数，要么把上下文作为一个额外的参数传递给C函数，要么提取上下文（要慢点）。
-
+当编写PHP扩展时，无论是在多进程或多线程环境中，都是依靠这一机制访问扩展自己的全局变量。
+如果使用全局变量访问宏（例如MYFILE_G()宏），需要确保TSRM上下文信息出现在当前函数中。
+基于性能的原因，Zend引擎试图把这个上下文信息作为参数传递到更多的地方，包括PHP_FUNCTION()的定义。
+正因为这样，在PHP_FUNCTION()内当编写的代码使用访问宏（例如MYFILE_G()宏）时，不需要做任何特殊的声明。
+然而，如果PHP函数调用其他需要访问全局变量的C函数，要么把上下文作为一个额外的参数传递给C函数，要么提取上下文（要慢点）。
 在需要访问全局变量的代码块开头使用TSRMLS_FETCH()来提取上下文。例如：
 复制代码代码如下:
-
 void myfunc(){
 TSRMLS_FETCH();
-
 MYFILE_G(myglobal) = 2;
 }
-
-如果希望让代码更加优化，更好的办法是直接传递上下文给函数（正如前面叙述的，PHP_FUNCTION()范围内自动可用）。可以使用TSRMLS_C（C表示调用Call）和TSRMLS_CC（CC边式调用Call和逗号Comma）宏。前者应当用于仅当上下文作为一个单独的参数，后者应用于接受多个参数的函数。在后一种情况中，因为根据取名，逗号在上下文的前面，所以TSRMLS_CC不能是第一个函数参。
-
+如果希望让代码更加优化，更好的办法是直接传递上下文给函数（正如前面叙述的，PHP_FUNCTION()范围内自动可用）。
+可以使用TSRMLS_C（C表示调用Call）和TSRMLS_CC（CC边式调用Call和逗号Comma）宏。
+前者应当用于仅当上下文作为一个单独的参数，后者应用于接受多个参数的函数。
+在后一种情况中，因为根据取名，逗号在上下文的前面，所以TSRMLS_CC不能是第一个函数参。
 在函数原形中，可以分别使用TSRMLS_D和TSRMLS_DC宏声名正在接收上下文。
-
 下面是前一例子的重写，利用了参数传递上下文。
 复制代码代码如下:
-
 void myfunc(TSRMLS_D){
 MYFILE_G(myglobal) = 2;
 }
@@ -29413,237 +28895,192 @@ myfunc(TSRMLS_C);
 ~
 
 总 结
-现在，你已经学到了足够的东西来创建自己的扩展。本章讲述了一些重要的基础来编写和理解PHP扩展。Zend引擎提供的扩展API相当丰富，使你能够开发面向对象的扩展。几乎没有文档谈几许多高级特性。当然，依靠本章所学的基础知识，你可以通过浏览现有的原码学到很多。
-
-更多关于信息可以在PHP手册的扩展PHP章节http://www.php.net/manual/en/zend.php中找到。另外，你也可以考虑加入PHP开发者邮件列表internals@ lists.php.net，该邮件列表围绕开发PHP 本身。你还可以查看一下新的扩展生成工具——PECL_Gen(http://pear.php.net/package/PECL_Gen)，这个工具正在开发之中，比起本章使用的ext_skel有更多的特性。
+现在，你已经学到了足够的东西来创建自己的扩展。本章讲述了一些重要的基础来编写和理解PHP扩展。
+Zend引擎提供的扩展API相当丰富，使你能够开发面向对象的扩展。几乎没有文档谈几许多高级特性。
+当然，依靠本章所学的基础知识，你可以通过浏览现有的原码学到很多。
+更多关于信息可以在PHP手册的扩展PHP章节http://www.php.net/manual/en/zend.php中找到。
+另外，你也可以考虑加入PHP开发者邮件列表internals@ lists.php.net，该邮件列表围绕开发PHP 本身。
+你还可以查看一下新的扩展生成工具——PECL_Gen(http://pear.php.net/package/PECL_Gen)，这个工具正在开发之中，
+比起本章使用的ext_skel有更多的特性。
 ```
 
 ### 修改 PHP Session 存储位置、修改 INI 配置参数
 ```
-n文件保存在c:/tmp目录下，默认tmp目录并没有创建，你可以在c盘下创建tmp目录，或者创建一个其他目录，比如leapsoulcn，再修改session.save_path的值，并去掉;，即
-
-　　session.save_path = ‘/leapsoulcn’;
-
-　　注意事项：
-
-　　1、一般为了保证服务器的安全，session.save_path值最好设置为外网无法访问的目录，另外如果你是在linux服务器下进行session配置，请务必同时配置此目录为可读写权限，否则在执行session操作时会报错。
-
-　　2、在使用session变量时，为了保证服务器的安全性，最好将register_globals设置为off，以保证全局变量不混淆，在使用session_register()注册session变量时，你可以通过系统全局变量$_SESSION来访问，比如你注册了leapsoulcn变量，你可以通过$_SESSION['leapsoulcn']来访问此变量。
-
-　　session.save_path配置其他说明事项，从php.ini配置文件翻译而来
-
-　　你可以使用”N;[MODE;]/path”这样模式定义该路径，N是一个整数，表示使用N层深度的子目录，而不是将所有数据文件都保存在一个目录下。
-
-　　[MODE;]可选，必须使用8进制数，默认600(=384)，表示每个目录下最多保存的会话文件数量。[MODE;]并不会改写进程的umask。php不会自动创建这些文件夹结构。可使用ext/session目录下的mod_files.sh脚本创建。如果该文件夹可以被不安全的用户访问(比如默认的”/tmp”)，那么将会带来安全漏洞。当N>0时自动垃圾回收将会失效，具体参见下面有关垃圾搜集的部分。
-
-　　如果你服务器上有多个虚拟主机，建议针对每个不同的虚拟主机分别设置各自不同的目录。
-
-　　至此最基本的session配置就完成了，你只要保存php.ini，并重启apache，即可使用session功能。
-
-　　其他session配置说明
-
-　　session.save_handler = ”files”
-
-　　默认以文件方式存取session数据，如果想要使用自定义的处理器来存取session数据，比如数据库，用”user”。
-
-　　session.use_cookies = 1
-
-　　是否使用cookies在客户端保存会话sessionid，默认为采用cookies
-
-　　session.use_only_cookies = 0
-
-　　是否仅仅使用cookie在客户端保存会话sessionid，这个选项可以使管理员禁止用户通过URL来传递id，默认为0，如果禁用的话，客户端如果禁用Cookie将使session无法工作。
-
-　　session.name = “PHPSESSID”
-
-　　当做cookie name来使用的session标识名
-
-　　session.auto_start = 0
-
-　　是否自动启动session，默认不启动，我们知道在使用session功能时，我们基本上在每个php脚本头部都会通过session_start()函数来启动session，如果你启动这个选项，则在每个脚本头部都会自动启动session，不需要每个脚本头部都以session_start()函数启动session，推荐关闭这个选项，采用默认值。
-
-　　session.cookie_lifetime = 0
-
-　　传递sessionid的Cookie有效期(秒)，0表示仅在浏览器打开期间有效。
-
-　　session.gc_probability = 1
-
-　　session.gc_divisor = 100
-
-　　定义在每次初始化会话时，启动垃圾回收程序的概率。计算公式如下：session.gc_probability/session.gc_divisor，比如1/100，表示有1%的概率启动启动垃圾回收程序，对会话页面访问越频繁，概率就应当越小。建议值为1/1000~5000。
-
-　　session.gc_maxlifetime = 1440
-
-　　设定保存的session文件生存期，超过此参数设定秒数后，保存的数据将被视为’垃圾’并由垃圾回收程序清理。判断标准是最后访问数据的时间(对于FAT文件系统是最后刷新数据的时间)。如果多个脚本共享同一个session.save_path目录但session.gc_maxlifetime不同，将以所有session.gc_maxlifetime指令中的最小值为准。
-
-　　如果你在session.save_path选项中设定使用子目录来存储session数据文件，垃圾回收程序不会自动启动，你必须使用自己编写的shell脚本、cron项或者其他办法来执行垃圾搜集。
-
-　　比如设置”session.gc_maxlifetime=1440″ (24分钟)：
-
-　　cd /path/to/sessions; find -cmin +24 | xargs rm
-
-　　以上是一些常用的session配置选项说明，更多的session配置选项说明你可以参考php.ini文件中的说明。
-
-　　至此，在php.ini配置文件中对session进行配置的PHP教程就介绍完毕了，通过上面的步骤实践与学习，基本的session功能都可以使用，至于session性能等其他方面则需要根据服务器环境和需求进行微调了，这个得自己体会。
+n文件保存在c:/tmp目录下，默认tmp目录并没有创建，你可以在c盘下创建tmp目录，或者创建一个其他目录，
+比如leapsoulcn，再修改session.save_path的值，并去掉;，即
+session.save_path = ‘/leapsoulcn’;
+注意事项：
+1、一般为了保证服务器的安全，session.save_path值最好设置为外网无法访问的目录，
+另外如果你是在linux服务器下进行session配置，请务必同时配置此目录为可读写权限，否则在执行session操作时会报错。
+2、在使用session变量时，为了保证服务器的安全性，最好将register_globals设置为off，
+以保证全局变量不混淆，在使用session_register()注册session变量时，你可以通过系统全局变量$_SESSION来访问，
+比如你注册了leapsoulcn变量，你可以通过$_SESSION['leapsoulcn']来访问此变量。
+session.save_path配置其他说明事项，从php.ini配置文件翻译而来
+你可以使用”N;[MODE;]/path”这样模式定义该路径，N是一个整数，表示使用N层深度的子目录，
+而不是将所有数据文件都保存在一个目录下。
+[MODE;]可选，必须使用8进制数，默认600(=384)，表示每个目录下最多保存的会话文件数量。
+[MODE;]并不会改写进程的umask。php不会自动创建这些文件夹结构。
+可使用ext/session目录下的mod_files.sh脚本创建。如果该文件夹可以被不安全的用户访问(比如默认的”/tmp”)，
+那么将会带来安全漏洞。当N>0时自动垃圾回收将会失效，具体参见下面有关垃圾搜集的部分。
+如果你服务器上有多个虚拟主机，建议针对每个不同的虚拟主机分别设置各自不同的目录。
+至此最基本的session配置就完成了，你只要保存php.ini，并重启apache，即可使用session功能。
+其他session配置说明
+session.save_handler = ”files”
+默认以文件方式存取session数据，如果想要使用自定义的处理器来存取session数据，比如数据库，用”user”。
+session.use_cookies = 1
+是否使用cookies在客户端保存会话sessionid，默认为采用cookies
+session.use_only_cookies = 0
+是否仅仅使用cookie在客户端保存会话sessionid，这个选项可以使管理员禁止用户通过URL来传递id，默认为0，
+如果禁用的话，客户端如果禁用Cookie将使session无法工作。
+session.name = “PHPSESSID”
+当做cookie name来使用的session标识名
+session.auto_start = 0
+是否自动启动session，默认不启动，我们知道在使用session功能时，
+我们基本上在每个php脚本头部都会通过session_start()函数来启动session，
+如果你启动这个选项，则在每个脚本头部都会自动启动session，不需要每个脚本头部都以session_start()函数启动session，
+推荐关闭这个选项，采用默认值。
+session.cookie_lifetime = 0
+传递sessionid的Cookie有效期(秒)，0表示仅在浏览器打开期间有效。
+session.gc_probability = 1
+session.gc_divisor = 100
+定义在每次初始化会话时，启动垃圾回收程序的概率。计算公式如下：session.gc_probability/session.gc_divisor，
+比如1/100，表示有1%的概率启动启动垃圾回收程序，对会话页面访问越频繁，概率就应当越小。建议值为1/1000~5000。
+session.gc_maxlifetime = 1440
+设定保存的session文件生存期，超过此参数设定秒数后，保存的数据将被视为’垃圾’并由垃圾回收程序清理。
+判断标准是最后访问数据的时间(对于FAT文件系统是最后刷新数据的时间)。
+如果多个脚本共享同一个session.save_path目录但session.gc_maxlifetime不同，
+将以所有session.gc_maxlifetime指令中的最小值为准。
+如果你在session.save_path选项中设定使用子目录来存储session数据文件，垃圾回收程序不会自动启动，
+你必须使用自己编写的shell脚本、cron项或者其他办法来执行垃圾搜集。
+比如设置”session.gc_maxlifetime=1440″ (24分钟)：
+cd /path/to/sessions; find -cmin +24 | xargs rm
+以上是一些常用的session配置选项说明，更多的session配置选项说明你可以参考php.ini文件中的说明。
+至此，在php.ini配置文件中对session进行配置的PHP教程就介绍完毕了，通过上面的步骤实践与学习，
+基本的session功能都可以使用，至于session性能等其他方面则需要根据服务器环境和需求进行微调了，这个得自己体会。
 ```
 
 ### 负载均衡有哪几种，挑一种你熟悉的说明其原理
 ```
 在说明常用负载均衡原理之前我们需要先知道何为“均衡”？
-
-均衡，不能狭义地理解为分配给所有实际服务器一样多的工作量，因为多台服务器的承载能力各不相同，这可能体现在硬件配置、网络带宽的差异，也可能因为某台服务器身兼多职，我们所说的“均衡”，也就是希望所有服务器都不要过载，并且能够最大程序地发挥作用。
-
-
+均衡，不能狭义地理解为分配给所有实际服务器一样多的工作量，因为多台服务器的承载能力各不相同，
+这可能体现在硬件配置、网络带宽的差异，也可能因为某台服务器身兼多职，我们所说的“均衡”，
+也就是希望所有服务器都不要过载，并且能够最大程序地发挥作用。
 一、IP负载均衡(LVS-NAT)
-
 因为反向代理服务器工作在HTTP层，其本身的开销就已经严重制约了可扩展性，从而也限制了它的性能极限。那能否在HTTP层面以下实现负载均衡呢？
-
-当用户请求的数据包到达负载均衡服务器后，服务器会在操作系统内核进程获取网络数据包，然后根据负载均衡算法计算得到一台真实的Web服务器，然后将数据目的地址修改为新的地址，真实的Web服务器处理完成后，响应数据包会回到负载均衡服务器，负载均衡服务器再将数据包原地址修改为自身的IP发送给用户浏览器。
-
-相较于反向代理负载均衡，IP负载均衡由于是在内核进程完成的数据分发，因此具有更好的处理性能。但是仍然没有解决的一个问题是：所有请求响应都要经过负载均衡服务器，所以这个时候负载均衡服务器的网卡带宽就成为集群吞吐量的瓶颈。
-
+当用户请求的数据包到达负载均衡服务器后，服务器会在操作系统内核进程获取网络数据包，
+然后根据负载均衡算法计算得到一台真实的Web服务器，然后将数据目的地址修改为新的地址，
+真实的Web服务器处理完成后，响应数据包会回到负载均衡服务器，负载均衡服务器再将数据包原地址修改为自身的IP发送给用户浏览器。
+相较于反向代理负载均衡，IP负载均衡由于是在内核进程完成的数据分发，因此具有更好的处理性能。
+但是仍然没有解决的一个问题是：所有请求响应都要经过负载均衡服务器，所以这个时候负载均衡服务器的网卡带宽就成为集群吞吐量的瓶颈。
 二、DNS负载均衡
-
-
-DNS负责提供域名解析服务，当访问某个站点时，实际上首先需要通过该站点域名的DNS服务器来获取域名指向的IP地址，在这一过程中，DNS服务器完成了域名到IP地址的映射，同样，这样映射也可以是一对多的，这时候，DNS服务器便充当了负载均衡调度器，它就像http重定向转换策略一样，将用户的请求分散到多台服务器上，但是它的实现机制完全不同。
-
-相比http重定向，基于DNS的负载均衡完全节省了所谓的主站点，或者说DNS服务器已经充当了主站点的职能。但不同的是，作为调度器，DNS服务器本身的性能几乎不用担心。因为DNS记录可以被用户浏览器或者互联网接入服务商的各级DNS服务器缓存，只有当缓存过期后才会重新向域名的DNS服务器请求解析。也说是DNS不存在http的吞吐率限制，理论上可以无限增加实际服务器的数量。
-
+DNS负责提供域名解析服务，当访问某个站点时，实际上首先需要通过该站点域名的DNS服务器来获取域名指向的IP地址，
+在这一过程中，DNS服务器完成了域名到IP地址的映射，同样，这样映射也可以是一对多的，
+这时候，DNS服务器便充当了负载均衡调度器，它就像http重定向转换策略一样，
+将用户的请求分散到多台服务器上，但是它的实现机制完全不同。
+相比http重定向，基于DNS的负载均衡完全节省了所谓的主站点，或者说DNS服务器已经充当了主站点的职能。
+但不同的是，作为调度器，DNS服务器本身的性能几乎不用担心。因为DNS记录可以被用户浏览器或者互联网接入服务商的各级DNS服务器缓存，
+只有当缓存过期后才会重新向域名的DNS服务器请求解析。也说是DNS不存在http的吞吐率限制，理论上可以无限增加实际服务器的数量。
 特性:
-
 1、可以根据用户IP来进行智能解析。DNS服务器可以在所有可用的A记录中寻找离用记最近的一台服务器。
-
 2、动态DNS：在每次IP地址变更时，及时更新DNS服务器。当然，因为缓存，一定的延迟不可避免。
-
 不足：
-
 1、没有用户能直接看到DNS解析到了哪一台实际服务器，加服务器运维人员的调试带来了不便。
-
-2、策略的局限性。例如你无法将HTTP请求的上下文引入到调度策略中，而在前面介绍的基于HTTP重定向的负载均衡系统中，调度器工作在HTTP层面，它可以充分理解HTTP请求后根据站点的应用逻辑来设计调度策略，比如根据请求不同的URL来进行合理的过滤和转移。
-
-3、如果要根据实际服务器的实时负载差异来调整调度策略，这需要DNS服务器在每次解析操作时分析各服务器的健康状态，对于DNS服务器来说，这种自定义开发存在较高的门槛，更何况大多数站点只是使用第三方DNS服务。
-
+2、策略的局限性。例如你无法将HTTP请求的上下文引入到调度策略中，而在前面介绍的基于HTTP重定向的负载均衡系统中，
+调度器工作在HTTP层面，它可以充分理解HTTP请求后根据站点的应用逻辑来设计调度策略，
+比如根据请求不同的URL来进行合理的过滤和转移。
+3、如果要根据实际服务器的实时负载差异来调整调度策略，这需要DNS服务器在每次解析操作时分析各服务器的健康状态，
+对于DNS服务器来说，这种自定义开发存在较高的门槛，更何况大多数站点只是使用第三方DNS服务。
 4、DNS记录缓存，各级节点的DNS服务器不同程序的缓存会让你晕头转向。
-
 5、基于以上几点，DNS服务器并不能很好地完成工作量均衡分配，最后，是否选择基于DNS的负载均衡方式完全取决于你的需要。
-
 三、反向代理负载均衡
-
-
 这个肯定大家都有所接触，因为几乎所有主流的Web服务器都热衷于支持基于反向代理的负载均衡。它的核心工作就是转发HTTP请求。
-
 相比前面的HTTP重定向和DNS解析，反向代理的调度器扮演的是用户和实际服务器中间人的角色：
-
 1、任何对于实际服务器的HTTP请求都必须经过调度器
-
 2、调度器必须等待实际服务器的HTTP响应，并将它反馈给用户（前两种方式不需要经过调度反馈，是实际服务器直接发送给用户）
-
 特性：
-
 1、调度策略丰富。例如可以为不同的实际服务器设置不同的权重，以达到能者多劳的效果。
-
 2、对反向代理服务器的并发处理能力要求高，因为它工作在HTTP层面。
-
-3、反向代理服务器进行转发操作本身是需要一定开销的，比如创建线程、与后端服务器建立TCP连接、接收后端服务器返回的处理结果、分析HTTP头部信息、用户空间和内核空间的频繁切换等，虽然这部分时间并不长，但是当后端服务器处理请求的时间非常短时，转发的开销就显得尤为突出。例如请求静态文件，更适合使用前面介绍的基于DNS的负载均衡方式。
-
-4、反向代理服务器可以监控后端服务器，比如系统负载、响应时间、是否可用、TCP连接数、流量等，从而根据这些数据调整负载均衡的策略。
-
-5、反射代理服务器可以让用户在一次会话周期内的所有请求始终转发到一台特定的后端服务器上（粘滞会话），这样的好处一是保持session的本地访问，二是防止后端服务器的动态内存缓存的资源浪费。
-
+3、反向代理服务器进行转发操作本身是需要一定开销的，比如创建线程、与后端服务器建立TCP连接、
+接收后端服务器返回的处理结果、分析HTTP头部信息、用户空间和内核空间的频繁切换等，虽然这部分时间并不长，
+但是当后端服务器处理请求的时间非常短时，转发的开销就显得尤为突出。例如请求静态文件，
+更适合使用前面介绍的基于DNS的负载均衡方式。
+4、反向代理服务器可以监控后端服务器，比如系统负载、响应时间、是否可用、TCP连接数、流量等，
+从而根据这些数据调整负载均衡的策略。
+5、反射代理服务器可以让用户在一次会话周期内的所有请求始终转发到一台特定的后端服务器上（粘滞会话），
+这样的好处一是保持session的本地访问，二是防止后端服务器的动态内存缓存的资源浪费。
 四、http重定向
-
-当http代理（比如浏览器）向web服务器请求某个URL后，web服务器可以通过http响应头信息中的Location标记来返回一个新的URL。这意味着HTTP代理需要继续请求这个新的URL，完成自动跳转。
-
+当http代理（比如浏览器）向web服务器请求某个URL后，web服务器可以通过http响应头信息中的Location标记来返回一个新的URL。
+这意味着HTTP代理需要继续请求这个新的URL，完成自动跳转。
 性能缺陷：
-
 1、吞吐率限制
-
-主站点服务器的吞吐率平均分配到了被转移的服务器。现假设使用RR（Round Robin）调度策略，子服务器的最大吞吐率为1000reqs/s，那么主服务器的吞吐率要达到3000reqs/s才能完全发挥三台子服务器的作用，那么如果有100台子服务器，那么主服务器的吞吐率可想而知得有大？相反，如果主服务的最大吞吐率为6000reqs/s，那么平均分配到子服务器的吞吐率为2000reqs/s，而现子服务器的最大吞吐率为1000reqs/s，因此就得增加子服务器的数量，增加到6个才能满足。
-
+主站点服务器的吞吐率平均分配到了被转移的服务器。现假设使用RR（Round Robin）调度策略，子服务器的最大吞吐率为1000reqs/s，
+那么主服务器的吞吐率要达到3000reqs/s才能完全发挥三台子服务器的作用，那么如果有100台子服务器，
+那么主服务器的吞吐率可想而知得有大？相反，如果主服务的最大吞吐率为6000reqs/s，
+那么平均分配到子服务器的吞吐率为2000reqs/s，而现子服务器的最大吞吐率为1000reqs/s，
+因此就得增加子服务器的数量，增加到6个才能满足。
 2、重定向访问深度不同
-
-有的重定向一个静态页面，有的重定向相比复杂的动态页面，那么实际服务器的负载差异是不可预料的，而主站服务器却一无所知。因此整站使用重定向方法做负载均衡不太好。
-
-我们需要权衡转移请求的开销和处理实际请求的开销，前者相对于后者越小，那么重定向的意义就越大，例如下载。你可以去很多镜像下载网站试下，会发现基本下载都使用了Location做了重定向。
-
-最后要感谢这个优秀的平台，可以让我们相互交流，如果想进一步学习交流，可以加群460570824，希望大家可以一起学习进步！
-
+有的重定向一个静态页面，有的重定向相比复杂的动态页面，那么实际服务器的负载差异是不可预料的，
+而主站服务器却一无所知。因此整站使用重定向方法做负载均衡不太好。
+我们需要权衡转移请求的开销和处理实际请求的开销，前者相对于后者越小，那么重定向的意义就越大，例如下载。
+你可以去很多镜像下载网站试下，会发现基本下载都使用了Location做了重定向。
 ```
 
 ### 数据库主从复制 M-S 是怎么同步的？是推还是拉？会不会不同步？怎么办
 ```
 0、为什么需要主从复制？
-1、在业务复杂的系统中，有这么一个情景，有一句sql语句需要锁表，导致暂时不能使用读的服务，那么就很影响运行中的业务，使用主从复制，让主库负责写，从库负责读，这样，即使主库出现了锁表的情景，通过读从库也可以保证业务的正常运作。
-
+1、在业务复杂的系统中，有这么一个情景，有一句sql语句需要锁表，导致暂时不能使用读的服务，那么就很影响运行中的业务，
+使用主从复制，让主库负责写，从库负责读，这样，即使主库出现了锁表的情景，通过读从库也可以保证业务的正常运作。
 2、做数据的热备
-
 3、架构的扩展。业务量越来越大，I/O访问频率过高，单机无法满足，此时做多库的存储，降低磁盘I/O访问的频率，提高单个机器的I/O性能。
-
 1、什么是mysql的主从复制？
-MySQL 主从复制是指数据可以从一个MySQL数据库服务器主节点复制到一个或多个从节点。MySQL 默认采用异步复制方式，这样从节点不用一直访问主服务器来更新自己的数据，数据的更新可以在远程连接上进行，从节点可以复制主数据库中的所有数据库或者特定的数据库，或者特定的表。
-
+MySQL 主从复制是指数据可以从一个MySQL数据库服务器主节点复制到一个或多个从节点。
+MySQL 默认采用异步复制方式，这样从节点不用一直访问主服务器来更新自己的数据，数据的更新可以在远程连接上进行，
+从节点可以复制主数据库中的所有数据库或者特定的数据库，或者特定的表。
 2、mysql复制原理
 原理：
 （1）master服务器将数据的改变记录二进制binlog日志，当master上的数据发生改变时，则将其改变写入二进制日志中；
-
 （2）slave服务器会在一定时间间隔内对master二进制日志进行探测其是否发生改变，如果发生改变，则开始一个I/OThread请求master二进制事件
-
 （3）同时主节点为每个I/O线程启动一个dump线程，用于向其发送二进制事件，并保存至从节点本地的中继日志中，从节点将启动SQL线程从中继日志中读取二进制日志，在本地重放，使得其数据和主节点的保持一致，最后I/OThread和SQLThread将进入睡眠状态，等待下一次被唤醒。
-
 也就是说：
 从库会生成两个线程,一个I/O线程,一个SQL线程;
 I/O线程会去请求主库的binlog,并将得到的binlog写到本地的relay-log(中继日志)文件中;
 主库会生成一个log dump线程,用来给从库I/O线程传binlog;
 SQL线程,会读取relay log文件中的日志,并解析成sql语句逐一执行;
 注意：
-1--master将操作语句记录到binlog日志中，然后授予slave远程连接的权限（master一定要开启binlog二进制日志功能；通常为了数据安全考虑，slave也开启binlog功能）。 2--slave开启两个线程：IO线程和SQL线程。其中：IO线程负责读取master的binlog内容到中继日志relay log里；SQL线程负责从relay log日志里读出binlog内容，并更新到slave的数据库里，这样就能保证slave数据和master数据保持一致了。 3--Mysql复制至少需要两个Mysql的服务，当然Mysql服务可以分布在不同的服务器上，也可以在一台服务器上启动多个服务。 4--Mysql复制最好确保master和slave服务器上的Mysql版本相同（如果不能满足版本一致，那么要保证master主节点的版本低于slave从节点的版本） 5--master和slave两节点间时间需同步
-
+1--master将操作语句记录到binlog日志中，然后授予slave远程连接的权限
+（master一定要开启binlog二进制日志功能；通常为了数据安全考虑，slave也开启binlog功能）。 
+2--slave开启两个线程：IO线程和SQL线程。其中：IO线程负责读取master的binlog内容到中继日志relay log里；
+SQL线程负责从relay log日志里读出binlog内容，并更新到slave的数据库里，这样就能保证slave数据和master数据保持一致了。 
+3--Mysql复制至少需要两个Mysql的服务，当然Mysql服务可以分布在不同的服务器上，也可以在一台服务器上启动多个服务。 
+4--Mysql复制最好确保master和slave服务器上的Mysql版本相同（如果不能满足版本一致，那么要保证master主节点的版本低于slave从节点的版本） 5--master和slave两节点间时间需同步
 
 具体步骤：
-1、从库通过手工执行change master to 语句连接主库，提供了连接的用户一切条件（user 、password、port、ip），并且让从库知道，二进制日志的起点位置（file名 position 号）； start slave
-
+1、从库通过手工执行change master to 语句连接主库，提供了连接的用户一切条件（user 、password、port、ip），
+并且让从库知道，二进制日志的起点位置（file名 position 号）； start slave
 2、从库的IO线程和主库的dump线程建立连接。
-
 3、从库根据change master to 语句提供的file名和position号，IO线程向主库发起binlog的请求。
-
 4、主库dump线程根据从库的请求，将本地binlog以events的方式发给从库IO线程。
-
 5、从库IO线程接收binlog events，并存放到本地relay-log中，传送过来的信息，会记录到http://master.info中
-
 6、从库SQL线程应用relay-log，并且把应用过的记录到http://relay-log.info中，默认情况下，已经应用过的relay 会自动被清理purge
-
 3、mysql主从形式
 （一）一主一从
-
 （二）主主复制
-
-
 （三）一主多从
-
-
 （四）多主一从
-
-
 （五）联级复制
-
-
 4、mysql主从同步延时分析
-mysql的主从复制都是单线程的操作，主库对所有DDL和DML产生的日志写进binlog，由于binlog是顺序写，所以效率很高，slave的sql thread线程将主库的DDL和DML操作事件在slave中重放。DML和DDL的IO操作是随机的，不是顺序，所以成本要高很多，另一方面，由于sql thread也是单线程的，当主库的并发较高时，产生的DML数量超过slave的SQL thread所能处理的速度，或者当slave中有大型query语句产生了锁等待，那么延时就产生了。
-
+mysql的主从复制都是单线程的操作，主库对所有DDL和DML产生的日志写进binlog，由于binlog是顺序写，所以效率很高，
+slave的sql thread线程将主库的DDL和DML操作事件在slave中重放。
+DML和DDL的IO操作是随机的，不是顺序，所以成本要高很多，另一方面，由于sql thread也是单线程的，
+当主库的并发较高时，产生的DML数量超过slave的SQL thread所能处理的速度，
+或者当slave中有大型query语句产生了锁等待，那么延时就产生了。
 解决方案：
-
 1.业务的持久化层的实现采用分库架构，mysql服务可平行扩展，分散压力。
-
 2.单个库读写分离，一主多从，主写从读，分散压力。这样从库压力比主库高，保护主库。
-
 3.服务的基础架构在业务和mysql之间加入memcache或者redis的cache层。降低mysql的读压力。
-
 4.不同业务的mysql物理上放在不同机器，分散压力。
-
 5.使用比主库更好的硬件设备作为slave，mysql压力小，延迟自然会变小。
-
 6.使用更加强劲的硬件设备
-
 主从复制中可能遇到主从数据不一致的情况，好了篇帖子，介绍比较详细
 ————————————如下———————————————-
 先上Master库：
@@ -29718,254 +29155,173 @@ Slave_SQL_Running: Yes
 ### 如何保障数据的可用性，即使被删库了也能恢复到分钟级别。你会怎么做。
 ```
 高可用数据库架构】
-
 一般来说数据库集群会是主从架构：
-
-
 或者主主架构：
-
-
- 
-
 如果此时主库宕机，可以：
-
 （1）一个从库顶上，重建集群
-
 （2）流量迁移到另一个主库
-
 来保证数据的安全性与服务的可用性。
-
- 
-
 但是，如果人为不小心执行了“删全库”操作，命令会同步给其他从（主）库，导致所有库上的数据全部丢失，这下怎么办呢？
-
 可以问问自己，当这种情况发生的时候：
-
 （1）能不能恢复数据？（应该没有公司不能）
-
 （2）多久能够恢复数据？
-
 保证数据的安全性是DBA第一要务。
-
- 
-
 【全量备份+增量备份】
-
 常见的数据库安全性策略是：全量备份+增量备份。
-
-
 全量备份：定期（例如一个月）将库文件全量备份
-
- 
-
-
 增量备份：定期（例如每天）将binlog增量备份
-
- 
-
 如果不小心误删了全库，可以这么恢复：
-
 （1）将最近一次全量备份的全库找到，拷贝回来（文件一般比较大），解压，应用
-
 （2）将最近一次全量备份后，每一天的增量binlog找到，拷贝回来（文件较多），依次重放
-
 （3）将最近一次增量备份后，到执行“删全库”之前的binlog找到，重放
-
 恢复完毕。
-
 为了保证方案的可靠性，建议定期进行恢复演练。
-
- 
-
 方案优点：能够找回数据
-
 方案缺点：恢复时间非常长
-
 有没有更优，更快恢复的方案呢？
-
- 
-
 【1小时延时从】
-
 使用1小时延时从库，可大大加速“删全库”恢复时间。
-
-
 什么是1小时延时从？
-
-如图所示，增加一个从库，这个从库不是实时与主库保持同步的，而是每隔1个小时同步一次主库，同步完之后立马断开1小时，这个从库会与主库保持1个小时的数据差距。
-
+如图所示，增加一个从库，这个从库不是实时与主库保持同步的，而是每隔1个小时同步一次主库，
+同步完之后立马断开1小时，这个从库会与主库保持1个小时的数据差距。
 当“删全库”事故发生时，只需要：
-
 （1）应用1小时延时从
-
 （2）将1小时延时从最近一次同步时间到，将执行“删全库”之前的binlog找到，重放
-
 快速恢复完毕。
-
- 
-
 方案优点：能够快速找回数据
-
 潜在不足：万一，万一，万一，1小时延时从正在连上主库进行同步的一小段时间内，发生了“删全库”事故，那怎么办咧？
-
- 
-
 【双份1小时延时从】
-
 使用双份1小时延时从库，可以避免上述“万一，万一，万一”的事故发生。
-
-
 什么是双份1小时延时从？
-
 如图所示，两个1小时延时从，他们连主库同步数据的时间“岔开半小时”。
-
-这样，即使一个延时从连上主库进行同步的一小段时间内，发生了“删全库”事故，依然有另一个延时从保有半小时之前的数据，可以实施快速恢复。
-
- 
-
+这样，即使一个延时从连上主库进行同步的一小段时间内，发生了“删全库”事故，
+依然有另一个延时从保有半小时之前的数据，可以实施快速恢复。
 方案优点：没有万一，都能快速恢复数据
-
 潜在不足：资源利用率有点低，为了保证数据的安全性，多了2台延时从，降低了从库利用率
-
- 
-
 【提高从库效率】
-
-
 1小时延时从也不是完全没有用，对于一些“允许延时”的业务，可以使用1小时延时从，例如：
-
 （1）运营后台，产品后台
-
 （2）BI进行数据同步
-
 （3）研发进行数据抽样，调研
-
 但需要注意的是，毕竟这是从库，只能够提供“只读”服务哟。
-
- 
-
 【总结】
-
 保证数据的安全性是DBA第一要务，需要进行：
-
 （1）全量备份+增量备份，并定期进行恢复演练，但该方案恢复时间较久，对系统可用性影响大
-
 （2）1小时延时从，双份1小时延时从能极大加速数据库恢复时间
-
 （3）个人建议1小时延时从足够，后台只读服务可以连1小时延时从，提高资源利用率
 ```
 
 ### 数据库连接过多，超过最大值，如何优化架构。从哪些方便处理？
 ```
 最近网站出现 User 数据库名称 has already more than 'max_user_connections' active connections 的报错，网站瘫痪。有必要研究下这个问题。
-
-max_user_connections 是 MySQL 用户连接数的最大值设置，整段语句的意思是：服务器的 MySQL 的最大连接数参数设置不足。解决方法：修改 MySQL 安装目录下 my.ini 或者 my.cnf 文件内的 max_user_connections 参数的数值，重启 MySQL 服务器。
-
-但是正常来说，MySQL默认的100个连接数是足够的。我们需要从程序上去考虑。MySQL的默认最大连接数为100（N），实际给普通用户使用只有N-1个，保留一个连接是留给超级管理员使用的，防止连接占满了不会把管理员也踢出来。很多网站在运行的时候都会出现连接数受限现象，我认为十之八九并非是网站的真实访问量太大导致连接数超标，更多是因为我们在设计网站程序的时候采用了不合理的设计架构或数据结构引起的。非正常连接超限可能原因如下（天缘即时归纳未必完整或无错讹仅供参考）：
-
+max_user_connections 是 MySQL 用户连接数的最大值设置，整段语句的意思是：服务器的 MySQL 的最大连接数参数设置不足。
+解决方法：修改 MySQL 安装目录下 my.ini 或者 my.cnf 文件内的 max_user_connections 参数的数值，重启 MySQL 服务器。
+但是正常来说，MySQL默认的100个连接数是足够的。我们需要从程序上去考虑。
+MySQL的默认最大连接数为100（N），实际给普通用户使用只有N-1个，保留一个连接是留给超级管理员使用的，
+防止连接占满了不会把管理员也踢出来。很多网站在运行的时候都会出现连接数受限现象，
+我认为十之八九并非是网站的真实访问量太大导致连接数超标，更多是因为我们在设计网站程序的时候采用了不合理的设计架构或数据结构引起的。
+非正常连接超限可能原因如下（天缘即时归纳未必完整或无错讹仅供参考）：
 类似人数、在线时间、浏览数等统计功能与主程序数据库同属一个数据空间时就很容易出现。
 复杂的动态页尤其是用户每次浏览都涉及到多数据库或多表操作时候也很容易出现。
 还有就是程序设计的不合理（比如复杂运算、等待等操作放置在数据库交互行为中间进行），或者程序存在释放BUG。
 计算机硬件配置太低却安装太高版、太高配置的MySQL。
 未采用缓存技术。
 数据库未经过优化或表格设计及其复杂。
-等等一些原因，都会延长数据库的数据交互时间或增加交互次数。所以，如果大家遇到这类问题，首先要考虑程序是否存在BUG导致连接释放失败，再次就是考虑优化软硬件。当然修改MySQL连接数也是软件优化的操作方法之一，希望大家都能够本着学习的态度通过研究一下自身的原因从而解决这一问题。如果实在是找不到原因，那就只好先修改连接数，暂缓定位真实原因了。
-
+等等一些原因，都会延长数据库的数据交互时间或增加交互次数。所以，如果大家遇到这类问题，
+首先要考虑程序是否存在BUG导致连接释放失败，再次就是考虑优化软硬件。
+当然修改MySQL连接数也是软件优化的操作方法之一，希望大家都能够本着学习的态度通过研究一下自身的原因从而解决这一问题。
+如果实在是找不到原因，那就只好先修改连接数，暂缓定位真实原因了。
 关于PHP的数据库持久连接 mysql_pconnect
-PHP程序员应该都知道连接MySQL数据库可以使用mysql_pconnect（永久连接）函数，使用数据库永久连接可以提高效率，但是实际应用中数据库永久连接往往会导致出现一些问题，通常的表现就是在大访问量的网站上时常发生断断续续的无法连接数据库的情况，出现类似＂Too many connections in ...＂的错误提示信息，重新启动服务器又正常了，但过不了一会儿又出现同样的故障。对于这些问题的成因，恐怕就不是每个人都能说清楚的了，虽然PHP文档里有一些相关资料，但是解释的并不浅显易懂，这里我厚着脸皮试图做一个简单的讨论，所述观点不见得全都正确，欢迎大家反馈意见。
-
-首先看看数据库永久连接的定义：永久的数据库连接是指在脚本结束运行时不关闭的连接。当收到一个永久连接的请求时。PHP 将检查是否已经存在一个（前面已经开启的）相同的永久连接。如果存在，将直接使用这个连接；如果不存在，则建立一个新的连接。所谓"相同"的连接是指用相同的用户名和密码到相同主机的连接。
-
-PHP使用永久连接方式操作MySQL是有前提的：就是PHP必须安装为多线程或多进程Web服务器的插件或模块。最常见的形式是把PHP用作多进程Apache服务器的一个模块。对于一个多进程的服务器，其典型特征是有一个父进程和一组子进程协调运行，其中实际生成Web页面的是子进程。每当客户端向父进程提出请求时，该请求会被传递给还没有被其它的客户端请求占用的子进程。这也就是说当相同的客户端第二次向服务端提出请求时，它将有可能被一个不同的子进程来处理。在开启了一个永久连接后，所有不同子进程请求SQL服务的后继页面都能够重新使用这个已经建立的 SQL服务器连接。它使得每个子进程在其生命周期中只做一次连接操作，而非每次在处理一个页面时都要向 SQL 服务器提出连接请求。每个子进程将对服务器建立各自独立的永久连接。PHP本身并没有数据库连接池的概念，但是Apache有进程池的概念, 一个Apache子进程结束后会被放回进程池, 这也就使得用mysql_pconnect打开的的那个mysql连接资源可以不被释放，而是依附在相应的Apache子进程上保存到了进程池中。于是在下一个连接请求时它就可以被复用。一切看起来似乎都很正常，但是在Apache并发访问量大的时候，如果使用mysql_pconnect，会由于之前的Apache子进程占用的MySQL连接没有close, 很快使MySQL达到最大连接数，使得之后的请求可能得不到响应。
-
+PHP程序员应该都知道连接MySQL数据库可以使用mysql_pconnect（永久连接）函数，使用数据库永久连接可以提高效率，
+但是实际应用中数据库永久连接往往会导致出现一些问题，通常的表现就是在大访问量的网站上时常发生断断续续的无法连接数据库的情况，
+出现类似＂Too many connections in ...＂的错误提示信息，重新启动服务器又正常了，但过不了一会儿又出现同样的故障。
+对于这些问题的成因，恐怕就不是每个人都能说清楚的了，虽然PHP文档里有一些相关资料，但是解释的并不浅显易懂，
+这里我厚着脸皮试图做一个简单的讨论，所述观点不见得全都正确，欢迎大家反馈意见。
+首先看看数据库永久连接的定义：永久的数据库连接是指在脚本结束运行时不关闭的连接。
+当收到一个永久连接的请求时。PHP 将检查是否已经存在一个（前面已经开启的）相同的永久连接。
+如果存在，将直接使用这个连接；如果不存在，则建立一个新的连接。所谓"相同"的连接是指用相同的用户名和密码到相同主机的连接。
+PHP使用永久连接方式操作MySQL是有前提的：就是PHP必须安装为多线程或多进程Web服务器的插件或模块。
+最常见的形式是把PHP用作多进程Apache服务器的一个模块。对于一个多进程的服务器，
+其典型特征是有一个父进程和一组子进程协调运行，其中实际生成Web页面的是子进程。
+每当客户端向父进程提出请求时，该请求会被传递给还没有被其它的客户端请求占用的子进程。
+这也就是说当相同的客户端第二次向服务端提出请求时，它将有可能被一个不同的子进程来处理。
+在开启了一个永久连接后，所有不同子进程请求SQL服务的后继页面都能够重新使用这个已经建立的 SQL服务器连接。
+它使得每个子进程在其生命周期中只做一次连接操作，而非每次在处理一个页面时都要向 SQL 服务器提出连接请求。
+每个子进程将对服务器建立各自独立的永久连接。PHP本身并没有数据库连接池的概念，但是Apache有进程池的概念, 
+一个Apache子进程结束后会被放回进程池, 这也就使得用mysql_pconnect打开的的那个mysql连接资源可以不被释放，
+而是依附在相应的Apache子进程上保存到了进程池中。于是在下一个连接请求时它就可以被复用。
+一切看起来似乎都很正常，但是在Apache并发访问量大的时候，如果使用mysql_pconnect，
+会由于之前的Apache子进程占用的MySQL连接没有close, 很快使MySQL达到最大连接数，使得之后的请求可能得不到响应。
 上面的部分文字是摘抄自PHP文档，看起来可能还是有些文绉绉的不好理解，那么我就用大白话再举一个例子来说明问题：
-
-假设Apache配置最大连接数为1000，MySQL配置最大连接数为100，当Apache服务器接到200个并发访问的时候，其中100个涉及到数据库访问，剩下的100个不涉及数据库访问，因为这个时候还不存在可用的数据库连接，所以这里面涉及到数据库访问的100个并发会同时产生100个数据库永久连接，达到了数据库最大连接数，当这些操作没有结束的时候，任何其他的连接都无法再获得数据库连接，当这些操作结束了，相应的连接会被放入进程池，此时Apache的进程池里就有了200个空闲的子进程，其中100个是带有数据库连接的，由于Apache会为访问请求随机的挑选空闲子进程，所以你得到的子进程很可能是不包含数据库连接的那100个中的一个，而数据库连接已经达到了最大值，你也不可能成功的建立新的数据库连接，唉，你便只好不停的刷新页面，哪个时候运气好，碰巧分配到了带有数据库连接的子进程，才能正常浏览页面。如果是大访问量的网站来说，任何时候都可能存在大量的并发，所以浏览者可能就会不停的发现无法连接数据库的现象了。
-
-或许你会说，我们把Apache和MySQL的最大连接数调成一样大不就可以了么？是的，合理的调整这个最大连接数某种程度上会避免这个问题的发生，但是Apache和MySQL的负载能力是不同的，如果按照Apache的负载能力来设置，对于MySQL来说，这个最大连接数就偏大，会产生大量的MySQL数据库永久连接，打个比方，就好像和平时代还要养活一个几百万的军队一样，其开销得不偿失；而如果按照Mysql的负载能力设置，对于Apache来说，这个最大连接数就偏小，有点杀鸡牛刀的感觉，无法发挥Apache的最大效率。
-
-所以按照PHP手册上的介绍，只适合在并发访问不大的网站上使用数据库永久连接，但对于一个并发访问不大的网站来说，使用数据库永久连接带来的效率提高似乎没有太大的意义，从这个角度上来看，我觉得PHP中的数据库永久连接基本上是一个鸡肋的角色，如果你一定要使用数据库连接池的概念，可以尝试一下sqlrelay或者Apache本身提供的mod_dbd，说不定会有惊喜。
-
+假设Apache配置最大连接数为1000，MySQL配置最大连接数为100，当Apache服务器接到200个并发访问的时候，
+其中100个涉及到数据库访问，剩下的100个不涉及数据库访问，因为这个时候还不存在可用的数据库连接，
+所以这里面涉及到数据库访问的100个并发会同时产生100个数据库永久连接，达到了数据库最大连接数，
+当这些操作没有结束的时候，任何其他的连接都无法再获得数据库连接，当这些操作结束了，相应的连接会被放入进程池，
+此时Apache的进程池里就有了200个空闲的子进程，其中100个是带有数据库连接的，由于Apache会为访问请求随机的挑选空闲子进程，
+所以你得到的子进程很可能是不包含数据库连接的那100个中的一个，而数据库连接已经达到了最大值，
+你也不可能成功的建立新的数据库连接，唉，你便只好不停的刷新页面，哪个时候运气好，碰巧分配到了带有数据库连接的子进程，
+才能正常浏览页面。如果是大访问量的网站来说，任何时候都可能存在大量的并发，
+所以浏览者可能就会不停的发现无法连接数据库的现象了。
+或许你会说，我们把Apache和MySQL的最大连接数调成一样大不就可以了么？是的，合理的调整这个最大连接数某种程度上会避免这个问题的发生，
+但是Apache和MySQL的负载能力是不同的，如果按照Apache的负载能力来设置，对于MySQL来说，这个最大连接数就偏大，
+会产生大量的MySQL数据库永久连接，打个比方，就好像和平时代还要养活一个几百万的军队一样，其开销得不偿失；
+而如果按照Mysql的负载能力设置，对于Apache来说，这个最大连接数就偏小，有点杀鸡牛刀的感觉，无法发挥Apache的最大效率。
+所以按照PHP手册上的介绍，只适合在并发访问不大的网站上使用数据库永久连接，但对于一个并发访问不大的网站来说，
+使用数据库永久连接带来的效率提高似乎没有太大的意义，从这个角度上来看，我觉得PHP中的数据库永久连接基本上是一个鸡肋的角色，
+如果你一定要使用数据库连接池的概念，可以尝试一下sqlrelay或者Apache本身提供的mod_dbd，说不定会有惊喜。
 关于mysql_free_result和mysql_close
 之前用mysql的时候一直是在用短链接，调用mysql_store_result获取一次数据之后就直接调用：
-
-1
 mysql_free_result(m_result);
-2
 mysql_close(m_Database);
 但是有两个问题：
-
 当使用长连接时（即connect之后一直不close），如果最后会调用mysql_close，需不需要每次都调用mysql_free_result呢?
 当mysql_close调用之后，m_result的数据是否还可以用。
 先说一下结论：
-
 必须每次调用。因为经过测试，每次mysql_store_result的指针都是不同的，可见并不是共享了同一块buf。
 还是可以使用。经过valgrind扫描，只调用mysql_close的扫描结果是：
-1
 ==9397== 16,468 (88 direct, 16,380 indirect) bytes in 1 blocks are definitely lost in loss record 4 of 5
-2
 ==9397==    at 0x40219B3: malloc (vg_replace_malloc.c:195)
-3
 ==9397==    by 0x8053EA2: my_malloc (in /data/home/dantezhu/appbase/application/platform/openqqcom/share/db_openright/test/test)
-4
 ==9397==    by 0x806D314: mysql_store_result (in /data/home/dantezhu/appbase/application/platform/openqqcom/share/db_openright/test/test)
-5
 ==9397==    by 0x804BB04: CMySQLCppClient::Result(st_mysql_res*&) (mysql_cpp_client.cpp:127)
-6
 ==9397==    by 0x804AB58: CDBOpenRight::GetUinsByApp(unsigned int, std::set<unsigned int, std::less<unsigned int>, std::allocator<unsigned int> >&) (db_openright.cpp:58)
-7
 ==9397==    by 0x8049F10: main (test.cpp:27)
 以后再慢慢研究。。
 ```
 
 ### 502 大概什么什么原因？ 如何排查  504呢？
 ```
-
 状态代码解释
-
 502 Bad Gateway：作为网关或者代理工作的服务器尝试执行请求时，从上游服务器接收到无效的响应。
-504 Gateway Time-out：作为网关或者代理工作的服务器尝试执行请求时，未能及时从上游服务器（URI标识出的服务器，例如HTTP、FTP、LDAP）或者辅助服务器（例如DNS）收到响应。
-
+504 Gateway Time-out：作为网关或者代理工作的服务器尝试执行请求时，
+未能及时从上游服务器（URI标识出的服务器，例如HTTP、FTP、LDAP）或者辅助服务器（例如DNS）收到响应。
 502 Bad Gateway原因分析
-
-将请求提交给网关如php-fpm执行，但是由于某些原因没有执行完毕导致php-fpm进程终止执行。说到此，这个问题就很明了了，与网关服务如php-fpm的配置有关了。
+将请求提交给网关如php-fpm执行，但是由于某些原因没有执行完毕导致php-fpm进程终止执行。
+说到此，这个问题就很明了了，与网关服务如php-fpm的配置有关了。
 php-fpm.conf配置文件中有两个参数就需要你考虑到，分别是max_children和request_terminate_timeout。
 max_children最大子进程数，在高并发请求下，达到php-fpm最大响应数，后续的请求就会出现502错误的。可以通过netstat命令来查看当前连接数。
 request_terminate_timeout设置单个请求的超时终止时间。还应该注意到php.ini中的max_execution_time参数。当请求终止时，也会出现502错误的。
-当积累了大量的php请求，你重启php-fpm释放资源，但一两分钟不到，502又再次呈现，这是什么原因导致的呢？ 这时还应该考虑到数据库，查看下数据库进程是否有大量的locked进程，数据库死锁导致超时，前端终止了继续请求，但是SQL语句还在等待释放锁，这时就要重启数据库服务了或kill掉死锁SQL进程了。
+当积累了大量的php请求，你重启php-fpm释放资源，但一两分钟不到，502又再次呈现，这是什么原因导致的呢？ 
+这时还应该考虑到数据库，查看下数据库进程是否有大量的locked进程，数据库死锁导致超时，前端终止了继续请求，
+但是SQL语句还在等待释放锁，这时就要重启数据库服务了或kill掉死锁SQL进程了。
 对于长时间的请求可以考虑使用异步方式，可以参阅《关于PHP实现异步操作的研究》。
-
 504 Gateway Time-out原因分析
-
-     504错误一般是与nginx.conf配置有关了。主要与以下几个参数有关：fastcgi_connect_timeout、fastcgi_send_timeout、fastcgi_read_timeout、fastcgi_buffer_size、fastcgi_buffers、fastcgi_busy_buffers_size、fastcgi_temp_file_write_size、fastcgi_intercept_errors。特别是前三个超时时间。如果fastcgi缓冲区太小会导致fastcgi进程被挂起从而演变为504错误。
-
+504错误一般是与nginx.conf配置有关了。主要与以下几个参数有关：fastcgi_connect_timeout、fastcgi_send_timeout、
+fastcgi_read_timeout、fastcgi_buffer_size、fastcgi_buffers、fastcgi_busy_buffers_size、
+fastcgi_temp_file_write_size、fastcgi_intercept_errors。特别是前三个超时时间。
+如果fastcgi缓冲区太小会导致fastcgi进程被挂起从而演变为504错误。
 小结
-
 1. max_children
-
 2. request_terminate_timeout、max_execution_time
 3. 数据库
 4. 网关服务是否启动如php-fpm
-
 504错误主要查看nginx.conf关于网关如fastcgi的配置。
-
 解决方法之一
-
-
-
 一、fastcgi缓冲区设置过小  
-
 出现错误，首先要查找nginx的日志文件，目录为/var/log/nginx，在日志中发现了如下错误。
-
-
 2013/01/17 13:33:47 [error] 15421#0: *16 upstream sent too big header while reading response header from upstream
-
 查阅了一下资料，大意是nginx缓冲区有一个bug造成的,我们网站的页面消耗占用缓冲区可能过大。
-
 网上查找了一下解决方法，在国外网站看到了一个增加缓冲区的方法，彻底解决了Nginx 502 Bad Gateway的问题。方法如下：
-
-
-
 http {
     ...
     fastcgi_buffers 8 16k;
@@ -29973,16 +29329,13 @@ http {
     ...
 }
 二、代理缓冲区设置过小请根据服务器已经网站的情况自行增大上述两个配置项。
-
-如果你使用的是nginx反向代理，如果header过大，超出了默认的1k，就会引发上述的upstream sent too big header （说白了就是nginx把外部请求给后端处理，后端返回的header太大，nginx处理不过来就会导致502。
-
+如果你使用的是nginx反向代理，如果header过大，超出了默认的1k，
+就会引发上述的upstream sent too big header 
+（说白了就是nginx把外部请求给后端处理，后端返回的header太大，nginx处理不过来就会导致502。
 server {
-
         listen       80;
         server_name  www.example.com;
-  
         location / {
-  
 ###############添加这3行
             proxy_buffer_size 64k;
             proxy_buffers   32 32k;
@@ -29994,16 +29347,13 @@ server {
 ............
 }
 三、默认php-cgi的进程数设置过少
-在安装好使用过程中出现502问题，一般是因为默认php-cgi进程是5个，可能因为phpcgi进程不够用而造成502，需要修改/usr/local/php/etc/php-fpm.conf 将其中的max_children值适当增加。也有可能是max_requests值不够用。需要说明的是这连个配置项占用内存很大，请根据服务器配置进行设置。否则可能起到反效果。
-
+在安装好使用过程中出现502问题，一般是因为默认php-cgi进程是5个，可能因为phpcgi进程不够用而造成502，
+需要修改/usr/local/php/etc/php-fpm.conf 将其中的max_children值适当增加。
+也有可能是max_requests值不够用。需要说明的是这连个配置项占用内存很大，请根据服务器配置进行设置。否则可能起到反效果。
 四、php执行超时
-
 php执行超时，修改/usr/local/php/etc/php.ini 将max_execution_time 改为300
-
 五、nginx等待时间超时
 部分PHP程序的执行时间超过了Nginx的等待时间，可以适当增加nginx.conf配置文件中FastCGI的timeout时间
-
-
 http  {
   fastcgi_connect_timeout 300;
   fastcgi_send_timeout 300;
@@ -30011,37 +29361,30 @@ http  {
   ......
   }
 nginx 502 bad gateway
-         一些运行在Nginx上的网站有时候会出现“502 Bad Gateway”错误，有些时候甚至频繁的出现。以下是小编搜集整理的一些Nginx 502错误的排查方法，供参考：
-
-　　Nginx 502错误的原因比较多，是因为在代理模式下后端服务器出现问题引起的。这些错误一般都不是nginx本身的问题，一定要从后端找原因！但nginx把这 些出错都揽在自己身上了，着实让nginx的推广者备受置疑，毕竟从字眼上理解，bad gateway？不就是bad nginx吗？让不了解的人看到，会直接把责任推在nginx身上，希望nginx下一个版本会把出错提示写稍微友好一些，至少不会是现在简单的一句 502 Bad Gateway，另外还不忘附上自己的大名。
-
+一些运行在Nginx上的网站有时候会出现“502 Bad Gateway”错误，有些时候甚至频繁的出现。
+以下是小编搜集整理的一些Nginx 502错误的排查方法，供参考：
+Nginx 502错误的原因比较多，是因为在代理模式下后端服务器出现问题引起的。
+这些错误一般都不是nginx本身的问题，一定要从后端找原因！但nginx把这 些出错都揽在自己身上了，
+着实让nginx的推广者备受置疑，毕竟从字眼上理解，bad gateway？不就是bad nginx吗？让不了解的人看到，
+会直接把责任推在nginx身上，希望nginx下一个版本会把出错提示写稍微友好一些，至少不会是现在简单的一句 502 Bad Gateway，
+另外还不忘附上自己的大名。
 Nginx 502的触发条件
-
-　　502错误最通常的出现情况就是后端主机当机。在upstream配置里有这么一项配置：proxy_next_upstream，这个配置指定了 nginx在从一个后端主机取数据遇到何种错误时会转到下一个后端主机，里头写上的就是会出现502的所有情况拉，默认是error timeout。error就是当机、断线之类的，timeout就是读取堵塞超时，比较容易理解。我一般是全写上的：
-
-
-
+502错误最通常的出现情况就是后端主机当机。在upstream配置里有这么一项配置：proxy_next_upstream，
+这个配置指定了 nginx在从一个后端主机取数据遇到何种错误时会转到下一个后端主机，
+里头写上的就是会出现502的所有情况拉，默认是error timeout。error就是当机、断线之类的，
+timeout就是读取堵塞超时，比较容易理解。我一般是全写上的：
 proxy_next_upstream error timeout invalid_header http_500 http_503;
-
-     不过现在可能我要去掉http_500这一项了，http_500指定后端返回500错误时会转一个主机，后端的jsp出错的话，本来会打印一堆 stacktrace的错误信息，现在被502取代了。但公司的程序员可不这么认为，他们认定是nginx出现了错误，我实在没空跟他们解释502的原理 了……
-
-503错误就可以保留，因为后端通常是apache resin，如果apache死机就是error，但resin死机，仅仅是503，所以还是有必要保留的。
-
+不过现在可能我要去掉http_500这一项了，http_500指定后端返回500错误时会转一个主机，后端的jsp出错的话，
+本来会打印一堆 stacktrace的错误信息，现在被502取代了。但公司的程序员可不这么认为，
+他们认定是nginx出现了错误，我实在没空跟他们解释502的原理 了……
+503错误就可以保留，因为后端通常是apache resin，如果apache死机就是error，
+但resin死机，仅仅是503，所以还是有必要保留的。
 解决办法
-
 遇到502问题，可以优先考虑按照以下两个步骤去解决。
-
 1、查看当前的PHP FastCGI进程数是否够用：
-
 netstat -anpo | grep "php-cgi" | wc -l
-
-
 如果实际使用的“FastCGI进程数”接近预设的“FastCGI进程数”，那么，说明“FastCGI进程数”不够用，需要增大。
-
 2、部分PHP程序的执行时间超过了Nginx的等待时间，可以适当增加nginx.conf配置文件中FastCGI的timeout时间，例如：
-
-
-
 http  {
   fastcgi_connect_timeout 300;
   fastcgi_send_timeout 300;
@@ -30049,124 +29392,101 @@ http  {
   ......
   }
 php.ini中memory_limit设低了会出错，修改了php.ini的memory_limit为64M，重启nginx，发现好了，原来是PHP的内存不足了。
-
-　　如果这样修改了还解决不了问题，可以参考下面这些方案：
-
+如果这样修改了还解决不了问题，可以参考下面这些方案：
 一、max-children和max-requests
-
-　　一台服务器上运行着nginx php(fpm) xcache，访问量日均 300W pv左右。
-
-　　最近经常会出现这样的情况：php页面打开很慢，cpu使用率突然降至很低，系统负载突然升至很高，查看网卡的流量，也会发现突然降到了很低。这种情况只持续数秒钟就恢复了。
-
-　　检查php-fpm的日志文件发现了一些线索。
-
+一台服务器上运行着nginx php(fpm) xcache，访问量日均 300W pv左右。
+最近经常会出现这样的情况：php页面打开很慢，cpu使用率突然降至很低，系统负载突然升至很高，查看网卡的流量，
+也会发现突然降到了很低。这种情况只持续数秒钟就恢复了。
+检查php-fpm的日志文件发现了一些线索。
 Sep 30 08:32:23.289973 [NOTICE] fpm_unix_init_main(), line 271: getrlimit(nofile): max:51200, cur:51200  Sep 30 08:32:23.290212 [NOTICE] fpm_sockets_init_main(), line 371: using inherited socket fd=10, “127.0.0.1:9000″  Sep 30 08:32:23.290342 [NOTICE] fpm_event_init_main(), line 109: libevent: using epoll  Sep 30 08:32:23.296426 [NOTICE] fpm_init(), line 47: fpm is running, pid 30587
-      在这几句的前面，是1000多行的关闭children和开启children的日志。
-
-　　原来，php-fpm有一个参数 max_requests，该参数指明了，每个children最多处理多少个请求后便会被关闭，默认的设置是500。因为php是把请求轮询给每个 children，在大流量下，每个childre到达max_requests所用的时间都差不多，这样就造成所有的children基本上在同一时间 被关闭。
-
-　　在这期间，nginx无法将php文件转交给php-fpm处理，所以cpu会降至很低(不用处理php，更不用执行sql)，而负载会升至很高(关 闭和开启children、nginx等待php-fpm)，网卡流量也降至很低(nginx无法生成数据传输给客户端)
-
-　　解决问题很简单，增加children的数量，并且将 max_requests 设置为 0 或者一个比较大的值：
-
-　　打开 /usr/local/php/etc/php-fpm.conf调大以下两个参数(根据服务器实际情况，过大也不行）
-
-
+在这几句的前面，是1000多行的关闭children和开启children的日志。
+原来，php-fpm有一个参数 max_requests，该参数指明了，每个children最多处理多少个请求后便会被关闭，默认的设置是500。
+因为php是把请求轮询给每个 children，在大流量下，每个childre到达max_requests所用的时间都差不多，
+这样就造成所有的children基本上在同一时间 被关闭。
+在这期间，nginx无法将php文件转交给php-fpm处理，所以cpu会降至很低(不用处理php，更不用执行sql)，而负载会升至很高
+(关 闭和开启children、nginx等待php-fpm)，网卡流量也降至很低(nginx无法生成数据传输给客户端)
+解决问题很简单，增加children的数量，并且将 max_requests 设置为 0 或者一个比较大的值：
+打开 /usr/local/php/etc/php-fpm.conf调大以下两个参数(根据服务器实际情况，过大也不行）
 <value name="max_children">5120</value>  <value name="max_requests">600</value>
 然后重启php-fpm。
-
-
 二、增加缓冲区容量大小
-
-　　将nginx的error log打开，发现“pstream sent too big header while reading response header from upstream”这样的错误提示。查阅了一下资料，大意是nginx缓冲区有一个bug造成的,我们网站的页面消耗占用缓冲区可能过大。参考老外写的修 改办法增加了缓冲区容量大小设置，502问题彻底解决。后来系统管理员又对参数做了调整只保留了2个设置参数：client head buffer，fastcgi buffer size。
-
+将nginx的error log打开，发现“pstream sent too big header while reading response header from upstream”这样的错误提示。
+查阅了一下资料，大意是nginx缓冲区有一个bug造成的,我们网站的页面消耗占用缓冲区可能过大。
+参考老外写的修 改办法增加了缓冲区容量大小设置，502问题彻底解决。后来系统管理员又对参数做了调整只保留了2个设置参数：
+client head buffer，fastcgi buffer size。
 三、request_terminate_timeout
-
-　　如果主要是在一些post或者数据库操作的时候出现502这种情况，而不是在静态页面操作中常见，那么可以查看一下php-fpm.conf设置中的一项：
-
+如果主要是在一些post或者数据库操作的时候出现502这种情况，而不是在静态页面操作中常见，那么可以查看一下php-fpm.conf设置中的一项：
 request_terminate_timeout
-
 这个值是max_execution_time，就是fast-cgi的执行脚本时间。
-
 0s
-
-0s为关闭，就是无限执行下去。（当时装的时候没仔细看就改了一个数字）问题解决了，执行很长时间也不会出错了。优化fastcgi中，还可以改改这个值5s 看看效果。
-
+0s为关闭，就是无限执行下去。（当时装的时候没仔细看就改了一个数字）问题解决了，执行很长时间也不会出错了。
+优化fastcgi中，还可以改改这个值5s 看看效果。
 php-cgi进程数不够用、php执行时间长、或者是php-cgi进程死掉，都会出现502错误。
-
-
 深入分析Nginx 502 Bad Gateway和Nginx 504 Gateway Time-out及其解决
-
-      Nginx 502 Bad Gateway的含义是请求的PHP-CGI已经执行，但是由于某种原因（一般是读取资源的问题）没有执行完毕而导致PHP-CGI进程终止。 
-　　 Nginx 504 Gateway Time-out的含义是所请求的网关没有请求到，简单来说就是没有请求到可以执行的PHP-CGI。 
-　　解决这两个问题其实是需要综合思考的，一般来说Nginx 502 Bad Gateway和php-fpm.conf的设置有关，而Nginx 504 Gateway Time-out则是与nginx.conf的设置有关。 
-　　 而正确的设置需要考虑服务器自身的性能和访客的数量等多重因素。 
-　　 以我目前的服务器为例子CPU是奔四1.5G的，内存1GB，CENTOS的系统，访客大概是50人左右同时在线。 
-　　 但是在线的人大都需要请求PHP-CGI进行大量的信息处理，因此我将nginx.conf设置为： 
-　　 fastcgi_connect_timeout 300s; 
-　　 fastcgi_send_timeout 300s; 
-　　 fastcgi_read_timeout 300s; 
-　　 fastcgi_buffer_size 128k; 
-　　 fastcgi_buffers 8 128k;#8 128 
-　　 fastcgi_busy_buffers_size 256k; 
-　　 fastcgi_temp_file_write_size 256k; 
-　　 fastcgi_intercept_errors on; 
-　　 这里最主要的设置是前三条，即 
-　　 fastcgi_connect_timeout 300s; 
-　　 fastcgi_send_timeout 300s; 
-　　 fastcgi_read_timeout 300s; 
-　　 这里规定了PHP-CGI的连接、发送和读取的时间，300秒足够用了，因此我的服务器很少出现504 Gateway Time-out这个错误。最关键的是php-fpm.conf的设置，这个会直接导致502 Bad Gateway和504 Gateway Time-out。 
-　　 下面我们来仔细分析一下php-fpm.conf几个重要的参数： 
-　　 php-fpm.conf有两个至关重要的参数，一个是"max_children",另一个是"request_terminate_timeout" 
-　　 我的两个设置的值一个是"40 ，一个是"900 ，但是这个值不是通用的，而是需要自己计算的。 
- 计算的方式如下： 
-　　 如果你的服务器性能足够好，且宽带资源足够充足，PHP脚本没有系循环或BUG的话你可以直接将"request_terminate_timeout"设置成0s。0s的含义是让PHP-CGI一直执行下去而没有时间限制。而如果你做不到这一点，也就是说你的PHP-CGI可能出现某个BUG，或者你的宽带不够充足或者其他的原因导致你的PHP-CGI能够假死那么就建议你给"request_terminate_timeout"赋一个值，这个值可以根据你服务器的性能进行设定。一般来说性能越好你可以设置越高，20分钟-30分钟都可以。由于我的服务器PHP脚本需要长时间运行，有的可能会超过10分钟因此我设置了900秒，这样不会导致PHP-CGI死掉而出现502 Bad gateway这个错误。 
-　　而"max_children"这个值又是怎么计算出来的呢？这个值原则上是越大越好，php-cgi的进程多了就会处理的很快，排队的请求就会很少。设置"max_children"也需要根据服务器的性能进行设定，一般来说一台服务器正常情况下每一个php-cgi所耗费的内存在20M左右，因此我的"max_children"我设置成40个，20M*40=800M也就是说在峰值的时候所有PHP-CGI所耗内存在800M以内，低于我的有效内存1Gb。而如果我的"max_children"设置的较小，比如5-10个，那么php-cgi就会"很累"，处理速度也很慢，等待的时间也较长。如果长时间没有得到处理的请求就会出现504 Gateway Time-out这个错误，而正在处理的很累的那几个php-cgi如果遇到了问题就会出现502 Bad gateway这个错误。
-
-
-
-
+Nginx 502 Bad Gateway的含义是请求的PHP-CGI已经执行，但是由于某种原因（一般是读取资源的问题）没有执行完毕而导致PHP-CGI进程终止。 
+Nginx 504 Gateway Time-out的含义是所请求的网关没有请求到，简单来说就是没有请求到可以执行的PHP-CGI。 
+解决这两个问题其实是需要综合思考的，一般来说Nginx 502 Bad Gateway和php-fpm.conf的设置有关，而Nginx 504 Gateway Time-out则是与nginx.conf的设置有关。 
+而正确的设置需要考虑服务器自身的性能和访客的数量等多重因素。 
+以我目前的服务器为例子CPU是奔四1.5G的，内存1GB，CENTOS的系统，访客大概是50人左右同时在线。 
+但是在线的人大都需要请求PHP-CGI进行大量的信息处理，因此我将nginx.conf设置为： 
+fastcgi_connect_timeout 300s; 
+fastcgi_send_timeout 300s; 
+fastcgi_read_timeout 300s; 
+fastcgi_buffer_size 128k; 
+fastcgi_buffers 8 128k;#8 128 
+fastcgi_busy_buffers_size 256k; 
+fastcgi_temp_file_write_size 256k; 
+fastcgi_intercept_errors on; 
+这里最主要的设置是前三条，即 
+fastcgi_connect_timeout 300s; 
+fastcgi_send_timeout 300s; 
+fastcgi_read_timeout 300s; 
+这里规定了PHP-CGI的连接、发送和读取的时间，300秒足够用了，因此我的服务器很少出现504 Gateway Time-out这个错误。最关键的是php-fpm.conf的设置，这个会直接导致502 Bad Gateway和504 Gateway Time-out。 
+下面我们来仔细分析一下php-fpm.conf几个重要的参数： 
+php-fpm.conf有两个至关重要的参数，一个是"max_children",另一个是"request_terminate_timeout" 
+我的两个设置的值一个是"40 ，一个是"900 ，但是这个值不是通用的，而是需要自己计算的。 
+计算的方式如下： 
+如果你的服务器性能足够好，且宽带资源足够充足，PHP脚本没有系循环或BUG的话你可以直接将"request_terminate_timeout"设置成0s。
+0s的含义是让PHP-CGI一直执行下去而没有时间限制。而如果你做不到这一点，也就是说你的PHP-CGI可能出现某个BUG，
+或者你的宽带不够充足或者其他的原因导致你的PHP-CGI能够假死那么就建议你给"request_terminate_timeout"赋一个值，
+这个值可以根据你服务器的性能进行设定。一般来说性能越好你可以设置越高，20分钟-30分钟都可以。
+由于我的服务器PHP脚本需要长时间运行，有的可能会超过10分钟因此我设置了900秒，这样不会导致PHP-CGI死掉而出现502 Bad gateway这个错误。 
+而"max_children"这个值又是怎么计算出来的呢？这个值原则上是越大越好，php-cgi的进程多了就会处理的很快，排队的请求就会很少。
+设置"max_children"也需要根据服务器的性能进行设定，一般来说一台服务器正常情况下每一个php-cgi所耗费的内存在20M左右，
+因此我的"max_children"我设置成40个，20M*40=800M也就是说在峰值的时候所有PHP-CGI所耗内存在800M以内，低于我的有效内存1Gb。
+而如果我的"max_children"设置的较小，比如5-10个，那么php-cgi就会"很累"，处理速度也很慢，等待的时间也较长。
+如果长时间没有得到处理的请求就会出现504 Gateway Time-out这个错误，
+而正在处理的很累的那几个php-cgi如果遇到了问题就会出现502 Bad gateway这个错误。
 Nginx 502 bad gateway错误解决方法
-
-
 使用Nginx作为Web服务器的时候，你或多或少都会遇到Nginx 502 bad gateway的错误，造成这种错误的原因有很多。下面我们来一一解析。  
- 
-
 一、查看php-cgi是否在运行  
 有时候由于网站流量过大或者其它原因，导致php-cgi直接down掉，所以我们得看php-cgi是否在运行。执行如下命令：
-
 ps -A | grep php5-cgi  
 如果没有运行，手动启动
-
 /etc/init.d/php_cgi start  
 如果你发现php-cgi不明原因有时候down掉，可以使用下面的脚本临时解决这个问题，添加到cronjob。
-
 if ps aux | grep ‘php5-cgi' | grep -v grep  > /dev/null ; then          echo "PHP-cgi is runnning !"      else          echo "PHP-cgi is down. Starting over…"          /etc/init.d/php-fcgi start  fi 二、fastcgi进程数不够用、php执行时间长的原因  
-　　fastcgi进程数可以修改php-fpm.conf中的max_children的数值，高峰时php-cgi耗掉的最大内存为20M，请根据自己的内存情况计算了。 
-　　 限制php执行时间可以在php-fpm.conf中的request_terminate_timeout设置，这是为了防止php程序的bug导致php-cgi假死。
-
+fastcgi进程数可以修改php-fpm.conf中的max_children的数值，高峰时php-cgi耗掉的最大内存为20M，请根据自己的内存情况计算了。 
+限制php执行时间可以在php-fpm.conf中的request_terminate_timeout设置，这是为了防止php程序的bug导致php-cgi假死。
 三、FastCGI执行时间过长  
 根据实际情况调高以下参数值
-
 fastcgi_connect_timeout 300; fastcgi_send_timeout 300; fastcgi_read_timeout 300;  
 除了上面列出的三种情况，当然还会有其它原因，但上面三种情况是最常见的
+最近几天发现网通线路的服务器出现流量不稳定的情况，具体的表现是，流量时而高，时而低，在流量低的时候发现系统的负载很小，
+几乎为0，但是过一会，负载又高上去，流量也上去，很是奇怪，查找了2天没有找到原因，后来看到一边文章，
+介绍了解决nginx出现502的错误现象，按照这个方法进行尝试，最终还是找到了问题的原因。
 
-　　最近几天发现网通线路的服务器出现流量不稳定的情况，具体的表现是，流量时而高，时而低，在流量低的时候发现系统的负载很小，几乎为0，但是过一会，负载又高上去，流量也上去，很是奇怪，查找了2天没有找到原因，后来看到一边文章，介绍了解决nginx出现502的错误现象，按照这个方法进行尝试，最终还是找到了问题的原因。
-
-　　解决步骤如下：
-
-　　1、查看当前的PHP FastCGI进程数是否够用
-
-　　netstat -anpo | grep "php-cgi" | wc -l
-
-　　如果实际使用的"FastCGI进程数"接近预设的"FastCGI进程数"，那么，说明"FastCGI进程数"不够用，需要增大。
-
-　　2、部分PHP程序的执行时间超过了Nginx的等待时间，可以适当增加nginx.conf配置文件中FastCGI的timeout时间，例如：
-
-　　在做第一步的时候，系统当前的PHP FastCGI进程数明显超过了预设值的64这个数值，在电信的服务器上查看当前的PHP FastCGI进程数没有高于64这个数值，而且网通线路的活动连接明显高于电信的活动连接，准备到晚上的时候看看情况，结果到晚上22：30的时候，查看系统当前的PHP FastCGI进程数明显小于64预设值，当前的活动连接也比原来低很多，由此可以说明出现nginx不稳定的情况是由于服务器访问负载过大引起的，就是加上第二步的错误也不顶作用。
-
-　　总结，php-cgi进程数不够用、php执行时间长、或者是php-cgi进程死掉，都会出现502错误
-
+解决步骤如下：
+1、查看当前的PHP FastCGI进程数是否够用
+netstat -anpo | grep "php-cgi" | wc -l
+如果实际使用的"FastCGI进程数"接近预设的"FastCGI进程数"，那么，说明"FastCGI进程数"不够用，需要增大。
+2、部分PHP程序的执行时间超过了Nginx的等待时间，可以适当增加nginx.conf配置文件中FastCGI的timeout时间，例如：
+在做第一步的时候，系统当前的PHP FastCGI进程数明显超过了预设值的64这个数值，
+在电信的服务器上查看当前的PHP FastCGI进程数没有高于64这个数值，而且网通线路的活动连接明显高于电信的活动连接，
+准备到晚上的时候看看情况，结果到晚上22：30的时候，查看系统当前的PHP FastCGI进程数明显小于64预设值，
+当前的活动连接也比原来低很多，由此可以说明出现nginx不稳定的情况是由于服务器访问负载过大引起的，
+就是加上第二步的错误也不顶作用。
+总结，php-cgi进程数不够用、php执行时间长、或者是php-cgi进程死掉，都会出现502错误
 意思就是叫你去 Nginx 的 upstream 去找原因
 至于怎么找原因，难道还能不看 log?
 502 504 直接去看 PHP-FPM/Spawn-fcgi 这个没的说
@@ -30175,6 +29495,7 @@ fastcgi_connect_timeout 300; fastcgi_send_timeout 300; fastcgi_read_timeout 300;
 最后看应用的的日志。一般靠框架记录日志，自己写的代码很少写日志。
 经验多了之后可以调整下顺序。
 ```
+
 ## Laravel5.8版本安装教程
 ```
 参考：https://www.jianshu.com/p/a3cdec31be9b
