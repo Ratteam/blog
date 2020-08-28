@@ -4692,6 +4692,7 @@ Child task 2 still alive!
 Parent task 1 iteration 4.
 Parent task 1 iteration 5.
 Parent task 1 iteration 6.
+https://www.cnblogs.com/lynxcat/p/7954456.html
 ```
 
 ### 如何获取客户端 IP 和服务端 IP 地址
@@ -4704,7 +4705,6 @@ function get_ip_address(){
         if (array_key_exists($key, $_SERVER) === true){
             foreach (explode(',', $_SERVER[$key]) as $ip){
                 $ip = trim($ip); // just to be safe
-
                 if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false){
                     return $ip;
                 }
@@ -5101,11 +5101,6 @@ $config = require(__DIR__ . '/../config/web.php');
 
 ### 依赖注入实现原理
 ```
-这篇文章主要介绍了PHP依赖注入原理与用法,简单讲述了依赖注入的概念、
-原理并结合实例形式分析了php实现与使用依赖注入的相关操作技巧,需要的朋友可以参考下
- 
-本文实例讲述了PHP依赖注入原理与用法。分享给大家供大家参考，具体如下：
-
 依然是来自到喜啦的一道面试题，你知道什么是依赖注入吗？
 
 依赖注入（DI）的概念虽然听起来很深奥，但是如果你用过一些新兴的php框架的话，
@@ -5618,14 +5613,14 @@ file_put_contents("/php.log", var_export($objects,true), FILE_APPEND);
 
 ### 索引数组 `[1, 2]` 与关联数组 `['k1'=>1, 'k2'=>2]` 有什么区别
 ```
-/*
+    /*
 	 *关联数组与索引数组的区别
 	 */
  
 	/*
 	 *创建一个索引数组，索引数组的键是“0”，值是“苹果”
-         *带有数字索引的数组。 
-         */ 
+    *带有数字索引的数组。 
+    */ 
 	$fruit=array("苹果","香蕉");  
 	// print_r($fruit); 
  
@@ -5698,9 +5693,6 @@ file_put_contents("/php.log", var_export($objects,true), FILE_APPEND);
 
 更新：先把数据存到数据库中，再清理缓存使其失效。
 
-
-
-
 不过这种模式有几个变种：
 
 第一，如果先更新数据库再更新缓存。假设两个并发更新操作，数据库先更新的反而后更新缓存，数据库后更新的反而先更新缓存。这样就会造成数据库和缓存中的数据不一致，应用程序中读取的都是脏数据。
@@ -5733,31 +5725,2325 @@ Write Behind Caching 吞吐量很高，多次操作可以合并。但是数据�
 ```
 
 ## 实践篇
-```
 ### 给定二维数组，根据某个字段排序
+```
+遇到问题：把两个数组用php自带的array_merge()函数合并之后，想按照两个数组中共有的'post_time'字段为新数组进行排序
+
+解决办法：通过查阅官方手册，得知有array_multisort()这个函数，可以对多个数组或多维数组进行排序，返回排序之后的数组，其中字符串键名将被保留，但是数字键名将被重新索引，从 0 开始，并以 1 递增。
+
+下面封装了这个函数，便于调用：
+
+/**
+ * 二维数组按照指定字段进行排序
+ * @params array $array 需要排序的数组
+ * @params string $field 排序的字段
+ * @params string $sort 排序顺序标志 SORT_DESC 降序；SORT_ASC 升序
+ */
+function arraySequence($array, $field, $sort = 'SORT_DESC') {
+ $arrSort = array();
+ foreach ($array as $uniqid => $row) {
+  foreach ($row as $key => $value) {
+   $arrSort[$key][$uniqid] = $value;
+  }
+ }
+ array_multisort($arrSort[$field], constant($sort), $array);
+ return $array;
+}
+//测试：
+$arrDemo = array(
+array('name'=>'Jack','age'=>'22'),
+array('name'=>'Tom','age'=>'24'),
+array('name'=>'Green','age'=>'21'),
+array('name'=>'Ben','age'=>'23'),);
+$arrDemo = arraySequence($arrDemo,'age');
+print_r($arrDemo);
+运行结果：
+
+Array
+(
+    [0] => Array
+        (
+            [name] => Tom
+            [age] => 24
+        )
+
+    [1] => Array
+        (
+            [name] => Ben
+            [age] => 23
+        )
+
+    [2] => Array
+        (
+            [name] => Jack
+            [age] => 22
+        )
+
+    [3] => Array
+        (
+            [name] => Green
+            [age] => 21
+        )
+
+)
+
+新增：按照指定的多个字段排序
+
+/**
+ * 二维数组按照指定的多个字段进行排序
+ *
+ * 调用示例：sortArrByManyField($arr,'id',SORT_ASC,'age',SORT_DESC);
+ */
+function sortArrByManyField(){
+ $args = func_get_args();
+ if(empty($args)){
+  return null;
+ }
+ $arr = array_shift($args);
+ if(!is_array($arr)){
+  throw new Exception("第一个参数应为数组");
+ }
+ foreach($args as $key => $field){
+  if(is_string($field)){
+   $temp = array();
+   foreach($arr as $index=> $val){
+    $temp[$index] = $val[$field];
+   }
+   $args[$key] = $temp;
+  }
+ }
+ $args[] = &$arr;//引用值
+ call_user_func_array('array_multisort',$args);
+ return array_pop($args);
+}
+//测试：
+$arrDemo = array(
+array('name'=>'Jack','age'=>'22'),
+array('name'=>'Tom','age'=>'24'),
+array('name'=>'Green','age'=>'21'),
+array('name'=>'Ben','age'=>'23'),);
+$arrDemo = sortArrByManyField($arrDemo,'age');
+print_r($arrDemo);
+运行结果：
+
+Array
+(
+    [0] => Array
+        (
+            [name] => Green
+            [age] => 21
+        )
+
+    [1] => Array
+        (
+            [name] => Jack
+            [age] => 22
+        )
+
+    [2] => Array
+        (
+            [name] => Ben
+            [age] => 23
+        )
+
+    [3] => Array
+        (
+            [name] => Tom
+            [age] => 24
+        )
+)
+```
 ### 如何判断上传文件类型，如：仅允许 jpg 上传
+```
+判断文件图片类型,
+
+$type     = $_FILES['image']['tmp_name'];//文件名
+//$type     = $this->getImagetype( $type ); 
+$filetype = ['jpg', 'jpeg', 'gif', 'bmp', 'png'];
+if (! in_array($type, $filetype))
+{  
+    return "不是图片类型";
+｝
+
+如上如果用户修改文件后缀为png jpeg等无法满足,查了查资料解决方法是采用判断文件的二进制流信息,如果你刚好遇到这种问题不妨尝试一下：
+
+//*判断图片上传格式是否为图片 return返回文件后缀
+public function getImagetype($filename)
+{
+    $file = fopen($filename, 'rb');
+    $bin  = fread($file, 2); //只读2字节
+    fclose($file);
+    $strInfo  = @unpack('C2chars', $bin);
+    $typeCode = intval($strInfo['chars1'].$strInfo['chars2']);
+    // dd($typeCode);
+    $fileType = '';
+    switch ($typeCode) {
+        case 255216:
+            $fileType = 'jpg';
+            break;
+        case 7173:
+            $fileType = 'gif';
+            break;
+        case 6677:
+            $fileType = 'bmp';
+            break;
+        case 13780:
+            $fileType = 'png';
+            break;
+        default:
+            $fileType = '只能上传图片类型格式';
+    }
+    // if ($strInfo['chars1']=='-1' AND $strInfo['chars2']=='-40' ) return 'jpg';
+    // if ($strInfo['chars1']=='-119' AND $strInfo['chars2']=='80' ) return 'png';
+    return $fileType;
+}
+```
 ### 不使用临时变量交换两个变量的值 `$a=1; $b=2;`  =>  `$a=2; $b=1;`
+```
+$a = 1; 
+$b = 2;
+// [$b,$a] = [$a,$b];
+list($b,$a) = [$a,$b]; // 就这一行有用，其他的别看了。
+echo $a;
+echo $b;
+
+$a = 100;
+$b = 200;
+$a = $a ^ $b;
+$b = $a ^ $b;
+$a = $a ^ $b;
+echo $a, '-', $b;
+```
 ### strtoupper 在转换中文时存在乱码，你如何解决？```php echo strtoupper('ab你好c'); ```
+```
+https://www.jb51.net/article/61799.htm
+汉字乱码真是一个悲催的事情，JAVA讨厌汉字，PHP也不喜欢汉字；
+
+Java乱码最终使用了spring给出的过滤器来过滤，处处过滤，其实影响了速度，不过没有办法，汉字就是W国首先不考虑的事情；
+
+想不到PHP也是乱码处处在，当你使用亲兄弟MySQL的时候，汉字显得那么亲切，从未考虑过他会变成天书；不过为了和其他其他交互，把PHP的手伸到SQL SERVER的时候，乱码来了，原因是第三方系统用的GBK编码；
+
+哎，转换吧；
+
+1，PHP自带的转换函数ICONV,一个高大上的函数；
+
+string iconv ( string $in_charset , string $out_charset , string $str )
+使用DEMO：
+
+<?php
+$text = "This is the Euro symbol '€'.";
+echo 'Original : ', $text, PHP_EOL;
+echo 'TRANSLIT : ', iconv("UTF-8", "ISO-8859-1//TRANSLIT", $text), PHP_EOL;
+echo 'IGNORE   : ', iconv("UTF-8", "ISO-8859-1//IGNORE", $text), PHP_EOL;
+echo 'Plain    : ', iconv("UTF-8", "ISO-8859-1", $text), PHP_EOL;
+?>
+大家都推荐的函数，不过使用之后无法转换，没有错误，字符也没有转换，NO!
+
+2，另辟蹊径，还有一个大家质疑效率不高的函数，不过无论如何，先实现再考虑其他三
+
+//检查该函数是否可用
+echo function_exists('mb_convert_encoding');
+//检测当前编码
+echo mb_detect_encoding($val, "GBK, GB2312, UTF-8");
+//转换编码，把CP936(就是GBK)转换成UTF-8
+$v=mb_convert_encoding ($val, "UTF-8", "CP936");
+结果成功了;
+
+好吧，先用着吧，为了转换数据库查询的结果集，制作一个转换函数：
+
+1，函数“乱码克星”：
+// $fContents 字符串
+// $from 字符串的编码
+// $to 要转换的编码
+function auto_charset($fContents,$from='gbk',$to='utf-8'){
+    $from   =  strtoupper($from)=='UTF8'? 'utf-8':$from;
+    $to       =  strtoupper($to)=='UTF8'? 'utf-8':$to;
+    if( strtoupper($from) === strtoupper($to) || empty($fContents) || (is_scalar($fContents) && !is_string($fContents)) ){
+        //如果编码相同或者非字符串标量则不转换
+        return $fContents;
+    }
+    if(is_string($fContents) ) {
+        if(function_exists('mb_convert_encoding')){
+            return mb_convert_encoding ($fContents, $to, $from);
+        }else{
+            return $fContents;
+        }
+    }
+    elseif(is_array($fContents)){
+        foreach ( $fContents as $key => $val ) {
+            $_key =     auto_charset($key,$from,$to);
+            $fContents[$_key] = auto_charset($val,$from,$to);
+            if($key != $_key )
+                unset($fContents[$key]);
+        }
+        return $fContents;
+    }
+    else{
+        return $fContents;
+    }
+}
+2，使用：
+//打印输出查询结果（假设你的结果）
+$arr=array();
+while($list=mssql_fetch_row($row))
+{
+    $arr[]=$list;
+}
+$s=auto_charset($arr,'gbk','utf-8');
+//打印试试，在浏览器设置编码为UFT-8，看没有乱码
+print_r($s);die();
+
+```
 ### Websocket、Long-Polling、Server-Sent Events(SSE) 区别
+```
+http://www.mamicode.com/info-detail-1327667.html
+在下面的示例中，客户端指的是浏览器，服务器指的是网站服务器主机。
+
+为了更好的理解这些知识点，你应该简单了解典型的http网站是如何工作的。
+
+普通的http：
+客户端从服务器端请求网页
+服务器作出相应的反应
+服务器返回相应到客户端
+技术分享
+
+AJAX Polling：
+客户端使用普通的http方式向服务器端请求网页
+客户端执行网页中的JavaScript轮询脚本，定期循环的向服务器发送请求（例如每5秒发送一次请求），获取信息
+服务器对每次请求作出响应，并返回相应信息，就像正常的http请求一样
+技术分享
+
+AJAX Long-Polling：
+客户端使用普通的http方式向服务器端请求网页
+客户端执行网页中的JavaScript脚本，向服务器发送数据、请求信息
+服务器并不是立即就对客户端的请求作出响应，而是等待有效的更新
+当信息是有效的更新时，服务器才会把数据推送给客户端
+当客户端接收到服务器的通知时，立即会发送一个新的请求，进入到下一次的轮询
+技术分享
+
+HTML5 Server Sent Events (SSE) / EventSource:
+客户端使用普通的http方式向服务器端请求网页
+客户端执行网页中的JavaScript脚本，与服务器之间建立了一个连接
+当服务器端有有效的更新时，会发送一个事件到客户端
+服务器到客户端数据的实时推送，大多数内容是你需要的
+你需要一台可以做Event Loop的服务器
+不允许跨域的连接
+如果你觉得这些还不够，想要了解更多，可以参考下面的文件和手册
+Using server-sent events
+https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
+Server-Sent Events
+http://html5doctor.com/server-sent-events
+Stream Updates with Server-Sent Events
+http://www.html5rocks.com/en/tutorials/eventsource/basics/
+Tutorial: JSF 2 and HTML5 Server Sent Events
+http://jaxenter.com/tutorial-jsf-2-and-html5-server-sent-events-42932.html
+技术分享
+
+HTML5 Websockets:
+客户端使用普通的http方式向服务器端请求网页
+客户端执行网页中的JavaScript脚本，与服务器之间建立了一个连接
+服务器和客户端之间，可以双向的发送有效数据到对方
+服务器可以实时的发送数据到客户端，同时客户端也可以实时的发送数据到服务器
+你需要一台可以做Event Loop的服务器
+使用 WebSockets 允许跨域的建立连接
+它同样支持第三方的websocket主机服务器，例如Pusher或者其它。这样你只需要关心客户端的实现 ，降低了开发难度。
+如果你觉得这些还不够，想要了解更多，可以参考下面的文件和手册
+An Introduction To WebSockets
+http://www.developerfusion.com/article/143158/an-introduction-to-websockets/
+Writing WebSocket client applications
+https://developer.mozilla.org/en-US/docs/WebSockets/Writing_WebSocket_client_applications
+Start Using HTML5 WebSockets Today
+http://code.tutsplus.com/tutorials/start-using-html5-websockets-today--net-13270
+WebRTC:
+WebRTC是一种点对点类型的传输方式，它支持多种传输协议，如：UDP、TCP甚至是抽象层的协议。设计它时同时考虑到了允许使用可靠和不可靠的两种方式传输数据。这种技术一般应用在传输数据量较大的内容，比如音、视频等流媒体的传输。
+
+Comet:
+Comet是一种用于web的推送技术，能使服务器实时地将更新的信息传送到客户端，而无须客户端发出请求，目前有两种实现方式，长轮询和iframe流。如果你想了解更多，可以参考维基百科或者IBM
+
+Event Loop
+Event Loop是一个程序结构，用于等待和发送消息和事件。
+长轮询
+长轮询是在打开一条连接以后保持，等待服务器推送来数据再关闭的方式。
+iframe流
+iframe流方式是在页面中插入一个隐藏的iframe，利用其src属性在服务器和客户端之间创建一条长链接，服务器向iframe传输数据（通常是HTML，内有负责插入信息的javascript），来实时更新页面。
+
+iframe流方式的优点是浏览器兼容好，Google公司在一些产品中使用了iframe流，如Google Talk。
+https://www.jianshu.com/p/d3f66b1eb748?from=timeline&isappinstalled=0
+介绍
+众所周知，数据交互有两种模式：Push（推模式）、Pull（拉模式）。
+
+推模式指的是客户端与服务端建立好网络长连接，服务方有相关数据，直接通过长连接通道推送到客户端。其优点是及时，一旦有数据变更，客户端立马能感知到；另外对客户端来说逻辑简单，不需要关心有无数据这些逻辑处理。缺点是不知道客户端的数据消费能力，可能导致数据积压在客户端，来不及处理。
+
+拉模式指的是客户端主动向服务端发出请求，拉取相关数据。其优点是此过程由客户端发起请求，故不存在推模式中数据积压的问题。缺点是可能不够及时，对客户端来说需要考虑数据拉取相关逻辑，何时去拉，拉的频率怎么控制等等。
+
+详解
+说到Long Polling（长轮询），必然少不了提起Polling（轮询），这都是拉模式的两种方式。
+
+Polling是指不管服务端数据有无更新，客户端每隔定长时间请求拉取一次数据，可能有更新数据返回，也可能什么都没有。
+
+Long Polling原理也很简单，相比Polling，客户端发起Long Polling，此时如果服务端没有相关数据，会hold住请求，直到服务端有相关数据，或者等待一定时间超时才会返回。返回后，客户端又会立即再次发起下一次Long Polling。这种方式也是对拉模式的一个优化，解决了拉模式数据通知不及时，以及减少了大量的无效轮询次数。（所谓的hold住请求指的服务端暂时不回复结果，保存相关请求，不关闭请求连接，等相关数据准备好，写会客户端。）
+
+前面提到Long Polling如果当时服务端没有需要的相关数据，此时请求会hold住，直到服务端把相关数据准备好，或者等待一定时间直到此次请求超时，这里大家是否有疑问，为什么不是一直等待到服务端数据准备好再返回，这样也不需要再次发起下一次的Long Polling，节省资源？
+主要原因是网络传输层主要走的是tcp协议，tcp协议是可靠面向连接的协议，通过三次握手建立连接。但是所建立的连接是虚拟的，可能存在某段时间网络不通，或者服务端程序非正常关闭，亦或服务端机器非正常关机，面对这些情况客户端根本不知道服务端此时已经不能互通，还在傻傻的等服务端发数据过来，而这一等一般都是很长时间。当然tcp协议栈在实现上有保活计时器来保证的，但是等到保活计时器发现连接已经断开需要很长时间，如果没有专门配置过相关的tcp参数，一般需要2个小时，而且这些参数是机器操作系统层面，所以，以此方式来保活不太靠谱，故Long Polling的实现上一般是需要设置超时时间的。
+
+实现
+Long Polling的实现很简单，可分为四个过程：
+
+发起Polling
+发起Polling很简单，只需向服务器发起请求，此时服务端还未应答，所以客户端与服务端之间一直处于连接状态。
+
+数据推送
+如果服务器端有相关数据，此时服务端会将数据通过此前建立的通道发回客户端。
+
+Polling终止
+Polling终止情况有三种：
+若服务端返回相关数据，此时客户端收到数据后，关闭请求连接，结束此次Polling过程。
+若客户端等待设定的超时时间后，服务端依然没有返回数据，此时客户端需要主动终止此次Polling请求。
+若客户端收到网络故障或异常，此时客户端自然也是需要主动终止此次Polling请求。
+
+重新Polling
+终止上次Polling后，客户端需要立即再次发起Polling请求。这样才能保证拉取数据的及时性。
+
+代码实现起来也很简单，Http Call按照上述过程就很方便实现LongPolling。下面Code只是简单展示过程，在具体场景下，根据具体的业务逻辑进行调整。
+
+客户端Code
+package com.andy.example.longpolling.client;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+/**
+ * Created by andy on 17/7/6.
+ */
+public class ClientBootstrap {
+
+    public static final String URL = "http://localhost:8080/long-polling";
+
+    public static void main(String[] args) {
+        int i = 0;
+        while (true) {
+            System.out.println("第" + (++i) + "次 longpolling");
+            HttpURLConnection connection = null;
+            try {
+                URL getUrl = new URL(URL);
+                connection = (HttpURLConnection) getUrl.openConnection();
+                connection.setReadTimeout(50000);//这就是等待时间，设置为50s
+                connection.setConnectTimeout(3000);
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Accept-Charset", "utf-8");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setRequestProperty("Charset", "UTF-8");
+
+                if (200 == connection.getResponseCode()) {
+                    BufferedReader reader = null;
+                    try {
+                        reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+                        StringBuilder result = new StringBuilder(256);
+                        String line = null;
+                        while ((line = reader.readLine()) != null) {
+                            result.append(line);
+                        }
+
+                        System.out.println("结果 " + result);
+
+                    } finally {
+                        if (reader != null) {
+                            reader.close();
+                        }
+                    }
+                }
+            } catch (IOException e) {
+
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            }
+        }
+    }
+
+}
+
+服务端Code
+package com.andy.example.longpolling.server;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+
+/**
+ * Created by andy on 17/7/6.
+ */
+public class LongPollingServlet extends HttpServlet {
+
+    private Random random = new Random();
+
+    private AtomicLong sequenceId = new AtomicLong();
+
+    private AtomicLong count = new AtomicLong();
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        System.out.println("第" + (count.incrementAndGet()) + "次 longpolling");
+
+        int sleepSecends = random.nextInt(100);
+//随机获取等待时间，来通过sleep模拟服务端是否准备好数据
+
+        System.out.println("wait " + sleepSecends + " second");
+
+        try {
+            TimeUnit.SECONDS.sleep(sleepSecends);//sleep
+        } catch (InterruptedException e) {
+
+        }
+
+        PrintWriter out = response.getWriter();
+        long value = sequenceId.getAndIncrement();
+        out.write(Long.toString(value));
+    }
+
+}
+
+结果
+服务端结果
+客户端结果
+应用
+WebQQ、Comet都用到长轮询技术，另外一些使用Pull模式消费的消息系统，都会使用Long Polling技术进行优化。
+
+补充
+针对一些同学的反馈，补充一篇 Long Polling长轮询实现进阶，希望大家对长轮询理解更加深刻。
+```
 ### "Headers already sent" 错误是什么意思，如何避免
+```
+https://blog.csdn.net/qq_41750040/article/details/80197764
+https://blog.csdn.net/change518/article/details/8716635
+发送或者修改 HTTP 头信息的方法必须在任何输出被输出之前被调用。否则调用将会出错：
+
+Warning: Cannot modify header information - headers already sent (output started at script:line)
+
+这些方法可以修改（modify） HTTP 头信息：
+
+header / header_remove
+session_start / session_regenerate_id
+setcookie / setrawcookie
+输出（output）可以是：
+
+无意的：
+<?php 之前或者 ?> 之后的空格
+UTF-8 BOM
+有意的：
+print ，echo 以及其他能产生输出的方法
+在 <?php 前原始的 <html> 区块
+为什么这个错误会产生
+为了理解为什么 HTTP header 必须在输出之前发送出去，我们有必要了解看一下一个典型的 HTTP 相应。PHP 脚本主要用来生成 HTML ，但它也会发送一系列的 HTTP/CGI 头信息到 web 服务器：
+
+1
+2
+3
+4
+5
+6
+7
+8
+HTTP/1.1 200 OK
+Powered-By: PHP/5.3.7
+Vary: Accept-Encoding
+Content-Type: text/html; charset=utf-8
+
+<html><head><title>PHP page output page</title></head>
+<body><h1>Content</h1> <p>Some more output follows...</p>
+and <a href="/"> <img src=internal-icon-delayed> </a>
+页面或者输出总是紧跟在头信息后面。PHP 必须先把头信息发送给 web 服务器，并且它只能发送一次，在这之后就再也不能修改头信息了。
+
+当 PHP 第一次接收到输出时（print ,echo,<html>） 它会清掉所有收集到的头信息。在此之后它能把输出所有想输出的内容，但是再想发送 HTTP 头信息就不可能了。
+
+怎么找到到底是哪里提前产生了输出？
+header() 头信息包含所有与问题产生相关的信息：
+
+Warning: Cannot modify header information - headers already sent by (output started at /www/usr2345/htdocs/auth.php:52) in /www/usr2345/htdocs/index.php on line 100
+
+在上面的警告中，line 100 指向调用 header() 失败的脚本行数。
+
+圆括号里的 output started 这条信息更加重要。它指出了先于 header() 前的输出的源头。在这个例子中是 auth.php 的 第 52 行，这就是你要去找的过早的输出的地方。
+
+典型的原因有这些：
+
+print,echo
+有意的 print 和 echo 语句输出将会中断输出 HTTP 头信息的机会。应用程序流必须重组以避免这种行为，可以使用 function 和模版来重组，从而保证 header() 调用是在信息被写出之前。
+产生输出的方法包括：
+
+print, echo, printf, vprintf
+trigger_error, ob_flush, ob_end_flush, var_dump, print_r
+readfile, passthru, flush, imagepng, imagejpeg
+以及其他用户自定义的方法。
+
+原始的 HTML
+在一个 PHP 文件中未被解析的 HTML 区块也是输出。脚本中各种可能触发调用 header() 的条件都必须在任何 <html> 区块前声明。
+
+<?php 前的空格导致的 "script.php line 1" 警告 
+如果警告指向第 1 行的输出，那么它很有可能指向的是在 <?php 之前的空格，文本或者 HTML 。
+
+1
+2
+ <?php
+// 在 <?php 前有个空格
+同样它可能出现在附加的脚本或者脚本区块上:
+
+1
+2
+3
+?>
+
+<?php
+PHP 确实在闭合标签后占据了一个换行符，但是它不会在上面的空白处插入换行符、制表符或者空格（也就是说这是我们自己造成的）。
+
+UTF-8 BOM(这个特别注意)
+换行符或者空格可能导致问题，但是不可见的字符序列同样可以。最著名的就是大多数文本编辑器并不会显示的 UTF-8 BOM 。它是在 UTF-8 编码的文档里可选甚至是多余的，被标示为 EF BB BF 的字节序列。但是 PHP 必须把它当作原始的输出来处理。它可能以 ï»¿ 这样的符号输出（如果客户端以 Latin-1 来解释这个文档）或者其他这样的“非法输出”。
+以某种图形化的编辑器或者基于 JAVA 的 IDE 查看这类文件时，你可能察觉不到 UTF-8 BOM 的存在。它们没有把 UTF-8 BOM 形象化（受制于 Unicode 标准）。然而大多数程序编辑器和控制台编辑程序会这样处理：
+
+像这样就能简单地提早发现问题了。其他的编辑器在设置某些选项后也能纠正这样的问题（Windows 上的 Notepad++ 可以识别并且纠正 BOM 问题 ），另一个发现 BOM 的方法就是借助十六进制的编辑器。在 *nix 系统上，大都提供了 hexdump ，如果没有的话，其他图形化的变种也可以用来简化审计这些问题的步骤：
+
+一个简单的修正方法就是将文本编辑器设置为 以 UTF-8 (no BOM) 保存文件（save files as UTF-8 (no BOM)）或者其他类似的设置。
+
+修正程序
+有很多自动化的工具可以检测并修改文本文件（sed / awk 或者 recode ）。PHP 里有 phptags 。它可以把打开标签和关闭标签重写成长标签（<?php）或者短标签（<?）的形式。也可以轻松地解决前导或尾随的空格、Unicode 和 UTF-x BOM 问题：
+
+1
+phptags  --whitespace  *.php
+同样，你可以在某个目录或整个项目目录使用这个命令。
+
+?> 后的空白 
+如果错误代码在闭合标签 >? 这一行的前面，那么这就是 >? 后的空格或者原始文本输出导致的问题。PHP 的结束标记并不会在遇到闭合标签时终止执行脚本，任何 ?> 之后的文本或者空格字符都会被当作页面内容输出。
+通用的被鼓励的做法，特别是针对新手，是避免在 PHP 文件后加上闭合标签 ?> 。这样就能避免一部分产生这类问题的情况。
+
+错误源提示：”Unknown on line 0”
+如果没有给出具体的错误源，那么这就是典型的 PHP 扩展或者 php.ini 设置的问题：
+
+偶尔是 gzip 编码设置或者是 ob_gzhandler
+也有可能是 php.ini 设置里模块加载了两次导致 PHP 产生了启动 / 警告信息
+先前的错误导致输出了错误信息 
+如果前面的 PHP 语句或者表达式造成了 warning 或者 notice 信息导致输出，这些输出也被认为是过早地输出。
+在这种情况下你需要避免错误，推后这些语句的执行，或者抑制这些信息的输出，可以使用 isset() 进行判断，或者使用抑制符@，前提是它们不会阻止后续的调试。
+
+没有错误信息输出
+如果你禁用了 php.ini 里的 error_reporting 或者 display_errors 设置，那么将不会产生 warning 。但是忽略错误并不会让问题消失，头信息仍然不能在过早的输出输出之前发送出去。
+
+所以当 header("Location: ...") 跳转静默地失败时，建议你去查看 warnings 。在脚本的最前面用下面的两条命令重新开启错误报告设置：
+
+1
+2
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+或者如果其他的设置都失败了那就设置 set_error_handler("var_dump"); 。
+
+至于跳转的 header ，在执行至最后的代码时你应该遵循下面的这种风格：
+
+1
+exit(header("Location: /finished.html"));
+最好是提供一个方法，特别是当 header() 执行失败时打印出用户信息。
+
+变通方法：输出缓冲
+PHP 的输出缓冲的方法是缓解这种问题的一种变通方法。它运行起来可靠，但是你绝不要使用它来替代你架构良好应用程序结构，从控制逻辑中分离输出。它的真实目的是用来减轻大块数据传输至服务器时的压力。
+
+output_buffering 设置 在 php.ini 或者 .htaccess 或者甚至在最新的 FPM/FastCGI 的 .user.ini 中设置；
+同样你可以在脚本的最前面使用 ob_start() 来设置，但是它并没那么可靠：
+即使 <?php ob_start(); ?> 在第一个脚本里，空格或者 BOM 也有可能在此之前被输出
+它可以隐藏 HTML 输出里的空格（将空格放到 buffer 中），但是只要应用程序逻辑企图发送二进制内容（比如生成的图片），缓冲里的无关的输出就会成为问题（这样 ob_clean() 方法就成为下一步的变通方法了）。
+缓冲有大小限制，并且在默认配置下很容易超出，并且这种情况并不少见，一旦发生也不太容易追踪。
+因此这两个方法变得不可靠了，特别是当你需要更改开发环境或者生产环境的配置的时候。这就是为什么输出缓冲被认为只是一种蹩脚的变通方法。
+
+建议参考官方手册里的基本 使用方法 ，以及它的优缺点：
+
+输出缓冲是什么
+为什么使用 output buffering
+使用输出缓冲是不好的实践吗？
+正确使用 output buffering 解决 “header already sent” 的例子
+但是在其他的服务器上是好的？
+如果你之前没有收到过头信息的 warning ，那么 php.ini 里的 output_buffering 设置改变了。在现在的／不同的服务器上很有可能没有设置。
+
+使用 headers_sent() 检查
+你可以使用 headers_sent 来检查是否可以发送头信息。这种方法可以有效地检查以便输出一个错误信息或是应用其他的逻辑。
+不错的回退变通方法有：
+
+HTML<meta> tag
+如果你的应用程序很难在结构上解决这个问题，有个简单但显得不专业的做法是在 HTML 标签中来跳转网页。可以这样实现：
+
+1
+<meta http-equiv="Location" content="http://example.com/">
+或者加上一个延迟时间
+
+1
+<meta http-equiv="Refresh" content="2; url=../target.html">
+JavaScript 跳转
+另一个可选的方法就是使用 JavaScript 跳转 来实现网页跳转：
+
+1
+<script> location.replace("target.html"); </script>
+这种方式相比较 方法起来更兼容 HTML 标准，它只依赖于可以运行 JavaScript 的客户端。
+
+这两种方式在 HTTP header() 调用失败时都提供了可以接受的回退方式。理想化的处理方式应该是将跳转与其它方式结合，给出对用户友好的辅助信息并且提供一个可点的链接以供后续操作。
+
+为什么 setcookie() 和 session_start() 都会被影响
+setcookie() 和 session_start() 都需要发送一个 set-cookie: 的 HTTP 头信息。这种情况就和前面输出 header() 的情况类似，所以同样会出现由于过早地输出错误信息导致的错误。
+
+（当然它们受影响也有可能是因为客户端禁止了 cookie 导致的，设置可能是代理的问题。很明显，session 也取决去剩余磁盘空间大小或者 php.ini 里的其它设置
 ```
 
 ## 算法篇
-```
 ### 快速排序（手写）
+```
+通过设置一个初始中间值，来将需要排序的数组分成3部分，小于中间值的左边，中间值，大于中间值的右边，
+继续递归用相同的方式来排序左边和右边，最后合并数组
+示例：
+<?php
+$a = array(2,13,42,34,56,23,67,365,87665,54,68,3);
+function quick_sort($a)
+{
+    // 判断是否需要运行，因下面已拿出一个中间值，这里<=1
+    if (count($a) <= 1) {
+        return $a;
+    }
+    $middle = $a[0]; // 中间值
+    $left = array(); // 接收小于中间值
+    $right = array();// 接收大于中间值
+    // 循环比较
+    for ($i=1; $i < count($a); $i++) { 
+        if ($middle < $a[$i]) {
+            // 大于中间值
+            $right[] = $a[$i];
+        } else {
+            // 小于中间值
+            $left[] = $a[$i];
+        }
+    }
+    // 递归排序划分好的2边
+    $left = quick_sort($left);
+    $right = quick_sort($right);
+    // 合并排序后的数据，别忘了合并中间值
+    return array_merge($left, array($middle), $right);
+}
+print_r(quick_sort($a));
+```
 ### 冒泡排序（手写）
+```
+<?php
+/**
+ * User: wujunze
+ * Email: itwujunze@163.com
+ * Blog: https://wujunze.com
+ * Date: 2016/8/25
+ *
+ */
+$arr = array(1, 43, 54, 72, 21, 66, 32,55,11, 78, 36, 76, 39,88);
+function getpao($arr)
+{
+    $len = count($arr);
+    //设置一个空数组 用来接收冒出来的泡
+    //该层循环控制 需要冒泡的轮数
+    for ($i = 1; $i < $len; $i++) { //该层循环用来控制每轮 冒出一个数 需要比较的次数
+        for ($k = 0; $k < $len - $i; $k++) {
+            if ($arr[$k] > $arr[$k + 1]) {
+                $tmp = $arr[$k + 1];
+                $arr[$k + 1] = $arr[$k];
+                $arr[$k] = $tmp;
+            }
+        }
+    }
+    return $arr;
+}
+var_dump(getpao($arr));
+```
 ### 二分查找（了解）
+```
+一：递归方式
+$array = [1,3,6,9,13,18,19,29,38,47,51,56,58,59,60,63,65,69,70,71,73,75,76,77,79,89];
+$target = 73;
+$low = 0;
+$high = count($array)-1;
+function bin_search($array, $low, $high, $target){
+    if ( $low <= $high){
+        var_dump($low, $high);echo "\n";
+        $mid =  intval(($low+$high)/2 );
+        if ($array[$mid] ==  $target){
+            return true;
+        }elseif ( $target < $array[$mid]){
+            return  bin_search($array, $low,  $mid-1, $target);
+        }else{
+            return  bin_search($array, $mid+ 1, $high, $target);
+        }
+    }
+    return false;
+}
+$find = bin_search($array, $low, $high, $target);
+var_dump($find);
+执行结果
+int(0)
+int(25)
+int(13)
+int(25)
+int(20)
+int(25)
+int(20)
+int(21)
+bool(true)
+我们看到，经过4次二分查找，查找区间不断折半，最终找到了$target。
+二：循环方式
+$array = [1,3,6,9,13,18,19,29,38,47,51,56,58,59,60,63,65,69,70,71,73,75,76,77,79,89];
+$target = 73;
+function bin_search($array, $target)
+{
+    $low = 0;
+    $high = count($array)-1;
+    $find = false;
+    while (true){
+        if ($low <= $high){
+            var_dump($low, $high);echo "\n";
+            $mid = intval(($low + $high)/2);
+            if ($array[$mid] == $target){
+                $find = true;
+                break;
+            } elseif ($array[$mid] < $target){
+                $low = $mid+1;
+            } elseif ($array[$mid] > $target){
+                $high = $mid-1;
+            }
+        } else {
+            break;
+        }
+    }
+    return $find;
+}
+$find = bin_search($array, $target);
+var_dump($find);
+执行结果
+int(0)
+int(25)
+int(13)
+int(25)
+int(20)
+int(25)
+int(20)
+int(21)
+bool(true)
+我们看到，两种方式过程和结果相同。下面我们来测试下针对关联数组的二分查找算法：
+
+$array = ['a'=>1,'b'=>3,'c'=>6,'d'=>9,'e'=>13,'f'=>18,'g'=>19,'h'=>29,'i'=>38];
+$target = 19;
+function bin_search($array, $target)
+{
+    $low = 0;
+    $high = count($array)-1;
+    $key_map = array_keys($array);
+    $find = false;
+    while (true){
+        if ($low <= $high){
+            var_dump($low, $high);echo "\n";
+            $mid = intval(($low + $high)/2);
+            if ($array[$key_map[$mid]] == $target){
+                $find = true;
+                break;
+            } elseif ($array[$key_map[$mid]] < $target){
+                $low = $mid+1;
+            } elseif ($array[$key_map[$mid]] > $target){
+                $high = $mid-1;
+            }
+        } else {
+            break;
+        }
+    }
+    return $find;
+}
+$find = bin_search($array, $target);
+var_dump($find);
+执行结果
+int(0)
+int(8)
+int(5)
+int(8)
+bool(true)
+```
 ### 查找算法 KMP（了解）
+```
+PHP实现KMP算法
+function cal_next($str){
+    $next[0] = -1;//next[0]初始化为-1
+    $i=0;    $j = -1;    $len=strlen($str);    while($i<$len){
+           if($j===-1 || $str[$i]===$str[$j]){            $i++;            $j++;            $next[$i]=$j;
+        }else{            $j=$next[$j];
+        }
+    }    return $next;
+}$str='ABCDABD';$next=cal_next($str);
+var_dump($next);function search($str,$search){
+    $next=cal_next($search);    $i=0;    $j=0;    $lenStr=strlen($str);    $lenSearch=strlen($search);    while($i<$lenStr && $j<$lenSearch){
+            if($j===-1 || $str[$i]===$search[$j]){
+            //$i 主串的不后退，移动模式串。为什么没有$j===0，因为如果有$j++为1，下一步是判断$str[$i]===$search[1]，跳过了$search[0]
+            $i++;            $j++;
+        }else{            $j=$next[$j];
+        }
+    }    if($j===$lenSearch){        return $i-$j;
+    }    return -1;
+}
+var_dump(search($str,'ABD'));
+
+[KMP算法（1）：如何理解KMP](https://segmentfault.com/a/1190000008575379)
+[字符串匹配的KMP算法](http://www.ruanyifeng.com/blog/2013/05/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm.html)
+[KMP算法最浅显理解](https://blog.csdn.net/starstar1992/article/details/54913261)
+来源地址：https://www.php.cn/php-weizijiaocheng-392133.html
+```
 ### 深度、广度优先搜索（了解）
+```
+https://www.cnblogs.com/zemliu/archive/2012/09/24/2700878.html
+<?php
+    #二叉树的广度优先遍历
+    #使用一个队列实现
+
+    class Node {
+        public $data = null;
+        public $left = null;
+        public $right = null;
+    }
+
+    #@param $btree 二叉树根节点
+    function breadth_first_traverse($btree) {
+        $traverse_data = array();
+        $queue = array();
+        array_unshift($queue, $btree); #根节点入队
+
+        while (!empty($queue)) { #持续输出节点，直到队列为空
+            $cnode = array_pop($queue); #队尾元素出队
+            $traverse_data[] = $cnode->data;
+
+            #左节点先入队，然后右节点入队
+            if ($cnode->left != null) array_unshift($queue, $cnode->left);
+            if ($cnode->right != null) array_unshift($queue, $cnode->right);
+        }
+
+        return $traverse_data;
+    }
+
+    #深度优先遍历,使用一个栈实现
+    function depth_first_traverse($btree) {
+    $traverse_data = array();
+    $stack = array();
+    array_push($stack, $btree);
+
+    while (!empty($stack)) {
+        $cnode = array_pop($stack);
+        $traverse_data[] = $cnode->data;
+
+        if ($cnode->right != null) array_push($stack, $cnode->right);
+        if ($cnode->left != null) array_push($stack, $cnode->left);
+    }
+
+    return $traverse_data;
+    }
+
+    $root = new Node();
+    $node1 = new Node();
+    $node2 = new Node();
+    $node3 = new Node();
+    $node4 = new Node();
+    $node5 = new Node();
+    $node6 = new Node();
+
+    $root->data = 1;
+    $node1->data = 2;
+    $node2->data = 3;
+    $node3->data = 4;
+    $node4->data = 5;
+    $node5->data = 6;
+    $node6->data = 7;
+
+    $root->left = $node1;
+    $root->right = $node2;
+    $node1->left = $node3;
+    $node1->right = $node4;
+    $node2->left = $node5;
+    $node2->right = $node6;
+
+    $traverse = breadth_first_traverse($root);
+    print_r($traverse);
+    echo "<br>";
+    $traverse = depth_first_traverse($root);
+    print_r($traverse);
+?>
+```
 ### LRU 缓存淘汰算法（了解，Memcached 采用该算法）
 ```
+https://learnku.com/articles/34584
+缓存是一种提高数据读取性能的技术。但是对于计算机来说，并不可能缓存所有的数据，在达到它的临界空间时，我们需要通过一些规则用新的数据取代掉一部分的缓存数据。这时候你会如果选择替换呢？
 
+替换的策略有很多种，常用的有以下几种:
+
+FIFO (先进先出策略)
+
+LFU (最少使用策略)
+
+LRU (最近最少使用策略)
+
+NMRU (在最近没有使用的缓存中随机选择一个替换)
+
+介于我这篇主要实现 LRU，所以就不去介绍其他的了，可以自行去了解。
+
+假设你已经有 5 个女朋友了，此时你成功勾搭上一个新女朋友，在你沉迷女色的同时，你惊奇的发现，你已经不能像年轻时一样以一敌六了，你必须舍弃若干个女朋友，这时候，身拥六个女朋友的渣男你，彻底展示出你的渣男本色，和最近最少秀恩爱的小姐姐说再见：“对不起，国篮此时需要我挺身发边线球，我楠辞琦咎，再见。”，就这样在你成功勾搭一个新小姐姐，你的身体临界点的同时，你就必须舍弃其他的小姐姐。
+
+下面来张实际点的图搞清楚他的原理。
+
+
+
+基于上述图片，我们知道，对于 LRU 的操作，无非在于插入 (insert), 删除 (delete)，以及替换，针对替换来说，如果缓存空间满了，那么就是 insert to head and delete for tail。如果未满，也分为两种，一种是缓存命中的话，只需要把缓存的值 move to head。如果之前不存在，那么就是 insert to head。
+
+实现过程
+接下来就是数据结构的选择了。数组的存储是连续的内存空间，虽然查询的时间复杂度是 O (1), 但是删除和插入为了保存内存空间的连续性，需要进行搬移，那么时间复杂度就是 O (n), 为了实现能快速删除，故而采用双向链表。但是链表的查询时间复杂度是 O (n), 那么就需要 hash table。屁话说了这么多，代码实现。其实之前刷过这道题目。特地拿出来讲一下。
+
+class LRUCache {
+    private $capacity;
+    private $list;
+    /**
+     * @param Integer $capacity
+     */
+    function __construct($capacity) {
+        $this->capacity=$capacity;
+        $this->list=new HashList();
+
+    }
+
+    /**
+     * @param Integer $key
+     * @return Integer
+     */
+    function get($key) {
+        if($key<0) return -1;
+        return $this->list->get($key);
+    }
+
+    /**
+     * @param Integer $key
+     * @param Integer $value
+     * @return NULL
+     */
+    function put($key, $value) {
+        $size=$this->list->size;
+        $isHas=$this->list->checkIndex($key);
+        if($isHas || $size+1 > $this->capacity){
+            $this->list->removeNode($key);
+        }
+        $this->list->addAsHead($key,$value);
+    }
+}
+
+class HashList{
+    public $head;
+    public $tail;
+    public $size;
+    public $buckets=[];
+    public function __construct(Node $head=null,Node $tail=null){
+        $this->head=$head;
+        $this->tail=$tail;
+        $this->size=0;
+    }
+
+    //检查键是否存在
+    public function checkIndex($key){
+        $res=$this->buckets[$key];
+        if($res){
+            return true;
+        }
+        return false;
+    }
+
+    public function get($key){
+        $res=$this->buckets[$key];
+        if(!$res) return -1;
+        $this->moveToHead($res);
+        return $res->val;
+    }
+
+    //新加入的节点
+    public function addAsHead($key,$val)
+{
+        $node=new Node($val);
+        if($this->tail==null && $this->head !=null){
+            $this->tail=$this->head;
+            $this->tail->next=null;
+            $this->tail->pre=$node;
+        }
+        $node->pre=null;
+        $node->next=$this->head;
+        $this->head->pre=$node;
+        $this->head=$node;
+        $node->key=$key;
+        $this->buckets[$key]=$node;
+        $this->size++;
+    }
+
+    //移除指针(已存在的键值对或者删除最近最少使用原则)
+    public function removeNode($key)
+{
+        $current=$this->head;
+        for($i=1;$i<$this->size;$i++){
+            if($current->key==$key) break;
+            $current=$current->next;
+        }
+        unset($this->buckets[$current->key]);
+        //调整指针
+        if($current->pre==null){
+            $current->next->pre=null;
+            $this->head=$current->next;
+        }else if($current->next ==null){
+            $current->pre->next=null;
+            $current=$current->pre;
+            $this->tail=$current;
+        }else{
+            $current->pre->next=$current->next;
+            $current->next->pre=$current->pre;
+            $current=null;
+        }
+        $this->size--;
+
+    }
+
+    //把对应的节点应到链表头部(最近get或者刚刚put进去的node节点)
+    public function moveToHead(Node $node)
+{
+        if($node==$this->head) return ;
+        //调整前后指针指向
+        $node->pre->next=$node->next;
+        $node->next->pre=$node->pre;
+        $node->next=$this->head;
+        $this->head->pre=$node;
+        $this->head=$node;
+        $node->pre=null;
+    }
+
+}
+
+class Node{
+    public $key;
+    public $val;
+    public $next;
+    public $pre;
+    public function __construct($val)
+{
+        $this->val=$val;
+    }
+}
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * $obj = LRUCache($capacity);
+ * $ret_1 = $obj->get($key);
+ * $obj->put($key, $value);
+```
 ## 数据结构篇（了解）
 ```
+一、基本概念
+
+（一）编写解决实际问题的程序的一般过程：
+
+1.如何用数据形式描述问题，即将问题抽象为一个数学模型；
+
+2.问题所涉及到的数据量的大小及数据之间的关系；
+
+3.如何在计算机中储存数据及体现数据之间的关系；
+
+4.处理数据时需要对数据执行的操作；
+
+5.编写的程序的性能是否良好。
+
+（二）数据(Data) ：
+
+是客观事物的符号表示，在计算机科学中指的是所有能输入到计算机中并被计算机程序处理的符号的总称。
+
+（三）数据元素(Data Element) ：是数据的基本单位，在程序中通常作为一个整体来进行考虑和处理。一个数据元素可由若干个数据项(Data Item)组成。数据项是数据的不可分割的最小单位。数据项是对客观事物某一方面特性的数据描述。
+
+（四）数据对象(Data Object)：是性质相同的数据元素的集合，是数据的一个子集。如字符集合C={‘A’,’B’,’C,…} 。
+
+（五）数据结构：相互之间具有一定联系的数据元素的集合。
+
+（六）数据的逻辑结构：数据元素之间的相互关系称为逻辑结构。
+
+（七）数据的逻辑结构有四种基本类型：
+
+1.集合：结构中数据元素之间除了“属于同一个集合”外,再也没有其他的关系；
+
+2.线性结构：结构中的数据元素存在一对一的关系；
+
+3.树形结构：结构中的数据元素存在一对多的关系；
+
+4.网状或者图状结构：结构中的数据元素存在多对多的关系；
+
+（八）数据结构的储存方式：由数据元素之间的关系在计算机中有两种不同的表示方法顺序表示和非顺序表示，从则导出两种储存方式，顺序储存结构和链式储存结构
+
+1.顺序存储结构：用数据元素在存储器中的相对位置来表示数据元素之间的逻辑结构(关系)。
+
+2.链式存储结构：在每一个数据元素中增加一个存放另一个元素地址的指针(pointer )，用该指针来表示数据元素之间的逻辑结构(关系)
+顺序结构：数据元素存放的地址是连续的；
+链式结构：数据元素存放的地址是否连续没有要求。
+数据的逻辑结构和物理结构是密不可分的两个方面，一个算法的设计取决于所选定的逻辑结构，而算法的实现依赖于所采用的存储结构
+
+（九）数据操作： 对数据要进行的运算
+
+（十）数据类型(Data Type)：指的是一个值的集合和定义在该值集上的一组操作的总称。
+
+（十一）算法(Algorithm)：是对特定问题求解方法(步骤)的一种描述，是指令的有限序列，其中每一条指令表示一个或多个操作。
+
+（十二）算法具有以下五个特性
+
+1.有穷性： 一个算法必须总是在执行有穷步之后结束，且每一步都在有穷时间内完成。
+
+2.确定性：算法中每一条指令必须有确切的含义。不存在二义性。且算法只有一个入口和一个出口。
+
+3.可行性： 一个算法是能行的。即算法描述的操作都可以通过已经实现的基本运算执行有限次来实现。
+
+4.输入： 一个算法有零个或多个输入，这些输入取自于某个特定的对象集合。
+
+5.输出： 一个算法有一个或多个输出，这些输出是同输入有着某些特定关系的量。
+
+（十三）算法和程序是两个不同的概念：一个计算机程序是对一个算法使用某种程序设计语言的具体实现。算法必须可终止意味着不是所有的计算机程序都是算法。
+
+（十四）评价一个好的算法有以下几个标准
+
+1.正确性(Correctness )： 算法应满足具体问题的需求。
+
+2.可读性(Readability)： 算法应容易供人阅读和交流。可读性好的算法有助于对算法的理解和修改。
+
+3.健壮性(Robustness)： 算法应具有容错处理。当输入非法或错误数据时，算法应能适当地作出反应或进行处理，而不会产生莫名其妙的输出结果。
+
+4.通用性(Generality)： 算法应具有一般性 ，即算法的处理结果对于一般的数据集合都成立。
+
+5.效率与存储量需求： 效率指的是算法执行的时间；存储量需求指算法执行过程中所需要的最大存储空间。一般地，这两者与问题的规模有关。
+
+（十五）算法的时间复杂度：算法中基本操作重复执行的次数是问题规模n的某个函数，其时间量度记作   T(n)=O(f(n))，称作算法的渐近时间复杂度(Asymptotic Time complexity)，简称时间复杂度。
+
+（十六）算法的空间复杂度：是指算法编写成程序后，在计算机中运行时所需存储空间大小的度量。记作：   S(n)=O(f(n)),其中n为问题规模
+```
 ### 堆、栈特性
+```
+https://blog.csdn.net/ljfphp/article/details/80053379
+一、关于堆和栈的概念及区别
+这里参考上篇博客： 浅谈堆和栈的区别
+通过这篇文章，我们可以知道广义的堆和栈到底是什么，但是具体在php中的使用呢
+
+二、php中的堆栈
+      众所周知，PHP提供了一组函数可以用于push与pop（堆栈）还有shift与unshift（队列）来操作数组元素。
+
+1、push与pop
+
+      这两个函数操作的是栈，遵循先进后出的原则。就像是往木桶里面加东西一样。通过array_push进行入栈操作，array_pop进行出栈操作。先进栈的部分在木桶的最下面。
+
+(1)array_push()方法
+
+array_push() 函数向第一个参数的数组尾部添加一个或多个元素（入栈），然后返回新数组的长度。该函数等于多次调用 $array[] = $value。
+1
+(2)array_pop()方法
+
+array_pop() 函数删除数组中的最后一个元素。
+返回数组的最后一个值。如果数组是空的，或者非数组，将返回 NULL。
+1
+2
+(3)实例：
+
+ <?php
+   $arr = array();
+   array_push($arr,'aaa');  //先入栈  aaa
+   array_push($arr,'bbb');  //后入栈   bbb
+   print_r($arr);   //此时打印结果为：[0]=>aaa,[1]=>bbb
+   $arr.pop();   //进行出栈操作，先进后出原则，则此时相当于bbb出栈了。
+   print_r($arr);  //打印结果应该是[0]=>aaa
+?>
+1
+2
+3
+4
+5
+6
+7
+8
+三、php实现的队列
+1、什么是队列
+
+      首先应该明确，队列和普通的堆栈是不一样的，队列遵循的是“先进先出”。堆栈只能在栈顶删除和插入。队列是每一个新插入的元素都是在队列的尾部插入，每一个要删除的元素都是位于队列的头部，当从队列的头部删除了一个元素后，其它队列中的元素就会向前进1位，在元素移动到队首时，就会接受出队的操作。
+
+队列模型可以理解为排队吃饭。先排队的人就先吃到饭。
+
+2、队列的操作
+
+php中使用array_push()来增加元素，使用array_shift()删除元素。
+
+（1）array_shift()方法
+
+array_shift() 函数删除数组中第一个元素，并返回被删除元素的值。
+如果键名是数字的，所有元素都会获得新的键名，从 0 开始，并以 1 递增
+1
+2
+具体参考手册：http://www.w3school.com.cn/php/func_array_shift.asp
+
+（2）实例：
+
+<?php
+   $arr = array();
+   array_push($arr,'aaa');  //队列中添加  aaa
+   array_push($arr,'bbb');  // 队列中添加   bbb
+   print_r($arr);  //此时打印输出为  [0]=>aaa,[1]=>bbb
+   array_shift($arr); //删除第一个元素，遵循先进先出原则，删除的是aaa
+   print_r($arr);  //打印结果为  [0]=>bbb
+?>
+1
+2
+3
+4
+5
+6
+7
+8
+（3）双端队列
+
+      还有一种队列比较特殊，首尾两端都允许进行插入和删除的操作，这种队列可以称为双端队列，与标准的队列不同的就是多了队首的插入操作和队尾的删除操作。一般是通过php的数组函数：array_unshift()和array_shift()。
+
+具体参考：PHP队列原理及基于队列的写文件案例
+
+四、队列的用途
+      队列可以很好地异步处理数据传送和存储，当你频繁地向数据库中插入数据、频繁地向搜索引擎提交数据，就可采取队列来异步插入。另外，还可以将较慢的处理逻辑、有并发数量限制的处理逻辑，通过消息队列放在后台处理，例如FLV视频转换、发送手机短信、发送电子邮件等。
+
+end
+```
 ### 队列
+```
+https://www.cnblogs.com/be-thebest/p/9983672.html
+队列是一种特殊的线性表，它只允许在表的前端，可以称之为front，进行删除操作；而在表的后端，可以称之为rear进行插入操作。队列和堆栈一样，是一种操作受限制的线性表，和堆栈不同之处在于：队列是遵循“先进先出”原则，而堆栈遵循的是“先进后出”原则。队列进行插入操作的端称为队尾，进行删除操作的称为队头，只允许在队尾进行插入操作，在队头进行删除操作。
+
+　　队列的数据元素又称为队列元素，在队尾中插入一个元素称为入队，在队头删除一个元素称为出队。具体实现参考代码：
+
+复制代码
+<?php
+/**
+*  php队列算法
+*  
+*  Create On 2010-6-4
+*  Author Been
+*  QQ:281443751
+*  Email:binbin1129@126.com
+**/
+class data {
+    //数据
+    private $data;
+    
+    public function __construct($data){
+        $this->data=$data;
+        echo $data.":哥进队了！<br>";
+    }
+    
+    public function getData(){
+        return $this->data;
+    }
+    public function __destruct(){
+        echo $this->data."：哥走了！<br>";
+    }
+}
+class queue{
+    protected $front;//队头
+    protected $rear;//队尾
+    protected $queue=array('0'=>'队尾');//存储队列
+    protected $maxsize;//最大数
+    
+    public function __construct($size){
+        $this->initQ($size);
+    }
+    //初始化队列
+    private function initQ($size){
+        $this->front=0;
+        $this->rear=0;
+        $this->maxsize=$size;
+    }
+    //判断队空
+    public function QIsEmpty(){
+        return $this->front==$this->rear;
+    }
+    //判断队满
+    public function QIsFull(){
+        return ($this->front-$this->rear)==$this->maxsize;
+    }
+    //获取队首数据
+    public function getFrontDate(){
+        return $this->queue[$this->front]->getData();
+    }
+    //入队
+    public function InQ($data){
+        if($this->QIsFull())echo $data.":我一来咋就满了！（队满不能入队，请等待！）<br>";
+        else {
+            $this->front++;
+            for($i=$this->front;$i>$this->rear;$i--){
+                //echo $data;
+                if($this->queue[$i])unset($this->queue[$i]);
+                $this->queue[$i]=$this->queue[$i-1];
+            }
+            $this->queue[$this->rear+1]=new data($data);
+            //print_r($this->queue);
+            //echo $this->front;
+            echo '入队成功！<br>';
+        }
+    }
+    //出队
+    public function OutQ(){
+        if($this->QIsEmpty())echo "队空不能出队！<br>";
+        else{
+            unset($this->queue[$this->front]);
+            $this->front--;
+            //print_r($this->queue);
+            //echo $this->front;
+            echo "出队成功！<br>";
+        }
+    }
+}
+$q=new queue(3);
+$q->InQ("小苗");
+$q->InQ('马帅');
+$q->InQ('溜冰');
+$q->InQ('张世佳');
+$q->OutQ();
+$q->InQ("周瑞晓");
+$q->OutQ();
+$q->OutQ();
+$q->OutQ();
+$q->OutQ();
+复制代码
+本案例中有两个类：
+
+　　第一个是data类，用于实现数据的存放以及队列元素的入队出队情况；
+
+　　第二个是queue类，用于队列元素的一些入队出队操作。
+
+队列中包含四个属性：
+
+　　front(队列的头部）
+
+　　rear(队列的尾部)
+
+　　maxsize(队列的长度，即队列元素个数)
+
+　　queue(存放所有已入队队列元素的对象)
+
+场景说明：
+
+1.初始化队列时，生成一个队列，传入一个参数作为maxsize初始化队列把队尾rear设为0，队头front也设为0，此时queue中只有0号元素，并且rear和front都指向它。
+
+2.入队时，先需要判断队列是否已满（front-rear == maxsize）,如果已满不可在插入，如果未满则允许插入。插入时，front自增，然后依次让队列所有元素向前移动一位（让出队尾位置以便插入新元素），然后生成新的data对象插入到队尾位置。
+
+3.出队时，判断队列是否为空（front == rear），如果为空时，无法出队。如果不为空时，删除front指向的对象，并且front自减，完成出队。
+
+运行结果如下:
+
+复制代码
+ 1 小苗:哥进队了！
+ 2 入队成功
+ 3 马帅:哥进队了！
+ 4 入队成功
+ 5 溜冰:哥进队了！
+ 6 入队成功
+ 7 张世佳:我一来咋就满了！（队满不能入队，请等待！）
+ 8 小苗：哥走了！
+ 9 出队成功！
+10 周瑞晓:哥进队了！
+11 入队成功
+12 马帅：哥走了！
+13 出队成功！
+14 溜冰：哥走了！
+15 出队成功！
+16 周瑞晓：哥走了！
+17 出队成功！
+18 队空不能出队！
+19 队空不能出队！
+```
 ### 哈希表
+```
+https://www.cnblogs.com/orlion/p/5344126.html
+一、哈希表(HashTable)
+
+    大部分动态语言的实现中都使用了哈希表，哈希表是一种通过哈希函数，将特定的键映射到特定值得一种数据
+
+ 
+
+结构，它维护键和值之间一一对应关系。
+
+键(key):用于操作数据的标示，例如PHP数组中的索引或者字符串键等等。
+
+槽(slot/bucket):哈希表中用于保存数据的一个单元，也就是数组真正存放的容器。
+
+哈希函数(hash function):将key映射(map)到数据应该存放的slot所在位置的函数。
+
+哈希冲突(hash collision):哈希函数将两个不同的key映射到同一个索引的情况。
+
+ 
+
+    目前解决hash冲突的方法有两种：链接法和开放寻址法。
+
+ 
+
+1、冲突解决
+
+    (1)链接法
+
+    链接法通过使用一个链表来保存slot值的方式来解决冲突，也就是当不同的key映射到一个槽中的时候使用链表
+
+ 
+
+来保存这些值。（PHP中正是使用了这种方式）；
+
+    (2)开放寻址法
+
+    使用开放寻址法是槽本身直接存放数据，在插入数据时如果key所映射到的索引已经有数据了，这说明有冲突，
+
+ 
+
+这时会寻找下一个槽，如果该槽也被占用了则继续寻找下一个槽，直到找到没有被占用的槽，在查找时也是这样
+
+ 
+
+2、哈希表的实现
+
+    哈希表的实现主要完成的工作只有三点:
+
+    * 实现哈希函数
+
+    * 冲突的解决
+
+    * 操作接口的实现
+
+（1）数据结构
+
+    首先需要一个容器来曹村我们的哈希表，哈希表需要保存的内容主要是保存进来的数据，同时为了方便的得知哈希表中存储的元素个数，需要保存一个大小字段，第二个需要的就是保存数据的容器。下面将实现一个简易的哈希表，基本的数据结构主要有两个，一个用于保存哈希表本身，另外一个就是用于实际保存数据的单链表了，定义如下：
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+typedef struct _Bucket
+{
+    char *key;
+    void *value;
+    struct _Bucket *next;
+  
+} Bucket;
+  
+typedef struct _HashTable
+{
+    int size;
+    Bucket* buckets;
+} HashTable;
+上边的定义与PHP中的实现相似，为了简化key的数据类型为字符串，而存储的结构可以为任意类型。
+
+Bucket结构体是一个单链表，这是为了解决哈希冲突。当多个key映射到同一个index的时候将冲突的元素链接起来
+
+ 
+
+（2）哈希函数实现
+
+我们采用一种最简单的哈希算法实现：将key字符串的所有字符加起来，然后以结果对哈希表的大小取模，这样索引就能落在数组索引的范围之内了。
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+static int hash_str(char *key)
+{
+    int hash = 0;
+  
+    char *cur = key;
+  
+    while(*(cur++) != '\0') {
+        hash += *cur;
+    }
+  
+    return hash;
+}
+  
+// 使用这个宏来求得key在哈希表中的索引
+#define HASH_INDEX(ht, key) (hash_str((key)) % (ht)->size)
+PHP使用的哈希算法称为DJBX33A。为了操作哈希表定义了如下几个操作函数：
+
+1
+2
+3
+4
+5
+int hash_init(HashTable *ht);                               // 初始化哈希表
+int hash_lookup(HashTable *ht, char *key, void **result);   // 根据key查找内容
+int hash_insert(HashTable *ht, char *key, void *value);     // 将内容插哈希表中
+int hash_remove(HashTable *ht, char *key);                  // 删除key所指向的内容
+int hash_destroy(HashTable *ht);
+下面以插入和获取操作函数为例：
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+int hash_insert(HashTable *ht, char *key, void *value)
+{
+    // check if we need to resize the hashtable
+    resize_hash_table_if_needed(ht);    // 哈希表不固定大小，当插入的内容快占满哈希表的存储空间
+                                        // 将对哈希表进行扩容，以便容纳所有的元素
+    int index = HASH_INDEX(ht, key);    // 找到key所映射到的索引
+  
+    Bucket *org_bucket = ht->buckets[index];
+    Bucket *bucket = (Bucket *)malloc(sizeof(Bucket)); // 为新元素申请空间
+  
+    bucket->key   = strdup(key);
+    // 将值内容保存起来，这里只是简单的将指针指向要存储的内容，而没有将内容复制
+    bucket->value = value;  
+  
+    LOG_MSG("Insert data p: %p\n", value);
+  
+    ht->elem_num += 1; // 记录一下现在哈希表中的元素个数
+  
+    if(org_bucket != NULL) { // 发生了碰撞，将新元素放置在链表的头部
+        LOG_MSG("Index collision found with org hashtable: %p\n", org_bucket);
+        bucket->next = org_bucket;
+    }
+  
+    ht->buckets[index]= bucket;
+  
+    LOG_MSG("Element inserted at index %i, now we have: %i elements\n",
+        index, ht->elem_num);
+  
+    return SUCCESS;
+}
+在查找时首先找到元素所在的位置，如果存在元素，则将链表中的所有元素的key和要查找的key依次对比，直到找到一致的元素，否则说明该值没有匹配的内容。
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+int hash_lookup(HashTable *ht, char *key, void **result)
+{
+    int index = HASH_INDEX(ht, key);
+    Bucket *bucket = ht->buckets[index];
+     if(bucket == NULL) return FAILED;
+  
+    // 查找这个链表以便找到正确的元素，通常这个链表应该是只有一个元素的，也就不同多次循环
+    // 要保证这一点需要有一个合适的哈希算法。
+    while(bucket)
+    {
+        if(strcmp(bucket->key, key) == 0)
+        {
+            LOG_MSG("HashTable found key in index: %i with  key: %s value: 
+%p\n",
+                index, key, bucket->value);
+            *result = bucket->value;    
+            return SUCCESS;
+        }
+  
+        bucket = bucket->next;
+    }
+  
+    LOG_MSG("HashTable lookup missed the key: %s\n", key);
+    return FAILED;
+}
+PHP中的数组是基于哈希表实现的，依次给数组添加元素时，元素之间是有顺序的，而这里的哈希表在物理上显然是接近平均分布的，这样是无法根据插入的先后顺序获取到这些元素的，在PHP的实现中Bucket结构体还维护了另一个指针字段来维护元素之间的关系。
+
+ 
+
+二、PHP的哈希表实现
+
+    1、PHP的哈希实现
+
+    PHP中的哈希表是十分重要的一个数据接口，基本上大部分的语言特征都是基于哈希表的，例如：变量的作用域和变量的存储，类的实现以及Zend引擎内部的数据有很多都是保存在哈希表中的。
+
+    (1)数据结构及说明
+
+    Zend为了保存数据之间的关系使用了双向链表来保存数据
+
+    (2)哈希表结构
+
+    PHP中的哈希表实现在Zend/zend_hash.c中，PHP使用如下两个数据结构来实现哈希表，HashTable结构体用于保存整个哈希表需要的基本信息，而Bucket结构体用于保存具体的数据内容，如下：
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+typedef struct _hashtable { 
+    uint nTableSize;        // hash Bucket的大小，最小为8，以2x增长
+    uint nTableMask;        // nTableSize-1,索引取值的优化
+    uint nNumOfElements;    // hash Bucket中当前存在的元素个数，count()函数会直接返回此值
+    ulong nNextFreeElement; // 下一个数字索引的位置
+    Bucket *pInternalPointer;   // 当前遍历的指针(foreach 比for快的原因之一)
+    Bucket *pListHead;          // 存储数头元素指针
+    Bucket *pListTail;          // 存储数组尾元素指针
+    Bucket **arBuckets;         // 存储hash数组
+    dtor_func_t pDestructor;
+    zend_bool persistent;
+    unsigned char nApplyCount; // 标记当前hash Bucket被递归访问的次数(防止多次递归)
+    zend_bool bApplyProtection;// 标记当前hash桶允许不允许多次访问，不允许时，最多只能递归3此
+#if ZEND_DEBUG
+    int inconsistent;
+#endif
+} HashTable;
+    nTableSize字段用于标示哈希表的容量，哈希表的初始化容量最小为8.首先看看哈希表的初始化函数：
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+ZEND_API int _zend_hash_init(HashTable *ht, uint nSize, hash_func_t 
+pHashFunction,
+                    dtor_func_t pDestructor, zend_bool persistent 
+ZEND_FILE_LINE_DC)
+{
+    uint i = 3;
+    //...
+    if (nSize >= 0x80000000) {
+        /* prevent overflow */
+        ht->nTableSize = 0x80000000;
+    } else {
+        while ((1U << i) < nSize) {
+            i++;
+        }
+        ht->nTableSize = 1 << i;
+    }
+    // ...
+    ht->nTableMask = ht->nTableSize - 1;
+  
+    /* Uses ecalloc() so that Bucket* == NULL */
+    if (persistent) {
+        tmp = (Bucket **) calloc(ht->nTableSize, sizeof(Bucket *));
+        if (!tmp) {
+            return FAILURE;
+        }
+        ht->arBuckets = tmp;
+    } else {
+        tmp = (Bucket **) ecalloc_rel(ht->nTableSize, sizeof(Bucket *));
+        if (tmp) {
+            ht->arBuckets = tmp;
+        }
+    }
+  
+    return SUCCESS;
+}
+    例如如果设置初始大小为10，则上面的算法将会将大小调整为16.也就是始终将大小调整为接近初始大小的2的整数次方
+
+为什么这么调整呢？先看看HashTable将哈希值映射到槽位的方法:
+
+1
+2
+h = zend_inline_hash_func(arKey, nKeyLength);
+nIndex = h & ht->nTableMask;
+    从上边的_zend_hash_init()函数中可知，ht->nTableMask的大小为ht->nTableSize – 1。这里使用&操作而不是使用取模，这是因为相对来说取模的操作的消耗和按位与的操作大很多。
+
+    设置好了哈希表的大小后就需要为哈希表申请存储空间了，如上边初始化的代码，根据是否需要持久保存而调用了不同的内存申请方法，是需要持久体现的是在前面PHP生命周期里介绍的：持久内容能在多个请求之间可访问，而如果是非持久存储则会在在请求结束时释放占用的空间。具体内容将在内存管理中详解
+
+    HashTable中的nNumOfElements字段很好理解，每插入一个元素或者unset删掉元素时会更新这个字段，这样在进行count()函数统计数组元素个数时就能快速的返回。
+
+    nNextFreeElement字段非常有用，先看一段PHP代码：
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+<?php
+$a = array(10 => 'Hello');
+$a[] = 'TIPI';
+var_dump($a);
+  
+// ouput
+array(2) {
+  [10]=>
+  string(5) "Hello"
+  [11]=>
+  string(5) "TIPI"
+}
+    PHP中可以不指定索引值向数组中添加元素，这时将默认使用数字作为索引，和C语言中的枚举类似，而这个元素的索引到底是多个就由nNextFreeElement字段决定了。如果数组中存在了数字key，则会默认使用最新使用的key+1，如上例中已经存在了10作为key的元素，这样新插入的默认索引就为11了。
+
+    下面看看保存哈希表数据的槽位数据结构体：
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+typedef struct bucket {
+    ulong h;            // 对char *key进行hash后的值，或者是用户指定的数字索引值
+    uint nKeyLength;    // hash关键字的长度，如果数组索引为数字，此值为0
+    void *pData;        // 指向value，一般是用户数据的副本，如果是指针数据，则指向pDataPtr
+    void *pDataPtr;     // 如果是指针数组，此值会指向真正的value，同时上面pData会指向此值
+    struct bucket *pListNext;   // 整个hash表的下一个元素
+    struct bucket *pListLast;   // 整个hash表的上一个元素
+    struct bucket *pNext;       // 存放在同一个hash Bucket内的下一个元素
+    struct bucket *pLast;       // 存放在同一个hash Bucket内的上一个元素
+    char arKey[1];  
+    /*
+    存储字符索引，此项必须放在最末尾，因为此处只定义了1个字节，存储的实际上是指向char *key的值，
+    这就意味着可以省去再赋值一次的消耗，而且，有时此值并不需要，所以同时还节省了空间。
+    */
+} Bucket;
+    如上面各字段的注释。h字段保存哈希表key哈希后的值。在PHP中可以使用字符串或者数字作为数组的索引。因为数字的索引是唯一的。如果再进行一次哈希将会极大的浪费。h字段后面的nKeyLength字段是作为key长度的标示，如果索引是数字的话，则nKeyLength为0.在PHP中定义数组时如果字符串可以被转换成数字也会进行转换。所以在PHP中例如'10','11'这类的字符索引和数字索引10,11没有区别
+
+
+
+Bucket结构体维护了两个双向链表，pNext和pLast指针分别指向本槽位所在的链表的关系
+
+而pListNext和pListLast指针指向的则是整个哈希表所有的数据之间的链接关系。HashTable结构体中的pListHead和pListTail则维护整个哈希表的头元素指针和最后一个元素的指针
+
+ 
+
+ 
+
+    哈希表的操作接口：
+
+    PHP提供了如下几类操作接口：
+
+初始化操作，例如zend_hash_init()函数，用于初始化哈希表接口，分配空间等。
+
+查找，插入，删除和更新操作接口，这是比较常规的操作。
+
+迭代和循环，这类的接口用于循环对哈希表进行操作。
+
+复制，排序，倒置和销毁等操作。
+```
 ### 链表
+```
+https://www.cnblogs.com/followyou/p/11162030.html
+链表
+链表是一种物理存储单元上非连续、非顺序的存储结构，数据元素的逻辑顺序是通过链表中的指针链接次序实现的。链表由一系列结点（链表中每一个元素称为结点）组成，结点可以在运行时动态生成。
+
+形式：单链表、双链表、跳表（redis 集合数据结构就是跳表实现，时间复杂度O（log N））
+
+跳表了解：https://lotabout.me/2018/skip-list/
+
+php实现对链表的增删改查操作
+定义节点类：
+
+<?php
+class Node
+{
+    public $val;
+    public $next;
+
+
+
+    public function __construct( $val = null, $next = null )
+    {
+        $this->val  = $val;
+        $this->next = $next;
+    }
+
+
+}
+链表类：
+
+<?php
+/**链表
+ * Class Linklist
+ * @package app\models
+ */
+class Linklist
+{
+    public $head;           //头节点(默认一个虚拟头节点)
+    public $size;           //长度
+
+    public function __construct()
+    {
+        $this->head = new Node();
+        $this->size  = 0;
+    }
+
+    //头插法
+    public function addFirst( $value ){
+//        $node = new Node($value);
+//        $node->next = $this->head;
+//        $this->head = $node;
+
+        //简化
+//        $this->head = new Node( $value, $this->head );
+//        $this->size++;
+
+        $this->add(0,$value);
+    }
+
+    /**指定索引位置插入
+     * @param $index
+     * @param $value
+     * @throws Exception
+     */
+    public function add( $index, $value ){
+
+        if( $index > $this->size )
+            throw new Exception('超过链表范围');
+
+//        if( $index==0 ){
+//            $this->addFirst($value);
+//        }else{
+            $prev = $this->head;
+            for($i=0;$i<$index;$i++){
+                $prev = $prev->next;
+            }
+
+//            $node = new Node($value);
+//            $node->next = $prev->next;
+//            $prev->next = $node;
+
+            $prev->next = new Node($value,$prev->next);
+//        }
+
+        $this->size++;
+    }
+
+    /**尾插法
+     * @param $value
+     */
+    public function addLast( $value ){
+
+        $this->add($this->size,$value);
+
+    }
+
+
+    /***
+     * 编辑
+     * @param $index
+     * @param $value
+     * @throws Exception
+     */
+    public function edit( $index, $value ){
+        if( $index > $this->size-1 )
+            throw new Exception('超过链表范围');
+
+        $prev = $this->head->next;
+        for($i=0;$i<=$index;$i++){
+            if( $i==$index )
+                $prev->val = $value;
+            $prev = $prev->next;
+        }
+
+    }
+
+    /**
+     * 查询
+     * @param $index
+     * @return null
+     * @throws Exception
+     */
+    public function select($index){
+        if( $index > $this->size-1 )
+            throw new Exception('超过链表范围');
+
+        $prev = $this->head->next;
+        for($i=0;$i<=$index;$i++){
+            if( $i==$index )
+                return $prev;
+            $prev = $prev->next;
+        }
+    }
+
+
+    /**删除
+     * @param $index
+     * @throws Exceptionr
+     */
+    public function delete( $index ){
+        if( $index > $this->size-1 )
+            throw new Exception('超过链表范围');
+
+        $prev = $this->head;
+        for($i=0;$i<=$index;$i++){
+            if( $i==$index )
+               $prev->next = $prev->next->next;
+            $prev = $prev->next;
+        }
+        $this->size--;
+    }
+
+    /**检索值是否存在
+     * @param $value
+     * @return bool
+     */
+    public function iscontain( $value ){
+        $prev = $this->head->next;
+        while( $prev ){
+
+            if( $prev->val==$value ){
+                return true;
+            }
+            $prev = $prev->next;
+        }
+
+        return false;
+    }
+
+    /**转换为字符串
+     * @return string
+     */
+    public function tostring(){
+
+        $prev = $this->head->next;
+
+        $r = [];
+        while( $prev ){
+            $r[] = $prev->val;
+            $prev = $prev->next;
+        }
+        return implode('->',$r);
+
+    }
+    
+     /**
+      * 删除指定的节点值
+      * @param $value
+      */
+      public function removeFileds( $value ){
+           $prev = $this->head;
+           while( $prev->next ){
+               if( $prev->val == $value ){
+                   $prev->val = $prev->next->val;
+                   $prev->next = $prev->next->next;
+               }else{
+                   $prev = $prev->next;
+               }
+           }
+      }
+      
+       /**
+        * 通过递归方式删除指定的节点值
+        * @param $value
+        */
+       public function removeFiledsByRecursion( $value ){
+           $this->head = $this->removeByRecursion( $this->head ,$value);
+           return $this->head;
+       }
+   
+        public function removeByRecursion( $node , $value, $level=0 ){
+               if( $node->next == null ){
+                   $this->showDeeep($level,$node->val);
+                   return $node->val == $value ? $node->next:$node;
+               }
+       
+               $this->showDeeep($level,$node->val);
+               $node->next = $this->removeByRecursion( $node->next,$value,++$level );
+               $this->showDeeep($level,$node->val);
+               return $node->val == $value ? $node->next:$node;
+           }
+       
+        /**
+        * 显示深度
+        * 帮助理解递归执行过程，回调函数执行层序遵循系统栈 
+        * @param int $level 深度层级
+        * @param $val
+        * @return bool
+        */
+        public function showDeeep( $level=1,$val ){
+             if( $level<1 ){
+                 return false;
+             }
+    
+             while($level--){
+                 echo '-';
+             }
+             echo "$val\n";
+        }
+
+}
+调用操作如下：
+
+<?php
+$node = new Linklist();
+$node->addFirst(1);
+$node->add(1,7);
+$node->add(2,10);
+$node->edit(1,8);
+var_dump($node->select(1)) ;
+$node->delete(1);
+$node->addLast(99);
+var_dump($node->iscontain(2));
+var_export($node);
+var_export($node->tostring());
+分析下链表操作的时间复杂度：
+
+增： O(n)  只对链表头操作：O(1)
+
+删： O(n)  只对链表头操作：O(1)
+
+改：O(n)
+
+查：O(n)   只对链表头操作：O(1)
+利用链表实现栈
+<?php
+/**
+ * 链表实现栈
+ * Class LinklistStack
+ * @package app\models
+ */
+class LinklistStack extends Linklist
+{
+    /**
+     * @param $value
+     */
+    public function push( $value ){
+        $this->addFirst($value);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function pop(){
+        $r = $this->head->next->val;
+        $this->delete(0);
+        return $r;
+    }
+}
+<?php
+        $stack = new LinklistStack();
+        $stack->push(1);
+        $stack->push(3);
+        $stack->push(6);
+        $stack->push(9);
+
+        print_r($stack->pop());
+        print_r($stack->head);
+链表实现队列
+image
+
+<?php
+
+/**
+ * 链表实现队列
+ * Class LinkListQueue
+ * @package app\models
+ */
+class LinkListQueue extends Linklist
+{
+    public $tail;    //尾节点
+
+    /**
+     * push
+     * @param $value
+     */
+    public function push( $value ){
+
+        if( $this->head->val==null ){
+            $this->tail = new Node( $value );
+            $this->head = $this->tail;
+        }else{
+            $this->tail->next =  new Node( $value );
+            $this->tail = $this->tail->next;
+        }
+        $this->size++;
+    }
+
+    /**
+     * pop
+     * @return null
+     * @throws \Exception
+     */
+    public function pop(){
+        if( $this->size<=0 )
+            throw new \Exception('超过链表范围');
+        $val = $this->head->val;
+        $this->head = $this->head->next;
+
+        $this->size--;
+        return $val;
+    }
+
+    /**
+     * 查看队首
+     */
+    public function checkHead(){
+        return $this->head->val;
+    }
+
+    /**
+     * 查看队尾
+     */
+    public function checkEnd(){
+        return $this->tail->val;
+    }
+
+    /**
+     * toString
+     */
+    public function toString(){
+        $r = [];
+        while( $this->head ){
+            $r[] = $this->head->val;
+            $this->head = $this->head->next;
+        }
+        return implode('->',$r);
+    }
+}
+测试
+
+<?php
+$stack = new LinkListQueue();
+        $stack->push(1);
+        $stack->push(3);
+        $stack->push(6);
+        $stack->push(9);
+
+        print_r($stack->pop());
+        print_r($stack->head);
+        print_r($stack->checkHead());
+        print_r($stack->checkEnd());
+        print_r($stack->toString());
+/**        
+1
+app\models\Node Object
+(
+    [val] => 3
+    [next] => app\models\Node Object
+        (
+            [val] => 6
+            [next] => app\models\Node Object
+                (
+                    [val] => 9
+                    [next] => 
+                )
+
+        )
+
+)
+3
+9
+3->6->9
+**/
 ```
 
 ## 对比篇
@@ -5771,8 +8057,6 @@ session会在一定时间内保存在服务器上。当访问增多，会比较�
 ```
 ### `GET` 与 `POST` 区别
 ```
-### get和post的区别
-```
 1. get是从服务器上获取数据，post是向服务器传送数据。
 2. get是把参数数据队列加到提交表单的ACTION属性所指的URL中，
 值和表单内各个字段一一对应，在URL中可以看到。
@@ -5781,9 +8065,6 @@ post是通过HTTP post机制，将表单内各个字段与其内容放置在HTML
 3. get传送的数据量较小，不能大于2KB。post传送的数据量较大，
 一般被默认为不受限制。
 4. get安全性非常低，post安全性较高。但是执行效率却比Post方法好。
-```
-
- 15. GET 与 POST 请求方式区别
 
 |GET|POST|
 |-|-|
