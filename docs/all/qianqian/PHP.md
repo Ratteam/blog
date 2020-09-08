@@ -714,7 +714,7 @@ $a="EFG";
 自动为$b生产一个$a的数据拷贝，重新申请一块内存进行存储
 ```
 
-### == 与 === 区别]
+### == 与 === 区别
 
 https://stackoverflow.com/questions/80646/how-do-the-php-equality-double-equals-and-identity-triple-equals-comp
 
@@ -1047,7 +1047,7 @@ OOP，Object Oriented Programming(面向对象的编程),还有OOD（面向对�
 有一天你想吃鱼香肉丝了，怎么办呢？你有两个选择
 
 1、自己买材料，肉，鱼香肉丝调料，蒜苔，胡萝卜等等然后切菜切肉，开炒，盛到盘子里。
-j
+
 2、去饭店，张开嘴：老板！来一份鱼香肉丝！
 
 1是面向过程，2是面向对象。
@@ -3019,57 +3019,56 @@ IP层传输单位是IP分组，属于点到点的传输；TCP层传输单位是T
 ```
 
 ### http版本
-```
 1.0
-- 无状态、无连接。
+无状态、无连接。
 HTTP1.0规定浏览器和服务器保持短暂的连接，浏览器的每次请求都需要与服务器建立一个TCP连接，
 服务器处理完成后立即断开TCP连接（无连接），服务器不跟踪每个客户端也不记录过去的请求（无状态）。
 
-- 队头阻塞
+队头阻塞
 HTTP1.0规定下一个请求必须在前一个请求响应到达之前才能发送。
 假设前一个请求响应一直不到达，那么下一个请求就不发送，同样的后面的请求也给阻塞了。
 
 1.1
-- 长连接
+长连接
 HTTP1.1增加了一个Connection字段，通过设置Keep-Alive可以保持HTTP连接不断开，
 避免了每次客户端与服务器请求都要重复建立释放建立TCP连接，提高了网络的利用率。
 如果客户端想关闭HTTP连接，可以在请求头中携带Connection: false来告知服务器关闭请求。
 
-- 管道化
+管道化
 基于HTTP1.1的长连接，使得请求管线化成为可能。管线化使得请求能够“并行”传输。
 
-- 新的字段
+新的字段
 如cache-control，支持断点传输，以及增加了Host字段（使得一个服务器能够用来创建多个Web站点）。
 
 2.0
-- 二进制分帧
+二进制分帧
 HTTP2.0通过在应用层和传输层之间增加一个二进制分帧层，突破了HTTP1.1的性能限制、改进传输性能。
 
-- 多路复用（连接共享）
+多路复用（连接共享）
 HTTP2.0实现了真正的并行传输，它能够在一个TCP上进行任意数量HTTP请求。而这个强大的功能则是基于“二进制分帧”的特性。
 
-- 头部压缩
+头部压缩
 HTTP2.0使用encoder来减少需要传输的header大小，通讯双方各自cache一份header fields表，
 既避免了重复header的传输，又减小了需要传输的大小。
 高效的压缩算法可以很大的压缩header，减少发送包的数量从而降低延迟。
 
-- 服务器推送
+服务器推送
 服务器除了对最初请求的响应外，服务器还可以额外的向客户端推送资源，而无需客户端明确的请求。
-```
 
 ### PHP 的垃圾收集机制是怎样的
-```
 php作为脚本语言是页面结束即释放变量所占内存的。 
-当一个 PHP线程结束时，当前占用的所有内存空间都会被销毁，
-当前程序中所有对象同时被销毁。GC进程一般都跟着每起一个SESSION而开始运行的.
+
+当一个 PHP线程结束时，当前占用的所有内存空间都会被销毁， 当前程序中所有对象同时被销毁。GC进程一般都跟着每起一个SESSION而开始运行的.
+
 gc目的是为了在session文件过期以后自动销毁删除这些文件.
+
 在PHP中，没有任何变量指向这个对象时，这个对象就成为垃圾。
+
 PHP会将其在内存中销毁；这是PHP的GC垃圾处理机制，防止内存溢出。
-执行这些函数也可以起到回收作用__destruct /unset/mysql_close /fclose php
-对session有明确的gc处理时间设定session.gc_maxlifetime 如果说有垃圾，
-那就是整体的程序在框架使用中，会多次调用同一文件等等造成的非单件模式等。
+
+执行这些函数也可以起到回收作用__destruct /unset/mysql_close /fclose php 对session有明确的gc处理时间设定session.gc_maxlifetime 如果说有垃圾， 那就是整体的程序在框架使用中，会多次调用同一文件等等造成的非单件模式等。
+
 所以在出来的时候，必要的用_once引用，在声明类的时候使用单件模式。还有简化逻辑等等。
-```
 
 ### 深入理解PHP7内核之zval
 
@@ -3184,7 +3183,7 @@ EG(objects_store).object_buckets[Z_OBJ_HANDLE_P(z)].bucket.obj
     dummy($array);
 ?>
 ```
-当我们调用dummy的时候, 本来只是简单的一个传值就行的地方, 但是因为$array曾经引用赋值给了$b, 所以导致$array变成了一个引用, 于是此处就会发生分离, 导致数组复制, 从而极大的拖慢性能, 这里有一个简单的测试:
+当我们调用dummy的时候, 本来只是简单的一个传值就行的地方, 但是因为`$array`曾经引用赋值给了`$b`, 所以导致`$array`变成了一个引用, 于是此处就会发生分离, 导致数组复制, 从而极大的拖慢性能, 这里有一个简单的测试:
 ```
 <?php
 $array = range(1, 100000);
@@ -5365,7 +5364,7 @@ ArrayAccess::offsetSet — 设置一个偏移位置的值
 ArrayAccess::offsetUnset — 复位一个偏移位置的值
 ```
 
-### yield 是什么，说个使用场景 [yield
+### yield 是什么，说个使用场景 yield
 https://www.oschina.net/translate/cooperative-multitasking-using-coroutines-in-php
 
 PHP5.5一个比较好的新功能是实现对生成器和协同程序的支持。对于生成器， PHP的文档和各种其他的博客文章（就像这一个或这一个）已经有了非常详细的讲解。
@@ -5415,7 +5414,7 @@ var_dump($range); // object(Generator)#1
 var_dump($range instanceof Iterator); // bool(true)
 ```
 
-你对某个对象调用迭代器方法一次，其中的代码运行一次。例如，如果你调用$range->rewind(), 那么xrange()里的代码运行到控制流 第一次出现yield的地方。在这种情况下， 这就意味着当$i=$start时yield $i才运行。传递给yield语句的值是使用$range->current()获取的。
+你对某个对象调用迭代器方法一次，其中的代码运行一次。例如，如果你调用`$range->rewind()`, 那么`xrange()`里的代码运行到控制流 第一次出现`yield`的地方。在这种情况下， 这就意味着当`$i=$start`时`yield $i`才运行。传递给`yield`语句的值是使用`$range->current()`获取的。
  
 为了继续执行生成器中的代码，你必须调用$range->next()方法。这将再次启动生成器，直到yield语句出现。
 
@@ -6020,7 +6019,7 @@ forwarded-for：可以获取到用户的真实IP地址。
 nginx realip：程序无需改动，直接使用remote_addr变量即可获取真实IP地址，但需要知道所有沿途经过的IP地址或IP段
 
 ### 如何开启 PHP 异常提示
-```
+
 php.ini 开启 `display_errors` 设置 `error_reporting` 等级
 
 运行时，使用 `ini_set(k, v);` 动态设置
@@ -6028,12 +6027,12 @@ php.ini 开启 `display_errors` 设置 `error_reporting` 等级
 PHP打开错误提示和关闭错误提示的方法
 找到php的配置文件，也就是php.ini
 
-在文件中查找 ‘display_errors’   查找到 display_errors = Off 或者 display_errors = On，
+在文件中查找 `display_errors`   查找到 `display_errors = Off` 或者 `display_errors = On`
 Off为关闭错误提示，On为打开错误提示，根据需求修改即可。
 
 也可在php文件中加入以下代码
 
-复制代码
+```
 //禁用错误报告
 error_reporting(0);
 //报告运行时错误
@@ -6043,37 +6042,36 @@ error_reporting(E_ALL);
 ```
 
 ### 如何获取扩展安装路径
-```
 `phpinfo();` 页面查找 `extension_dir`
 
 命令行 `php -i |grep extension_dir`
 
 运行时 `echo ini_get('extension_dir');`
-```
 
 ### 字符串、数字比较大小的原理，注意 0 开头的8进制、0x 开头16进制
-```
 字符串比较大小，从左(高位)至右，逐个字符 ASCII 比较
-```
 
 ### BOM 头是什么，怎么除去
-```
 `0xEF`,`0xBB`,`0xBF`
-WINDOWS自带的记事本，在保存一个以 UTF-8 编码的文件时，会在文件开始的地方插入三个不可见的字符（0xEF 0xBB 0xBF，即BOM）。
-它是一串隐藏的字符，用于让记事本等编辑器识别这个文件是否以UTF-8编码。对于一般的文本文件，
-这样并不会产生什么麻烦。但对于 PHP来说，BOM是个大麻烦。
-PHP并不会忽略BOM，所以在读取、包含或者引用这些文件时，会把 BOM 作为该文件开头正文的一部分。
-根据嵌入式语言的特点，这串字符将被直接执行（显示）出来。由此造成即使页面的 top padding 设置为0，
-也无法让整个网页紧贴浏览器顶部，因为在html一开头有这3个字符呢！
-而且 BOM 是内容输入，如果没有开启缓冲区输出的时候，BOM 会影响 header 函数的使用，
-因为在header之前不能有任何有效的内容输出，BOM也算是有效内容输出。
-去掉BOM的方法，建议使用专业的代码编辑器工具来处理 例如 Notepad++ 或者 EditPlus 
-在新建和保存以及转换编码的功能内都会有无 BOM的格式选择。
+WINDOWS自带的记事本，在保存一个以 UTF-8 编码的文件时，会在文件开始的地方插入三个不可见的字符（`0xEF 0xBB 0xBF，即BOM`）。
 
-[检测、去除
+它是一串隐藏的字符，用于让记事本等编辑器识别这个文件是否以UTF-8编码。对于一般的文本文件， 这样并不会产生什么麻烦。但对于 PHP来说，BOM是个大麻烦。
+
+PHP并不会忽略BOM，所以在读取、包含或者引用这些文件时，会把 BOM 作为该文件开头正文的一部分。
+
+根据嵌入式语言的特点，这串字符将被直接执行（显示）出来。由此造成即使页面的 top padding 设置为0， 也无法让整个网页紧贴浏览器顶部，因为在html一开头有这3个字符呢！
+
+而且 BOM 是内容输入，如果没有开启缓冲区输出的时候，BOM 会影响 header 函数的使用， 因为在header之前不能有任何有效的内容输出，BOM也算是有效内容输出。
+
+去掉BOM的方法，建议使用专业的代码编辑器工具来处理 例如 Notepad++ 或者 EditPlus 在新建和保存以及转换编码的功能内都会有无 BOM的格式选择。
+
+检测、去除
+
 https://stackoverflow.com/questions/10290849/how-to-remove-multiple-utf-8-bom-sequences-before-doctype
+
 you would use the following code to remove utf8 bom
 
+```
 //Remove UTF8 Bom
 
 function remove_utf8_bom($text)
@@ -6085,7 +6083,6 @@ function remove_utf8_bom($text)
 ```
 
 ### 什么是 MVC 
-```
 MVC 即 Model、View、Controller 即模型、视图、控制器。
 
 在 web 项目中 View 层是界面，Controller 层是业务逻辑，Model 层是数据库访问。
@@ -6095,60 +6092,67 @@ MVC 要实现的目标是将软件用户界面和业务逻辑分离以使代码�
 控制器的作用就是这么简单， 用来将不同的View和不同的Model组织在一起，顺便替双方传递消息，仅此而已。
 
 组成MVC的三个模式分别是组合模式、策咯模式、观察者模式，MVC在软件开发中发挥的威力，最终离不开这三个模式的默契配合。
-```
 
 ### Memcached 与 Redis 区别
-```
-Redis和Memcache 都是基于内存的数据存储系统。Memcached是高性能分布式内存缓存服务，
-其本质上就是一个内存key-value数据库。Redis是一个开源的key-value存储系统。与Memcached类似，
-Redis将大部分数据存储在内存中，支持的数据类型包括：字符串、哈希表、链表、集合、有序集合以及基于这些数据类型的相关操作。
+Redis和Memcache 都是基于内存的数据存储系统。Memcached是高性能分布式内存缓存服务， 其本质上就是一个内存key-value数据库。Redis是一个开源的key-value存储系统。与Memcached类似， Redis将大部分数据存储在内存中，支持的数据类型包括：字符串、哈希表、链表、集合、有序集合以及基于这些数据类型的相关操作。
+
 那么，Memcache与Redis有什么区别呢？
 
 1、数据操作不同
-与Memcached仅支持简单的key-value结构的数据记录不同，Redis支持的数据类型要丰富得多。
-Memcached基本只支持简单的key-value存储，不支持枚举，不支持持久化和复制等功能。
-Redis支持服务器端的数据操作相比Memcached来说，拥有更多的数据结构和并支持更丰富的数据操作，
-支持list、set、sorted set、hash等众多数据结构，还同时提供了持久化和复制等功能。
 
-而通常在Memcached里，使用者需要将数据拿到客户端来进行类似的修改再set回去，
-这大大增加了网络IO的次数和数据体积。在Redis中，这些复杂的操作通常和一般的GET/SET一样高效。
+与Memcached仅支持简单的key-value结构的数据记录不同，Redis支持的数据类型要丰富得多。
+
+Memcached基本只支持简单的key-value存储，不支持枚举，不支持持久化和复制等功能。
+
+Redis支持服务器端的数据操作相比Memcached来说，拥有更多的数据结构和并支持更丰富的数据操作， 支持list、set、sorted set、hash等众多数据结构，还同时提供了持久化和复制等功能。
+
+而通常在Memcached里，使用者需要将数据拿到客户端来进行类似的修改再set回去， 这大大增加了网络IO的次数和数据体积。在Redis中，这些复杂的操作通常和一般的GET/SET一样高效。
+
 所以，如果需要缓存能够支持更复杂的结构和操作， Redis会是更好的选择。
 
 2、内存管理机制不同
+
 在Redis中，并不是所有的数据都一直存储在内存中的。这是和Memcached相比一个最大的区别。
-当物理内存用完时，Redis可以将一些很久没用到的value交换到磁盘。Redis只会缓存所有的key的信息，
-如果Redis发现内存的使用量超过了某一个阀值，将触发swap的操作，Redis根据“swappability = age*log(size_in_memory)”
+
+当物理内存用完时，Redis可以将一些很久没用到的value交换到磁盘。Redis只会缓存所有的key的信息， 如果Redis发现内存的使用量超过了某一个阀值，将触发swap的操作，Redis根据“swappability = age*log(size_in_memory)”
+
 计算出哪些key对应的value需要swap到磁盘。然后再将这些key对应的value持久化到磁盘中，同时在内存中清除。
+
 这种特性使得Redis可以保持超过其机器本身内存大小的数据。
 
-而Memcached默认使用Slab Allocation机制管理内存，其主要思想是按照预先规定的大小，
-将分配的内存分割成特定长度的块以存储相应长度的key-value数据记录，以完全解决内存碎片问题。
+而Memcached默认使用Slab Allocation机制管理内存，其主要思想是按照预先规定的大小， 将分配的内存分割成特定长度的块以存储相应长度的key-value数据记录，以完全解决内存碎片问题。
 
 从内存利用率来讲，使用简单的key-value存储的话，Memcached的内存利用率更高。
+
 而如果Redis采用hash结构来做key-value存储，由于其组合式的压缩，其内存利用率会高于Memcached。
 
 3、性能不同
+
 由于Redis只使用单核，而Memcached可以使用多核，所以平均每一个核上Redis在存储小数据时比Memcached性能更高。
+
 而在100k以上的数据中，Memcached性能要高于Redis，虽然Redis也在存储大数据的性能上进行了优化，但是比起Memcached，还是稍有逊色。
 
 4、集群管理不同
+
 Memcached是全内存的数据缓冲系统，Redis虽然支持数据的持久化，但是全内存毕竟才是其高性能的本质。
+
 作为基于内存的存储系统来说，机器物理内存的大小就是系统能够容纳的最大数据量。
+
 如果需要处理的数据量超过了单台机器的物理内存大小，就需要构建分布式集群来扩展存储能力。
 
 Memcached本身并不支持分布式，因此只能在客户端通过像一致性哈希这样的分布式算法来实现Memcached的分布式存储。
+
 相较于Memcached只能采用客户端实现分布式存储，Redis更偏向于在服务器端构建分布式存储。
-```
 
 ### redis
-```
 Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库，并提供多种语言的API。
 
 redis包括string(字符串)、list(链表)、set(集合)、zset(sorted set --有序集合)和hashs（哈希类型）。
+
 这些数据类型都 支持push/pop、add/remove及取交集并集和差集及更丰富的操作，而且这些操作都是原子性的。
 
 php中reids的操作
-
+```
 // from 菜鸟runoob
 // 从代码中以点带面，在什么样的场景中会运用到
 
@@ -6180,29 +6184,34 @@ $redis->save();
 ```
 
 ### Yii2中的依赖注入
-```
- 基本概念
-1.依赖倒置（反转）原则（DIP）：一种软件架构设计的原则（抽象概念，是一种思想）
-在面向对象编程领域中，依赖反转原则（Dependency inversion principle，DIP）是指一种特定的解耦
-（传统的依赖关系创建在高层次上，而具体的策略设置则应用在低层次的模块上）形式，
-使得高层次的模块不依赖于低层次的模块的实现细节，依赖关系被颠倒（反转），从而使得低层次模块依赖于高层次模块的需求抽象。
+基本概念
+
+1.依赖倒置（反转）原则（DIP）：一种软件架构设计的原则（抽象概念，是一种思想） 在面向对象编程领域中，依赖反转原则（Dependency inversion principle，DIP）是指一种特定的解耦 （传统的依赖关系创建在高层次上，而具体的策略设置则应用在低层次的模块上）形式， 使得高层次的模块不依赖于低层次的模块的实现细节，依赖关系被颠倒（反转），从而使得低层次模块依赖于高层次模块的需求抽象。
 
 该原则规定：
-    1.高层次的模块不应该依赖于低层次的模块，两者都应该依赖于抽象接口。
-    2.抽象接口不应该依赖于具体实现。而具体实现则应该依赖于抽象接口。
 
-在上图中，高层对象A依赖于底层对象B的实现；图2中，把高层对象A对底层对象的需求抽象为一个接口A，
-底层对象B实现了接口A，这就是依赖反转。
+1.高层次的模块不应该依赖于低层次的模块，两者都应该依赖于抽象接口。
+
+2.抽象接口不应该依赖于具体实现。而具体实现则应该依赖于抽象接口。
+
+在上图中，高层对象A依赖于底层对象B的实现；图2中，把高层对象A对底层对象的需求抽象为一个接口A， 底层对象B实现了接口A，这就是依赖反转。
+
 该原则颠倒了一部分人对于面向对象设计的认识方式。如高层次和低层次对象都应该依赖于相同的抽象接口。
+
 它转换了依赖，高层模块不依赖于低层模块的实现，而低层模块依赖于高层模块定义的接口。通俗的讲，就是高层模块定义接口，低层模块负责实现。
 
 2.控制反转（IoC）：一种反转流、依赖和接口的方式（DIP的具体实现方式，一种设计原则）
+
 控制反转（Inversion of Control，缩写为IoC），是面向对象编程中的一种设计原则，可以用来减低计算机代码之间的耦合度。
+
 其中最常见的方式叫做依赖注入（Dependency Injection，简称DI），还有一种方式叫“依赖查找”（Dependency Lookup）。
+
 通过控制反转，对象在被创建的时候，由一个调控系统内所有对象的外界实体，将其所依赖的对象的引用传递给它。也可以说，依赖被注入到对象中。
 
 参考：https://segmentfault.com/a/1190000010788354
- 入口文件
+
+入口文件
+```
 > 文件位置：web\index.php
 
 //定义全局变量
@@ -6227,17 +6236,16 @@ $config = require(__DIR__ . '/../config/web.php');
 ```
 
 ### 依赖注入实现原理
-```
 依然是来自到喜啦的一道面试题，你知道什么是依赖注入吗？
 
-依赖注入（DI）的概念虽然听起来很深奥，但是如果你用过一些新兴的php框架的话，
-对于DI一定不陌生，因为它们多多少少都用到了依赖注入来处理类与类之间的依赖关系。
+依赖注入（DI）的概念虽然听起来很深奥，但是如果你用过一些新兴的php框架的话， 对于DI一定不陌生，因为它们多多少少都用到了依赖注入来处理类与类之间的依赖关系。
 
 php中传递依赖关系的三种方案
+
 其实要理解DI，首先要明白在php中如何传递依赖关系。
 
 第一种方案，也是最不可取的方案，就是在A类中直接用new关键词来创建一个B类，如下代码所示：
-
+```
 <?php
 class A
 {
@@ -6246,10 +6254,11 @@ class A
     $b = new B();
   }
 }
+```
 为什么这种方案不可取呢？因为这样的话，A与B就耦合在了一起，也就是说A类无法脱离B类工作。
 
 第二种方案就是在A类的方法中传入需要的B类，如下代码所示：
-
+```
 <?php
 class A
 {
@@ -6257,12 +6266,13 @@ class A
   {
   }
 }
+```
 这种方法比第一种方案有了改进，A类不必与B类捆绑在一起，只要传入的类满足A类的需求，也可以是C类，也可以是D类等等。
 
 但是这种方案的弊端在于如果A类依赖的类较多，参数列表会很长，容易发生混乱。
 
 第三种方案是使用set方法传入，如下代码所示：
-
+```
 <?php
 class A
 {
@@ -6271,21 +6281,23 @@ class A
     $this->b = $b;
   }
 }
+```
 这种方案同样存在和第二种方案一样的弊端，当依赖的类增多时，我们需要些很多很多的set方法。
 
 这时我们在想如果有一个专门的类（或者说一个容器）可以帮我们管理这些依赖关系就好了。
 
 一个简单的依赖注入的例子
 如下代码来自twittee：
-
+```
 <?php
 class Container {
  private $s=array();
  function __set($k, $c) { $this->s[$k]=$c; }
  function __get($k) { return $this->s[$k]($this); }
 }
+```
 有了container类之后我们可以怎样管理A与B之间的依赖关系呢，用代码说话吧：
-
+```
 <?php
 class A
 {
@@ -6301,46 +6313,64 @@ class A
     //to do
   }
 }
+```
 再将B类注入到容器类中：
-
+```
 $c = new Container();
 $c->setB(new B());
+```
 还可以传入一个匿名函数，这样B类就不会在传入时就立即实例化，而是在真正调用时才完成实例化的工作：
-
+```
 $c = new Container();
 $c->setB(function (){
   return new B();
 });
-这里举的只是一个很简单的例子，在实际中，容器类要考虑的有很多，比如延迟加载等等。
 ```
+这里举的只是一个很简单的例子，在实际中，容器类要考虑的有很多，比如延迟加载等等。
 
 ### 如何异步执行命令
-```
 客户端与服务器端是通过HTTP协议进行连接通讯，客户端发起请求，服务器端接收到请求后执行处理，并返回处理结果。
+
 有时服务器需要执行很耗时的操作，这个操作的结果并不需要返回给客户端。
+
 但因为php是同步执行的，所以客户端需要等待服务处理完才可以进行下一步。
+
 因此对于耗时的操作适合异步执行，服务器接收到请求后，处理完客户端需要的数据就返回，再异步在服务器执行耗时的操作。
 
 1.使用Ajax 与 img 标记
+
 原理，服务器返回的html中插入Ajax 代码或 img 标记，img的src为需要执行的程序。
+
 优点：实现简单，服务端无需执行任何调用
+
 缺点：在执行期间，浏览器会一直处于loading状态，因此这种方法并不算真正的异步调用。
+```
 $.get("doRequest.php", { name: "fdipzone"} );
 <img src="doRequest.php?name=fdipzone">
+```
 
 2.使用popen
+
 使用popen执行命令，语法：
+```
 // popen — 打开进程文件指针  
 resource popen ( string $command , string $mode )
 pclose(popen('php /home/fdipzone/doRequest.php &', 'r'));
+```
 优点：执行速度快
+
 缺点：
+
 1）.只能在本机执行
+
 2）.不能传递大量参数
+
 3）.访问量高时会创建很多进程
 
 3.使用curl
+
 设置curl的超时时间 CURLOPT_TIMEOUT 为1 （最小为1），因此客户端需要等待1秒
+```
 <?php 
 $ch = curl_init(); 
 $curl_opt = array( 
@@ -6353,8 +6383,11 @@ curl_exec($ch);
 curl_close($ch); 
 ?>
 
+```
 4.使用fsockopen
+
 fsockopen是最好的，缺点是需要自己拼接header部分。
+```
 <?php 
 $url = 'http://www.example.com/doRequest.php'; 
 $param = array( 
@@ -6383,50 +6416,45 @@ function doRequest($url, $param=array()){
   fclose($fp); 
 } 
 ?>
+```
 注意：当执行过程中，客户端连接断开或连接超时，都会有可能造成执行不完整，因此需要加上
+```
 ignore_user_abort(true); // 忽略客户端断开 
 set_time_limit(0);    // 设置执行不超时
 ```
 
 ### 模板引擎是什么，解决什么问题、实现原理（Smarty、Twig、Blade）
-```
 PHP的模板引擎smarty原理是什么（整理）
-目录
+
 一、总结
-一句话总结：其实所有的模板引擎的工作原理是差不多的，无非就是在php程序里面
-用正则匹配将模板里面的标签替换为php代码从而将两者混合为一个php的混编文件，然后执行这个混编文件。
-1、smarty模板引擎的主要作用是什么？
-2、smarty的两个函数的主要作用是什么？
-3、我们模板中没有php代码，我们只用了{$name}和{$age}就能把对应的变量给展示了出来，是为什么呢？
-4、smarty模板引擎里面的display函数的最核心的操作是什么？
-二、PHP的模板引擎smarty原理浅谈
-三、Smarty模板执行原理
- 
->  一、总结（点击显示或隐藏总结内容）
-一句话总结：其实所有的模板引擎的工作原理是差不多的，无非就是在php程序里面
-用正则匹配将模板里面的标签替换为php代码从而将两者混合为一个php的混编文件，然后执行这个混编文件。
+一句话总结：其实所有的模板引擎的工作原理是差不多的，无非就是在php程序里面用正则匹配将模板里面的标签替换为php代码从而将两者混合为一个php的混编文件，然后执行这个混编文件。
 
 1、smarty模板引擎的主要作用是什么？
+
 smarty模板技术，可以让数据和视图进行分离，让视图中不能直接出现php代码。
+
 这样的话，让前段页面的开发和后台数据的开发，可以双管齐下，同时进行了。
 
 2、smarty的两个函数的主要作用是什么？
-smarty模板的使用比较简单，主要有两个非常核心的函数。一个是assign()，
-把模板中要使用的数据进行预赋值，一个是display()，用来解析和展示最后的视图模板。
+
+smarty模板的使用比较简单，主要有两个非常核心的函数。一个是assign()， 把模板中要使用的数据进行预赋值，一个是display()，用来解析和展示最后的视图模板。
 
 使用的简单代码如下：
+```
 include_once "Smarty.class.php";//引入smarty类
 $smarty = new Smarty;//创建smarty对象
 $smarty->assign("name","zhangmiao");//赋值，以备模板中使用
 $smarty->assign("age","18");
 $smarty->display('index.tpl');//引入模板，展示视图页面
- 
+```
 3、我们模板中没有php代码，我们只用了{$name}和{$age}就能把对应的变量给展示了出来，是为什么呢？
-然后，我们一看smarty编译后的文件是这样的：
 
+然后，我们一看smarty编译后的文件是这样的：
+```
 <h1>测试模板1</h1>
 我的名字是：<?php echo $this->var["name"]; ?><br/>
 我的年纪是：<?php echo $this->var["age"]; ?><br/>
+```
 原来如此，最终还是变成了含有php代码的模板，但是这个模板中把标签转成php代码的工作，我们交给了smarty模板引擎来完成的。
 
 那到底smarty模板引擎是怎么把模板里面的非php代码的标签，转变成被最终可以解析执行的php代码的呢？
@@ -6435,13 +6463,14 @@ $smarty->display('index.tpl');//引入模板，展示视图页面
 
 分成了两步：
 
-　　1、用过assign函数把要解析的标签变量赋值
+1、用过assign函数把要解析的标签变量赋值
 
-　　2、通过display函数把标签替换成对象的php变量
+2、通过display函数把标签替换成对象的php变量
 
 我们根据这个思路，自己也写了个简易版的smarty模板引擎，算是多smarty模板引擎设计原理的一种理解。
-但是只能解析单个变量的标签，其他标签均没有处理。核心代码如下：
 
+但是只能解析单个变量的标签，其他标签均没有处理。核心代码如下：
+```
 //获取模板源文件，用来替换
 $template_content = file_get_contents($template_path);
 
@@ -6455,10 +6484,12 @@ $replace = array(
 $res = preg_replace($pattern,$replace,$template_content);
 //编译后文件写入某个目录
 file_put_contents($template_c_path,$res);
+```
 
 4、smarty模板引擎里面的display函数的最核心的操作是什么？
 替换
 
+```
 把标签的内容替换成php的内容
 例如把
 <h1>测试模板1</h1>
@@ -6469,8 +6500,10 @@ file_put_contents($template_c_path,$res);
 <h1>测试模板1</h1>
 我的名字是：<?php echo $this->var["name"]; ?><br/>
 我的年纪是：<?php echo $this->var["age"]; ?><br/>
+```
 
 二、PHP的模板引擎smarty原理浅谈
+
 　　mvc是开发中的一个伟大的思想，使得开发代码有了更加清晰的层次，让代码分为了三层各施其职、
 无论是对代码的编写以及后期的阅读和维护，都提供了很大的便利。
 
@@ -6486,6 +6519,7 @@ file_put_contents($template_c_path,$res);
 把模板中要使用的数据进行预赋值，一个是display()，用来解析和展示最后的视图模板。
 
 　　使用的简单代码如下：
+```
 include_once "Smarty.class.php";//引入smarty类
 $smarty = new Smarty;//创建smarty对象
 $smarty->assign("name","zhangmiao");//赋值，以备模板中使用
@@ -6497,14 +6531,16 @@ $smarty->display('index.tpl');//引入模板，展示视图页面
 我的名字是：{$name}<br/>
 我的年纪是：{$age}<br/>
 浏览器页面是这样的：
-
 疑问：我们模板中没有php代码，我们只用了{$name}和{$age}就能把对应的变量给展示了出来，是什么鬼呢？
+```
 
 然后，我们一看smarty编译后的文件是这样的：
 
+```
 <h1>测试模板1</h1>
 我的名字是：<?php echo $this->var["name"]; ?><br/>
 我的年纪是：<?php echo $this->var["age"]; ?><br/>
+```
 原来如此，最终还是变成了含有php代码的模板，但是这个模板中把标签转成php代码的工作，我们交给了smarty模板引擎来完成的。
 
 那到底smarty模板引擎是怎么把模板里面的非php代码的标签，转变成被最终可以解析执行的php代码的呢？
@@ -6513,13 +6549,14 @@ $smarty->display('index.tpl');//引入模板，展示视图页面
 
 分成了两步：
 
-　　1、用过assign函数把要解析的标签变量赋值
+1、用过assign函数把要解析的标签变量赋值
 
-　　2、通过display函数把标签替换成对象的php变量
+2、通过display函数把标签替换成对象的php变量
 
 我们根据这个思路，自己也写了个简易版的smarty模板引擎，算是多smarty模板引擎设计原理的一种理解。
-但是只能解析单个变量的标签，其他标签均没有处理。代码如下：
 
+但是只能解析单个变量的标签，其他标签均没有处理。代码如下：
+```
 class MySmarty{
 
     //模板存放路径
@@ -6567,38 +6604,42 @@ class MySmarty{
 
     }
 }
+```
  
 我们调用自己的assign和display放入引入，也能正常解析使用啦
 
 三、Smarty模板执行原理
-为了实现程序的业务逻辑和内容表现页面的分离从而提高开发速度，php 引入了模板引擎的概念，
-php 模板引擎里面最流行的可以说是smarty了，smarty因其功能强大而且速度快而被广大php web开发者所认可。
+
+为了实现程序的业务逻辑和内容表现页面的分离从而提高开发速度，php 引入了模板引擎的概念， php 模板引擎里面最流行的可以说是smarty了，smarty因其功能强大而且速度快而被广大php web开发者所认可。
+
 本文将记录一下smarty模板引擎的工作执行原理，算是加深一下理解。
 
-其实所有的模板引擎的工作原理是差不多的，无非就是在php程序里面
-用正则匹配将模板里面的标签替换为php代码从而将两者混合为一个php的混编文件，
-然后执行这个混编文件。基本上就是这么回事儿了。下面以smarty为例说下这个过程。
+其实所有的模板引擎的工作原理是差不多的，无非就是在php程序里面 用正则匹配将模板里面的标签替换为php代码从而将两者混合为一个php的混编文件， 然后执行这个混编文件。基本上就是这么回事儿了。下面以smarty为例说下这个过程。
 
 例如文章页面：http://www.phpernote.com/article.php?id=795
 
 一般处理过程是这样的：
-
+```
 html模板页面部分代码（article.html）：
 
 <body>
 <div>{subject}</div>
 <div>{content}</div>
 </body>
+```
 php页面逻辑部分代码：
 
+```
 $subject='smarty视频教程分享';
 $content='smarty视频教程分享，下面是具体的下载地址，有需要的朋友可以看看，对smarty模板讲解的非常详细，作者粗略看了一下目录，真是详细到细枝末节该......';
 $str=file_get_contents('article.html');
 $str=str_replace('{subject}',$subject,$str);
 $str=str_replace('{content}',$content,$str);
 echo $str;
+```
 使用面向对象技术实现模板功能的封装代码如下：
 
+```
 <?php
 class Template{
     //属性
@@ -6619,6 +6660,7 @@ class Template{
     }
 }
 注意：assign(‘name’,’zhangsan’)；这句的时候其实还没有进行数据替换，而是把传入的数据保存在vars[]中，当display的时候才进行数据替换。
+```
 
 smarty的处理过程：
 
@@ -6628,8 +6670,7 @@ smarty的处理过程：
 
 3、 之后每次访问都会访问编译文件
 
-如果启用缓存文件而且有缓存文件并且缓存文件没有过期，则直接访问缓存文件（先不考虑缓存的时候的流程）
-编译文件里时间戳记录模板文件修改时间，如果模板被修改过就可以检测到，然后重新编译。
+如果启用缓存文件而且有缓存文件并且缓存文件没有过期，则直接访问缓存文件（先不考虑缓存的时候的流程） 编译文件里时间戳记录模板文件修改时间，如果模板被修改过就可以检测到，然后重新编译。
 
 （编译是把静态内容保存起来，动态内容根据传入的参数不同而不同）
 
@@ -6637,33 +6678,27 @@ smarty的处理过程：
 
 第一次请求article.php时候编译，产生编译文件，在编译文件里。
 
-第二次请求article.php的时候，判断模板文件是否改变，如果模板文件已改变，
-那么去读取模板文件，然后再编译，如果没有改变，则去读取编译文件，编译文件最终输出；
+第二次请求article.php的时候，判断模板文件是否改变，如果模板文件已改变， 那么去读取模板文件，然后再编译，如果没有改变，则去读取编译文件，编译文件最终输出；
 
-缓存默认是关闭的；缓存是把数据彻底的存在缓存文件里，直到缓存文件过期才会重新来缓存；
-所以说smarty在一些实时性特别强的网站里不是特别合适；
+缓存默认是关闭的；缓存是把数据彻底的存在缓存文件里，直到缓存文件过期才会重新来缓存； 所以说smarty在一些实时性特别强的网站里不是特别合适；
 
-对于以上文字可以抽象的理解为下面的一幅图，读者自己去体会吧！
-
-考虑缓存：
-在smarty程序里，判断是否开启了缓存文件，并且缓存文件没有过期，，就去找缓存文件，
-如果没有开启缓存文件，就去判断模板文件，如果缓存文件已过期，也是去判断模板文件。
-```
+考虑缓存： 在smarty程序里，判断是否开启了缓存文件，并且缓存文件没有过期，，就去找缓存文件， 如果没有开启缓存文件，就去判断模板文件，如果缓存文件已过期，也是去判断模板文件。
 
 ### 如何实现链式操作 `$obj->w()->m()->d();`
-```
 在php中有很多字符串函数，例如要先过滤字符串收尾的空格，再求出其长度，一般的写法是：
-
+```
 strlen(trim($str))
-
+```
 如果要实现类似js中的链式操作，比如像下面这样应该怎么写？
-
+```
 $str->trim()->strlen()
-
+```
 下面分别用三种方式来实现：
 
 方法一、使用魔法函数__call结合call_user_func来实现
+
 思想：首先定义一个字符串类StringHelper，构造函数直接赋值value，然后链式调用trim()和strlen()函数，通过在调用的魔法函数__call()中使用call_user_func来处理调用关系，实现如下：
+```
 class StringHelper
 {
   private $value;
@@ -6682,11 +6717,15 @@ class StringHelper
 $str = new StringHelper(" sd f 0");
 echo $str->trim('0')->strlen();
 
+```
 终端执行脚本：
+```
 php test.php
+```
 
 方法二、使用魔法函数__call结合call_user_func_array来实现
 
+```
 class StringHelper
 {
   private $value;
@@ -6705,6 +6744,7 @@ class StringHelper
 }
 $str = new StringHelper(" sd f 0");
 echo $str->trim('0')->strlen();
+```
 
 说明：
 array_unshift(array,value1,value2,value3...)
@@ -6713,22 +6753,21 @@ call_user_func()和call_user_func_array都是动态调用函数的方法，区�
 
 方法三、不使用魔法函数__call来实现
 只需要修改_call()为trim()函数即可：
-
+```
 public function trim($t)
 {
   $this->value = trim($this->value, $t);
   return $this;
 }
+```
 
 重点在于，返回$this指针，方便调用后者函数。
-```
 
 ### Xhprof 、Xdebug 性能调试工具使用
-```
 php调试方式： https://blog.csdn.net/kikajack/article/details/81014804
 
 PHP 后端开发之调试方法： https://blog.csdn.net/f786587718/article/details/90603514
-
+```
 //输出日志内容到文件
 $fp = fopen('./php.log', '测试');
 fwrite($fp, print_r($content, true));
@@ -6792,7 +6831,7 @@ file_put_contents("/php.log", var_export($objects,true), FILE_APPEND);
 
 ### 缓存的使用方式、场景
 https://zhuanlan.zhihu.com/p/40091810
-```
+
 为什么使用缓存
 
 提升性能：使用缓存可以跳过数据库查询，分布式系统中可以跳过多次网络开销。在读多写少的场景下，可以有效的提高性能，降低数据库等系统的压力。
@@ -6850,17 +6889,15 @@ Cache Aside 更新模式实现起来比较简单，最常用，实时性也高�
 Read/Write Through 更新模式只需要维护一个缓存，对应用屏蔽掉了缓存的细节，实时性也高。但是实现起来要复杂一些。
 
 Write Behind Caching 吞吐量很高，多次操作可以合并。但是数据可能会丢失，例如系统断电等，实现起来最复杂。
-```
 
 ## 实践篇
 ### 给定二维数组，根据某个字段排序
-```
 遇到问题：把两个数组用php自带的array_merge()函数合并之后，想按照两个数组中共有的'post_time'字段为新数组进行排序
 
 解决办法：通过查阅官方手册，得知有array_multisort()这个函数，可以对多个数组或多维数组进行排序，返回排序之后的数组，其中字符串键名将被保留，但是数字键名将被重新索引，从 0 开始，并以 1 递增。
 
 下面封装了这个函数，便于调用：
-
+```
 /**
  * 二维数组按照指定字段进行排序
  * @params array $array 需要排序的数组
@@ -6914,9 +6951,9 @@ Array
         )
 
 )
-
+```
 新增：按照指定的多个字段排序
-
+```
 /**
  * 二维数组按照指定的多个字段进行排序
  *
@@ -6981,10 +7018,10 @@ Array
         )
 )
 ```
-### 如何判断上传文件类型，如：仅允许 jpg 上传
-```
-判断文件图片类型,
 
+### 如何判断上传文件类型，如：仅允许 jpg 上传
+判断文件图片类型,
+```
 $type     = $_FILES['image']['tmp_name'];//文件名
 //$type     = $this->getImagetype( $type ); 
 $filetype = ['jpg', 'jpeg', 'gif', 'bmp', 'png'];
@@ -6992,9 +7029,9 @@ if (! in_array($type, $filetype))
 {  
     return "不是图片类型";
 ｝
-
+```
 如上如果用户修改文件后缀为png jpeg等无法满足,查了查资料解决方法是采用判断文件的二进制流信息,如果你刚好遇到这种问题不妨尝试一下：
-
+```
 //*判断图片上传格式是否为图片 return返回文件后缀
 public function getImagetype($filename)
 {
@@ -7026,6 +7063,7 @@ public function getImagetype($filename)
     return $fileType;
 }
 ```
+
 ### 不使用临时变量交换两个变量的值 `$a=1; $b=2;`  =>  `$a=2; $b=1;`
 ```
 $a = 1; 
@@ -7042,9 +7080,10 @@ $b = $a ^ $b;
 $a = $a ^ $b;
 echo $a, '-', $b;
 ```
+
 ### strtoupper 在转换中文时存在乱码，你如何解决？```php echo strtoupper('ab你好c'); ```
-```
 https://www.jb51.net/article/61799.htm
+
 汉字乱码真是一个悲催的事情，JAVA讨厌汉字，PHP也不喜欢汉字；
 
 Java乱码最终使用了spring给出的过滤器来过滤，处处过滤，其实影响了速度，不过没有办法，汉字就是W国首先不考虑的事情；
@@ -7054,7 +7093,7 @@ Java乱码最终使用了spring给出的过滤器来过滤，处处过滤，其�
 哎，转换吧；
 
 1，PHP自带的转换函数ICONV,一个高大上的函数；
-
+```
 string iconv ( string $in_charset , string $out_charset , string $str )
 使用DEMO：
 
@@ -7065,10 +7104,12 @@ echo 'TRANSLIT : ', iconv("UTF-8", "ISO-8859-1//TRANSLIT", $text), PHP_EOL;
 echo 'IGNORE   : ', iconv("UTF-8", "ISO-8859-1//IGNORE", $text), PHP_EOL;
 echo 'Plain    : ', iconv("UTF-8", "ISO-8859-1", $text), PHP_EOL;
 ?>
+```
 大家都推荐的函数，不过使用之后无法转换，没有错误，字符也没有转换，NO!
 
 2，另辟蹊径，还有一个大家质疑效率不高的函数，不过无论如何，先实现再考虑其他三
 
+```
 //检查该函数是否可用
 echo function_exists('mb_convert_encoding');
 //检测当前编码
@@ -7076,9 +7117,11 @@ echo mb_detect_encoding($val, "GBK, GB2312, UTF-8");
 //转换编码，把CP936(就是GBK)转换成UTF-8
 $v=mb_convert_encoding ($val, "UTF-8", "CP936");
 结果成功了;
+```
 
 好吧，先用着吧，为了转换数据库查询的结果集，制作一个转换函数：
 
+```
 1，函数“乱码克星”：
 // $fContents 字符串
 // $from 字符串的编码
@@ -7110,7 +7153,9 @@ function auto_charset($fContents,$from='gbk',$to='utf-8'){
         return $fContents;
     }
 }
+```
 2，使用：
+```
 //打印输出查询结果（假设你的结果）
 $arr=array();
 while($list=mssql_fetch_row($row))
@@ -7120,91 +7165,130 @@ while($list=mssql_fetch_row($row))
 $s=auto_charset($arr,'gbk','utf-8');
 //打印试试，在浏览器设置编码为UFT-8，看没有乱码
 print_r($s);die();
+```
 
-```
 ### Websocket、Long-Polling、Server-Sent Events(SSE) 区别
-```
 http://www.mamicode.com/info-detail-1327667.html
+
 在下面的示例中，客户端指的是浏览器，服务器指的是网站服务器主机。
 
 为了更好的理解这些知识点，你应该简单了解典型的http网站是如何工作的。
 
 普通的http：
+
 客户端从服务器端请求网页
+
 服务器作出相应的反应
+
 服务器返回相应到客户端
-技术分享
 
 AJAX Polling：
+
 客户端使用普通的http方式向服务器端请求网页
+
 客户端执行网页中的JavaScript轮询脚本，定期循环的向服务器发送请求（例如每5秒发送一次请求），获取信息
+
 服务器对每次请求作出响应，并返回相应信息，就像正常的http请求一样
-技术分享
 
 AJAX Long-Polling：
+
 客户端使用普通的http方式向服务器端请求网页
+
 客户端执行网页中的JavaScript脚本，向服务器发送数据、请求信息
+
 服务器并不是立即就对客户端的请求作出响应，而是等待有效的更新
+
 当信息是有效的更新时，服务器才会把数据推送给客户端
+
 当客户端接收到服务器的通知时，立即会发送一个新的请求，进入到下一次的轮询
-技术分享
 
 HTML5 Server Sent Events (SSE) / EventSource:
+
 客户端使用普通的http方式向服务器端请求网页
+
 客户端执行网页中的JavaScript脚本，与服务器之间建立了一个连接
+
 当服务器端有有效的更新时，会发送一个事件到客户端
+
 服务器到客户端数据的实时推送，大多数内容是你需要的
+
 你需要一台可以做Event Loop的服务器
+
 不允许跨域的连接
+
 如果你觉得这些还不够，想要了解更多，可以参考下面的文件和手册
+
 Using server-sent events
 https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
+
 Server-Sent Events
 http://html5doctor.com/server-sent-events
+
 Stream Updates with Server-Sent Events
 http://www.html5rocks.com/en/tutorials/eventsource/basics/
+
 Tutorial: JSF 2 and HTML5 Server Sent Events
 http://jaxenter.com/tutorial-jsf-2-and-html5-server-sent-events-42932.html
-技术分享
 
 HTML5 Websockets:
+
 客户端使用普通的http方式向服务器端请求网页
+
 客户端执行网页中的JavaScript脚本，与服务器之间建立了一个连接
+
 服务器和客户端之间，可以双向的发送有效数据到对方
+
 服务器可以实时的发送数据到客户端，同时客户端也可以实时的发送数据到服务器
+
 你需要一台可以做Event Loop的服务器
+
 使用 WebSockets 允许跨域的建立连接
+
 它同样支持第三方的websocket主机服务器，例如Pusher或者其它。这样你只需要关心客户端的实现 ，降低了开发难度。
+
 如果你觉得这些还不够，想要了解更多，可以参考下面的文件和手册
+
 An Introduction To WebSockets
 http://www.developerfusion.com/article/143158/an-introduction-to-websockets/
+
 Writing WebSocket client applications
 https://developer.mozilla.org/en-US/docs/WebSockets/Writing_WebSocket_client_applications
+
 Start Using HTML5 WebSockets Today
 http://code.tutsplus.com/tutorials/start-using-html5-websockets-today--net-13270
+
 WebRTC:
+
 WebRTC是一种点对点类型的传输方式，它支持多种传输协议，如：UDP、TCP甚至是抽象层的协议。设计它时同时考虑到了允许使用可靠和不可靠的两种方式传输数据。这种技术一般应用在传输数据量较大的内容，比如音、视频等流媒体的传输。
 
 Comet:
+
 Comet是一种用于web的推送技术，能使服务器实时地将更新的信息传送到客户端，而无须客户端发出请求，目前有两种实现方式，长轮询和iframe流。如果你想了解更多，可以参考维基百科或者IBM
 
 Event Loop
+
 Event Loop是一个程序结构，用于等待和发送消息和事件。
+
 长轮询
+
 长轮询是在打开一条连接以后保持，等待服务器推送来数据再关闭的方式。
+
 iframe流
+
 iframe流方式是在页面中插入一个隐藏的iframe，利用其src属性在服务器和客户端之间创建一条长链接，服务器向iframe传输数据（通常是HTML，内有负责插入信息的javascript），来实时更新页面。
 
 iframe流方式的优点是浏览器兼容好，Google公司在一些产品中使用了iframe流，如Google Talk。
+
 https://www.jianshu.com/p/d3f66b1eb748?from=timeline&isappinstalled=0
+
 介绍
+
 众所周知，数据交互有两种模式：Push（推模式）、Pull（拉模式）。
 
 推模式指的是客户端与服务端建立好网络长连接，服务方有相关数据，直接通过长连接通道推送到客户端。其优点是及时，一旦有数据变更，客户端立马能感知到；另外对客户端来说逻辑简单，不需要关心有无数据这些逻辑处理。缺点是不知道客户端的数据消费能力，可能导致数据积压在客户端，来不及处理。
 
 拉模式指的是客户端主动向服务端发出请求，拉取相关数据。其优点是此过程由客户端发起请求，故不存在推模式中数据积压的问题。缺点是可能不够及时，对客户端来说需要考虑数据拉取相关逻辑，何时去拉，拉的频率怎么控制等等。
 
-详解
 说到Long Polling（长轮询），必然少不了提起Polling（轮询），这都是拉模式的两种方式。
 
 Polling是指不管服务端数据有无更新，客户端每隔定长时间请求拉取一次数据，可能有更新数据返回，也可能什么都没有。
@@ -7212,29 +7296,37 @@ Polling是指不管服务端数据有无更新，客户端每隔定长时间请�
 Long Polling原理也很简单，相比Polling，客户端发起Long Polling，此时如果服务端没有相关数据，会hold住请求，直到服务端有相关数据，或者等待一定时间超时才会返回。返回后，客户端又会立即再次发起下一次Long Polling。这种方式也是对拉模式的一个优化，解决了拉模式数据通知不及时，以及减少了大量的无效轮询次数。（所谓的hold住请求指的服务端暂时不回复结果，保存相关请求，不关闭请求连接，等相关数据准备好，写会客户端。）
 
 前面提到Long Polling如果当时服务端没有需要的相关数据，此时请求会hold住，直到服务端把相关数据准备好，或者等待一定时间直到此次请求超时，这里大家是否有疑问，为什么不是一直等待到服务端数据准备好再返回，这样也不需要再次发起下一次的Long Polling，节省资源？
+
 主要原因是网络传输层主要走的是tcp协议，tcp协议是可靠面向连接的协议，通过三次握手建立连接。但是所建立的连接是虚拟的，可能存在某段时间网络不通，或者服务端程序非正常关闭，亦或服务端机器非正常关机，面对这些情况客户端根本不知道服务端此时已经不能互通，还在傻傻的等服务端发数据过来，而这一等一般都是很长时间。当然tcp协议栈在实现上有保活计时器来保证的，但是等到保活计时器发现连接已经断开需要很长时间，如果没有专门配置过相关的tcp参数，一般需要2个小时，而且这些参数是机器操作系统层面，所以，以此方式来保活不太靠谱，故Long Polling的实现上一般是需要设置超时时间的。
 
-实现
 Long Polling的实现很简单，可分为四个过程：
 
 发起Polling
+
 发起Polling很简单，只需向服务器发起请求，此时服务端还未应答，所以客户端与服务端之间一直处于连接状态。
 
 数据推送
+
 如果服务器端有相关数据，此时服务端会将数据通过此前建立的通道发回客户端。
 
 Polling终止
+
 Polling终止情况有三种：
+
 若服务端返回相关数据，此时客户端收到数据后，关闭请求连接，结束此次Polling过程。
+
 若客户端等待设定的超时时间后，服务端依然没有返回数据，此时客户端需要主动终止此次Polling请求。
+
 若客户端收到网络故障或异常，此时客户端自然也是需要主动终止此次Polling请求。
 
 重新Polling
+
 终止上次Polling后，客户端需要立即再次发起Polling请求。这样才能保证拉取数据的及时性。
 
 代码实现起来也很简单，Http Call按照上述过程就很方便实现LongPolling。下面Code只是简单展示过程，在具体场景下，根据具体的业务逻辑进行调整。
 
 客户端Code
+```
 package com.andy.example.longpolling.client;
 
 import java.io.BufferedReader;
@@ -7347,19 +7439,20 @@ public class LongPollingServlet extends HttpServlet {
 服务端结果
 客户端结果
 应用
+```
 WebQQ、Comet都用到长轮询技术，另外一些使用Pull模式消费的消息系统，都会使用Long Polling技术进行优化。
 
 补充
 针对一些同学的反馈，补充一篇 Long Polling长轮询实现进阶，希望大家对长轮询理解更加深刻。
-```
+
 ### "Headers already sent" 错误是什么意思，如何避免
-```
 https://blog.csdn.net/qq_41750040/article/details/80197764
+
 https://blog.csdn.net/change518/article/details/8716635
+
+```
 发送或者修改 HTTP 头信息的方法必须在任何输出被输出之前被调用。否则调用将会出错：
-
 Warning: Cannot modify header information - headers already sent (output started at script:line)
-
 这些方法可以修改（modify） HTTP 头信息：
 
 header / header_remove
@@ -7376,14 +7469,6 @@ print ，echo 以及其他能产生输出的方法
 为什么这个错误会产生
 为了理解为什么 HTTP header 必须在输出之前发送出去，我们有必要了解看一下一个典型的 HTTP 相应。PHP 脚本主要用来生成 HTML ，但它也会发送一系列的 HTTP/CGI 头信息到 web 服务器：
 
-1
-2
-3
-4
-5
-6
-7
-8
 HTTP/1.1 200 OK
 Powered-By: PHP/5.3.7
 Vary: Accept-Encoding
@@ -7422,15 +7507,9 @@ readfile, passthru, flush, imagepng, imagejpeg
 <?php 前的空格导致的 "script.php line 1" 警告 
 如果警告指向第 1 行的输出，那么它很有可能指向的是在 <?php 之前的空格，文本或者 HTML 。
 
-1
-2
  <?php
 // 在 <?php 前有个空格
 同样它可能出现在附加的脚本或者脚本区块上:
-
-1
-2
-3
 ?>
 
 <?php
@@ -7447,7 +7526,6 @@ UTF-8 BOM(这个特别注意)
 修正程序
 有很多自动化的工具可以检测并修改文本文件（sed / awk 或者 recode ）。PHP 里有 phptags 。它可以把打开标签和关闭标签重写成长标签（<?php）或者短标签（<?）的形式。也可以轻松地解决前导或尾随的空格、Unicode 和 UTF-x BOM 问题：
 
-1
 phptags  --whitespace  *.php
 同样，你可以在某个目录或整个项目目录使用这个命令。
 
@@ -7469,15 +7547,12 @@ phptags  --whitespace  *.php
 
 所以当 header("Location: ...") 跳转静默地失败时，建议你去查看 warnings 。在脚本的最前面用下面的两条命令重新开启错误报告设置：
 
-1
-2
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 或者如果其他的设置都失败了那就设置 set_error_handler("var_dump"); 。
 
 至于跳转的 header ，在执行至最后的代码时你应该遵循下面的这种风格：
 
-1
 exit(header("Location: /finished.html"));
 最好是提供一个方法，特别是当 header() 执行失败时打印出用户信息。
 
@@ -7507,16 +7582,13 @@ output_buffering 设置 在 php.ini 或者 .htaccess 或者甚至在最新的 FP
 HTML<meta> tag
 如果你的应用程序很难在结构上解决这个问题，有个简单但显得不专业的做法是在 HTML 标签中来跳转网页。可以这样实现：
 
-1
 <meta http-equiv="Location" content="http://example.com/">
 或者加上一个延迟时间
 
-1
 <meta http-equiv="Refresh" content="2; url=../target.html">
 JavaScript 跳转
 另一个可选的方法就是使用 JavaScript 跳转 来实现网页跳转：
 
-1
 <script> location.replace("target.html"); </script>
 这种方式相比较 方法起来更兼容 HTML 标准，它只依赖于可以运行 JavaScript 的客户端。
 
@@ -7530,10 +7602,10 @@ setcookie() 和 session_start() 都需要发送一个 set-cookie: 的 HTTP 头�
 
 ## 算法篇
 ### 快速排序（手写）
-```
 通过设置一个初始中间值，来将需要排序的数组分成3部分，小于中间值的左边，中间值，大于中间值的右边，
 继续递归用相同的方式来排序左边和右边，最后合并数组
 示例：
+```
 <?php
 $a = array(2,13,42,34,56,23,67,365,87665,54,68,3);
 function quick_sort($a)
@@ -7563,6 +7635,7 @@ function quick_sort($a)
 }
 print_r(quick_sort($a));
 ```
+
 ### 冒泡排序（手写）
 ```
 <?php
@@ -7592,6 +7665,7 @@ function getpao($arr)
 }
 var_dump(getpao($arr));
 ```
+
 ### 二分查找（了解）
 ```
 一：递归方式
@@ -7701,6 +7775,7 @@ int(5)
 int(8)
 bool(true)
 ```
+
 ### 查找算法 KMP（了解）
 ```
 PHP实现KMP算法
@@ -7732,6 +7807,7 @@ http://www.ruanyifeng.com/blog/2013/05/Knuth%E2%80%93Morris%E2%80%93Pratt_algori
 https://blog.csdn.net/starstar1992/article/details/54913261
 来源地址：https://www.php.cn/php-weizijiaocheng-392133.html
 ```
+
 ### 深度、广度优先搜索（了解）
 ```
 https://www.cnblogs.com/zemliu/archive/2012/09/24/2700878.html
@@ -7810,9 +7886,10 @@ https://www.cnblogs.com/zemliu/archive/2012/09/24/2700878.html
     print_r($traverse);
 ?>
 ```
+
 ### LRU 缓存淘汰算法（了解，Memcached 采用该算法）
-```
 https://learnku.com/articles/34584
+
 缓存是一种提高数据读取性能的技术。但是对于计算机来说，并不可能缓存所有的数据，在达到它的临界空间时，我们需要通过一些规则用新的数据取代掉一部分的缓存数据。这时候你会如果选择替换呢？
 
 替换的策略有很多种，常用的有以下几种:
@@ -7831,13 +7908,12 @@ NMRU (在最近没有使用的缓存中随机选择一个替换)
 
 下面来张实际点的图搞清楚他的原理。
 
-
-
 基于上述图片，我们知道，对于 LRU 的操作，无非在于插入 (insert), 删除 (delete)，以及替换，针对替换来说，如果缓存空间满了，那么就是 insert to head and delete for tail。如果未满，也分为两种，一种是缓存命中的话，只需要把缓存的值 move to head。如果之前不存在，那么就是 insert to head。
 
 实现过程
-接下来就是数据结构的选择了。数组的存储是连续的内存空间，虽然查询的时间复杂度是 O (1), 但是删除和插入为了保存内存空间的连续性，需要进行搬移，那么时间复杂度就是 O (n), 为了实现能快速删除，故而采用双向链表。但是链表的查询时间复杂度是 O (n), 那么就需要 hash table。屁话说了这么多，代码实现。其实之前刷过这道题目。特地拿出来讲一下。
 
+接下来就是数据结构的选择了。数组的存储是连续的内存空间，虽然查询的时间复杂度是 O (1), 但是删除和插入为了保存内存空间的连续性，需要进行搬移，那么时间复杂度就是 O (n), 为了实现能快速删除，故而采用双向链表。但是链表的查询时间复杂度是 O (n), 那么就需要 hash table。屁话说了这么多，代码实现。其实之前刷过这道题目。特地拿出来讲一下。
+```
 class LRUCache {
     private $capacity;
     private $list;
@@ -7977,8 +8053,8 @@ class Node{
  * $ret_1 = $obj->get($key);
  * $obj->put($key, $value);
 ```
+
 ## 数据结构篇（了解）
-```
 一、基本概念
 
 （一）编写解决实际问题的程序的一般过程：
@@ -8020,8 +8096,11 @@ class Node{
 1.顺序存储结构：用数据元素在存储器中的相对位置来表示数据元素之间的逻辑结构(关系)。
 
 2.链式存储结构：在每一个数据元素中增加一个存放另一个元素地址的指针(pointer )，用该指针来表示数据元素之间的逻辑结构(关系)
+
 顺序结构：数据元素存放的地址是连续的；
+
 链式结构：数据元素存放的地址是否连续没有要求。
+
 数据的逻辑结构和物理结构是密不可分的两个方面，一个算法的设计取决于所选定的逻辑结构，而算法的实现依赖于所采用的存储结构
 
 （九）数据操作： 对数据要进行的运算
@@ -8059,33 +8138,29 @@ class Node{
 （十五）算法的时间复杂度：算法中基本操作重复执行的次数是问题规模n的某个函数，其时间量度记作   T(n)=O(f(n))，称作算法的渐近时间复杂度(Asymptotic Time complexity)，简称时间复杂度。
 
 （十六）算法的空间复杂度：是指算法编写成程序后，在计算机中运行时所需存储空间大小的度量。记作：   S(n)=O(f(n)),其中n为问题规模
-```
-### 堆、栈特性
-```
-https://blog.csdn.net/ljfphp/article/details/80053379
-一、关于堆和栈的概念及区别
-这里参考上篇博客： 浅谈堆和栈的区别
-通过这篇文章，我们可以知道广义的堆和栈到底是什么，但是具体在php中的使用呢
 
-二、php中的堆栈
-      众所周知，PHP提供了一组函数可以用于push与pop（堆栈）还有shift与unshift（队列）来操作数组元素。
+### 堆、栈特性
+https://blog.csdn.net/ljfphp/article/details/80053379
+
+关于堆和栈的概念及区别
+
+php中的堆栈
+众所周知，PHP提供了一组函数可以用于push与pop（堆栈）还有shift与unshift（队列）来操作数组元素。
 
 1、push与pop
-
-      这两个函数操作的是栈，遵循先进后出的原则。就像是往木桶里面加东西一样。通过array_push进行入栈操作，array_pop进行出栈操作。先进栈的部分在木桶的最下面。
+这两个函数操作的是栈，遵循先进后出的原则。就像是往木桶里面加东西一样。通过array_push进行入栈操作，array_pop进行出栈操作。先进栈的部分在木桶的最下面。
 
 (1)array_push()方法
 
 array_push() 函数向第一个参数的数组尾部添加一个或多个元素（入栈），然后返回新数组的长度。该函数等于多次调用 $array[] = $value。
-1
+
 (2)array_pop()方法
 
 array_pop() 函数删除数组中的最后一个元素。
-返回数组的最后一个值。如果数组是空的，或者非数组，将返回 NULL。
-1
-2
-(3)实例：
 
+返回数组的最后一个值。如果数组是空的，或者非数组，将返回 NULL。
+(3)实例：
+```
  <?php
    $arr = array();
    array_push($arr,'aaa');  //先入栈  aaa
@@ -8094,18 +8169,11 @@ array_pop() 函数删除数组中的最后一个元素。
    $arr.pop();   //进行出栈操作，先进后出原则，则此时相当于bbb出栈了。
    print_r($arr);  //打印结果应该是[0]=>aaa
 ?>
-1
-2
-3
-4
-5
-6
-7
-8
+```
 三、php实现的队列
-1、什么是队列
 
-      首先应该明确，队列和普通的堆栈是不一样的，队列遵循的是“先进先出”。堆栈只能在栈顶删除和插入。队列是每一个新插入的元素都是在队列的尾部插入，每一个要删除的元素都是位于队列的头部，当从队列的头部删除了一个元素后，其它队列中的元素就会向前进1位，在元素移动到队首时，就会接受出队的操作。
+1、什么是队列
+首先应该明确，队列和普通的堆栈是不一样的，队列遵循的是“先进先出”。堆栈只能在栈顶删除和插入。队列是每一个新插入的元素都是在队列的尾部插入，每一个要删除的元素都是位于队列的头部，当从队列的头部删除了一个元素后，其它队列中的元素就会向前进1位，在元素移动到队首时，就会接受出队的操作。
 
 队列模型可以理解为排队吃饭。先排队的人就先吃到饭。
 
@@ -8117,12 +8185,11 @@ php中使用array_push()来增加元素，使用array_shift()删除元素。
 
 array_shift() 函数删除数组中第一个元素，并返回被删除元素的值。
 如果键名是数字的，所有元素都会获得新的键名，从 0 开始，并以 1 递增
-1
-2
+
 具体参考手册：http://www.w3school.com.cn/php/func_array_shift.asp
 
 （2）实例：
-
+```
 <?php
    $arr = array();
    array_push($arr,'aaa');  //队列中添加  aaa
@@ -8131,33 +8198,25 @@ array_shift() 函数删除数组中第一个元素，并返回被删除元素的
    array_shift($arr); //删除第一个元素，遵循先进先出原则，删除的是aaa
    print_r($arr);  //打印结果为  [0]=>bbb
 ?>
-1
-2
-3
-4
-5
-6
-7
-8
+```
 （3）双端队列
 
-      还有一种队列比较特殊，首尾两端都允许进行插入和删除的操作，这种队列可以称为双端队列，与标准的队列不同的就是多了队首的插入操作和队尾的删除操作。一般是通过php的数组函数：array_unshift()和array_shift()。
+还有一种队列比较特殊，首尾两端都允许进行插入和删除的操作，这种队列可以称为双端队列，与标准的队列不同的就是多了队首的插入操作和队尾的删除操作。一般是通过php的数组函数：array_unshift()和array_shift()。
 
 具体参考：PHP队列原理及基于队列的写文件案例
 
 四、队列的用途
-      队列可以很好地异步处理数据传送和存储，当你频繁地向数据库中插入数据、频繁地向搜索引擎提交数据，就可采取队列来异步插入。另外，还可以将较慢的处理逻辑、有并发数量限制的处理逻辑，通过消息队列放在后台处理，例如FLV视频转换、发送手机短信、发送电子邮件等。
 
-end
-```
+队列可以很好地异步处理数据传送和存储，当你频繁地向数据库中插入数据、频繁地向搜索引擎提交数据，就可采取队列来异步插入。另外，还可以将较慢的处理逻辑、有并发数量限制的处理逻辑，通过消息队列放在后台处理，例如FLV视频转换、发送手机短信、发送电子邮件等。
+
 ### 队列
-```
 https://www.cnblogs.com/be-thebest/p/9983672.html
+
 队列是一种特殊的线性表，它只允许在表的前端，可以称之为front，进行删除操作；而在表的后端，可以称之为rear进行插入操作。队列和堆栈一样，是一种操作受限制的线性表，和堆栈不同之处在于：队列是遵循“先进先出”原则，而堆栈遵循的是“先进后出”原则。队列进行插入操作的端称为队尾，进行删除操作的称为队头，只允许在队尾进行插入操作，在队头进行删除操作。
 
-　　队列的数据元素又称为队列元素，在队尾中插入一个元素称为入队，在队头删除一个元素称为出队。具体实现参考代码：
+队列的数据元素又称为队列元素，在队尾中插入一个元素称为入队，在队头删除一个元素称为出队。具体实现参考代码：
 
-复制代码
+```
 <?php
 /**
 *  php队列算法
@@ -8249,22 +8308,22 @@ $q->OutQ();
 $q->OutQ();
 $q->OutQ();
 $q->OutQ();
-复制代码
+```
 本案例中有两个类：
 
-　　第一个是data类，用于实现数据的存放以及队列元素的入队出队情况；
+第一个是data类，用于实现数据的存放以及队列元素的入队出队情况；
 
-　　第二个是queue类，用于队列元素的一些入队出队操作。
+第二个是queue类，用于队列元素的一些入队出队操作。
 
 队列中包含四个属性：
 
-　　front(队列的头部）
+front(队列的头部）
 
-　　rear(队列的尾部)
+rear(队列的尾部)
 
-　　maxsize(队列的长度，即队列元素个数)
+maxsize(队列的长度，即队列元素个数)
 
-　　queue(存放所有已入队队列元素的对象)
+queue(存放所有已入队队列元素的对象)
 
 场景说明：
 
@@ -8275,8 +8334,7 @@ $q->OutQ();
 3.出队时，判断队列是否为空（front == rear），如果为空时，无法出队。如果不为空时，删除front指向的对象，并且front自减，完成出队。
 
 运行结果如下:
-
-复制代码
+```
  1 小苗:哥进队了！
  2 入队成功
  3 马帅:哥进队了！
@@ -8297,14 +8355,13 @@ $q->OutQ();
 18 队空不能出队！
 19 队空不能出队！
 ```
+
 ### 哈希表
-```
 https://www.cnblogs.com/orlion/p/5344126.html
+
 一、哈希表(HashTable)
 
-    大部分动态语言的实现中都使用了哈希表，哈希表是一种通过哈希函数，将特定的键映射到特定值得一种数据
-
- 
+大部分动态语言的实现中都使用了哈希表，哈希表是一种通过哈希函数，将特定的键映射到特定值得一种数据
 
 结构，它维护键和值之间一一对应关系。
 
@@ -8316,59 +8373,36 @@ https://www.cnblogs.com/orlion/p/5344126.html
 
 哈希冲突(hash collision):哈希函数将两个不同的key映射到同一个索引的情况。
 
- 
-
-    目前解决hash冲突的方法有两种：链接法和开放寻址法。
-
- 
+目前解决hash冲突的方法有两种：链接法和开放寻址法。
 
 1、冲突解决
 
-    (1)链接法
+(1)链接法
 
-    链接法通过使用一个链表来保存slot值的方式来解决冲突，也就是当不同的key映射到一个槽中的时候使用链表
-
- 
+链接法通过使用一个链表来保存slot值的方式来解决冲突，也就是当不同的key映射到一个槽中的时候使用链表
 
 来保存这些值。（PHP中正是使用了这种方式）；
 
-    (2)开放寻址法
+(2)开放寻址法
 
-    使用开放寻址法是槽本身直接存放数据，在插入数据时如果key所映射到的索引已经有数据了，这说明有冲突，
-
- 
+使用开放寻址法是槽本身直接存放数据，在插入数据时如果key所映射到的索引已经有数据了，这说明有冲突，
 
 这时会寻找下一个槽，如果该槽也被占用了则继续寻找下一个槽，直到找到没有被占用的槽，在查找时也是这样
 
- 
-
 2、哈希表的实现
 
-    哈希表的实现主要完成的工作只有三点:
+哈希表的实现主要完成的工作只有三点:
 
-    * 实现哈希函数
+* 实现哈希函数
 
-    * 冲突的解决
+* 冲突的解决
 
-    * 操作接口的实现
+* 操作接口的实现
 
 （1）数据结构
 
-    首先需要一个容器来曹村我们的哈希表，哈希表需要保存的内容主要是保存进来的数据，同时为了方便的得知哈希表中存储的元素个数，需要保存一个大小字段，第二个需要的就是保存数据的容器。下面将实现一个简易的哈希表，基本的数据结构主要有两个，一个用于保存哈希表本身，另外一个就是用于实际保存数据的单链表了，定义如下：
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
+首先需要一个容器来曹村我们的哈希表，哈希表需要保存的内容主要是保存进来的数据，同时为了方便的得知哈希表中存储的元素个数，需要保存一个大小字段，第二个需要的就是保存数据的容器。下面将实现一个简易的哈希表，基本的数据结构主要有两个，一个用于保存哈希表本身，另外一个就是用于实际保存数据的单链表了，定义如下：
+```
 typedef struct _Bucket
 {
     char *key;
@@ -8382,31 +8416,15 @@ typedef struct _HashTable
     int size;
     Bucket* buckets;
 } HashTable;
+```
 上边的定义与PHP中的实现相似，为了简化key的数据类型为字符串，而存储的结构可以为任意类型。
 
 Bucket结构体是一个单链表，这是为了解决哈希冲突。当多个key映射到同一个index的时候将冲突的元素链接起来
 
- 
-
 （2）哈希函数实现
 
 我们采用一种最简单的哈希算法实现：将key字符串的所有字符加起来，然后以结果对哈希表的大小取模，这样索引就能落在数组索引的范围之内了。
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
+```
 static int hash_str(char *key)
 {
     int hash = 0;
@@ -8419,53 +8437,17 @@ static int hash_str(char *key)
   
     return hash;
 }
-  
 // 使用这个宏来求得key在哈希表中的索引
 #define HASH_INDEX(ht, key) (hash_str((key)) % (ht)->size)
 PHP使用的哈希算法称为DJBX33A。为了操作哈希表定义了如下几个操作函数：
-
-1
-2
-3
-4
-5
 int hash_init(HashTable *ht);                               // 初始化哈希表
 int hash_lookup(HashTable *ht, char *key, void **result);   // 根据key查找内容
 int hash_insert(HashTable *ht, char *key, void *value);     // 将内容插哈希表中
 int hash_remove(HashTable *ht, char *key);                  // 删除key所指向的内容
 int hash_destroy(HashTable *ht);
+```
 下面以插入和获取操作函数为例：
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
+```
 int hash_insert(HashTable *ht, char *key, void *value)
 {
     // check if we need to resize the hashtable
@@ -8496,33 +8478,10 @@ int hash_insert(HashTable *ht, char *key, void *value)
   
     return SUCCESS;
 }
+```
 在查找时首先找到元素所在的位置，如果存在元素，则将链表中的所有元素的key和要查找的key依次对比，直到找到一致的元素，否则说明该值没有匹配的内容。
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
+```
 int hash_lookup(HashTable *ht, char *key, void **result)
 {
     int index = HASH_INDEX(ht, key);
@@ -8548,41 +8507,23 @@ int hash_lookup(HashTable *ht, char *key, void **result)
     LOG_MSG("HashTable lookup missed the key: %s\n", key);
     return FAILED;
 }
+```
 PHP中的数组是基于哈希表实现的，依次给数组添加元素时，元素之间是有顺序的，而这里的哈希表在物理上显然是接近平均分布的，这样是无法根据插入的先后顺序获取到这些元素的，在PHP的实现中Bucket结构体还维护了另一个指针字段来维护元素之间的关系。
-
- 
 
 二、PHP的哈希表实现
 
-    1、PHP的哈希实现
+1、PHP的哈希实现
 
-    PHP中的哈希表是十分重要的一个数据接口，基本上大部分的语言特征都是基于哈希表的，例如：变量的作用域和变量的存储，类的实现以及Zend引擎内部的数据有很多都是保存在哈希表中的。
+PHP中的哈希表是十分重要的一个数据接口，基本上大部分的语言特征都是基于哈希表的，例如：变量的作用域和变量的存储，类的实现以及Zend引擎内部的数据有很多都是保存在哈希表中的。
 
-    (1)数据结构及说明
+(1)数据结构及说明
 
-    Zend为了保存数据之间的关系使用了双向链表来保存数据
+Zend为了保存数据之间的关系使用了双向链表来保存数据
 
-    (2)哈希表结构
+(2)哈希表结构
 
-    PHP中的哈希表实现在Zend/zend_hash.c中，PHP使用如下两个数据结构来实现哈希表，HashTable结构体用于保存整个哈希表需要的基本信息，而Bucket结构体用于保存具体的数据内容，如下：
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
+PHP中的哈希表实现在Zend/zend_hash.c中，PHP使用如下两个数据结构来实现哈希表，HashTable结构体用于保存整个哈希表需要的基本信息，而Bucket结构体用于保存具体的数据内容，如下：
+```
 typedef struct _hashtable { 
     uint nTableSize;        // hash Bucket的大小，最小为8，以2x增长
     uint nTableMask;        // nTableSize-1,索引取值的优化
@@ -8600,43 +8541,10 @@ typedef struct _hashtable {
     int inconsistent;
 #endif
 } HashTable;
-    nTableSize字段用于标示哈希表的容量，哈希表的初始化容量最小为8.首先看看哈希表的初始化函数：
+```
+TableSize字段用于标示哈希表的容量，哈希表的初始化容量最小为8.首先看看哈希表的初始化函数：
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
+```
 ZEND_API int _zend_hash_init(HashTable *ht, uint nSize, hash_func_t 
 pHashFunction,
                     dtor_func_t pDestructor, zend_bool persistent 
@@ -8672,34 +8580,23 @@ ZEND_FILE_LINE_DC)
   
     return SUCCESS;
 }
-    例如如果设置初始大小为10，则上面的算法将会将大小调整为16.也就是始终将大小调整为接近初始大小的2的整数次方
+```
+例如如果设置初始大小为10，则上面的算法将会将大小调整为16.也就是始终将大小调整为接近初始大小的2的整数次方
 
 为什么这么调整呢？先看看HashTable将哈希值映射到槽位的方法:
-
-1
-2
+```
 h = zend_inline_hash_func(arKey, nKeyLength);
 nIndex = h & ht->nTableMask;
-    从上边的_zend_hash_init()函数中可知，ht->nTableMask的大小为ht->nTableSize – 1。这里使用&操作而不是使用取模，这是因为相对来说取模的操作的消耗和按位与的操作大很多。
+```
+从上边的_zend_hash_init()函数中可知，ht->nTableMask的大小为ht->nTableSize – 1。这里使用&操作而不是使用取模，这是因为相对来说取模的操作的消耗和按位与的操作大很多。
 
-    设置好了哈希表的大小后就需要为哈希表申请存储空间了，如上边初始化的代码，根据是否需要持久保存而调用了不同的内存申请方法，是需要持久体现的是在前面PHP生命周期里介绍的：持久内容能在多个请求之间可访问，而如果是非持久存储则会在在请求结束时释放占用的空间。具体内容将在内存管理中详解
+设置好了哈希表的大小后就需要为哈希表申请存储空间了，如上边初始化的代码，根据是否需要持久保存而调用了不同的内存申请方法，是需要持久体现的是在前面PHP生命周期里介绍的：持久内容能在多个请求之间可访问，而如果是非持久存储则会在在请求结束时释放占用的空间。具体内容将在内存管理中详解
 
-    HashTable中的nNumOfElements字段很好理解，每插入一个元素或者unset删掉元素时会更新这个字段，这样在进行count()函数统计数组元素个数时就能快速的返回。
+HashTable中的nNumOfElements字段很好理解，每插入一个元素或者unset删掉元素时会更新这个字段，这样在进行count()函数统计数组元素个数时就能快速的返回。
 
-    nNextFreeElement字段非常有用，先看一段PHP代码：
+nNextFreeElement字段非常有用，先看一段PHP代码：
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
+```
 <?php
 $a = array(10 => 'Hello');
 $a[] = 'TIPI';
@@ -8712,25 +8609,11 @@ array(2) {
   [11]=>
   string(5) "TIPI"
 }
-    PHP中可以不指定索引值向数组中添加元素，这时将默认使用数字作为索引，和C语言中的枚举类似，而这个元素的索引到底是多个就由nNextFreeElement字段决定了。如果数组中存在了数字key，则会默认使用最新使用的key+1，如上例中已经存在了10作为key的元素，这样新插入的默认索引就为11了。
+```
+PHP中可以不指定索引值向数组中添加元素，这时将默认使用数字作为索引，和C语言中的枚举类似，而这个元素的索引到底是多个就由nNextFreeElement字段决定了。如果数组中存在了数字key，则会默认使用最新使用的key+1，如上例中已经存在了10作为key的元素，这样新插入的默认索引就为11了。
 
-    下面看看保存哈希表数据的槽位数据结构体：
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
+下面看看保存哈希表数据的槽位数据结构体：
+```
 typedef struct bucket {
     ulong h;            // 对char *key进行hash后的值，或者是用户指定的数字索引值
     uint nKeyLength;    // hash关键字的长度，如果数组索引为数字，此值为0
@@ -8746,21 +8629,16 @@ typedef struct bucket {
     这就意味着可以省去再赋值一次的消耗，而且，有时此值并不需要，所以同时还节省了空间。
     */
 } Bucket;
-    如上面各字段的注释。h字段保存哈希表key哈希后的值。在PHP中可以使用字符串或者数字作为数组的索引。因为数字的索引是唯一的。如果再进行一次哈希将会极大的浪费。h字段后面的nKeyLength字段是作为key长度的标示，如果索引是数字的话，则nKeyLength为0.在PHP中定义数组时如果字符串可以被转换成数字也会进行转换。所以在PHP中例如'10','11'这类的字符索引和数字索引10,11没有区别
-
-
+```
+如上面各字段的注释。h字段保存哈希表key哈希后的值。在PHP中可以使用字符串或者数字作为数组的索引。因为数字的索引是唯一的。如果再进行一次哈希将会极大的浪费。h字段后面的nKeyLength字段是作为key长度的标示，如果索引是数字的话，则nKeyLength为0.在PHP中定义数组时如果字符串可以被转换成数字也会进行转换。所以在PHP中例如'10','11'这类的字符索引和数字索引10,11没有区别
 
 Bucket结构体维护了两个双向链表，pNext和pLast指针分别指向本槽位所在的链表的关系
 
 而pListNext和pListLast指针指向的则是整个哈希表所有的数据之间的链接关系。HashTable结构体中的pListHead和pListTail则维护整个哈希表的头元素指针和最后一个元素的指针
 
- 
+哈希表的操作接口：
 
- 
-
-    哈希表的操作接口：
-
-    PHP提供了如下几类操作接口：
+PHP提供了如下几类操作接口：
 
 初始化操作，例如zend_hash_init()函数，用于初始化哈希表接口，分配空间等。
 
@@ -8769,11 +8647,12 @@ Bucket结构体维护了两个双向链表，pNext和pLast指针分别指向本�
 迭代和循环，这类的接口用于循环对哈希表进行操作。
 
 复制，排序，倒置和销毁等操作。
-```
+
 ### 链表
-```
 https://www.cnblogs.com/followyou/p/11162030.html
+
 链表
+
 链表是一种物理存储单元上非连续、非顺序的存储结构，数据元素的逻辑顺序是通过链表中的指针链接次序实现的。链表由一系列结点（链表中每一个元素称为结点）组成，结点可以在运行时动态生成。
 
 形式：单链表、双链表、跳表（redis 集合数据结构就是跳表实现，时间复杂度O（log N））
@@ -8782,7 +8661,7 @@ https://www.cnblogs.com/followyou/p/11162030.html
 
 php实现对链表的增删改查操作
 定义节点类：
-
+```
 <?php
 class Node
 {
@@ -8799,8 +8678,10 @@ class Node
 
 
 }
+```
 链表类：
 
+```
 <?php
 /**链表
  * Class Linklist
@@ -9167,9 +9048,7 @@ app\models\Node Object
                     [val] => 9
                     [next] => 
                 )
-
         )
-
 )
 3
 9
@@ -9179,24 +9058,24 @@ app\models\Node Object
 
 ## 对比篇
 ### Cookie 与 Session 区别
-```
 cookie数据存放在客户的浏览器上，session数据放在服务器上。
+
 cookie不是很安全，别人可以分析存放在本地的COOKIE并进行COOKIE欺骗，考虑到安全应当使用session。
-session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能，
-考虑到减轻服务器性能方面，应当使用COOKIE。
+
+session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能， 考虑到减轻服务器性能方面，应当使用COOKIE。
+
 单个cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。
-```
+
 ### `GET` 与 `POST` 区别
-```
 1. get是从服务器上获取数据，post是向服务器传送数据。
-2. get是把参数数据队列加到提交表单的ACTION属性所指的URL中，
-值和表单内各个字段一一对应，在URL中可以看到。
-post是通过HTTP post机制，将表单内各个字段与其内容放置在HTML HEADER内
-一起传送到ACTION属性所指的URL地址。用户看不到这个过程。
-3. get传送的数据量较小，不能大于2KB。post传送的数据量较大，
-一般被默认为不受限制。
+
+2. get是把参数数据队列加到提交表单的ACTION属性所指的URL中， 值和表单内各个字段一一对应，在URL中可以看到。 post是通过HTTP post机制，将表单内各个字段与其内容放置在HTML HEADER内 一起传送到ACTION属性所指的URL地址。用户看不到这个过程。
+
+3. get传送的数据量较小，不能大于2KB。post传送的数据量较大， 一般被默认为不受限制。
+
 4. get安全性非常低，post安全性较高。但是执行效率却比Post方法好。
 
+```
 |GET|POST|
 |-|-|
 |后退按钮/刷新无害|数据会被重新提交|
@@ -9207,172 +9086,202 @@ post是通过HTTP post机制，将表单内各个字段与其内容放置在HTML
 ```
 
 ### MySQL 各个存储引擎、及区别（一定会问 MyISAM 与 Innodb 区别）
-```
 https://blog.csdn.net/qq_27607965/article/details/79925288?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.edu_weight&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.edu_weight
+
 InnoDB和MyISAM是很多人在使用MySQL时最常用的两个表类型，这两个表类型各有优劣，5.7之后就不一样了
 
 1、事务和外键
-InnoDB具有事务，支持4个事务隔离级别，回滚，崩溃修复能力和多版本并发的事务安全，
-包括ACID。如果应用中需要执行大量的INSERT或UPDATE操作，则应该使用InnoDB，这样可以提高多用户并发操作的性能
-MyISAM管理非事务表。它提供高速存储和检索，以及全文搜索能力。如果应用中需要执行大量的SELECT查询，那么MyISAM是更好的选择
+
+InnoDB具有事务，支持4个事务隔离级别，回滚，崩溃修复能力和多版本并发的事务安全， 包括ACID。如果应用中需要执行大量的INSERT或UPDATE操作，则应该使用InnoDB，这样可以提高多用户并发操作的性能 MyISAM管理非事务表。它提供高速存储和检索，以及全文搜索能力。如果应用中需要执行大量的SELECT查询，那么MyISAM是更好的选择
 
 2、全文索引
-Innodb不支持全文索引，如果一定要用的话，最好使用sphinx等搜索引擎。myisam对中文支持的不是很好
-不过新版本的Innodb已经支持了
+
+Innodb不支持全文索引，如果一定要用的话，最好使用sphinx等搜索引擎。myisam对中文支持的不是很好 不过新版本的Innodb已经支持了
 
 3、锁
 mysql支持三种锁定级别，行级、页级、表级;
+
 MyISAM支持表级锁定，提供与 Oracle 类型一致的不加锁读取(non-locking read in SELECTs)
-InnoDB支持行级锁，InnoDB表的行锁也不是绝对的，如果在执行一个SQL语句时MySQL不能确定要扫描的范围，
-InnoDB表同样会锁全表，注意间隙锁的影响
+
+InnoDB支持行级锁，InnoDB表的行锁也不是绝对的，如果在执行一个SQL语句时MySQL不能确定要扫描的范围， InnoDB表同样会锁全表，注意间隙锁的影响
+
 例如update table set num=1 where name like “%aaa%”
 
 4、存储
-MyISAM在磁盘上存储成三个文件。第一个文件的名字以表的名字开始，扩展名指出文件类型，
-.frm文件存储表定义，数据文件的扩展名为.MYD，  索引文件的扩展名是.MYI
-InnoDB，基于磁盘的资源是InnoDB表空间数据文件和它的日志文件，InnoDB 表的大小只受限于操作系统文件的大小
-注意：MyISAM表是保存成文件的形式，在跨平台的数据转移中使用MyISAM存储会省去不少的麻烦
+
+MyISAM在磁盘上存储成三个文件。第一个文件的名字以表的名字开始，扩展名指出文件类型， .frm文件存储表定义，数据文件的扩展名为.MYD，  索引文件的扩展名是.MYI
+
+InnoDB，基于磁盘的资源是InnoDB表空间数据文件和它的日志文件，InnoDB 表的大小只受限于操作系统文件的大小 注意：MyISAM表是保存成文件的形式，在跨平台的数据转移中使用MyISAM存储会省去不少的麻烦
 
 5、索引
+
 InnoDB（索引组织表）使用的聚簇索引、索引就是数据，顺序存储，因此能缓存索引，也能缓存数据
+
 MyISAM（堆组织表）使用的是非聚簇索引、索引和文件分开，随机存储，只能缓存索引
 
 6、并发
-MyISAM读写互相阻塞：不仅会在写入的时候阻塞读取，MyISAM还会在读取的时候阻塞写入，但读本身并不会阻塞另外的读
-InnoDB 读写阻塞与事务隔离级别相关
+
+MyISAM读写互相阻塞：不仅会在写入的时候阻塞读取，MyISAM还会在读取的时候阻塞写入，但读本身并不会阻塞另外的读 InnoDB 读写阻塞与事务隔离级别相关
 
 7、场景选择
+
 MyISAM
+
 不需要事务支持（不支持）
+
 并发相对较低（锁定机制问题）
+
 数据修改相对较少（阻塞问题），以读为主
+
 数据一致性要求不是非常高
+
 尽量索引（缓存机制）
+
 调整读写优先级，根据实际需求确保重要操作更优先
+
 启用延迟插入改善大批量写入性能
+
 尽量顺序操作让insert数据都写入到尾部，减少阻塞
+
 分解大的操作，降低单个操作的阻塞时间
+
 降低并发数，某些高并发场景通过应用来进行排队机制
+
 对于相对静态的数据，充分利用Query Cache可以极大的提高访问效率
+
 MyISAM的Count只有在全表扫描的时候特别高效，带有其他条件的count都需要进行实际的数据访问
 
 InnoDB 
+
 需要事务支持（具有较好的事务特性）
+
 行级锁定对高并发有很好的适应能力，但需要确保查询是通过索引完成
+
 数据更新较为频繁的场景
+
 数据一致性要求较高
+
 硬件设备内存较大，可以利用InnoDB较好的缓存能力来提高内存利用率，尽可能减少磁盘 IO
+
 主键尽可能小，避免给Secondary index带来过大的空间负担
+
 避免全表扫描，因为会使用表锁
+
 尽可能缓存所有的索引和数据，提高响应速度
+
 在大批量小插入的时候，尽量自己控制事务而不要使用autocommit自动提交
+
 合理设置innodb_flush_log_at_trx_commit参数值，不要过度追求安全性
+
 避免主键更新，因为这会带来大量的数据移动
 
 8、其它细节
+
 1）InnoDB 中不保存表的具体行数，注意的是，当count(*)语句包含 where条件时，两种表的操作是一样的
-2）对于AUTO_INCREMENT类型的字段，InnoDB中必须包含只有该字段的索引，但是在MyISAM表中，
-可以和其他字段一起建立联合索引， 如果你为一个表指定AUTO_INCREMENT列，
-在数据词典里的InnoDB表句柄包含一个名为自动增长计数器的计数器，
-它被用在为该列赋新值。自动增长计数器仅被存储在主内存中，而不是存在磁盘
+
+2）对于AUTO_INCREMENT类型的字段，InnoDB中必须包含只有该字段的索引，但是在MyISAM表中， 可以和其他字段一起建立联合索引， 如果你为一个表指定AUTO_INCREMENT列， 在数据词典里的InnoDB表句柄包含一个名为自动增长计数器的计数器， 它被用在为该列赋新值。自动增长计数器仅被存储在主内存中，而不是存在磁盘
+
 3）DELETE FROM table时，InnoDB不会重新建立表，而是一行一行的删除
-4）LOAD TABLE FROM MASTER操作对InnoDB是不起作用的，解决方法是首先把InnoDB表改成MyISAM表，
-导入数据后再改成InnoDB表，但是对于使用的额外的InnoDB特性(例如外键)的表不适用
+
+4）LOAD TABLE FROM MASTER操作对InnoDB是不起作用的，解决方法是首先把InnoDB表改成MyISAM表， 导入数据后再改成InnoDB表，但是对于使用的额外的InnoDB特性(例如外键)的表不适用
+
 5）如果执行大量的SELECT，MyISAM是更好的选择，如果你的数据执行大量的INSERT或UPDATE，
 出于性能方面的考虑，应该使用InnoDB表
 
-7、为什么MyISAM会比Innodb 的查询速度快
-InnoDB 在做SELECT的时候，要维护的东西比MYISAM引擎多很多；
+7、为什么MyISAM会比Innodb 的查询速度快 InnoDB 在做SELECT的时候，要维护的东西比MYISAM引擎多很多；
+
 1）InnoDB 要缓存数据和索引，MyISAM只缓存索引块，这中间还有换进换出的减少
+
 2）innodb寻址要映射到块，再到行，MyISAM记录的直接是文件的OFFSET，定位比INNODB要快
+
 3）InnoDB 还需要维护MVCC一致；虽然你的场景没有，但他还是需要去检查和维护
 
 MVCC ( Multi-Version Concurrency Control )多版本并发控制
-InnoDB ：通过为每一行记录添加两个额外的隐藏的值来实现MVCC，这两个值一个记录这行数据何时被创建，
-另外一个记录这行数据何时过期（或者被删除）。但是InnoDB并不存储这些事件发生时的实际时间，
-相反它只存储这些事件发生时的系统版本号。这是一个随着事务的创建而不断增长的数字。
+
+InnoDB ：通过为每一行记录添加两个额外的隐藏的值来实现MVCC，这两个值一个记录这行数据何时被创建， 另外一个记录这行数据何时过期（或者被删除）。但是InnoDB并不存储这些事件发生时的实际时间， 相反它只存储这些事件发生时的系统版本号。这是一个随着事务的创建而不断增长的数字。
+
 每个事务在事务开始时会记录它自己的系统版本号。每个查询必须去检查每行数据的版本号与事务的版本号是否相同。
+
 让我们来看看当隔离级别是REPEATABLE READ时这种策略是如何应用到特定的操作的
 
 SELECT InnoDB必须每行数据来保证它符合两个条件
-1、InnoDB必须找到一个行的版本，它至少要和事务的版本一样老(也即它的版本号不大于事务的版本号)。
-这保证了不管是事务开始之前，或者事务创建时，或者修改了这行数据的时候，这行数据是存在的。
+
+1、InnoDB必须找到一个行的版本，它至少要和事务的版本一样老(也即它的版本号不大于事务的版本号)。 这保证了不管是事务开始之前，或者事务创建时，或者修改了这行数据的时候，这行数据是存在的。
+
 2、这行数据的删除版本必须是未定义的或者比事务版本要大。这可以保证在事务开始之前这行数据没有被删除。
 
 8、mysql性能讨论
+
 MyISAM最为人垢病的缺点就是缺乏事务的支持
+
 InnoDB 的磁盘性能很令人担心
+
 MySQL 缺乏良好的 tablespace 
+
 两种类型最主要的差别就是Innodb 支持事务处理与外键和行级锁.
+
 而MyISAM不支持.所以MyISAM往往就容易被人认为只适合在小项目中使用。
-我作为使用MySQL的用户角度出发，Innodb和MyISAM都是比较喜欢的，
-但是从我目前运维的数据库平台要达到需求：99.9%的稳定性，
+
+我作为使用MySQL的用户角度出发，Innodb和MyISAM都是比较喜欢的， 但是从我目前运维的数据库平台要达到需求：99.9%的稳定性，
 方便的扩展性和高可用性来说的话，MyISAM绝对是我的首选。
 
 原因如下：
+
 1、首先我目前平台上承载的大部分项目是读多写少的项目，而MyISAM的读性能是比Innodb强不少的。
-2、MyISAM的索引和数据是分开的，并且索引是有压缩的，内存使用率就对应提高了不少。
-能加载更多索引，而Innodb是索引和数据是紧密捆绑的，没有使用压缩从而会造成Innodb比MyISAM体积庞大不小。
-3、从平台角度来说，经常隔1，2个月就会发生应用开发人员不小心update一个表where写的范围不对，
-导致这个表没法正常用了，这个时候MyISAM的优越性就体现出来了，随便从当天拷贝的压缩包取出对应表的文件，
-随便放到一个数据库目录下，然后dump成sql再导回到主库，并把对应的binlog补上。如果是Innodb，
-恐怕不可能有这么快速度，别和我说让Innodb定期用导出xxx.sql机制备份，
-因为我平台上最小的一个数据库实例的数据量基本都是几十G大小。
-4、从我接触的应用逻辑来说，select count(*) 和order by 是最频繁的，大概能占了整个sql总语句的60%以上的操作，
-而这种操作Innodb其实也是会锁表的，很多人以为Innodb是行级锁，那个只是where对它主键是有效，非主键的都会锁全表的。
-5、还有就是经常有很多应用部门需要我给他们定期某些表的数据，MyISAM的话很方便，只要发给他们对应那表的frm.MYD,MYI的文件，
-让他们自己在对应版本的数据库启动就行，而Innodb就需要导出xxx.sql了，因为光给别人文件，受字典数据文件的影响，对方是无法使用的。
-6、如果和MyISAM比insert写操作的话，Innodb还达不到MyISAM的写性能，如果是针对基于索引的update操作，
-虽然MyISAM可能会逊色Innodb,但是那么高并发的写，从库能否追的上也是一个问题，还不如通过多实例分库分表架构来解决。
-7、如果是用MyISAM的话，merge引擎可以大大加快应用部门的开发速度，他们只要对这个merge表做一些select count(*)操作，
-非常适合大项目总量约几亿的rows某一类型(如日志，调查统计)的业务表。
-当然Innodb也不是绝对不用，用事务的项目如模拟炒股项目，我就是用Innodb的，活跃用户20多万时候，也是很轻松应付了，
-因此我个人也是很喜欢Innodb的，只是如果从数据库平台应用出发，我还是会首选MyISAM。
-另外，可能有人会说你MyISAM无法抗太多写操作，但是我可以通过架构来弥补，说个我现有用的数据库平台容量：
-主从数据总量在几百T以上，每天十多亿 pv的动态页面，还有几个大项目是通过数据接口方式调用未算进pv总数，
-(其中包括一个大项目因为初期memcached没部署,导致单台数据库每天处理 9千万的查询)。
-而我的整体数据库服务器平均负载都在0.5-1左右。
+
+2、MyISAM的索引和数据是分开的，并且索引是有压缩的，内存使用率就对应提高了不少。 能加载更多索引，而Innodb是索引和数据是紧密捆绑的，没有使用压缩从而会造成Innodb比MyISAM体积庞大不小。
+
+3、从平台角度来说，经常隔1，2个月就会发生应用开发人员不小心update一个表where写的范围不对， 导致这个表没法正常用了，这个时候MyISAM的优越性就体现出来了，随便从当天拷贝的压缩包取出对应表的文件， 随便放到一个数据库目录下，然后dump成sql再导回到主库，并把对应的binlog补上。如果是Innodb， 恐怕不可能有这么快速度，别和我说让Innodb定期用导出xxx.sql机制备份， 因为我平台上最小的一个数据库实例的数据量基本都是几十G大小。
+
+4、从我接触的应用逻辑来说，select count(*) 和order by 是最频繁的，大概能占了整个sql总语句的60%以上的操作， 而这种操作Innodb其实也是会锁表的，很多人以为Innodb是行级锁，那个只是where对它主键是有效，非主键的都会锁全表的。
+
+5、还有就是经常有很多应用部门需要我给他们定期某些表的数据，MyISAM的话很方便，只要发给他们对应那表的frm.MYD,MYI的文件， 让他们自己在对应版本的数据库启动就行，而Innodb就需要导出xxx.sql了，因为光给别人文件，受字典数据文件的影响，对方是无法使用的。
+
+6、如果和MyISAM比insert写操作的话，Innodb还达不到MyISAM的写性能，如果是针对基于索引的update操作， 虽然MyISAM可能会逊色Innodb,但是那么高并发的写，从库能否追的上也是一个问题，还不如通过多实例分库分表架构来解决。
+
+7、如果是用MyISAM的话，merge引擎可以大大加快应用部门的开发速度，他们只要对这个merge表做一些select count(*)操作， 非常适合大项目总量约几亿的rows某一类型(如日志，调查统计)的业务表。 当然Innodb也不是绝对不用，用事务的项目如模拟炒股项目，我就是用Innodb的，活跃用户20多万时候，也是很轻松应付了， 因此我个人也是很喜欢Innodb的，只是如果从数据库平台应用出发，我还是会首选MyISAM。 另外，可能有人会说你MyISAM无法抗太多写操作，但是我可以通过架构来弥补，说个我现有用的数据库平台容量： 主从数据总量在几百T以上，每天十多亿 pv的动态页面，还有几个大项目是通过数据接口方式调用未算进pv总数， (其中包括一个大项目因为初期memcached没部署,导致单台数据库每天处理 9千万的查询)。 而我的整体数据库服务器平均负载都在0.5-1左右。 
 
 MyISAM索引实现
+
 MyISAM引擎使用B+Tree作为索引结构，叶节点的data域存放的是数据记录的地址。如图： 
 
 MyISAM主键索引
+
 这里设表一共有三列，假设我们以Col1为主键，则上图是一个MyISAM表的主索引（Primary key）示意。
-可以看出MyISAM的索引文件仅仅保存数据记录的地址。在MyISAM中，主索引和辅助索引（Secondary key）在结构上没有任何区别，
-只是主索引要求key是唯一的，而辅助索引的key可以重复。如果我们在Col2上建立一个辅助索引，则此索引的结构如下图所示： 
+
+可以看出MyISAM的索引文件仅仅保存数据记录的地址。在MyISAM中，主索引和辅助索引（Secondary key）在结构上没有任何区别， 只是主索引要求key是唯一的，而辅助索引的key可以重复。如果我们在Col2上建立一个辅助索引，则此索引的结构如下图所示： 
 
 MyISAM辅助索引
-同样也是一颗B+Tree，data域保存数据记录的地址。因此，MyISAM中索引检索的算法为首先按照B+Tree搜索算法搜索索引，
-如果指定的Key存在，则取出其data域的值，然后以data域的值为地址，读取相应数据记录。 
+
+同样也是一颗B+Tree，data域保存数据记录的地址。因此，MyISAM中索引检索的算法为首先按照B+Tree搜索算法搜索索引， 如果指定的Key存在，则取出其data域的值，然后以data域的值为地址，读取相应数据记录。 
+
 MyISAM的索引方式也叫做“非聚集”的，之所以这么称呼是为了与InnoDB的聚集索引区分。
 
 InnoDB索引实现
+
 虽然InnoDB也使用B+Tree作为索引结构，但具体实现方式却与MyISAM截然不同。
 
-第一个重大区别是InnoDB的数据文件本身就是索引文件。从上文知道，MyISAM索引文件和数据文件是分离的，
-索引文件仅保存数据记录的地址。而在InnoDB中，表数据文件本身就是按B+Tree组织的一个索引结构，
+第一个重大区别是InnoDB的数据文件本身就是索引文件。从上文知道，MyISAM索引文件和数据文件是分离的， 索引文件仅保存数据记录的地址。而在InnoDB中，表数据文件本身就是按B+Tree组织的一个索引结构，
+
 这棵树的叶节点data域保存了完整的数据记录。这个索引的key是数据表的主键，因此InnoDB表数据文件本身就是主索引。
 
 InnoDB主索引
-上图是InnoDB主索引（同时也是数据文件）的示意图，可以看到叶节点包含了完整的数据记录。
-这种索引叫做聚集索引。因为InnoDB的数据文件本身要按主键聚集，所以InnoDB要求表必须有主键（MyISAM可以没有），
-如果没有显式指定，则MySQL系统会自动选择一个可以唯一标识数据记录的列作为主键，如果不存在这种列，
-则MySQL自动为InnoDB表生成一个隐含字段作为主键，这个字段长度为6个字节，类型为长整形。
 
-第二个与MyISAM索引的不同是InnoDB的辅助索引data域存储相应记录主键的值而不是地址。换句话说，
-InnoDB的所有辅助索引都引用主键作为data域。例如，下图为定义在Col3上的一个辅助索引： 
+上图是InnoDB主索引（同时也是数据文件）的示意图，可以看到叶节点包含了完整的数据记录。
+
+这种索引叫做聚集索引。因为InnoDB的数据文件本身要按主键聚集，所以InnoDB要求表必须有主键（MyISAM可以没有）， 如果没有显式指定，则MySQL系统会自动选择一个可以唯一标识数据记录的列作为主键，如果不存在这种列， 则MySQL自动为InnoDB表生成一个隐含字段作为主键，这个字段长度为6个字节，类型为长整形。
+
+第二个与MyISAM索引的不同是InnoDB的辅助索引data域存储相应记录主键的值而不是地址。换句话说， InnoDB的所有辅助索引都引用主键作为data域。例如，下图为定义在Col3上的一个辅助索引： 
 
 InnoDB辅助索引
-这里以英文字符的ASCII码作为比较准则。聚集索引这种实现方式使得按主键的搜索十分高效，
-但是辅助索引搜索需要检索两遍索引：首先检索辅助索引获得主键，然后用主键到主索引中检索获得记录。
+
+这里以英文字符的ASCII码作为比较准则。聚集索引这种实现方式使得按主键的搜索十分高效， 但是辅助索引搜索需要检索两遍索引：首先检索辅助索引获得主键，然后用主键到主索引中检索获得记录。
 
 总结
+
 在数据库开发中，了解不同存储引擎的索引实现方式对于正确使用和优化索引都非常有帮助。
-例如，知道了InnoDB的索引实现后，就很容易明白为什么不建议使用过长的字段作为主键，因为所有辅助索引都引用主索引，
-过长的主索引会令辅助索引变得过大。再例如，用非单调的字段作为主键在InnoDB中不是个好做法，
-因为InnoDB数据文件本身是一颗B+Tree，非单调的主键会造成在插入新记录时数据文件为了维持B+Tree的特性而频繁的分裂调整，
-十分低效，而使用自增字段作为主键则是一个很好的选择。
-```
+
+例如，知道了InnoDB的索引实现后，就很容易明白为什么不建议使用过长的字段作为主键，因为所有辅助索引都引用主索引， 过长的主索引会令辅助索引变得过大。再例如，用非单调的字段作为主键在InnoDB中不是个好做法， 因为InnoDB数据文件本身是一颗B+Tree，非单调的主键会造成在插入新记录时数据文件为了维持B+Tree的特性而频繁的分裂调整， 十分低效，而使用自增字段作为主键则是一个很好的选择。
 
 ### HTTP 与 HTTPS 区别
 ```
@@ -9390,40 +9299,63 @@ HTTPS 约等于 HTTP+SSL
 ```
 
 ### Apache 与 Nginx 区别
-```
 Nginx
+
 轻量级，采用 C 进行编写，同样的 web 服务，会占用更少的内存及资源
+
 抗并发，nginx 以 epoll and kqueue 作为开发模型，处理请求是异步非阻塞的，负载能力比 apache 高很多，
+
 而 apache 则是阻塞型的。在高并发下 nginx 能保持低资源低消耗高性能 ，
+j
 而 apache 在 PHP 处理慢或者前端压力很大的情况下，很容易出现进程数飙升，从而拒绝服务的现象。
 
 nginx 处理静态文件好，静态处理性能比 apache 高三倍以上
+
 nginx 的设计高度模块化，编写模块相对简单
+
 nginx 配置简洁，正则配置让很多事情变得简单，而且改完配置能使用 -t 测试配置有没有问题，apache 配置复杂 ，重启的时候发现配置出错了，会很崩溃
+
 nginx 作为负载均衡服务器，支持 7 层负载均衡
+
 nginx 本身就是一个反向代理服务器，而且可以作为非常优秀的邮件代理服务器
+
 启动特别容易, 并且几乎可以做到 7*24 不间断运行，即使运行数个月也不需要重新启动，还能够不间断服务的情况下进行软件版本的升级
+
 社区活跃，各种高性能模块出品迅速
 
 Apache
+
 apache 的 rewrite 比 nginx 强大，在 rewrite 频繁的情况下，用 apache
+
 apache 发展到现在，模块超多，基本想到的都可以找到
+
 apache 更为成熟，少 bug ，nginx 的 bug 相对较多
+
 apache 超稳定
+
 apache 对 PHP 支持比较简单，nginx 需要配合其他后端用
+
 apache 在处理动态请求有优势，nginx 在这方面是鸡肋，一般动态请求要 apache 去做，nginx 适合静态和反向。
+
 apache 仍然是目前的主流，拥有丰富的特性，成熟的技术和开发社区
 
 总结
+
 两者最核心的区别在于 apache 是同步多进程模型，一个连接对应一个进程，
+
 而 nginx 是异步的，多个连接（万级别）可以对应一个进程
+
 一般来说，需要性能的 web 服务，用 nginx 。如果不需要性能只求稳定，更考虑 apache ，后者的各种功能模块实现得比前者，
+
 例如 ssl 的模块就比前者好，可配置项多。epoll(freebsd 上是 kqueue ) 网络 IO 模型是 nginx 处理性能高的根本理由，
+
 但并不是所有的情况下都是 epoll 大获全胜的，如果本身提供静态服务的就只有寥寥几个文件，
+
 apache 的 select 模型或许比 epoll 更高性能。当然，这只是根据网络 IO 模型的原理作的一个假设，
+
 真正的应用还是需要实测了再说的。
+
 更为通用的方案是，前端 nginx 抗并发，后端 apache 集群，配合起来会更好。
-```
 
 ### define() 与 const 区别
 ```
