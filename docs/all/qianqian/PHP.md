@@ -11541,25 +11541,28 @@ InnoDB存储引擎。 InnoDB外键和MySQL分区不兼容。分区 InnoDB表不�
 所以在使用的时候一定要注意。
 
 ### 会使用 `explain` 分析 SQL 性能问题，了解各参数含义
-```
 https://zhuanlan.zhihu.com/p/127948040
+
 在了解explain之前，不妨先看下mysql服务大致的逻辑架构图，以对其有一个整体的认识
 
 从图中可以看出,我们的sql在查询的时候主要需要经历以下步骤:
 
 与mysql建立连接
+
 查询缓存是否存在,如果有则直接返回结果
+
 解析器,主要是对sql进行解析
+
 查询优化器,主要对sql进行各种优化,包括重写查询、决定表的读取顺序以及选择合适的索引等等。。并产生执行计划
+
 去存储引擎查询结果
+
 而我们使用explain即是去查询优化器查询执行计划
 
 explain字段解释
 看一条简单的执行计划
 
 explain select * from t_user where id = 1;
-
-
 
 我们可以看到，一个执行计划会展示12个相关的字段,下面我们对主要字段以及这些字段常见的值进行解释:
 
@@ -11569,52 +11572,67 @@ id
 规则：
 
 id不相同的，id值越大越先执行
+
 id相同的,从上到下顺序执行
+
 select_type
+
 常见的值以及描述如下
 
 值描述SIMPLE简单的SELECT语句（不包括UNION操作或子查询操作）PRIMARY查询中最外层的SELECT（如两表做UNION或者存在子查询的外层的表操作为PRIMARY，内层的操作为UNION）UNIONUNION操作中，查询中处于内层的SELECT，即被union的SELECTSUBQUERY子查询中的SELECTDERIVED表示包含在 From 子句中的 Select 查询UNION RESULTunion的结果,此时id为NULL
 
 table
+
 涉及的表
 
 type（重要）
+
 这列很重要,显示了连接使用哪种类型,有无使用索引， 常见的值从最好到最差如下 system > const > eq_ref > ref > range > index > all
 
 各值的描述如下
 
-
 possible_keys
+
 表示可能用到的索引
 
 key
+
 表示最终用到的key
 
 ref
+
 显示索引的哪一列被使用了，有时候会是一个常量：表示哪些列或常量被用于查找索引列上的值
 
 rows
+
 估算出结果集行数，表示MySQL根据表统计信息及索引选用情况，估算的找到所需的记录所需要读取的行数, 原则上 rows 越少越好。
 
 filtered
+
 查询结果的行数占上面rows的百分比
 
 Extra(重要)
+
 这一列也很重要,主要展示额外的信息说明,能够给出让我们深入理解执行计划进一步的细节信息
 
 常见的值及描述如下
 
-
 优化原则
+
 通常有以下几种优化原则:
 
 让主要查询语句使用到合适的索引,type出现ALL(全表扫描)需格外注意,同时建立合适的索引以减少possible_keys的数量
+
 type最好能达到ref级别
+
 Extra列出现Using temporary、Using filesort（文件排序）务必去除
+
 优化思路
+
 针对上面提到的几点优化原则,提供如下的优化思路
 
 针对优化原则1，2
+
 上述1,2点其实都可以通过优化索引来达到目的,而要想让我们建的索引达到最优,则需要依据一个原则: 三星索引原则
 
 简单描述就是
@@ -11634,10 +11652,11 @@ Extra列出现Using temporary、Using filesort（文件排序）务必去除
 如果你的索引能集齐上述三颗星,则说明你的索引是最优的索引！
 
 针对优化原则3
+
 我们创建如下表，并插入一些数据
 
 用户表
-
+```
 CREATE TABLE `t_user`  (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -11646,8 +11665,10 @@ CREATE TABLE `t_user`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_name`(`name`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1240277101395107842 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
-分组表
+```
 
+分组表
+```
 CREATE TABLE `t_group`  (
   `id` bigint(20) NOT NULL,
   `group_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -11655,72 +11676,85 @@ CREATE TABLE `t_group`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 Using filesort
 order by 的字段不在where条件中
+```
+
 下面这条sql会出现Using filesort
+```
 select * from t_user where group_id = 2 and age = 32 order by name;
+```
 
 但是下面这条sql不会
-
 ```
 select * from t_user where group_id = 2 and age = 32 order by group_id ;
-
 ```
 
 组合索引跨列
+
 举例:给t_user表创建索引(name,age,group_id)
+
 下面这条sql排序会出现Using filesort
+```
 select * from t_user where name= '李A' order by group_id;
+```
 
 但是下面这条就不会
 
 ```
 select * from t_user where name = '李A' order by age;
-
 ```
 
 因为第一条查询order by跳过了age,直接使用了group_id;删除索引(name,age,group_id);
+
 由于group by第一步默认进行了排序,所以当group by 的字段满足上述条件是,也会出现Using filesort,可以在group by后面加上order by null取消排序
+
 Using temporary
+
 临时表的出现对性能影响是很大的,主要会出现在以下情况中
 
 分组字段不在where条件后面,并且group by字段不是最终使用到的索引,原因有点类似于上面的Using filesort
+
 下面这条sql会出现Using temporary
+```
 select * from t_user where group_id = 2 and name= '李A' group by age;
-
-
+```
 
 但是下面这条sql不会
 
 ```
 select * from t_user where name = '李A' and age = 21 group by age;
-
 ```
 
-**结论: where哪些字段,就group by 哪些字段**
+结论: where哪些字段,就group by 哪些字段
+
 表连接中，order by的列不是驱动表中的
+
 如下sql是会创建临时表的
+```
 explain select * from t_user t1 left join t_group t2 on t1.group_id = t2.id order by t2.id;
-
-
+```
 
 因为t1和t2连接的时候,t1是驱动表,但是排序使用了被驱动表t2中的字段。改为t1的字段排序就不会出现临时表了,这里就不举例了。
 
-**结论: 连接查询的时候，排序字段使用驱动表的字段**
+结论: 连接查询的时候，排序字段使用驱动表的字段
+```
 order by和group by的子句不一样时
 explain select * from t_user group by group_id order by `name`;
-
-
+```
 
 这种情况只能尽量使用同一个字段来分组和排序了，否则无法避免
+```
 distinct查询并且加上order by时
 explain select DISTINCT(`name`) from t_user order by age;
-这种情况有时候无法避免，只能尽量将distinct的字段和order by的字段使用相同的索引。还有会出现临时表的情况有: from 中的子查询、union，这里就不一一举例了。
-总结
-sql优化已经是我们后端开发的内化技能之一了，在学习框架，设计思想的同时，不要忘记打牢基础，希望各位能够有所收获。
 ```
+这种情况有时候无法避免，只能尽量将distinct的字段和order by的字段使用相同的索引。还有会出现临时表的情况有: from 中的子查询、union，这里就不一一举例了。
+
+总结
+
+sql优化已经是我们后端开发的内化技能之一了，在学习框架，设计思想的同时，不要忘记打牢基础，希望各位能够有所收获。
 
 ### Slow Log（有什么用，什么时候需要）
-```
 https://www.cnblogs.com/hjqjk/p/Mysqlslowlog.html
+
 MySQL慢查询日志是MySQL提供的一种日志记录，用来记录执行时长超过指定时长的查询语句，具体指运行时间超过 long_query_time 值的 SQL 语句，则会被记录到慢查询日志中。
 
 long_query_time 默认值是 10 ，单位是 s，即默认是 10秒 。默认情况下，MySQL数据库并不会开启慢查询日志，需要手动设置这个参数。
@@ -11728,61 +11762,84 @@ long_query_time 默认值是 10 ，单位是 s，即默认是 10秒 。默认情
 通过慢查询日志，可以查找出哪些查询语句的执行效率很低，以便进行优化。一般建议开启，它对服务器性能的影响微乎其微，但是可以记录MySQL服务器上执行了很长时间的查询语句。慢查询日志可以帮助我们定位mysql性能问题所在。
 
 MySQL慢查询日志
+
 慢查询日志相关参数
+
 slow_query_log : 是否启用慢查询日志，[1 | 0] 或者 [ON | OFF]
 
 slow_query_log_file : MySQL数据库（5.6及以上版本）慢查询日志存储路径。
-                    可以不设置该参数，系统则会默认给一个缺省的文件 HOST_NAME-slow.log
+
+可以不设置该参数，系统则会默认给一个缺省的文件 HOST_NAME-slow.log
 
 long_query_time : 慢查询的阈值，当查询时间超过设定的阈值时，记录该SQL语句到慢查询日志。
 
 log_queries_not_using_indexes ：设置为 ON ，可以捕获到所有未使用索引的SQL语句(不建议启用)
 
 log_output : 日志存储方式。
-            log_output='FILE'，表示将日志存入文件，默认值是'FILE'。      
-            log_output='TABLE'，表示将日志存入数据库，这样日志信息就会被写入到 mysql.slow_log 表中。
-            MySQL数据库支持同时两种日志存储方式，配置的时候以逗号隔开即可，如：log_output='FILE,TABLE'。
-            日志记录到系统的专用日志表中，要比记录到文件耗费更多的系统资源，因此对于需要启用慢查询日志，又需要能够获得更高的系统性能，那么建议优先记录到文件。
+
+log_output='FILE'，表示将日志存入文件，默认值是'FILE'。      
+
+log_output='TABLE'，表示将日志存入数据库，这样日志信息就会被写入到 mysql.slow_log 表中。
+
+MySQL数据库支持同时两种日志存储方式，配置的时候以逗号隔开即可，如：log_output='FILE,TABLE'。
+
+日志记录到系统的专用日志表中，要比记录到文件耗费更多的系统资源，因此对于需要启用慢查询日志，又需要能够获得更高的系统性能，那么建议优先记录到文件。
+
 5.6之前的版本，有些参数名字不一样：
 
 log-slow-queries : MySQL数据库（5.6以下版本）慢查询日志存储路径。
+
 开启日志
+
 立即生效，重启失效
+```
 mysql> set global slow_query_log=ON;
 mysql> set global slow_query_log_file='/xxx/mysql-slow.log';
+```
 永久生效
+```
 修改 my.cnf ：
 
 [mysqld]
 slow_query_log           = 1
 slow_query_log_file      = /xxx/mysql-slow.log
 long_query_time          = 1
+```
 
-# 也可以写成这种形式
+也可以写成这种形式
+```
 slow-query-log           = 1
 slow-query-log-file      = /xxx/mysql-slow.log
 long-query-time          = 1
+```
 重启mysql服务。
 
 关闭日志
+
 临时关闭，重启失效：
-
+```
 mysql> set global slow_query_log=OFF;
+```
 永久关闭，修改 my.cnf，重启mysql服务：
-
+```
 [mysqld]
 slow_query_log           = 0
-MySQL慢查询日志分析
-慢查询日志格式说明
-打开慢查询日志 mysql-slow.log ，内容都是以下格式：
+```
 
+MySQL慢查询日志分析
+
+慢查询日志格式说明
+
+打开慢查询日志 mysql-slow.log ，内容都是以下格式：
+```
 # Time: 2017-11-22T12:22:32.554299Z
 # User@Host: www[www] @  [192.168.10.2]  Id: 580785559
 # Query_time: 24.354270  Lock_time: 0.000238 Rows_sent: 1  Rows_examined: 511156
 SET timestamp=1511353352;
 SELECT * FROM mo_user WHERE email = 'chxxx@hotmail.com' LIMIT 1;
+```
 其中参数说明如下：
-
+```
 log 记录的时间：# Time: 2017-11-22T12:22:32.554299Z
 SQL 的执行主机：# User@Host: www[www] @ [192.168.10.2] Id: 580785559
 SQL 的执行信息（执行时间(单位：s)，锁时间，返回结果行数，查询总行数）：# Query_time: 24.354270 Lock_time: 0.000238 Rows_sent: 1 Rows_examined: 511156;
@@ -11851,220 +11908,258 @@ t：query time，按累计总耗费时间排序
 -i NAME : 根据服务器 MySQL 实例名称选择慢查询日志
 
 -l : 不要将总时间减去锁定时间
-
+```
 mysqldumpslow 分析的结果如下:
 
-
-
 Count : 出现次数(Count)
+
 Time : 执行最长时间(Time) 和 累计总耗费时间(Time)
+
 Lock : 等待锁的时间(Lock)
+
 Rows : 发送给客户端的行总数(Rows) 和 扫描的行总数(Rows)
+```
 root[root]@localhost : 用户
 SHOw FULL ... : SQL语句本身(抽象了格式, 比如 limit 1, 20 用 limit N,N 表示。'N'表示数字，'S'表示字符串)。
+```
 例子:
 返回记录数最多的10个SQL
-
+```
 mysqldumpslow -s r -t 10 mysql-slow.log
-
+```
 mysqlsla
+
 mysqlsla是 hackmysql.com 推出的一款日志分析工具(该网站还维护了 mysqlreport, mysqlidxchk 等比较实用的mysql工具)
+
 整体来说, 功能非常强大。数据报表,非常有利于分析慢查询的原因, 包括执行频率, 数据量, 查询消耗等。
 
 但是，hackmysql.com官方已经在2015年1月份放弃了对mysqlsla的维护。
 
-
-
 安装
+
 解决依赖关系
+```
 # yum install  perl-DBI perl-DBD-MySQL 
+```
 可能会遇到的问题：Can't locate ExtUtils/MakeMaker.pm，解决如下：
-
+```
 # yum install  perl-ExtUtils-CBuilder  perl-ExtUtils-MakeMaker
+```
 可能会遇到的问题：Can't locate Time/HiRes.pm in @INC，解决如下：
-
+```
 # yum install perl-Time-HiRes
+```
 下载mysqlsla
 当前 mysqlsla 的最新版本为 2.03，到官网下载（官方链接已经失效），可以去这个 有效下载地址 下载。
-
+```
 编译安装
 # tar xvfz mysqlsla-2.03.tar.gz 
 # cd mysqlsla-2.03
 # perl Makefile.PL
 # make
 # make install
+```
 使用
+```
 # mysqlsla -lt slow mysql-slow.log 
+```
 
 或者 
+```
 # mysqlsla -lt slow mysql-slow.log -sf "+SELECT" -db dbName -top 10 -sort t_sum
+```
 参数意义 ：
-
+```
 -lt ：表示日志类型，有: slow, general, binary, msl, udl
 -sf ：[+-][TYPE]，包括|不包括，过滤sql语句的类型 [TYPE]有 SELECT, CREATE, DROP, UPDATE, INSERT，例如 "+SELECT,INSERT"，不出现的默认是 - ，即不包括。
 -db ：要处理哪个库的日志。
 -top ：表示取按规则排序的前多少条。
 -sort ：按某种规则排序，t_sum 按总时间排序， c_sum 按总次数排序。c_sum_p : sql语句执行次数占总执行次数的百分比。
+```
 对慢查询日志文件的分析，最简化的调用方式如下：
-
+```
 # mysqlsla -lt slow [SlowLogFilePath] > [ResultFilePath]
-
-
+```
 格式说明如下:
 
 总查询次数 (queries total), 去重后的sql数量 (unique)
+
 输出报表的内容排序方式(sorted by)
+
 最重大的慢sql统计信息, 包括平均执行时间, 等待锁时间, 结果行的总数, 扫描的行总数。
+
 Count： sql的执行次数及占总的slow log数量的百分比.
+
 Time：执行时间, 包括总时间, 平均时间, 最小, 最大时间, 时间占总慢sql时间的百分比.
+
 95% of Time：去除最快和最慢的sql, 覆盖率占95%的sql的执行时间.
+
 Lock Time：等待锁的时间.
+
 95% of Lock ：95%的慢sql等待锁时间.
+
 Rows sent：结果行统计数量, 包括平均, 最小, 最大数量.
+
 Rows examined： 扫描的行数量.
+
 Database：属于哪个数据库
+
 Users：哪个用户,IP, 占到所有用户执行的sql百分比
+
 Query abstract：抽象后的sql语句
+
 Query sample：sql语句个例
+
 pt-query-digest
+
 percona-toolkit 工具介绍
+
 percona-toolkit 是一组高级命令行工具的集合，用来执行各种通过手工执行非常复杂和麻烦的mysql和系统任务。这些任务包括：
 
 检查master和slave数据的一致性
+
 有效地对记录进行归档
+
 查找重复的索引
+
 对服务器信息进行汇总
+
 分析来自日志和tcpdump的查询
+
 当系统出问题的时候收集重要的系统信息
+
 Percona Toolkit整个工具箱提供了非常多实用的工具，具体的使用方法可以参看 官方文档
 
-
 percona-toolkit安装
-安装 percona-toolkit 非常简单，到 官网 下载 .tar.gz 包：
 
+安装 percona-toolkit 非常简单，到 官网 下载 .tar.gz 包：
+```
 # wget percona.com/get/percona-toolkit.tar.gz
 # tar -zxvf percona-toolkit-2.2.5.tar.gz
+```
 然后依次执行下面的命令：
-
+```
 # perl Makefile.PL
 # make
 # make install
+```
 默认的会被安装在 /usr/local/bin 目录下。执行 man percona-toolkit 可以查看安装了哪些工具。
 
 运行工具可能会遇到下面的错误：
 
-
 这是因为缺少相应包，.pm包实际上是perl的包，运行下面的命令安装即可：
-
+```
 yum install -y perl-Time-HiRes
+```
 如果安装过程中出现 Error Downloading Packages 错误，尝试 yum clean all 后再安装。使用其Percona Toolkit中其他工具也可能会遇到类似的问题，按照提示安装相应的perl包就可以了。
-
+```
 问题：Can't locate Digest/MD5.pm in @INC
 解决：# yum install perl-Digest-MD5
 
 问题：Can't locate ExtUtils/MakeMaker.pm in @INC
 解决：# yum install perl-ExtUtils-CBuilder perl-ExtUtils-MakeMaker
-
+```
 pt-query-digest使用
+
 pt-query-digest 可以从普通MySQL日志，慢查询日志以及二进制日志中分析查询，甚至可以从 SHOW PROCESSLIST; 和MySQL协议的tcpdump中进行分析，如果没有指定文件，它从标准输入流（STDIN）中读取数据。
 
 最简单的用法如下：
-
+```
 # pt-query-digest mysql-slow.log
+```
 输出信息大致如下:
-
 
 整个输出分为三大部分：
 
 整体概要（Overall）
 
-
 这个部分是一个大致的概要信息(类似loadrunner给出的概要信息)，通过它可以对当前MySQL的查询性能做一个初步的评估，比如各个指标的最大值(max)，平均值(min)，95%分布值，中位数(median)，标准偏差(stddev)。
+
 这些指标有查询的执行时间（Exec time），锁占用的时间（Lock time），MySQL执行器需要检查的行数（Rows examine），最后返回给客户端的行数（Rows sent），查询的大小。
 
 查询的汇总信息（Profile）
+
 这个部分对所有 "重要" 的查询(通常是比较慢的查询)做了个一览表:
 
-
 每个查询都有一个Query ID，这个ID通过Hash计算出来的。pt-query-digest 是根据这个所谓的Fingerprint来group by的。举例下面两个查询的Fingerprint是一样的都是 select * from table1 where column1 = ?，工具箱中也有一个与之相关的工具 pt-fingerprint。
-
+```
 select * from table1 where column1 = 2
 select * from table1 where column1 = 3
+```
 Rank整个分析中该“语句”的排名，一般也就是性能最常的。
+
 Response time “语句”的响应时间以及整体占比情况。
+
 Calls 该“语句”的执行次数。
+
 R/Call 每次执行的平均响应时间。
+
 V/M 响应时间的差异平均对比率。
+
 在尾部有一行输出，显示了其他2个占比较低而不值得单独显示的查询的统计数据。
 
 详细信息
+
 这个部分会列出Profile表中每个查询的详细信息：（默认是按照总的Exec time排序，降序）
-
-
 
 包括Overall中有的信息、查询响应时间的分布情况以及该查询 "入榜" 的理由，最底下会显示该查询SQL语句（真实显示，非抽象格式）。
 
 pt-query-digest 还有很多复杂的操作，这里就不一一介绍了。比如：从PROCESSLIST中查询某个MySQL中最慢的查询：
-
+```
 # pt-query-digest –processlist h=host1
+```
 从tcpdump中分析：
-
+```
 # tcpdump -s 65535 -x -nn -q -tttt -i any -c 1000 port 3306 > mysql.tcp.txt
 # pt-query-digest --type tcpdump mysql.tcp.txt
+```
 从一台机器上将 slow log 保存到另外一台机器上待稍后详细分析：
-
+```
 # pt-query-digest --review h=host2 --no-report slow.log
+```
 还可以跟一些过滤条件。详见 官方文档
 
 另外结合一些第三方工具还能生成相应的报表，可以 参考这里
 
 建议 ：当 slow log 很大的时候最好还是将日志文件移到其他机器上进行分析，避免分析时过度消耗该服务器资源。
-```
 
 ### MSSQL(了解)
-```
 美国Microsoft公司推出的一种关系型数据库系统。SQL Server是一个可扩展的、高性能的、为分布式客户机/服务器计算所设计的数据库管理系统，实现了与WindowsNT的有机结合，提供了基于事务的企业级信息管理系统方案。
+
 （1）高性能设计，可充分利用WindowsNT的优势。
+
 （2）系统管理先进，支持Windows图形化管理工具，支持本地和远程的系统管理和配置。
+
 （3）强壮的事务处理功能，采用各种方法保证数据的完整性。
+
 （4）支持对称多处理器结构、存储过程、ODBC，并具有自主的SQL语言。 SQLServer以其内置的数据复制功能、强大的管理工具、与Internet的紧密集成和开放的系统结构为广大的用户、开发人员和系统集成商提供了一个出众的数据库平台。
+
 上面是百度百科的资料。
 
 mssql和sqlserver有着很大的不同，sqlserver的结构比较复杂，注入语句也比较复杂。但是如果在注入当中数据库是采用sa用户来运行的，那么我们就可以很轻松的拿下webshell。mssql可以直接启用存储过程来执行命令。
 
 我们来看一下mssql的系统自带数据库的作用。
 
-
-
- 
-
- 
-
- 
-
 master 数据库存放着一切对象的信息，sa或者其他用户的密码 以密文存储
+
 model： 存在创建用户数据库的模板
+
 msdb:用户数据库，存放所有的任务调度
+
 tmpdb：临时数据库，在注入时候如果受限制显示位，存在在某表里面，然后再爆数据。重启会清空tempdb的数据
+
 数据库自带用户介绍：
 
 前面带＃号的是mssql 内部用户数据库仅用数据库内部使用
+
 nt开头的是数据库安装的时候创建的
-
-
- 
-
- 
-
- 
 
 如果msql 执行命令是使用nt serivice\mssqlserver 这个 服务来执行命令 。
 
- 
-
 下面我们来查询个看看，来查看与mysql 不同的地方。
-
+```
 select * from master.dbo.sysobjects where xtype = 'u';
+```
 matster是指定数据库名点号后面跟上的是他的架构 再加上表名。
 
 那么我们发现其实这个数据库里面根本没有这张表是怎么回事？
@@ -12074,75 +12169,65 @@ matster是指定数据库名点号后面跟上的是他的架构 再加上表名
 sysobjects 是系统的视图，用于存放改数据库内创建的所有对象、如约束、默认值、日志、规则、存储过程，
 
 xtype是代表对象类型：
+
 U：表（用户自定义的表）
+
 V：视图
+
 P ：存储过程
+
 X ：扩展存储过程
+
 我们可以来查询我们所有的数据库名字
-
+```
 select * from master..sysdatabases;
-
-
- 
-
- 
-
- 
+```
 
 这个查询的也是我们的视图 在mssql里面information这个数据库也都是以视图的形式存在的
 
 查看是否站库分离
-
- and (select host_name()) = (select @@servername)) 
+```
+and (select host_name()) = (select @@servername)) 
+```
 查询数据库的名字，这个函数可以遍历 在括号里面输入数字可以查询对应的数据库名字
-
+```
 SELECT DB_NAME();
- 
-
-
-
- 
-
- 
-
- 
+```
 
 这里再来说到mssql的权限划分，
 
 sa：sysadmin      超级管理员权限
-dbo : db_owner   数据库管理员权限
-public :访问用户权限
- 
 
- 
+dbo : db_owner   数据库管理员权限
+
+public :访问用户权限
 
 0x02  存储过程
 
-存储过程（Stored Procedure）是在大型数据库系统中，
-一组为了完成特定功能的SQL 语句集，它存储在数据库中，一次编译后永久有效
-，用户通过指定存储过程的名字并给出参数（如果该存储过程带有参数）来执行它。
+存储过程（Stored Procedure）是在大型数据库系统中， 一组为了完成特定功能的SQL 语句集，它存储在数据库中，一次编译后永久有效 ，用户通过指定存储过程的名字并给出参数（如果该存储过程带有参数）来执行它。
+
 存储过程是数据库中的一个重要对象。
+
 在数据量特别庞大的情况下利用存储过程能达到倍速的效率提升
+
 那么我们在实战当中就可以利用到存储过程来直接执行cmd命令
 
 常用的存储过程有xp_cmdshell,sp_oacreate  sp_oacreate这个存储过程执行命令无回显，需要输出到txt文件然后进行查看。
 
 在00版本是默认开启xp_cmdshell的 05版本后需要手工开启。
 
- 
-
 0x03  结尾
 
 本次文章耗时3小时，记录一下时间点。下篇文章写mssql各类注入语法与bypass手法
-```
 
 ### 查询最新5条数据
 ```
 select   *   from   表名   order   by   列名 desc （降序）   limit    显示的条数
 ```
+
 ### NOSQL
-```
 NoSQL 简介
+
 NoSQL(NoSQL = Not Only SQL )，意即"不仅仅是SQL"。
 
 在现代的计算系统上每天网络上都会产生庞大的数据量。
@@ -12154,6 +12239,7 @@ NoSQL(NoSQL = Not Only SQL )，意即"不仅仅是SQL"。
 NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发展至2009年趋势越发高涨。NoSQL的拥护者们提倡运用非关系型的数据存储，相对于铺天盖地的关系型数据库运用，这一概念无疑是一种全新的思维的注入。
 
 关系型数据库遵循ACID规则
+
 事务在英文中是transaction，和现实世界中的交易很类似，它有如下四个特性：
 
 1、A (Atomicity) 原子性
@@ -12178,8 +12264,8 @@ NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发�
 
 持久性是指一旦事务提交后，它所做的修改将会永久的保存在数据库上，即使出现宕机也不会丢失。
 
-
 分布式系统
+
 分布式系统（distributed system）由多台计算机和通信的软件组件通过计算机网络连接（本地网络或广域网）组成。
 
 分布式系统是建立在网络之上的软件系统。正是因为软件的特性，所以分布式系统具有高度的内聚性和透明性。
@@ -12188,8 +12274,8 @@ NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发�
 
 分布式系统可以应用在不同的平台上如：Pc、工作站、局域网和广域网上等。
 
-
 分布式计算的优点
+
 可靠性（容错） ：
 
 分布式计算系统中的一个重要的优点是可靠性。一台服务器的系统崩溃并不影响到其余的服务器。
@@ -12218,8 +12304,8 @@ NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发�
 
 相较于集中式计算机网络集群可以提供更高的性能（及更好的性价比）。
 
-
 分布式计算的缺点
+
 故障排除：
 
 故障排除和诊断问题。
@@ -12236,21 +12322,20 @@ NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发�
 
 开放系统的特性让分布式计算系统存在着数据的安全性和共享的风险等问题。
 
-
 什么是NoSQL?
+
 NoSQL，指的是非关系型的数据库。NoSQL有时也称作Not Only SQL的缩写，是对不同于传统的关系型数据库的数据库管理系统的统称。
 
 NoSQL用于超大规模数据的存储。（例如谷歌或Facebook每天为他们的用户收集万亿比特的数据）。这些类型的数据存储不需要固定的模式，无需多余操作就可以横向扩展。
 
 为什么使用NoSQL ?
+
 今天我们可以通过第三方平台（如：Google,Facebook等）可以很容易的访问和抓取数据。用户的个人信息，社交网络，地理位置，用户生成的数据和用户操作日志已经成倍的增加。我们如果要对这些用户数据进行挖掘，那SQL数据库已经不适合这些应用了, NoSQL 数据库的发展却能很好的处理这些大的数据。
 
-
-
-
 实例
-社会化关系网:
 
+社会化关系网:
+```
 Each record: UserID1, UserID2
 Separate records: UserID, first_name,last_name, age, gender,...
 Task: Find all friends of friends of friends of ... friends of a given user.
@@ -12259,68 +12344,94 @@ Wikipedia 页面 :
 Large collection of documents
 Combination of structured and unstructured data
 Task: Retrieve all pages regarding athletics of Summer Olympic before 1950.
+```
 
 RDBMS vs NoSQL
+
 RDBMS
+
 - 高度组织化结构化数据
+
 - 结构化查询语言（SQL） (SQL)
+
 - 数据和关系都存储在单独的表中。
+
 - 数据操纵语言，数据定义语言
+
 - 严格的一致性
+
 - 基础事务
 
 NoSQL
+
 - 代表着不仅仅是SQL
+
 - 没有声明性查询语言
+
 - 没有预定义的模式
--键 - 值对存储，列存储，文档存储，图形数据库
+
+- 键 - 值对存储，列存储，文档存储，图形数据库
+
 - 最终一致性，而非ACID属性
+
 - 非结构化和不可预知的数据
+
 - CAP定理
+
 - 高性能，高可用性和可伸缩性
 
-
-
-
 NoSQL 简史
+
 NoSQL一词最早出现于1998年，是Carlo Strozzi开发的一个轻量、开源、不提供SQL功能的关系数据库。
 
 2009年，Last.fm的Johan Oskarsson发起了一次关于分布式开源数据库的讨论[2]，来自Rackspace的Eric Evans再次提出了NoSQL的概念，这时的NoSQL主要指非关系型、分布式、不提供ACID的数据库设计模式。
 
 2009年在亚特兰大举行的"no:sql(east)"讨论会是一个里程碑，其口号是"select fun, profit from real_world where relational=false;"。因此，对NoSQL最普遍的解释是"非关联型的"，强调Key-Value Stores和文档数据库的优点，而不是单纯的反对RDBMS。
 
-
 CAP定理（CAP theorem）
+
 在计算机科学中, CAP定理（CAP theorem）, 又被称作 布鲁尔定理（Brewer's theorem）, 它指出对于一个分布式计算系统来说，不可能同时满足以下三点:
 
 一致性(Consistency) (所有节点在同一时间具有相同的数据)
+
 可用性(Availability) (保证每个请求不管成功或者失败都有响应)
+
 分隔容忍(Partition tolerance) (系统中任意信息的丢失或失败不会影响系统的继续运作)
+
 CAP理论的核心是：一个分布式系统不可能同时很好的满足一致性，可用性和分区容错性这三个需求，最多只能同时较好的满足两个。
 
 因此，根据 CAP 原理将 NoSQL 数据库分成了满足 CA 原则、满足 CP 原则和满足 AP 原则三 大类：
 
 CA - 单点集群，满足一致性，可用性的系统，通常在可扩展性上不太强大。
+
 CP - 满足一致性，分区容忍性的系统，通常性能不是特别高。
+
 AP - 满足可用性，分区容忍性的系统，通常可能对一致性要求低一些。
 
-
-
 NoSQL的优点/缺点
+
 优点:
 
 - 高可扩展性
+
 - 分布式计算
+
 - 低成本
+
 - 架构的灵活性，半结构化数据
+
 - 没有复杂的关系
+
 缺点:
 
 - 没有标准化
+
 - 有限的查询功能（到目前为止）
+
 - 最终一致是不直观的程序
 
 BASE
+
 BASE：Basically Available, Soft-state, Eventually Consistent。 由 Eric Brewer 定义。
 
 CAP理论的核心是：一个分布式系统不可能同时很好的满足一致性，可用性和分区容错性这三个需求，最多只能同时较好的满足两个。
@@ -12328,20 +12439,31 @@ CAP理论的核心是：一个分布式系统不可能同时很好的满足一�
 BASE是NoSQL数据库通常对可用性及一致性的弱要求原则:
 
 Basically Availble --基本可用
+
 Soft-state --软状态/柔性事务。 "Soft state" 可以理解为"无连接"的, 而 "Hard state" 是"面向连接"的
+
 Eventual Consistency -- 最终一致性， 也是是 ACID 的最终目的。
 
 ACID vs BASE
+
 ACID	BASE
+
 原子性(Atomicity)	基本可用(Basically Available)
+
 一致性(Consistency)	软状态/柔性事务(Soft state)
+
 隔离性(Isolation)	最终一致性 (Eventual consistency)
+
 持久性 (Durable)	 
 
 NoSQL 数据库分类
+
 类型	部分代表
+
 特点
+
 列存储	
+
 Hbase
 
 Cassandra
@@ -12394,50 +12516,59 @@ BaseX
 
 高效的存储XML数据，并支持XML的内部查询语法，比如XQuery,Xpath。
 
-
 谁在使用
-现在已经有很多公司使用了 NoSQL：
-Google
-Facebook
-Mozilla
-Adobe
-Foursquare
-LinkedIn
-Digg
-McGraw-Hill Education
-Vermont Public Radio
-```
+
+现在已经有很多公司使用了 NoSQL： Google Facebook Mozilla Adobe Foursquare LinkedIn Digg McGraw-Hill Education Vermont Public Radio
 
 ### Redis、Memcached、MongoDB
-```
 https://www.cnblogs.com/kuhaha/p/9827124.html
->>Memcached
+
+Memcached
+
 Memcached的优点：
+
 Memcached可以利用多核优势，单实例吞吐量极高，可以达到几十万QPS（取决于key、value的字节大小以及服务器硬件性能，日常环境中QPS高峰大约在4-6w左右）。适用于最大程度扛量。
+
 支持直接配置为session handle。
+
 Memcached的局限性：
+
 只支持简单的key/value数据结构，不像Redis可以支持丰富的数据类型。
+
 无法进行持久化，数据不能备份，只能用于缓存使用，且重启后数据全部丢失。
+
 无法进行数据同步，不能将MC中的数据迁移到其他MC实例中。
+
 Memcached内存分配采用Slab Allocation机制管理内存，value大小分布差异较大时会造成内存利用率降低，并引发低利用率时依然出现踢出等问题。需要用户注重value设计。
 
->>Redis
+Redis
+
 Redis的优点：
+
 支持多种数据结构，如 string（字符串）、 list(双向链表)、dict(hash表)、set(集合）、zset(排序set)、hyperloglog（基数估算）
+
 支持持久化操作，可以进行aof及rdb数据持久化到磁盘，从而进行数据备份或数据恢复等操作，较好的防止数据丢失的手段。
+
 支持通过Replication进行数据复制，通过master-slave机制，可以实时进行数据的同步复制，支持多级复制和增量复制，master-slave机制是Redis进行HA的重要手段。
+
 单线程请求，所有命令串行执行，并发情况下不需要考虑数据一致性问题。
+
 支持pub/sub消息订阅机制，可以用来进行消息订阅与通知。
+
 支持简单的事务需求，但业界使用场景很少，并不成熟。
 
 Redis的局限性：
+
 Redis只能使用单线程，性能受限于CPU性能，故单实例CPU最高才可能达到5-6wQPS每秒（取决于数据结构，数据大小以及服务器硬件性能，日常环境中QPS高峰大约在1-2w左右）。
+
 支持简单的事务需求，但业界使用场景很少，并不成熟，既是优点也是缺点。
+
 Redis在string类型上会消耗较多内存，可以使用dict（hash表）压缩存储以降低内存耗用。
 
 Mc和Redis都是Key-Value类型，不适合在不同数据集之间建立关系，也不适合进行查询搜索。比如redis的keys pattern这种匹配操作，对redis的性能是灾难。
 
->>mongoDB 
+mongoDB 
+
 mongoDB 是一种文档性的数据库。先解释一下文档的数据库，即可以存放xml、json、bson类型系那个的数据。
 
 这些数据具备自述性（self-describing），呈现分层的树状数据结构。redis可以用hash存放简单关系型数据。
@@ -12449,41 +12580,53 @@ mongoDB 存放json格式数据。
 1.mongodb持久化原理
 
 mongodb与mysql不同，mysql的每一次更新操作都会直接写入硬盘，但是mongo不会，做为内存型数据库，数据操作会先写入内存，然后再会持久化到硬盘中去，那么mongo是如何持久化的呢
+
 mongodb在启动时，专门初始化一个线程不断循环（除非应用crash掉），用于在一定时间周期内来从defer队列中获取要持久化的数据并写入到磁盘的journal(日志)和mongofile(数据)处，当然因为它不是在用户添加记录时就写到磁盘上，所以按mongodb开发者说，它不会造成性能上的损耗，因为看过代码发现，当进行CUD操作时，记录(Record类型)都被放入到defer队列中以供延时批量（groupcommit）提交写入，但相信其中时间周期参数是个要认真考量的参数，系统为90毫秒，如果该值更低的话，可能会造成频繁磁盘操作，过高又会造成系统宕机时数据丢失过。
 
 2.什么是NoSQL数据库？NoSQL和RDBMS有什么区别？在哪些情况下使用和不使用NoSQL数据库？
+
 NoSQL是非关系型数据库，NoSQL = Not Only SQL。
+
 关系型数据库采用的结构化的数据，NoSQL采用的是键值对的方式存储数据。
+
 在处理非结构化/半结构化的大数据时；在水平方向上进行扩展时；随时应对动态增加的数据项时可以优先考虑使用NoSQL数据库。
+
 在考虑数据库的成熟度；支持；分析和商业智能；管理及专业性等问题时，应优先考虑关系型数据库。
 
 3.MySQL和MongoDB之间最基本的区别是什么？
+
 关系型数据库与非关系型数据库的区别，即数据存储结构的不同。
 
 4.MongoDB的特点是什么？
+
 （1）面向文档（2）高性能（3）高可用（4）易扩展（5）丰富的查询语言
 
 5.MongoDB支持存储过程吗？如果支持的话，怎么用？
+
 MongoDB支持存储过程，它是javascript写的，保存在db.system.js表中。
 
 6.如何理解MongoDB中的GridFS机制，MongoDB为何使用GridFS来存储文件？
+
 GridFS是一种将大型文件存储在MongoDB中的文件规范。使用GridFS可以将大文件分隔成多个小文档存放，这样我们能够有效的保存大文档，而且解决了BSON对象有限制的问题。
 
 7.为什么MongoDB的数据文件很大？
+
 MongoDB采用的预分配空间的方式来防止文件碎片。
 
 8.当更新一个正在被迁移的块（Chunk）上的文档时会发生什么？
+
 更新操作会立即发生在旧的块（Chunk）上，然后更改才会在所有权转移前复制到新的分片上。
 
 9.MongoDB在A:{B,C}上建立索引，查询A:{B,C}和A:{C,B}都会使用索引吗？
+
 不会，只会在A:{B,C}上使用索引。
 
 10.如果一个分片（Shard）停止或很慢的时候，发起一个查询会怎样？
+
 如果一个分片停止了，除非查询设置了“Partial”选项，否则查询会返回一个错误。如果一个分片响应很慢，MongoDB会等待它的响应。
 
- 
-
 >>Redis、Memcache和MongoDB的区别
+
 从以下几个维度，对redis、memcache、mongoDB 做了对比，
 
 1、性能
@@ -12551,21 +12694,28 @@ redis：数据量较小的更性能操作和运算上
 memcache：用于在动态系统中减少数据库负载，提升性能;做缓存，提高性能（适合读多写少，对于数据量比较大，可以采用sharding）
 
 MongoDB:主要解决海量数据的访问效率问题
-```
 
 ### 持久化
-```
 持久化
+
 ACID中的持久化和具体的硬件配置有很大的关系，因为持久化时的性能和具体的服务器CPU，网络，和硬盘有很大的关系，MySQL中跟持久化有关了的配置主要有:
 
 doublewrite buffer的打开和关闭
+
 innodb_flush_log_at_trx_commit的配置
+
 sync_binlog的配置
+
 innodb_file_per_table的配置
+
 存储设备中的电池备份缓存
+
 运行MySQL数据库的操作系统选择，必须要支持fsync() 系统调用
+
 运行MySQL的服务器电源使用UPS，保护MySQL服务器和存储设备不会因为断电出现异常
+
 对于分布式应用程序，需要考虑应用程序和MySQL数据中心之间的网络
+
 一般MySQL运行的操作系统选择Linux，如Centos。如果是自建机房，那么运行MySQL的服务器尽量单独一台，且配置高一些，磁盘最好使用ssd。
 
 下面着重讲解MySQL关于持久化的配置
@@ -12581,7 +12731,7 @@ double write虽然是一个buffer, 但是它是开在物理文件上的一个buf
 不过 doublewrite buffer写入磁盘共享表空间这个过程是连续存储，是顺序写，性能非常高，(约占写的%10)，牺牲一点写性能来保证数据页的完整还是很有必要的。所以一般建议打开MySQL的doublewrite buffer
 
 1.2 监控double write工作负载
-
+```
 mysql> show global status like '%dblwr%';
 +----------------------------+---------+
 | Variable_name | Value |
@@ -12598,6 +12748,7 @@ mysql> select (2432011/188819);
 +------------------+
 1 row in set (0.00 sec)
 关注点：Innodb_dblwr_pages_written / Innodb_dblwr_writes
+```
 
 开启doublewrite后，每次脏页刷新必须要先写doublewrite，而doublewrite存在于磁盘上的是两个连续的区，每个区由连续的页组成，一般情况下一个区最多有64个页，所以一次IO写入应该可以最多写64个页。
 
@@ -12606,10 +12757,13 @@ mysql> select (2432011/188819);
 1.3 关闭double write的场景
 
 海量DML
-不惧怕数据损坏和丢失
-系统写负载成为主要负载
-作为InnoDB的一个关键特性，doublewrite功能默认是开启的
 
+不惧怕数据损坏和丢失
+
+系统写负载成为主要负载
+
+作为InnoDB的一个关键特性，doublewrite功能默认是开启的
+```
 mysql> show variables like '%double%';
 +----------------------------------+----------------+
 | Variable_name | Value |
@@ -12619,8 +12773,8 @@ mysql> show variables like '%double%';
 +----------------------------------+----------------+
 2 rows in set (0.01 sec)
 2 innodb_flush_log_at_trx_commit的配置
-
 innodb_flush_log_at_trx_commit：是 InnoDB 引擎特有的，ib_logfile的刷新方式（ ib_logfile：记录的是redo log和undo log的信息）， 其取值可以为0， 1， 2
+```
 
 innodb_flush_log_at_trx_commit=0: Innodb 中的Log Thread每隔1 秒钟会将log buffer中的数据写入到文件，同时还会通知文件系统进行文件同步的flush 操作，保证数据确实已经写入到磁盘上面的物理文件。但是，每次事务的结束（commit 或者是rollback）并不会触发Log Thread 将log buffer 中的数据写入文件。所以，当设置为0 的时候，当MySQL Crash 和OS Crash 或者主机断电之后，最极端的情况是丢失1 秒时间的数据变更。
 
@@ -12628,7 +12782,7 @@ innodb_flush_log_at_trx_commit=1: Innodb 的默认设置，表示在每次事务
 
 innodb_flush_log_at_trx_commit=2: 表示在每次事务提交的时候会把log buffer刷到文件系统中去，但并不会立即刷写到磁盘。如果只是MySQL数据库挂掉了，由于文件系统没有问题，那么对应的事务数据并没有丢失。只有在数据库所在的主机操作系统损坏或者突然掉电的情况下，数据库的事务数据可能丢失1秒之类的事务数据。这样的好处，减少了事务数据丢失的概率，而对底层硬件的IO要求也没有那么高(log buffer写到文件系统中，一般只是从log buffer的内存转移的文件系统的内存缓存中，对底层IO没有压力)。
 
-[玩转MySQL之九]MySQL实现ACID机制之持久性
+MySQL实现ACID机制之持久性
 3 sync_binlog的配置
 
 sync_binlog: 是MySQL 的二进制日志（binary log）同步到磁盘的频率。其可取的值是: 0 ~ N
@@ -12656,11 +12810,13 @@ Innodb存储引擎可将所有数据存放于ibdata*的共享表空间，也可�
 这个表空间可以由很多个文件组成，一个表可以跨多个文件存在，所以其大小限制不再是文件大小的限制，而是其自身的限制。从Innodb的官方文档中可以看到，其表空间的最大限制为64TB，也就是说，Innodb的单表限制基本上也在64TB左右了，当然这个大小是包括这个表的所有索引等其他相关数据。
 
 共享表空间的优点
+
 1) 可以将表空间分成多个文件存放到各个磁盘上（表空间文件大小不受表大小的限制，如一个表可以分布在不同的文件上）。
 
 2) 数据和文件放在一起方便管理。
 
 共享表空间的缺点
+
 1) 所有的数据和索引存放到一个文件，虽然可以把一个大文件分成多个小文件，但是多个表及索引在表空间中混合存储，当数据量非常大的时候，表做了大量删除操作后表空间中将会有大量的空隙，特别是对于统计分析，对于经常删除操作的这类应用最不适合用共享表空间。
 
 2) 共享表空间分配后不能回缩：当出现临时建索引或是创建一个临时表的操作表空间扩大后，就是删除相关的表也没办法回缩那部分空间了（可以理解为oracle的表空间10G，但是才使用10M，但是操作系统显示mysql的表空间为10G），进行数据库的冷备很慢；
@@ -12670,6 +12826,7 @@ Innodb存储引擎可将所有数据存放于ibdata*的共享表空间，也可�
 每一个表都将会生成以独立的文件方式来进行存储，每一个表都有一个.frm表描述文件，还有一个.ibd文件。 其中这个文件包括了单独一个表的数据内容以及索引内容，默认情况下它的存储位置也是在表的位置之中。
 
 独立表空间的优点
+
 1) 每个表都有自已独立的表空间。
 
 2) 每个表的数据和索引都会存在自已的表空间中。
@@ -12685,6 +12842,7 @@ ii: 对于使innodb-plugin的Innodb使用turncate table也会使空间收缩
 iii: 对于使用独立表空间的表，不管怎么删除，表空间的碎片不会太严重的影响性能，而且还有机会处理。
 
 独立表空间的缺点
+
 1) 单表增加过大，当单表占用空间过大时，存储空间不足，只能从操作系统层面思考解决方法；
 
 2) 单表增加过大，如超过100个G，相比较之下，使用独占表空间的效率以及性能会更高一点。
@@ -12692,16 +12850,16 @@ iii: 对于使用独立表空间的表，不管怎么删除，表空间的碎片
 4.3 结论
 
 共享表空间在Insert操作上少有优势。其它都没独立表空间表现好。当启用独立表空间时，请合理调整一 下：innodb_open_files 。InnoDB Hot Backup（冷备）的表空间cp不会面对很多无用的copy了。而且利用innodb hot backup及表空间的管理命令可以实现单现移动。
-```
 
 ### 支持多钟数据类型
-```
 MySQL 数据类型
+
 MySQL中定义数据字段的类型对你数据库的优化是非常重要的。
 
 MySQL支持多种类型，大致可以分为三类：数值、日期/时间和字符串(字符)类型。
 
 数值类型
+
 MySQL支持所有标准SQL数值数据类型。
 
 这些类型包括严格数值数据类型(INTEGER、SMALLINT、DECIMAL和NUMERIC)，以及近似数值数据类型(FLOAT、REAL和DOUBLE PRECISION)。
@@ -12711,7 +12869,7 @@ MySQL支持所有标准SQL数值数据类型。
 BIT数据类型保存位字段值，并且支持MyISAM、MEMORY、InnoDB和BDB表。
 
 作为SQL标准的扩展，MySQL也支持整数类型TINYINT、MEDIUMINT和BIGINT。下面的表显示了需要的每个整数类型的存储和范围。
-
+```
 类型	大小	范围（有符号）	范围（无符号）	用途
 TINYINT	1 byte	(-128，127)	(0，255)	小整数值
 SMALLINT	2 bytes	(-32 768，32 767)	(0，65 535)	大整数值
@@ -12725,11 +12883,13 @@ DOUBLE	8 bytes	(-1.797 693 134 862 315 7 E+308，-2.225 073 858 507 201 4 E-308)
 DECIMAL	对DECIMAL(M,D) ，如果M>D，为M+2否则为D+2	依赖于M和D的值	依赖于M和D的值	小数值
 日期和时间类型
 表示时间值的日期和时间类型为DATETIME、DATE、TIMESTAMP、TIME和YEAR。
+```
 
 每个时间类型有一个有效值范围和一个"零"值，当指定不合法的MySQL不能表示的值时使用"零"值。
 
 TIMESTAMP类型有专有的自动更新特性，将在后面描述。
 
+```
 类型	大小
 ( bytes)	范围	格式	用途
 DATE	3	1000-01-01/9999-12-31	YYYY-MM-DD	日期值
@@ -12756,6 +12916,7 @@ MEDIUMBLOB	0-16 777 215 bytes	二进制形式的中等长度文本数据
 MEDIUMTEXT	0-16 777 215 bytes	中等长度文本数据
 LONGBLOB	0-4 294 967 295 bytes	二进制形式的极大文本数据
 LONGTEXT	0-4 294 967 295 bytes	极大文本数据
+```
 注意：char(n) 和 varchar(n) 中括号中 n 代表字符的个数，并不代表字节个数，比如 CHAR(30) 就可以存储 30 个字符。
 
 CHAR 和 VARCHAR 类型类似，但它们保存和检索的方式不同。它们的最大长度和是否尾部空格被保留等方面也不同。在存储或检索过程中不进行大小写转换。
@@ -12766,10 +12927,7 @@ BLOB 是一个二进制大对象，可以容纳可变数量的数据。有 4 种
 
 有 4 种 TEXT 类型：TINYTEXT、TEXT、MEDIUMTEXT 和 LONGTEXT。对应的这 4 种 BLOB 类型，可存储的最大长度不同，可根据实际情况选择。
 
-```
-
 ### 可利用 CPU 多核心
-```
 在工作中可能遇到这样的情况，随着业务的增长，用户量也在逐渐增长，终究有一天，一到高峰期，数据库服务器CPU利用率直飚100%。
 
 最简单的做法就是直接提升硬件性能，简单粗暴，直接有效。
@@ -12777,20 +12935,19 @@ BLOB 是一个二进制大对象，可以容纳可变数量的数据。有 4 种
 假如我们最开始的服务器CPU核数是4，然后我们觉得4个有点扛不住，那就直接给他搞16个核。这下应该没啥问题了吧，用户访问站点貌似也比以前快了。但是不要高兴太早，当你打开任务管理器，你会发现利用率高的还是以前那几个核，或者说只有4个用的比较多，其它12位大爷感觉不接茬。
 
 如果你去查一下innodb_read_io_threads和innodb_write_io_threads这两个变量的时候，你就回发现，它们的默认值是4。可以用以下语句查看这两个变量的值：
-
+```
 show variables like '%_io_threads'
-
+```
 那就往大放呗。如果你直接用set命令去修改，你就回发现，人家会告你这俩命令是只读变量。那好吧，只能在初始化文件中添加这两个变量了。找到mysql的安装目录，用管理员身份打开mysql.ini文件，在最后添加这么两句：
-
+```
 innodb_read_io_threads=16
 innodb_read_write_threads=16
-
-重启MySQL服务，再去观察一下任务管理器，你就会发现，这次任务分配到每个处理器的任务量就均匀了些。
 ```
+重启MySQL服务，再去观察一下任务管理器，你就会发现，这次任务分配到每个处理器的任务量就均匀了些。
 
 ### 内存淘汰机制
-```
 http://www.mamicode.com/info-detail-2679625.html
+
 首先我们说一下大查询会不会把内存打爆？
 
 比如说主机内存有5g，但是我们一个大查询的数据有10g，这样会不会把内存打爆呢？
@@ -12800,14 +12957,10 @@ http://www.mamicode.com/info-detail-2679625.html
 为什么？
 
 因为mysql读取数据是采取边读边发的策略
-
+```
 select * from t1
-
+```
 这条语句的流程是这样的
-
-技术图片
-
- 
 
 1.读取数据放入net_buffer中，net_buffer大小是由net_buffer_length控制
 
@@ -12819,8 +12972,6 @@ select * from t1
 
 根据这个流程来看，读取数据的时候占用的内存最多也就是net_buffer的大小。
 
- 
-
 InnoDB内存（buffer pool）管理
 
 我们都知道mysql查询数据是先看内存中有没有数据，如果没有就从磁盘中读出来，然后在读入内存
@@ -12828,26 +12979,18 @@ InnoDB内存（buffer pool）管理
 所以说bufferpool对查询有加速效果，加速效果依赖于一个指标也就是内存命中率，如果命中率能达到100%那是最好的
 
 通过
-
+```
 show engine innodb status
-
+```
 可以查看命中率
 
 innodb buffer pool的大小是由参数innodb_buffer_pool_size控制的，一般设置为可用物理内存的60%-80%
 
- 
-
 内存淘汰
-
- 
 
 既然内存是一块固定大小的，那么存放在内存里的数据就肯定有的会被淘汰
 
 下面是一个lur算法的基本模型
-
-技术图片
-
- 
 
 innodb管理bufferpool的lru算法是基于链表实现的
 
@@ -12861,8 +13004,6 @@ state3中由于我们查询的px数据不是在px中，那么就从磁盘中查�
 
 就会把pm的数据从链表尾部淘汰掉，从现象上来看就是最久没有被访问都的数据会被淘汰
 
- 
-
 这种算法对于mysql来说有什么问题？？
 
 如果我们对一个冷数据表进行全表扫描，比如说日志表，这些不是正常用户访问的表，
@@ -12871,17 +13012,11 @@ state3中由于我们查询的px数据不是在px中，那么就从磁盘中查�
 
 就会导致大量数据需要重新读磁盘放入内存，这样性能就会大大降低
 
- 
-
 mysql肯定不会允许这种情况发生的，所以它基于上面的lru算法做了改进
 
 下图就是改进后的模型
 
-技术图片
-
- 
-
- innodb把整个内存的前八分之五记为young区域，后八分之三记为old区域，
+innodb把整个内存的前八分之五记为young区域，后八分之三记为old区域，
 
 我们看上图state1中由于我们访问的p3是在young区域，那么就把p3移动到链表头部
 
@@ -12893,8 +13028,6 @@ mysql肯定不会允许这种情况发生的，所以它基于上面的lru算法
 
 innodb_old_blocks_time控制的，默认值是1000，单位毫秒
 
- 
-
 这样我们在看扫描全表的步骤
 
 扫描过程中被访问的数据页会被放在old区域
@@ -12905,32 +13038,29 @@ innodb_old_blocks_time控制的，默认值是1000，单位毫秒
 
 在继续扫描后面的数据页，之前的这个数据页也不会被访问到，因此就会一直在old区域，也就很快就会被淘汰掉了
 
- 
-
 可以看到这个策略的最大收益，就是在扫描的过程中，虽然也用到了bufferpool，
 
 但是不会对young区域造成影响，也就保证了bufferpool响应业务的内存命中率
-```
 
 ### 集群 Cluster
-```
 1. 参考文档
+
 http://xuwensong.elastos.org/2014/01/13/ubuntu-%E4%B8%8Bmysql-cluster%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE/
 
 2. 简介
+
 MySQL-Cluster是一种技术，该技术允许在无共享的系统中部署“内存中”数据库的簇。通过无共享体系结构，系统能够使用廉价的硬件，而且对软硬件无特殊要求。此外，由于每个组件都有自己的内存和磁盘，所以不存在单点故障。
 
 MySQL簇将标准的MySQL服务器与名为NDB的“内存中”的簇式存储引擎集成了起来。术语NDB指的是与存储引擎相关的设置部分，而术语“MySQL簇”指的是MySQL和NDB存储引擎的组合。
 
 MySQL簇由一组计算机构成，每台计算机上均运行着多种进程，包括MySQL服务器，NDB簇的数据节点，管理服务器（MGM），以及（可能）专门的数据访问程序。关于簇中组件的关系，如下图：
 
- 
-
 所有这些程序一起构成了MySQL簇。将数据保存到NBD簇引擎中时，表将保存在数据节点内。能够从簇中所有其他MySQL服务器直接访问这些表。因此，假如在将数据保存在簇内的工资应用程序中，如果某一应用程序更新了一位雇员的工资，所有查询该数据的其他MySQL 服务器能立刻发现这种变化。
 
 对于MySQL簇，保存在数据节点的数据可被映射，簇能够处理单独数据节点的故障，除了少数事物将因事物状态丢失而被放弃外，不会产生其他影响。由于事物性应用程序能够处理失败事宜，因而它不是问题源。
 
 3. MySQL簇的基本概念
+
 NDB 是一种“内存中”存储引擎，它具有可用性高和数据一致性好的特点。
 
 能够使用多种故障切换和负载平衡选项配置NDB 存储引擎，但以簇层面上的存储引擎开始最简单。MySQL簇的NDB存储引擎包含完整的数据集，仅取决于簇本身内的其他数据。
@@ -12953,11 +13083,10 @@ SQL节点：这类节点是用来访问簇数据的节点。对于MySQL簇，客
 
 管理服务器（MGM节点）负责管理簇配置文件和簇日志。簇中的每个节点从管理服务器检索配置数据，并请求确定管理服务器所在的位置的方式。当数据节点内出现有趣的事件时，节点将关于这类事件的信息传输到管理服务器，然后，啊经这类信息写入簇日志。
 
-
-
 4. 实现环境
-现在，我们计划建立有5个节点的MySQL CLuster体系，因此需要用到3台机器(sql和数据节点共用)，分别做如下用途：
 
+现在，我们计划建立有5个节点的MySQL CLuster体系，因此需要用到3台机器(sql和数据节点共用)，分别做如下用途：
+```
                  节点(用途)                 IP地址(主机名)
                  管理节点(MGM)              10.24.0.101(db1) nodeid = 1
 
@@ -12965,16 +13094,20 @@ SQL节点：这类节点是用来访问簇数据的节点。对于MySQL簇，客
                  数据节点2(NDBD2)           10.24.6.6(db5) nodeid =12
                  SQL节点1(SQL1)            10.24.6.4(db2) nodeid = 21
                  SQL节点2(SQL2)            10.24.6.6(db3) nodeid = 22
+```
 
 5. MySQL-Cluster安装包下载
+
 对于MySQL-Cluster的安装包下载，下载地址见http://dev.mysql.com/downloads/cluster/
 
 mysql-cluster-gpl-7.4.7-debian7-x86_64.deb
 
 6. 安装
-6.1. 清除之前的mysql痕迹
-此外 如果之前安装过mysql-server，在进行此次实验之前，需要将mysql-server卸载，执行以下指令卸载mysql
 
+6.1. 清除之前的mysql痕迹
+
+此外 如果之前安装过mysql-server，在进行此次实验之前，需要将mysql-server卸载，执行以下指令卸载mysql
+```
 sudo apt-get autoremove --purge mysql-server
 
 sudo apt-get remove mysql-server
@@ -12982,36 +13115,39 @@ sudo apt-get remove mysql-server
 sudo apt-get autoremove mysql-server
 
 sudo apt-get remove mysql-common (非常重要)
-
+```
 6.2. 安装deb文件
+```
 sudo dpkg -i mysql-cluster-gpl-7.4.7-debian7-x86_64.deb
-
+```
 安装目录/opt/mysql/server-5.6
 
 6.3. 存储节点/SQL节点安装
+
 SQL节点和数据节点的安装步骤基本相同，所以在设计为存储节点或SQL节点的的每一台机器上，以系统根用户身份执行以下步骤：
 
 mysql组和mysql用户
 
 检查/etc/passwd和/etc/group/文件，查看在系统上是否已经存在mysql组和mysql用户，这时因为某些操作系统会将其作为安装进程的一部分创建。可以使用以下指令查看：
-
+```
 cat show /etc/passwd
 
 cat show /etc/group
-
+```
 如果它们不存在，则需要创建新的mysql用户组，然后为该组添加一个mysql用户
-
+```
 groupadd mysql
 
 useradd -g mysql mysql
-
+```
 6.4. 创建系统数据库的脚本
+```
 sudo /opt/mysql/server-5.6/scripts/mysql_install_db --user=mysql
-
+```
 如果此脚本不能运行，若报错为主机名不匹配的话，则很有可能是下载的版本不对，查看操作系统是32位还是64位，选择正确的版本。若报错找不到默认的文件，则很有可能是因为之前的mysql-server没有卸载，执行上文提供的指令，彻底卸载mysql-server
 
 成功结果：
-
+```
 To start mysqld at boot time you have to copy
 
 support-files/mysql.server to the right place for your system
@@ -13057,72 +13193,62 @@ and when you later start the server.
 The new default config file was created as /opt/mysql/server-5.6/my-new.cnf,
 
 please compare it with your file and take the changes you need.
-
+```
 6.5.设置MySQL服务器和数据目录必要的权限
+```
 chown -R root .
-
 chown -R mysql data
-
-3
-
 chgrp -R mysql .
-
+```
 6.6. 拷贝mysql.server
- 	 
- 	 
+```
 sudo cp /opt/mysql/server-5.6/support-files/mysql.server /etc/init.d/mysql
 
 chmod +x /etc/init.d/mysql
-
+```
 6.7. 拷贝 my.cnf
+```
 sudo cp /opt/mysql/server-5.6/my-new.cnf /etc/my.cnf
 
 sudo vim /etc/my.cnf
-
- 
-
- 
-
+```
 6.8. 设置root密码
+```
 sudo apt-get install mysql-client
 
 mysqladmin -u root flush-privileges password "123456"
-
- 
-
+```
 6.9. 管理节点安装
-对于管理（MGM）节点，不需要安装mysqld可执行文件，仅需要安装用于MGM服务器和客户端的二进制文件，这类文件可在下载的档案文件中找到。假定将下载的档案文件放在了/var/tmp文件下，以系统管理员的身份执行以下步骤，在簇管理节点主机上安装ndb_mgmd和ndb_mgm
 
+对于管理（MGM）节点，不需要安装mysqld可执行文件，仅需要安装用于MGM服务器和客户端的二进制文件，这类文件可在下载的档案文件中找到。假定将下载的档案文件放在了/var/tmp文件下，以系统管理员的身份执行以下步骤，在簇管理节点主机上安装ndb_mgmd和ndb_mgm
+```
 ndb_mgmd：ndb管理服务器
 
 ndb_mgm: ndb管理客户端
-
+```
 6.10. 安装deb文件
+```
 sudo dpkg -i mysql-cluster-gpl-7.4.7-debian7-x86_64.deb
-
+```
 安装目录/opt/mysql/server-5.6
 
- 
-
 6.11. 创建管理目录
+```
 sudo mkdir /usr/local/mysql/
-
+```
 6.12. 拷贝ndb管理程序
+```
 sudo cp /opt/mysql/server-5.6/bin/ndb_mgm* /usr/local/mysql/
-
+```
 6.13. 端口
+
 注释：簇管理节点的默认端口是1186,数据节点的默认端后是2202。
 
- 
-
-
-
 6.14.  配置ndb管理节点
+```
 cd /usr/local/mysql/
 
 sudo vim config.ini：
-
- 
 
 # Options affecting ndbd processes on all data nodes:
 
@@ -13134,15 +13260,11 @@ DataMemory=80M
 
 IndexMemory=18M
 
- 
-
 # TCP/IP options:
 
 [TCP DEFAULT]
 
 #portnumber=2202
-
- 
 
 # Management process options:
 
@@ -13154,8 +13276,6 @@ HostName=10.24.0.101
 
 DataDir=/usr/local/mysql
 
- 
-
 # Options for data node :
 
 [NDBD]
@@ -13166,8 +13286,6 @@ HostName=10.24.6.4
 
 DataDir=/opt/mysql/server-5.6/data/
 
- 
-
 # Options for data node :
 
 [NDBD]
@@ -13177,8 +13295,6 @@ nodeid=12
 HostName=10.24.6.6
 
 DataDir=/opt/mysql/server-5.6/data/
-
- 
 
 # SQL node options:
 
@@ -13193,30 +13309,20 @@ HostName=10.24.6.4
 nodeid=22
 
 HostName=10.24.6.6
-
- 
-
- 
-
-
-
+```
 7. 启动
+
 完成配置后，启动簇并不困难。必须在数据节点所在的主机上分别启动每个簇节点进程。尽管能够按任何顺序启动节点，但还是建议，首先启动管理节点，然后启动存储节点，最后启动SQL节点。
 
 7.1. 管理节点启动
+
 可使用nbd_mgm指令登录到ndb_mgm客户端，登录后，可使用show指令来查看簇中个节点情况。
 
 注意，启动MGM时，必须用-f或者–config-file选项，告诉ndb_mgmd到哪里找到配置文件。首次启动时必须选用–initial选项，或者更改了MGM节点的配置信息后，也需选用–initial选项。
-
- 
-
+```
 sudo /usr/local/mysql/ndb_mgmd -f /usr/local/mysql/config.ini
 
- 
-
 Ndb客户端查看:
-
- 
 
 wiki@zoweewiki:/usr/local/mysql$ /usr/local/mysql/ndb_mgm
 
@@ -13242,38 +13348,30 @@ id=11   @10.24.6.4  (mysql-5.6.25 ndb-7.4.7, Nodegroup: 0, *)
 
 id=12   @10.24.6.6  (mysql-5.6.25 ndb-7.4.7, Nodegroup: 0)
 
- 
-
 [ndb_mgmd(MGM)] 1 node(s)
 
 id=1    @10.24.0.101  (mysql-5.6.25 ndb-7.4.7)
-
- 
 
 [mysqld(API)]   2 node(s)
 
 id=21   @10.24.6.4  (mysql-5.6.25 ndb-7.4.7)
 
 id=22   @10.24.6.6  (mysql-5.6.25 ndb-7.4.7)
-
-
-
+```
 7.2. 数据节点启动
+
 在每台数据节点主机上，对于首次启动，运行下述命令启动NDBD进程：
-
+```
 sudo /opt/mysql/server-5.6/bin/ndbd --initial
-
+```
 注意，应仅在首次启动时ndbd时，或者在备份/恢复或者配置变化后重启ndbd时使用“–initial”参数，这很重要，因为该参数会使数据节点删除由早期ndbd实例创建的，用于恢复的任何文件，包括恢复用日志文件。
 
- 
-
 7.3. MYSQL节点启动
+```
 sudo /etc/init.d/mysql restart
-
- 
-
+```
 启动日志：
-
+```
 /opt/mysql/server-5.6/data/drbd02.err
 
 151015 14:33:19 mysqld_safe Starting mysqld daemon with databases from /opt/mysql/server-5.6/data
@@ -13415,64 +13513,48 @@ Version: '5.6.25-ndb-7.4.7-cluster-gpl-log'  socket: '/var/run/mysqld/mysqld.soc
 2015-10-15 14:41:04 15192 [Note] NDB Schema dist: Data node: 11 failed, subscriber bitmask 00
 
 2015-10-15 14:42:36 15192 [Note] NDB Schema dist: Data node: 12 reports subscribe from node 21, subscriber bitmask 00
-
-
-
+```
 8. 测试
+
 8.1. 常规测试
+
 为了让数据表能够在cluster中正常复制，创建数据表时必须指定为ndbcluster引擎（engine=ndb或engine=ndbcluster）。
 
 登录到10.24.64的mysql，然后创建一个新数据库songzi，并创建一个ndbcluster引擎的数据表test（id int，name char（10））,并向表中插入一条数据（0,songzi）。10.24.6.4上的操作及结果如下图：
 
- 
-
 然后登录10.24.6.6的mysql，可查看到数据已同步，并且新建的表及数据也存在。10.24.6.6上的操作及结果如下图：
 
- 
-
-
-
 8.2. 模拟NDB节点Crash
-终止10.24.6.4上的NDB进程，执行以下指令查看NDB进程情况
 
+终止10.24.6.4上的NDB进程，执行以下指令查看NDB进程情况
+```
 ps -ef | grep ndbd
 
 kill 24077
 
 ps -ef | grep ndbd
-
+```
 具体操作及结果见下图：
-
- 
 
 也可以在ndb_mgm管理节点客户端查看到10.24.0.101上的NDB节点已停掉
 
- 
-
 然后分别登录到10.24.6.4和10.24.6.6的mysql，可发现依然能够查询到数据。结果如下图
-
+```
 10.24.6.4
 
- 
-
 10.24.6.6
-
- 
-
+```
 此结果说明测试成功，即当有一个NDB节点Crash后，整个MySQL环境仍可以正常服务。
 
 8.3. 模拟SQL节点Crash
+
 在上10.24.6.4上终止mysqld进程，可执行以下指令：
-
+```
 killall mysqld
-
+```
 也可以在ndb_mgm管理节点客户端查看到10.24.6.4上的SQL节点已停掉
 
- 
-
 登录到10.24.6.6上的mysql，可查看到数据依然存在
-
- 
 
 此结果说明测试成功，及当有一个SQL节点Crash后，整个MySQL-Cluster环境仍可以工作。
 
@@ -13481,35 +13563,54 @@ killall mysqld
 9. 遇到问题
 
 10. 总结
+
 Mysql cluster是一个统一的共享集群
+
 多mysql同时共享
+
 一个值多份存储，不是像redis那样根据一致性hash分布存储
+
 高并发、高可用、高伸缩性
+
 share nothing架构
+
 通过增加数据节点扩展：通过32个数据节点实现每秒2亿条NoSQL查询，以及通过16个数据节点每秒查询近250万SQL语句
+
 推荐使用lvs + keepalived + mysql cluster 实现集群mysqlMySQL Cluster是一个实时可扩展且符合ACID的事务型内存数据库
 
 支持 SQL
+
 性能对比
+
 支持事务
+
 应用场景
+
 你之前为了解决什么问题使用的什么，为什么选它？
+
 https://www.cnblogs.com/guipeng/p/11876729.html
+
 1. 为什么需要分布式数据库
-    随着计算机和信息技术的迅猛发展和普及，行业应用系统的规模迅速扩大，行业应用所产生的数据量量呈爆炸式增长，动辄达到数百TB甚至数百PB规模，已远远超出现有的传统计算技术和信息系统的处理能力，而集中式数据库面对大规模数据处理逐渐表现出其局限性，因此，人们希望寻找一种能快速处理数据和及时响应用户访问的方法，也希望对数据进行集中分析、管理和维护。这已成为现实世界的迫切需求。
 
-    分布式数据库是在集中式数据库的基础上发展起来的，是计算机技术和网络技术结合的产物。分布式数据库是指数据在物理上分布而逻辑上集中管理的数据库系统。物理上分布指的是分布式数据库的数据分布在物理位置不同并由网络连接的节点或站点上；逻辑上集中是指各数据库之间在逻辑上是一个整体，并由统一的数据库管理系统管理。不同的节点分布可以跨不同的机房、城市甚至国家。
+随着计算机和信息技术的迅猛发展和普及，行业应用系统的规模迅速扩大，行业应用所产生的数据量量呈爆炸式增长，动辄达到数百TB甚至数百PB规模，已远远超出现有的传统计算技术和信息系统的处理能力，而集中式数据库面对大规模数据处理逐渐表现出其局限性，因此，人们希望寻找一种能快速处理数据和及时响应用户访问的方法，也希望对数据进行集中分析、管理和维护。这已成为现实世界的迫切需求。
 
-    分布式数据库的主要特点如下：
+分布式数据库是在集中式数据库的基础上发展起来的，是计算机技术和网络技术结合的产物。分布式数据库是指数据在物理上分布而逻辑上集中管理的数据库系统。物理上分布指的是分布式数据库的数据分布在物理位置不同并由网络连接的节点或站点上；逻辑上集中是指各数据库之间在逻辑上是一个整体，并由统一的数据库管理系统管理。不同的节点分布可以跨不同的机房、城市甚至国家。
+
+分布式数据库的主要特点如下：
 
 透明性：用户不必关心数据的逻辑分区和物理位置的分布细节，也不必关心重复副本（冗余数据）的一致性问题，同时不必关心在局部场地上数据库支持哪种数据模型。对于系统开发工程师而言，当数据从一个场地移到另一个场地时不必改写应用程序，使用起来如同一个集中式数据库。
-数据冗余性：分布式数据库通过冗余实现系统的可靠性、可用性，并改善其性能。多个节点存储数据副本，当某一节点的数据遭到破坏时，冗余的副本可保证数据的完整性；当工作的节点受损害时，可通过心跳等机制进行切换，系统整体不被破坏。还可以通过热点数据的就近分析原则减少网络通信的消耗，加快访问速度，改善性能。
-易于扩展性：在分布式数据库中能够方便地通过水平扩展提高系统的整体性能，也能通过垂直扩展来提供性能，扩展并不需要修改系统程序。
-自治性：各节点上的数据由本地的DBMS管理，具有自动处理能力，完成本场地的应用或局部应用。
-2. MySQL Cluster原理
-    MySQL 群集是 MySQL 适合于分布式计算环境的高可用、高冗余版本。它采用了 NDB Cluster 存储引擎，允许在 1 个群集中运行多个 MySQL 服务器。在 MySQL 5.0 及以上的二进制版本中，以及与最新的 Linux 版本兼容的 RPM 包中提供了该存储引擎。
 
-    MySQL 群集是一种技术，该技术允许在无共享的系统中部署“内存中”和“磁盘中”数据库的 Cluster 。通过无共享体系结构，系统能够使用廉价的硬件，而且对软硬件无特殊要求。此外，由于每个组件有自己的内存和磁盘，不存在单点故障。MySQL Cluster 由一组计算机构成，每台计算机上均运行着多种进程，包括 MySQL 服务器，NDB Cluster 的数据节点，管理服务器，以及（可能存在的）专门的数据访问程序。
+数据冗余性：分布式数据库通过冗余实现系统的可靠性、可用性，并改善其性能。多个节点存储数据副本，当某一节点的数据遭到破坏时，冗余的副本可保证数据的完整性；当工作的节点受损害时，可通过心跳等机制进行切换，系统整体不被破坏。还可以通过热点数据的就近分析原则减少网络通信的消耗，加快访问速度，改善性能。
+
+易于扩展性：在分布式数据库中能够方便地通过水平扩展提高系统的整体性能，也能通过垂直扩展来提供性能，扩展并不需要修改系统程序。
+
+自治性：各节点上的数据由本地的DBMS管理，具有自动处理能力，完成本场地的应用或局部应用。
+
+2. MySQL Cluster原理
+
+MySQL 群集是 MySQL 适合于分布式计算环境的高可用、高冗余版本。它采用了 NDB Cluster 存储引擎，允许在 1 个群集中运行多个 MySQL 服务器。在 MySQL 5.0 及以上的二进制版本中，以及与最新的 Linux 版本兼容的 RPM 包中提供了该存储引擎。
+
+MySQL 群集是一种技术，该技术允许在无共享的系统中部署“内存中”和“磁盘中”数据库的 Cluster 。通过无共享体系结构，系统能够使用廉价的硬件，而且对软硬件无特殊要求。此外，由于每个组件有自己的内存和磁盘，不存在单点故障。MySQL Cluster 由一组计算机构成，每台计算机上均运行着多种进程，包括 MySQL 服务器，NDB Cluster 的数据节点，管理服务器，以及（可能存在的）专门的数据访问程序。
 
 管理服务器(MGM节点)负责管理 Cluster 配置文件和 Cluster 日志。Cluster 中的每个节点从管理服务器检索配置数据。
 
@@ -13518,10 +13619,6 @@ https://www.cnblogs.com/guipeng/p/11876729.html
 目前能够运行 MySQL Cluster 的操作系统有 Linux、Mac OS X 和 Solaris，最新的版本已经支持 Windows 操作系统。
 
 MySQL 群集的数据节点之间的通信是不加密的，并且需要高速的带宽，所以建议把群集建立在一个高速局域网内，不建议跨网段、跨公网的部署这种系统体系。
-
-
-
- 
 
 MySQL 群集分为三种节点：管理节点，数据节点和SQL节点。
 
@@ -13533,43 +13630,46 @@ SQL节点：主要是对外提供SQL功能，类似一台普通的 MySQL Server�
 
 而SQL节点和数据节点可以是同一台机器，也就是说这台机器即是SQL节点也是数据节点。它们只是逻辑关系上的划分，实际部署时，甚至所有的阶段都可以位于同一台物理机器上，只是配置较复杂些。
 
- 
-
 3. MySQL Cluster的优缺点
+
 优点：
 
 99.999 ％的高可用性
+
 快速的自动失效切换
+
 灵活的分布式体系结构，没有单点故障
+
 高吞吐量和低延迟
+
 可扩展性强，支持在线扩容
+
 缺点：
 
 存在很多限制，比如：不支持外键，数据行不能超过8K（不包括BLOB和text中的数据）
+
 部署、管理、配置很复杂
+
 占用磁盘空间大，内存大
+
 备份和恢复不方便
+
 重启的时候，数据节点将数据load到内存需要很长时间
-```
+
 
 ## 服务器篇
-
 ### 服务器
-```
 心中有概念，然后足够的实际操作。
-Apache
-[百度百科介绍
-https://baike.baidu.com/item/apache/6265
-Nginx
-[百度百科介绍
-https://baike.baidu.com/item/nginx/3817705
-```
+
+Apache 百度百科介绍 https://baike.baidu.com/item/apache/6265
+
+Nginx 百度百科介绍 https://baike.baidu.com/item/nginx/3817705
 
 ## 架构篇
 
 ### 负载均衡（Nginx、HAProxy、DNS）
-```
 https://www.cnblogs.com/yuhaohao/p/12922237.html
+
 LVS是Linux Virtual Server的缩写，意思是Linux虚拟服务器，LVS由用户空间的ipvsadm和内核空间的ipvs组成，ipvsadm用来定义规则，ipvs利用ipvsadm定义的规则工作。
 
 Nginx是一款轻量级的Web服务器/反向代理服务器以及电子邮件(IMAP/POP3)代理服务器，并在一个BSD-like协议下发行。
@@ -13577,152 +13677,229 @@ Nginx是一款轻量级的Web服务器/反向代理服务器以及电子邮件(I
 HAProxy是一个使用C语言编写的自由及开放源代码软件，其提供高可用性、负载均衡以及基于TCP和HTTP的应用程序代理。
 
 通过LVS提供的负载均衡技术和Linux操作系统实现一个高性能、高可用的服务器集群。它具有良好的可靠性、可扩展性和可操作性。从而以低廉的成本实现最优的服务性能。LVS主要特点有以下几个方面：
+
 优势：
 
 高并发连接：LVS基于内核网络层面工作，有超强的承载能力和并发处理能力。单台LVS负载均衡器，可支持上万并发连接。稳定性强：是工作在网络4层之上仅作分发之用，这个特点也决定了它在负载均衡软件里的性能最强、稳定性最好、对内存和CPU资源消耗极低。
+
 成本低廉：硬件负载均衡器少则几万，多则几十万上百万，LVS只需要一台服务器就能免费部署使用，性价比极高。
+
 配置简单：LVS配置非常简单，仅需几行命令即可配置完成，也可以写成脚本进行管理。
+
 支持多种算法：支持多种轮调算法，可根据业务场景灵活调配进行使用，支持多种工作模型：可以根据业务场景使用不同的工作模式来解决生产环境请求处理问题。
+
 应用范围广：因为LVS工作在4层，所以它几乎对所有应用做负载均衡，包括http、数据库、DNS、ftp服务等。
+
 缺点：工作在四层，不支持七层规则修改，机制过于庞大，不适合小规模应用。
 
 名称	解释
+
 ipvsadm	用户空间的命令行工具，用于管理集群服务及集群服务上的RS等
+
 IPVS	工作在内核上的netfilter INPUT HOOK之上的程序，可根据用户定义的集群实现请求转发
+
 VS	Virtual Server、虚拟服务
+
 Director,Balancer	负载均衡器，分发器
+
 RS	Real Server 后端请求处理服务器
+
 CIP	Client IP,客户端IP
+
 VIP	Director Virtual IP,负载均衡器虚拟IP
+
 DIP	Director IP,负载均衡器IP
+
 RIP	Real Server IP,后端请求处理服务器IP
+
 LVS常用的工作模式有：DR(直接路由)模式、TUN模式、以及NAT模式
 
-【此部分参考：https://blog.csdn.net/gui951753/article/details/80316565】
+此部分参考：https://blog.csdn.net/gui951753/article/details/80316565】
 
 LVS工作原理：
 
 当客户端的请求到达负载均衡器的内核空间时，首先会到达PREROUTING链。
+
 当内核发现请求数据包的目的地址是本机时，将数据包送往INPUT链。
+
 LVS由用户空间的ipvsadm和内核空间的IPVS组成，ipvsadm用来定义规则，IPVS利用ipvsadm定义的规则工作，IPVS工作在INPUT链上,当数据包到达INPUT链时，首先会被IPVS检查，如果数据包里面的目的地址及端口没有在规则里面，那么这条数据包将经过INPUT链送至用户空间，交给用户空间的进程来处理。
+
 如果数据包里面的目的地址及端口在规则里面，那么这条数据报文将被修改目的地址为事先定义好的后端服务器，并送往POSTROUTING链。
+
 最后经由POSTROUTING链发往后端服务器。
+
 优势：
 
 工作在7层网络之上，可以针对http应用做一些分流的策略，比如针对域名、目录结构、它的正则规则比HAProxy更加强大和灵活，这也是它目前广泛流行的主要原因之一，Nginx单凭这点可利用的场合就远远多余LVS了，location使用灵活、应用场合广泛，工作在应用层。
+
 Nginx对网络稳定性的依赖比较小，理论上能ping通就可以进行负载均衡，这个也是它的优势。相反LVS对网络依赖性比较大。
+
 Nginx安装配置简单，测试起来比较方便，它基本能把错误用日志打印出来。LVS的配置、测试就要花比较长的时间了，LVS对网络依赖比较大。
+
 Nginx可以通过端口检测到服务器内部的故障，比如根据服务器处理网页返回的状态码、超时等等，并且会把返回错误的请求重新提交到另一个节点，不过其中缺点就是不支持url来检测。比如用户正在上传一个文件，而处理该上传的节点刚好在上传过程中出现故障，Nginx会把上传切到另一台服务器重新处理，而LVS就直接断掉了，如果是上传一个很大的文件或者很重要的文件的话，用户可能会因此而不满。
+
 Nginx不仅仅是一款优秀的负载均衡器/反向代理软件，它同时也是功能强大的Web应用服务器。LNMP也是近几年非常流行的web架构，在高流量的环境中稳定性也很好。
+
 Nginx现在作为Web反向加速缓存越来越成熟了，速度比传统的Squid服务器更快，可以考虑用其作为反向代理加速器。
+
 Nginx可作为中层反向代理使用，这一层面Nginx基本上无对手，唯一可以对比Nginx的就只有lighttpd了，不过lighttpd目前还没有做到Nginx完全的功能，配置也不那么清晰易读，社区资料也远远没Nginx活跃。
+
 Nginx也可作为静态网页和图片服务器，这方面的性能也无对手。还有Nginx社区非常活跃，第三方模块也很多。
+
 缺点：
+
 1.Nginx仅能支持http、https和Email协议，这样就在适用范围上面小些，这个是它的缺点。
+
 2.对后端服务器的健康检查，只支持通过端口来检测，不支持通过url来检测。不支持Session的直接保持，但能通过ip_hash来解决
 
 Nginx由内核和模块组成。Nginx本身做的工作实际很少，当它接到一个HTTP请求时，它仅仅是通过查找配置文件将此次请求映射到一个location block，而此location中所配置的各个指令则会启动不同的模块去完成工作，因此模块可以看做Nginx真正的劳动工作者。通常一个location中的指令会涉及一个handler模块和多个filter模块（当然，多个location可以复用同一个模块）。
+
 handler模块负责处理请求，完成响应内容的生成，而filter模块对响应内容进行处理。用户根据自己的需要开发的模块都属于第三方模块。正是有了这么多模块的支撑，Nginx的功能才会如此强大。具体的Nginx处理流程：
+
 1.客户端发送HTTP请求
+
 2.Nginx基于配置文件中的位置选择一个合适的处理模块
+
 3.负载均衡模块选择一台后端服务器 (如果有)
+
 4.处理模块进行处理并把输出缓冲放到第一个过滤模块上
+
 5.第一个过滤模块处理后输出给第二个过滤模块
+
 6.然后第二个过滤模块又到第三个
+
 7.依此类推，最后把响应发给客户端。
 
 Nginx目前支持自带3种负载均衡策略：
 
 轮询(rr)：按照轮询（默认）方式进行负载，每个请求按时间顺序逐一分配到不同的后端服务器，如果后端服务器down掉，能自动剔除。虽然这种方式简便、成本低廉。但缺点是：可靠性低和负载分配不均衡。
+
 权重(weight)：指定轮询几率，weight和访问比率成正比，用于后端服务器性能不均的情况。
+```
 upstream westos{
      server 192.168.1.1:80  weight=9;
      server 192.168.1.2:80  weight=1;
 }
+```
 ip哈希(ip_hash)：上面的2种方式都有一个问题，那就是下一个请求来的时候请求可能分发到另外一个服务器，当我们的程序不是无状态的时候（采用了session保存数据），这时候就有一个很大的很问题了，比如把登录信息保存到了session中，那么跳转到另外一台服务器的时候就需要重新登录了，所以很多时候我们需要一个客户只访问一个服务器，那么就需要用ip_hash了，ip_hash的每个请求按访问ip的hash结果分配，这样每个访客固定访问一个后端服务器，可以解决session的问题。
-# ip_hash： 来自同一个IP的请求会分发到相同的后端服务器
+
+ip_hash： 来自同一个IP的请求会分发到相同的后端服务器
+```
 upstream westos{
      ip_hash;
      server 192.168.1.1:80;
      server 192.168.1.2:80;
 }
+```
 fair：这是第三方的策略，按照后端服务器响应时间来分配请求，响应时间短的优先分配。
+```
 upstream backend{
 	 fair;
      server 192.168.1.1:80;
      server 192.168.1.2:80;
 }
+```
 url_hash：按访问url的hash结果来分配请求，使每个url定向到同一个后端服务器，后端服务器为缓存时比较有效。在upstream中加入hash语句，server语句中不能写入weight等其他的参数，hash_method是使用的hash算法。
+```
 upstream backend{
      hash $request_uri; 
      hash_method crc32; 
      server 192.168.1.1:80;
      server 192.168.1.2:80;
 }
+```
 优点：
 
 支持两种代理模式：TCP（四层）和HTTP（七层），支持虚拟主机；
+
 支持Session的保持，Cookie的引导；同时支持通过获取指定的url来检测后端服务器的状态。能够补充Nginx的一些缺点。
+
 HAProxy跟LVS类似，本身就只是一款负载均衡软件；单纯从效率上来讲HAProxy会比Nginx有更出色的负载均衡速度，在并发处理上也是优于Nginx的。
+
 HAProxy可以对Mysql进行负载均衡，对后端的DB节点进行检测和负载均衡。
+
 HAProxy负载均衡策略非常多，比如：动态加权轮循(Dynamic Round Robin)，加权源地址哈希(Weighted Source Hash)，加权URL哈希和加权参数哈希(Weighted Parameter Hash)
+
 免费开源，稳定性也是非常好，可以与LVS相媲美；
+
 自带强大的监控服务器状态的页面，实际环境中我们结合Nagios进行邮件或短信报警；
+
 HAProxy实现了一种事件驱动, 单一进程模型，此模型支持非常大的并发连接数。多进程或多线程模型受内存限制 、系统调度器限制以及无处不在的锁限制，很少能处理数千并发连接。事件驱动模型因为在有更好的资源和时间管理的用户空间(User-Space) 实现所有这些任务，所以没有这些问题。此模型的弊端是，在多核系统上，这些程序通常扩展性较差。这就是为什么他们必须进行优化以使每个CPU时间片(Cycle)做更多的工作
 
 roundrobin：简单的轮询
+
 static-rr：权重轮询
+
 leastconn：最少连接者优先
+
 source：根据请求源IP,这个跟Nginx的ip_hash机制类似
+
 ri：根据请求的URI
+
 rl_param：表示根据请求的URI参数‘balance url_param’requires an URL parameter name;
+
 hdr(name)：根据HTTP请求头来锁定每一次HTTP请求
+
 rdp-cookie(name)：根据cookie来锁定并哈希每一次TCP请求
 
-```
-
 ### 主从复制（MySQL、Redis）
-```
+
 https://www.cnblogs.com/yidashi110/p/10274846.html
+
 一、mysql(mariadb)基础
+
 1、基础命令(centos7操作系统下)
-复制代码
-复制代码
+
 1.启动mysql
+```
 systemctl start mariadb 
+```
 
 2.linux客户端连接自己 
+```
 mysql -uroot -p -h 127.0.0.1
     -u 用户
     -p 密码验证
     -h 连接的主机地址
+```
 
 3.远程链接mysql服务端
+```
 mysql -uroot -p -h 192.168.3.115
+```
 
 4.修改mysql密码
+```
 # 修改当前用户的密码
 set password = PASSWORD('mariadb123');
-
 # 修改其他用户的密码
 set password for 'username'@'host' = PASSWORD('newpassword') 
+```
 
 5.创建mysql用户
+```
 create user xiaoming@'%' identified by 'xm666';
+```
 
 6.查询mysql库中的用户信息
+```
 use mysql;  # mysql是默认存在的库，储存着用户的信息，密码之类的
 select host,user,password from  user;
+```
 
 7.授权语句
 给小明这个用户，授予创建数据库的权限
+
 mysql中使用grant命令对账户进行授权，grant命令常见格式如下
 
 grant 权限 on 数据库.表名 to 账户@主机名          对特定数据库中的特定表授权
-grant 权限 on 数据库.* to 账户@主机名             对特定数据库中的所有表给与授权
-grant 权限1,权限2,权限3 on *.* to 账户@主机名   　对所有库中的所有表给与多个授权
-grant all privileges on *.* to 账户@主机名   　　 对所有库和所有表授权所有权限
 
+grant 权限 on 数据库.* to 账户@主机名             对特定数据库中的所有表给与授权
+
+grant 权限1,权限2,权限3 on *.* to 账户@主机名   　对所有库中的所有表给与多个授权
+
+grant all privileges on *.* to 账户@主机名   　　 对所有库和所有表授权所有权限
+```
 # 授予小明创建的权限，对于所有的库表生效
 grant create  on *.* to xiaoming@"%";
 
@@ -13737,16 +13914,15 @@ flush privileges;  # 刷新使授权立即生效
 
 # 查看用户权限
 show grants for 'xiaoming'@'%';
+```
 
 8.移除权限
+```
 revoke all privileges on *.* from xiaoming@"%";
-复制代码
-复制代码
- 
+```
 
 2、数据库的备份与恢复
-复制代码
-复制代码
+```
 # 备份
 mysqldump -u root -p --all-databases > /tmp/db.sql
 
@@ -13762,179 +13938,181 @@ mysql -uroot -p < /tmp/db.sql
 
 第四种，如果你数据量特别大的话
 使用第三方工具 xtrabackup
-复制代码
-复制代码
- 
+```
 
 二、mysql主从复制
+
 1、mysql主从复制背景
+
 1.如果你是单点数据库，数据库挂了，你整个项目就挂了
 
 2.如果你是主备数据库，挂了一台主库，我可能还有千千万万个备用的数据库
 
 3.原理
+
 MySQL数据库的主从复制是其自带的功能，主从复制并不是复制磁盘上的数据库文件，而是通过主库的binlog日志复制到需要同步的从服务器上。
+
 在复制的过程中，一台服务器充当主服务器（Master），接收来自用户的内容更新，而一个或多个其他的服务器充当从服务器（slave），接收来自Master上binlog文件的日志内容，解析出SQL，重新更新到Slave，使得主从服务器数据达到一致。
 
 主从复制的逻辑有以下几种
+
 一主一从，单向主从同步模式，只能在Master端写入数据
-
-
- 
 
 一主多从
 
-
-
- 
-
-
-
- 
-
 双主主复制逻辑架构，此架构可以在Master1或Master2进行数据写入，或者两端同时写入（特殊设置）
 
-
- 
-
 4.应用场景
+
 利用复制功能当Master服务器出现问题时，我们可以人工的切换到从服务器继续提供服务，此时服务器的数据和宕机时的数据几乎完全一致。
+
 复制功能也可用作数据备份，但是如果人为的执行drop,delete等语句删除，那么从库的备份功能也就失效了
 
- 
-
 2、mysql主从复制主库的配置步骤
-复制代码
-复制代码
+
 1.在matser(192.168.3.115)主库上的操作，开启主库功能
+```
 # 先把主数据库停了
 systemctl stop mariadb 
-
 # 编辑数据库的配置文件 /etc/my.cnf ，写入如下信息
 [mysqld]
 server-id=6  # 这个server-id只要与你从库的server-id不一样即可
 log-bin=master-logbin  # 生成二进制日志，记录数据的变化
-
 # 重启数据库
 systemctl start mariadb
+```
 
 2.在主库创建用户，用于同步数据
+```
 create user xiaoming@'%' identified by 'xm666';
 
 授予用户，slave从库的身份
 grant replication slave on *.* to 'xiaoming'@'%';
+```
 
-
-3.锁定数据库的库表，禁止写入
-这个命令是全局读锁定，执行了命令之后所有库所有表都被锁定只读。一般都是用在数据库联机备份，这个时候数据库的写操作将被阻塞，读操作顺利进行。 
+3.锁定数据库的库表，禁止写入 这个命令是全局读锁定，执行了命令之后所有库所有表都被锁定只读。一般都是用在数据库联机备份，这个时候数据库的写操作将被阻塞，读操作顺利进行。 
+```
 解锁语句是：UNLOCK TABLES;
 flush table with read lock;
 
 记录下主库的状态，记录下，日志文件的名字，和位置
 show master status; 
+```
 
 4.导出主库的数据
+```
 mysqldump -u root -p --all-databases > /tmp/db.sql
-
+```
 
 5.确保数据导出后，没有数据插入，完毕再查看主库状态
-
-　　show master status;
+```
+show master status;
+```
 
 6.远程传输主库的数据，给从库，进行导入
+```
 scp /tmp/db.sql  root@192.168.3.27:/tmp/
-
+```
 
 7.解锁主库的锁，写入数据，查看从库是否同步
+```
 unlock tables;
-复制代码
-复制代码
- 
+```
 
 3、从库slave(192.168.3.27)机器的配置步骤
-复制代码
-复制代码
+
 1.在从库的 /etc/my.cnf中添加参数，添加只读参数
+```
 [mysqld]
 server-id=3
 read-only=true
-
+```
 
 2.重启数据库
+```
 systemctl restart mariadb 
+```
 
 在从库中导入主库的数据
+```
 mysql -uroot -p  <  /tmp/db.sql 
-
+```
 
 3.一条语句，开启主从之间的复制关系
+
 用root用户，进入mysql数据库，输入命令：
+```
 change master to master_host='192.168.3.115',  # 主数据库的ip
 master_user='xiaoming',  # 普通用户的用户名
 master_password='xm666', # 普通用户的密码
 master_log_file='master-logbin.000002',  # 主库show master status;日志文件的名字
 master_log_pos=492;  # 主库show master status;记录的位置
+```
 
 4.开启slave同步功能
+```
 start slave;
+```
 
 5.检查slave机器的主从是否正确
+```
 show slave status\G  查看主从同步是否正确
 
 确保如下两条参数，是yes，即主从复制正确
 Relay_Master_Log_File: master-logbin.000002
      Slave_IO_Running: Yes
     Slave_SQL_Running: Yes
-
+```
 
 6.此时mariadb数据库，请退出root用户，使用普通用户配置，因为root身份权限太大，无法达到read-only效果
-6.此时mariadb数据库，请退出root用户，使用普通用户配置，因为root身份权限太大，无法达到read-only效果
+
 6.此时mariadb数据库，请退出root用户，使用普通用户配置，因为root身份权限太大，无法达到read-only效果
 
+6.此时mariadb数据库，请退出root用户，使用普通用户配置，因为root身份权限太大，无法达到read-only效果
 
 7.登录一个普通用户
+```
 mysql -u xiaoming -p 
-
+```
 8.此时在主库写入数据，查看从库是否正确同步
 
 9.从库无法写入数据，即为正常
 
 10.完成主从同步，读写分离实验
-复制代码
-复制代码
- 
 
 三、redis基础
+
 redis是一种高级的key：value存储系统，其中value支持五种数据类型
+
 String: 字符串
+
 Hash: 散列
+
 List: 列表
+
 Set: 集合
+
 Sorted Set: 有序集合
 
- 
-
 1、strings类型
-操作
 
-复制代码
-复制代码
 set 　　 设置key
+
 get      获取key
+
 append   追加string
+
 mset     设置多个键值对
+
 mget     获取多个键值对
+
 del      删除key
+
 incr     递增+1
+
 decr     递减-1
-复制代码
-复制代码
- 
 
-示例
-
-复制代码
-复制代码
+```
 127.0.0.1:6379> set name 'dog'  # 设置key
 OK
 127.0.0.1:6379> get name  # 获取value
@@ -13976,30 +14154,24 @@ OK
 (integer) 10
 127.0.0.1:6379> get num
 "10"
-复制代码
-复制代码
- 
+```
 
 2、list类型
-操作
 
-复制代码
-复制代码
 lpush           从列表左边插
+
 rpush           从列表右边插
+
 lrange          获取一定长度的元素  lrange key  start stop(相当于获取切片的内容)
+
 ltrim           截取一定长度列表
+
 lpop            删除最左边一个元素
+
 rpop            删除最右边一个元素
+
 lpushx/rpushx   key存在则添加值，不存在不处理
-复制代码
-复制代码
- 
-
-示例
-
-复制代码
-复制代码
+```
 127.0.0.1:6379> lpush list1 'a' 'b' 'c' 'd'  # 新建一个list1，从左边放入四个元素
 (integer) 4
 127.0.0.1:6379> llen list1  # 查看list1的长度
@@ -14037,31 +14209,23 @@ OK
 127.0.0.1:6379> lrange list1 0 -1
 1) "c"
 2) "b"
-复制代码
-复制代码
- 
-
+```
 3、set集合类型
+
 redis的集合，是一种无序的集合，集合中的元素没有先后顺序，且集合成员是唯一的。
 
-操作
-
-复制代码
-复制代码
 sadd/srem   添加/删除 元素
+
 sismember   判断是否为set的一个元素
+
 smembers    返回集合所有的成员
+
 sdiff       返回一个集合和其他集合的差异
+
 sinter      返回几个集合的交集
+
 sunion      返回几个集合的并集
-复制代码
-复制代码
- 
-
-示例
-
-复制代码
-复制代码
+```
 127.0.0.1:6379> sadd school class1 class2  # 添加一个名叫school的集合，有2个元素，不加引号就当做字符串处理
 (integer) 2
 127.0.0.1:6379> smembers school  # 查看集合school成员
@@ -14093,60 +14257,46 @@ sunion      返回几个集合的并集
 1) "class3"
 2) "class4"
 3) "class2"
-复制代码
-复制代码
- 
+```
 
 4、哈希数据结构
+
 hashes即哈希。哈希是从redis-2.0.0版本之后才有的数据结构。
 
 hashes存的是字符串和字符串值之间的映射，比如一个用户要存储其全名、姓氏、年龄等等，就很适合使用哈希。
 
-操作
-
-复制代码
-复制代码
 hset    设置散列值
-hget    获取散列值
-hmset   设置多对散列值
-hmget   获取多对散列值
-hsetnx  如果散列已经存在，则不设置（防止覆盖key）
-hkeys   返回所有keys
-hvals   返回所有values
-hlen    返回散列包含域（field）的数量
-hdel    删除散列指定的域（field）
-hexists 判断是否存在
-复制代码
-复制代码
- 
 
-注意
+hget    获取散列值
+
+hmset   设置多对散列值
+
+hmget   获取多对散列值
+
+hsetnx  如果散列已经存在，则不设置（防止覆盖key）
+
+hkeys   返回所有keys
+
+hvals   返回所有values
+
+hlen    返回散列包含域（field）的数量
+
+hdel    删除散列指定的域（field）
+
+hexists 判断是否存在
 
 Hash不支持多次嵌套，即
 "key": {'field': '不能再对应字典'}
 
 "key": {'field': {...}}   --> 错误 
 若想嵌套字典，可以json.dumps后存入，取出数据的时候可以json.loads
- 
-
-语法
-
-复制代码
-复制代码
+```
 hset key field value
 结构如下
     key: {
         field1: value1,
         field2: value2,
     }
-复制代码
-复制代码
- 
-
-示例
-
-复制代码
-复制代码
 127.0.0.1:6379> hset school name 'ChinaSchool'  # 创建一个key为school的哈希数据
 (integer) 1
 127.0.0.1:6379> hget school name  # 获取school的name的值
@@ -14171,93 +14321,88 @@ OK
 (integer) 1
 127.0.0.1:6379> hdel shcool area  # 删除school中的area键值对
 (integer) 1
-复制代码
-复制代码
- 
+```
 
 5、额外的危险操作(慎用)
-复制代码
-复制代码
+
 获取redis数据库中所有的键(这个不危险)
+
 keys *
 
 删除所有Key，可以使用Redis的flushdb和flushall命令(危险慎用)
-# 删除当前数据库中的所有Key
+
+删除当前数据库中的所有Key
 flushdb
 
-# 删除所有数据库中的key
+删除所有数据库中的key
 flushall
-复制代码
-复制代码
- 
 
 四、redis发布者订阅者
-复制代码
-复制代码
-发布者：
-PUBLISH channel msg
-    将信息 message 发送到指定的频道 channel
+
+发布者： PUBLISH channel msg 将信息 message 发送到指定的频道 channel
     
-频道  channel  
-    自定义频道的名字
+频道  channel  自定义频道的名字
 
-订阅者：
-SUBSCRIBE channel [channel ...]
-    订阅频道，可以同时订阅多个频道
+订阅者： SUBSCRIBE channel [channel ...] 订阅频道，可以同时订阅多个频道
 
-UNSUBSCRIBE [channel ...]
-    取消订阅指定的频道, 如果不指定频道，则会取消订阅所有频道
+UNSUBSCRIBE [channel ...] 取消订阅指定的频道, 如果不指定频道，则会取消订阅所有频道 
 
-PSUBSCRIBE pattern [pattern ...]
-    订阅一个或多个符合给定模式的频道(正则匹配)，每个模式以 * 作为匹配符，
-    比如 it* 匹配所有以 it 开头的频道( it.news 、 it.blog 、 it.tweets 等等)， 
-    news.* 匹配所有以 news. 开头的频道( news.it 、 news.global.today 等等)，诸如此类
+PSUBSCRIBE pattern [pattern ...] 订阅一个或多个符合给定模式的频道(正则匹配)，每个模式以 * 作为匹配符，
 
-PUNSUBSCRIBE [pattern [pattern ...]]
-    退订指定的规则, 如果没有参数则会退订所有规则
+比如 it* 匹配所有以 it 开头的频道( it.news 、 it.blog 、 it.tweets 等等)， 
 
-PUBSUB subcommand [argument [argument ...]]
-    查看订阅与发布系统状态
+news.* 匹配所有以 news. 开头的频道( news.it 、 news.global.today 等等)，诸如此类
+
+PUNSUBSCRIBE [pattern [pattern ...]] 退订指定的规则, 如果没有参数则会退订所有规则
+
+PUBSUB subcommand [argument [argument ...]] 查看订阅与发布系统状态
 
 注意：使用发布订阅模式实现的消息队列，当有客户端订阅channel后只能收到后续发布到该频道的消息，之前发送的不会缓存，必须Provider和Consumer同时在线
-复制代码
-复制代码
- 
 
 五、redis数据持久化
+
 redis的缺点：
-　　redis数据放在内存中
-　　重启服务器丢失数据
-　　重启redis服务丢失数据
-　　断电丢失数据
+
+redis数据放在内存中
+
+重启服务器丢失数据
+
+重启redis服务丢失数据
+
+断电丢失数据
 
 为了防止redis数据丢失，进行持久化，将数据，写入到一个文件中
 
- 
-
 1、redis持久化之RDB
+
 redis提供了RDB持久化的功能，这个功能可以将redis在内存中的的状态保存到硬盘中，它可以手动执行。
+
 也可以再redis.conf中配置，定期执行。
+
 RDB持久化产生的RDB文件是一个经过压缩的二进制文件，这个文件被保存在硬盘中，redis可以通过这个文件还原数据库当时的状态。
 
 RDB的原理是
-　　基于内存的数据快照
-　　定期执行数据快照
-　　手动触发数据快照
-　　Redis会将数据集的快照dump到dump.rdb文件中
-　　可以通过配置文件来修改Redis服务器dump快照的频率
+
+基于内存的数据快照
+
+定期执行数据快照
+
+手动触发数据快照
+
+Redis会将数据集的快照dump到dump.rdb文件中
+
+可以通过配置文件来修改Redis服务器dump快照的频率
 
 RDB优点：
-　　速度快，适合做备份，主从复制就是基于RDB持久化功能实现
-　　rdb通过在redis中使用save命令触发 rdb
 
- 
+速度快，适合做备份，主从复制就是基于RDB持久化功能实现
+
+rdb通过在redis中使用save命令触发 rdb
 
 1. 配置rdb数据持久化
 
-复制代码
-复制代码
 1.在配置文件中，添加rdb持久化参数 
+```
 vim redis-6379.conf 
 写入如下配置
 port 6379           
@@ -14272,46 +14417,45 @@ dbfilename  dbmp.rdb  # rdb持久化文件
 save 900 1  # rdb机制 每900秒 如果至少有1个key发生变化，则dump内存快照(相当于手动save触发rdb持久化文件)
 save 300 10 # 在300秒(5分钟)之后，如果至少有10个key发生变化，则dump内存快照。
 save 60 10000  # 在60秒(1分钟)之后，如果至少有10000个key发生变化，则dump内存快照。
+```
 
 2.触发rdb持久化，可以手动save命令,生成 dump.rdb持久化文件
 
 3.重启redis，数据不再丢失
 
 4. 测试
+
 进入redis客户端
+```j
 redis-cli
 
 127.0.0.1:6379> set age 18
 OK
 127.0.0.1:6379> save
 OK
-
+```
 5.进入/data/6379查看是否生成了 dbmp.rdb 持久化文件
+
 注意：rdb数据文件是二进制文件，人为的看不懂
 
 6.kill掉redis进程，再重启，进入redis   keys * 查看数据是否还在
-复制代码
-复制代码
- 
 
 2、redis持久化之aof
+
 AOF（append-only log file）
+
 记录服务器执行的所有变更操作命令（例如set del等），并在服务器启动时，通过重新执行这些命令来还原数据集
 
-
 AOF 文件中的命令全部以redis协议的格式保存，新命令追加到文件末尾。
-优点：最大程序保证数据不丢
-缺点：日志记录非常大
 
- 
+优点：最大程序保证数据不丢
+
+缺点：日志记录非常大
 
 1. 配置方式
 
- 
-
-复制代码
-复制代码
 1,在配置文件中，添加aof参数
+```
 参数解释：
 appendonly yes  # 开启aof功能
 
@@ -14335,90 +14479,92 @@ save 60 10000
 
 appendonly yes
 appendfsync everysec
-
+```
 
 2,重启redis数据库，加载aof功能
-会在/data/6379目录下生成 appendonly.aof 文件
 
+会在/data/6379目录下生成 appendonly.aof 文件
 
 3,appendonly.aof 文件是人可以看懂的记录了sql操作的文件
 
 4,测试
+
 进入redis客户端
+```
 redis-cli
 
 127.0.0.1:6379> set long 18
 OK
-
+```
 5,进入/data/6379查看appendonly.aof 文件的内容
 
 6,kill掉redis进程，再重启，进入redis   keys * 查看数据是否还在
-复制代码
-复制代码
- 
-
- 
 
 3、在不重启redis的情况下，切换rdb数据到aof数据中
- 
 
-复制代码
-复制代码
 1.配置redis支持rdb持久化
 
 2.启动redis客户端，通过命令，临时切换到aof模式
+```
 127.0.0.1:6379> CONFIG set appendonly yes  # 开启AOF功能
 OK
 127.0.0.1:6379> CONFIG SET save ""  # 关闭RDB功能
 OK
-
+```
 3.检查此时的数据持久化方式是rdb，还是aof，检查appendonly.aof文件，数据变动
+```
 tail -f appendonly.aof
-
+```
 4.此时aof还未永久生效，写入参数到配置文件
+```
 编辑redis-6379.conf 添加如下参数
 appendonly yes
 appendfsync everysec
-复制代码
-复制代码
- 
+```
 
 4、redis持久化方式有什么区别
+
 rdb：基于快照的持久化，速度更快，一般用作备份，主从复制也是依赖于rdb持久化功能
 
 aof：以追加的方式记录redis操作日志的文件。可以最大程度的保证redis数据安全，类似于mysql的binlog
 
- 
-
 六、redis主从同步实现
+
 原理：
+
 1. 从服务器向主服务器发送 SYNC 命令。
+
 2. 接到 SYNC 命令的主服务器会调用BGSAVE 命令，创建一个 RDB 文件，并使用缓冲区记录接下来执行的所有写命令。
+
 3. 当主服务器执行完 BGSAVE 命令时，它会向从服务器发送 RDB 文件，而从服务器则会接收并载入这个文件。
+
 4. 主服务器将缓冲区储存的所有写命令发送给从服务器执行。
 
 小知识：
+
 1. 在开启主从复制的时候，使用的是RDB方式的，同步主从数据的
+
 2. 同步开始之后，通过主库命令传播的方式，主动的复制方式实现
+
 3. 2.8以后实现PSYNC的机制，实现断线重连
 
- 
-
 1、使用配置文件进行redis主从同步配置
+
 准备三个redis数据库,redis支持多实例
+
 三个配置文件，仅仅是端口的不同
 
 在三个配置文件中，添加主从同步的参数,
+
 三个配置文件参数是一样的，唯一不同的是，
+
 在从库中需要指定它的主库是谁即可，
+
 例如6380的配置
 slaveof 127.0.0.1 6379 代表这个redis库是6379的从库
 
- 
-
-复制代码
-复制代码
 1. 三个配置文件参信息如下
+```
 # redis-6379.conf(主redis)
 port 6379           
 daemonize yes           
@@ -14431,7 +14577,6 @@ dbfilename  dbmp.rdb
 save 900 1
 save 300 10 
 save 60 10000
-
 
 # redis-6380.conf(从redis)
 port 6380           
@@ -14447,7 +14592,6 @@ save 300 10
 save 60 10000
 slaveof  127.0.0.1 6379
 
-
 # redis-6381.conf(从redis)
 port 6381           
 daemonize yes           
@@ -14461,36 +14605,42 @@ save 900 1
 save 300 10 
 save 60 10000
 slaveof  127.0.0.1 6379
-
-
+```
 2.启动三个redis实例
+```
 redis-server redis-6379.conf
 redis-server redis-6380.conf
 redis-server redis-6381.conf
+```
 
 3.查看主从同步身份
+```
 1,redis-cli -p 6379  info replication 
 # Replication
 role:master
 connected_slaves:2
 slave0:ip=127.0.0.1,port=6380,state=online,offset=28,lag=1
 slave1:ip=127.0.0.1,port=6381,state=online,offset=28,lag=1
-
+```
 
 2,redis-cli -p 6380  info replication 
+```
 # Replication
 role:slave
 master_host:127.0.0.1
 master_port:6379
-
+```
 
 3,redis-cli -p 6381  info replication 
+```
 # Replication
 role:slave
 master_host:127.0.0.1
 master_port:6379
+```
 
 4.测试
+```
 # 在6379主库
 redis-cli -p 6379
 
@@ -14508,101 +14658,109 @@ redis-cli -p 6381
 
 127.0.0.1:6381> get uzi
 "good"
-复制代码
-复制代码
- 
+```
 
 2、使用命令行进行redis主从同步配置
-复制代码
-复制代码
+```
 1. 6380/6381命令行
 redis-cli -p 6380
 127.0.0.1:6380> SLAVEOF 127.0.0.1 6379  #指明主库的地址
 
 redis-cli -p 6381
 127.0.0.1:6381> SLAVEOF 127.0.0.1 6379  #指明主库的地址
-
+```
 
 2. 检查主从状态
+```
 主库：
 127.0.0.1:6379> info replication
 
 从库：
 127.0.0.1:6380> info replication
 127.0.0.1:6381> info replication
-复制代码
-复制代码
- 
+```
 
 3、如果我主库挂了怎么办
-复制代码
-复制代码
-解决方案：手动切换主从身份，选举一个新的主库
-1.干掉6379主库
-redis-cli -p 6379 shutdown
 
+解决方案：手动切换主从身份，选举一个新的主库
+
+1.干掉6379主库
+```
+redis-cli -p 6379 shutdown
+```
 2.在6380上关闭自己的slave身份
+```
 127.0.0.1:6380> slaveof no one 
+```
 
 3.在6381上给与新的主人身份
+```
 127.0.0.1:6381> salveof  127.0.0.1  6380 
+```
 
 4.修改完毕，还得修改配置文件，永久生效
 
-```
-
 ### 数据冗余、备份（MySQL增量、全量 原理）
-```
+
 https://www.cnblogs.com/abeli/p/6725201.html
+
 在日常运维工作中，对mysql数据库的备份是万分重要的，以防在数据库表丢失或损坏情况出现，可以及时恢复数据。
 
 下面对这种备份方案详细说明下：
+
 1.MySQLdump增量备份配置
+
 执行增量备份的前提条件是MySQL打开binlog日志功能，在my.cnf中加入
+```
 log-bin=/opt/Data/MySQL-bin
+```
 “log-bin=”后的字符串为日志记载目录，一般建议放在不同于MySQL数据目录的磁盘上。
-
- 
-
+```
 　　mysqldump >       导出数据
  
 
 　　mysql <           导入数据  （或者使用source命令导入数据，导入前要先切换到对应库下）
- 
-
- 
+``` 
 
 注意一个细节：
- 
 
 若是mysqldump导出一个库的数据，导出文件为a.sql，然后mysql导入这个数据到新的空库下。
- 
 
 如果新库名和老库名不一致，那么需要将a.sql文件里的老库名改为新库名，
- 
 
 这样才能顺利使用mysql命令导入数据（如果使用source命令导入就不需要修改a.sql文件了）。
+
 2.MySQLdump增量备份
+
 假定星期日下午1点执行全量备份，适用于MyISAM存储引擎。
+```
 [root@test-huanqiu ~]# MySQLdump --lock-all-tables --flush-logs --master-data=2 -u root -p test > backup_sunday_1_PM.sql
+```
 
 对于InnoDB将--lock-all-tables替换为--single-transaction
+
 --flush-logs为结束当前日志，生成新日志文件；
+
 --master-data=2 选项将会在输出SQL中记录下完全备份后新日志文件的名称，
 
 用于日后恢复时参考，例如输出的备份SQL文件中含有：
+```
 CHANGE MASTER TO MASTER_LOG_FILE=’MySQL-bin.000002′, MASTER_LOG_POS=106;
-
+```
 3.MySQLdump增量备份其他说明：
+
 如果MySQLdump加上–delete-master-logs 则清除以前的日志，以释放空间。但是如果服务器配置为镜像的复制主服务器，用MySQLdump –delete-master-logs删掉MySQL二进制日志很危险，因为从服务器可能还没有完全处理该二进制日志的内容。在这种情况下，使用 PURGE MASTER LOGS更为安全。
 
 每日定时使用 MySQLadmin flush-logs来创建新日志，并结束前一日志写入过程。并把前一日志备份，例如上例中开始保存数据目录下的日志文件 MySQL-bin.000002 , ...
 
 1.恢复完全备份
+```
 mysql -u root -p < backup_sunday_1_PM.sql
-
+```
 2.恢复增量备份
+```
 mysqlbinlog MySQL-bin.000002 … | MySQL -u root -p注意此次恢复过程亦会写入日志文件，如果数据量很大，建议先关闭日志功能
+```
 
 --compatible=name
 它告诉 MySQLdump，导出的数据将和哪种数据库或哪个旧版本的 MySQL 服务器相兼容。值可以为 ansi、MySQL323、MySQL40、postgresql、oracle、mssql、db2、maxdb、no_key_options、no_tables_options、no_field_options 等，要使用几个值，用逗号将它们隔开。当然了，它并不保证能完全兼容，而是尽量兼容。
@@ -14658,9 +14816,12 @@ mysqldump --host=host1 --opt sourceDb| mysql --host=host2 -C targetDb
 
 结合Linux的cron命令实现定时备份
 比如需要在每天凌晨1:30备份某个主机上的所有数据库并压缩dump文件为gz格式
+```
 30 1 * * * mysqldump -u root -pPASSWORD --all-databases | gzip > /mnt/disk2/database_`date '+%m-%d-%Y'`.sql.gz
+```
 
 一个完整的Shell脚本备份MySQL数据库示例。比如备份数据库opspc
+```
 [root@test-huanqiu ~]# vim /root/backup.sh
 #!bin/bash
 echo "Begin backup mysql database"
@@ -14669,37 +14830,46 @@ echo "Your database backup successfully completed"
 
 [root@test-huanqiu ~]# crontab -e
 30 1 * * * /bin/bash -x /root/backup.sh > /dev/null 2>&1
-
+```
 mysqldump全量备份+mysqlbinlog二进制日志增量备份
+
 1）从mysqldump备份文件恢复数据会丢失掉从备份点开始的更新数据，所以还需要结合mysqlbinlog二进制日志增量备份。
+
 首先确保已开启binlog日志功能。在my.cnf中包含下面的配置以启用二进制日志：
+```
 [mysqld]
 log-bin=mysql-bin
-
+```
 2）mysqldump命令必须带上--flush-logs选项以生成新的二进制日志文件：
+```
 mysqldump --single-transaction --flush-logs --master-data=2 > backup.sql
+```
 其中参数--master-data=[0|1|2]
+
 0: 不记录
+
 1：记录为CHANGE MASTER语句
+
 2：记录为注释的CHANGE MASTER语句
 
 mysqldump全量+增量备份方案的具体操作可参考下面两篇文档：
-数据库误删除后的数据恢复操作说明
-解说mysql之binlog日志以及利用binlog日志恢复数据
 
- 
+数据库误删除后的数据恢复操作说明
+
+解说mysql之binlog日志以及利用binlog日志恢复数据
 
 下面分享一下自己用过的mysqldump全量和增量备份脚本
 
- 
-
 应用场景：
+
 1）增量备份在周一到周六凌晨3点，会复制mysql-bin.00000*到指定目录；
+
 2）全量备份则使用mysqldump将所有的数据库导出，每周日凌晨3点执行，并会删除上周留下的mysq-bin.00000*，然后对mysql的备份操作会保留在bak.log文件中。
 
 脚本实现：
-1）全量备份脚本（假设mysql登录密码为123456；注意脚本中的命令路径）：
 
+1）全量备份脚本（假设mysql登录密码为123456；注意脚本中的命令路径）：
+```
 [root@test-huanqiu ~]# vim /root/Mysql-FullyBak.sh
 #!/bin/bash
 # Program
@@ -14720,8 +14890,10 @@ Last=`date +"%Y年%m月%d日 %H:%M:%S"`
 echo 开始:$Begin 结束:$Last $GZDumpFile succ >> $LogFile
 cd $BakDir/daily
 /bin/rm -f *
+```
 
 2）增量备份脚本（脚本中mysql的数据存放路径是/home/mysql/data，具体根据自己的实际情况进行调整）
+```
 [root@test-huanqiu ~]# vim /root/Mysql-DailyBak.sh
 #!/bin/bash
 # Program
@@ -14758,15 +14930,19 @@ do
      fi
 done
 echo `date +"%Y年%m月%d日 %H:%M:%S"` $Next Bakup succ! >> $LogFile
+```
 
 3）设置crontab任务，执行备份脚本。先执行的是增量备份脚本，然后执行的是全量备份脚本：
+```
 [root@test-huanqiu ~]# crontab -e
 #每个星期日凌晨3:00执行完全备份脚本
 0 3 * * 0 /bin/bash -x /root/Mysql-FullyBak.sh >/dev/null 2>&1
 #周一到周六凌晨3:00做增量备份
 0 3 * * 1-6 /bin/bash -x /root/Mysql-DailyBak.sh >/dev/null 2>&1
+```
 
 4）手动执行上面两个脚本，测试下备份效果
+```
 [root@test-huanqiu backup]# pwd
 /home/mysql/backup
 [root@test-huanqiu backup]# mkdir daily
@@ -14775,8 +14951,9 @@ total 4
 drwxr-xr-x. 2 root root 4096 Nov 29 11:29 daily
 [root@test-huanqiu backup]# ll daily/
 total 0
-
+```
 先执行增量备份脚本
+```
 [root@test-huanqiu backup]# sh /root/Mysql-DailyBak.sh
 [root@test-huanqiu backup]# ll
 total 8
@@ -14791,8 +14968,9 @@ mysql-binlog.000030 copying
 mysql-binlog.000031 copying
 mysql-binlog.000032 skip!
 2016年11月29日 11:29:32 Bakup succ!
-
+```
 然后执行全量备份脚本
+```
 [root@test-huanqiu backup]# sh /root/Mysql-FullyBak.sh
 20161129.sql
 [root@test-huanqiu backup]# ll
@@ -14808,36 +14986,49 @@ mysql-binlog.000031 copying
 mysql-binlog.000032 skip!
 2016年11月29日 11:29:32 Bakup succ!
 开始:2016年11月29日 11:30:38 结束:2016年11月29日 11:30:38 20161129.sql.tgz succ
-
 ```
 
 ### 监控检查（分存活、服务可用两个维度）
-```
 https://zhuanlan.zhihu.com/p/27437421
+
 1. 背景
+
 此处所说的服务监控程序，是指通过模拟用户的请求，对一个系统的服务质量进行监控的程序。服务监控程序的主要目的是：从用户的角度，通过发送端到端的请求，确认系统对外提供的服务是否正常。
 
 简单来说，一个好的服务监控程序应该具备以下功能：
 
 检测服务是否存活
+
 检测服务质量是否正常
+
 检测服务质量的变化趋势
+
 对每日的监控数据做统计报表
+
 运维友好的
+
 ……
+
 需要首先说明的是，监控一个系统服务是否正常是一个全方位的工作，需要进行如进程监控、请求错误率监控、网络流量监控，日志监控等工作。然而服务监控程序通常有着不可替代的作用，例如，通过将服务监控程序部署在用户的机器上，就可以从用户的角度对系统的服务质量进行监控，包括请求响应时间，请求错误率等等。
 
 本文接下来首先分析在开发一个服务监控程序时需要考虑的方方面面，接着介绍在部署和运维一个服务监控程序的时候需要注意的问题。
 
 2. 监控目标
+
 要实现一个服务监控程序，首先需要明确要对服务可能出现的哪些异常情况进行监控，以下列举了一些可能出现的服务异常：
 
 Dead – 服务已经挂掉（如进程异常退出，系统异常重启等）
+
 Unreachable – 服务不可达（如DNS异常，网络中断等）
+
 Unresponsive – 请求可以正常发送，但是服务无响应（如服务器内部异常等）
+
 Slow – 服务可以正确响应，但是响应时间过长（如服务器过载等）
+
 Wrong – 服务可以及时响应，但是结果不符合预期（如服务器内部数据库异常等）
+
 ……（以下还有很多异常）
+
 对于以上的一些错误，如服务进程异常退出等，可以通过进程监控等及时发现。然而对于服务不可达，或者服务响应时间变长等，通常服务内部的监控并不能及时发现，此时就需要依赖服务监控程序。
 
 部署服务监控程序的一个重要目标，就是当由于系统内部的错误、或者系统外部依赖的环境的异常导致用户的请求受到影响时，可以在短时间（1分钟）发现并及时处理。
@@ -14845,6 +15036,7 @@ Wrong – 服务可以及时响应，但是结果不符合预期（如服务器�
 同时，通过及时分析服务监控程序的请求记录，也可以对系统可能出现的瓶颈及时预警。举例来说：当服务监控程序的请求响应时间逐渐变长时，则说明系统可能需要扩容了。
 
 3. 服务监控程序的实现
+
 实现一个服务监控程序相对容易：只要模拟用户的请求发送到服务器，当请求超时或失败时则进行报警通知管理员即可。然而要实现一个好的监控程序，达到报警及时、准确——出问题时马上报警，不出问题不误报警，并不是一件容易的事情。
 
 以下介绍实现一个好的服务监控程序时需要注意的一些问题。
@@ -14856,14 +15048,21 @@ Wrong – 服务可以及时响应，但是结果不符合预期（如服务器�
 举例来说，我们的对象存储服务对用户提供了以下功能：
 
 用户可以向自己的存储空间中上传和下载对象
+
 用户可以对一个图片对象进行图片处理相关操作（如裁剪，给图片加水印等）
+
 用户可以对一个视频对象进行视频处理相关操作（如截取视频帧，视频转码等）
+
 还提供了其他一些操作，如List自己存储空间中的对象，批量删除对象等操作
+
 我们的每一种服务都由一个相对独立的集群提供：
 
 上传下载服务有数据库和存储集群
+
 图片处理服务有图片处理集群
+
 视频处理服务有视频处理集群
+
 我们的服务监控程序在实现时有以下考虑：
 
 为了检测服务上传下载服务，需要模拟用户发送对象上传下载请求。这里要注意的是，上传下载的对象不能太大，原因有两个：一是服务器处理逻辑对于大对象和小对象是一样的；二是避免因为上传或下载一个大对象出现的网络波动或磁盘负载抖动。
@@ -14893,8 +15092,11 @@ Wrong – 服务可以及时响应，但是结果不符合预期（如服务器�
 以下给出我们的服务监控程序探测上传下载服务的相关处理逻辑：
 
 每分钟发送1次上传、下载、删除请求，判断请求返回值是否符合预期，同时记录每次请求的响应时间；
+
 如果请求的返回值符合预期，且响应时间没有超过设置的阈值，则等待一分钟再次发送请求；否则，将错误信息记入日志，并执行第3步；
+
 连续发送5次请求，并判断这5次请求的返回结果和执行时间。如果超过2次请求出错或超时，则发送报警，否则只记日志不发送报警。
+
 该处理逻辑中所有的次数（包括发送请求次数，报警阈值等）均可以在配置文件中设置，保证运维人员可以根据实际情况配置合理的值。这种实现方式，可以有效防止偶发的错误造成的误报警。当然，对于那些出错的请求，需要好好进行分析。
 
 3.4. 全面监控子系统
@@ -14912,8 +15114,11 @@ Wrong – 服务可以及时响应，但是结果不符合预期（如服务器�
 服务监控程序的监控需要从开发和运维两个方面进行保障，在这里先谈谈开发时需要考虑的因素：
 
 要考虑运维误操作可能会kill掉服务监控程序，因此程序中需要捕获kill信号并发送报警或输出一条FATAL级别日志（用于日志监控）；
+
 服务监控程序可以考虑提供HTTP访问接口，供外部程序监控服务监控程序的状态。当系统部署多套服务监控程序时，也可以利用该接口查看各个服务监控程序所在机器的服务质量；
+
 ……
+
 3.6. 多重报警机制
 
 当服务监控程序可以及时、精确发现服务异常时，需要通过短信报警（或邮件等其他报警）将问题告诉给系统运维人员。在开发时需要考虑服务监控程序需要提供至少两套报警机制，防止其中一种报警方式失灵的情况。
@@ -14921,29 +15126,49 @@ Wrong – 服务可以及时响应，但是结果不符合预期（如服务器�
 举例来说，服务监控程序至少可以采用以下几种方式进行报警：
 
 直接调用公共的报警短信接口（如运维平台提供的Http接口）发送报警；
+
 通过记录错误日志，进行日志监控，当日志中出现特定关键字时进行报警；
+
 将监控的数据推送到统一的监控平台，在监控平台中实现逻辑判断和报警发送
+
 3.7. 其他若干注意事项
 
 以下再列举一些其他在开发服务监控程序时的注意事项：
 
 报警信息要准确
+
 发送报警信息很重要的一方面在于帮助开发和运维尽快定位问题，因此报警信息一定要准确。下面是一些推荐的报警信息：
+
 “192.168.0.1上对象读写监控程序连续5次请求超时”
+
 “10.10.0.138上的视频截图服务出现错误，错误信息为：...”
+
 可以对配置文件进行动态reload
+
 例如，如果服务监控程序有一个配置文件：hosts.conf，表示该监控程序需要探测的所有服务器地址。那当该配置文件修改时，程序可以在下次探测时去探测新加入的地址。这样减少了运维关闭服务监控程序和重启的操作，也就减小了出错的风险。
+
 服务监控程序的重试
+
 我们之前实现的服务监控程序，内部采用Java-SDK中提供的PutObject函数和GetObject等函数。这些函数在某些错误的情况下会进行重试，而这个重试很有可能导致屏蔽了某种可能的系统异常。
+
 服务监控程序的日志
+
 服务监控程序的日志也应该按照生产系统的标准，输出操作日志和错误日志等，规范的日志可以大大加速错误定位过程。
+
 防止服务监控程序导致系统过载
+
 在系统已经过载的情况下，请求可能被拒绝或超时。此时，当服务监控程序判断系统已经过载时，则发送报警。同时应该暂停（如暂停10分钟）向服务器发送探测请求，减轻系统负担。
+
 将所有服务的监控都放在一个程序中
+
 我们将所有服务的监控（上传下载、图片处理、视频处理）都集成在一套代码中，通过配置文件可以分别对各类监控进行配置。这样做的好处是：代码维护和运维成本低，因为只需要维护一套代码，部署一套代码即可。然而需要注意的是，所有的监控都部署在一台机器上，可能导致该机器的占用较多的带宽，因此需要特别注意采样数据不能太大。
+
 服务监控程序的代码应该纳入版本管理
+
 需要把服务监控程序作为整个系统的一个重要部分，进行代码的管理。
+
 4. 服务监控程序的部署与运维
+
 开发服务监控程序只走完了长征路的第一步，而剩下的两万五千里路都依赖服务的部署和运维。
 
 以下介绍部署和运维服务监控程序的注意事项。
@@ -14953,23 +15178,33 @@ Wrong – 服务可以及时响应，但是结果不符合预期（如服务器�
 将服务监控程序进行多点部署至少有两个方面的目的：
 
 服务监控程序的高可用——防止一台服务监控程序挂掉的情况
+
 从用户角度监控服务——通过将服务监控程序部署在用户的服务器上，可以从用户的角度监控服务质量
+
 多点部署也有以下问题需要注意：
 
 服务监控程序必须能够支持多点部署，因此在开发的时候需要注意多个服务监控程序不能相互干扰；
+
 部署在用户服务器上的监控程序要占用尽量少的资源，避免对用户本身的系统产生影响，在部署时也可以通过配置若干参数：如探测周期、探测请求数量等，降低服务监控程序占用资源；
+
 4.2. 报警阈值调节
 
 在开发服务监控程序时，需要尽量将所有的参数做成可配置参数，同时可以动态reload，如:
 
 要监控哪些服务器
+
 要监控哪类操作
+
 监控周期是多少
+
 每个监控周期发送多少请求
+
 请求超时时间是多少
+
 一次请求出错后要连续发送多少请求
-报警接收人信息
-……
+
+报警接收人信息 ……
+
 而运维人员的工作是，需要根据被检测系统的实际情况设置这些参数，并且调节这些参数为一个合理的值。
 
 参数调节应该遵循“先紧后松”的原则，即开始是可以将报警阈值设置的敏感一些，然后去分析每次报警，如果确认是误报，再将报警阈值调高一点。同时，及时不报警，也应该及时分析系统的错误日志，确保没有报警遗漏。
@@ -14993,35 +15228,45 @@ Wrong – 服务可以及时响应，但是结果不符合预期（如服务器�
 以下再列举一些部署和运维服务监控程序时的注意事项：
 
 任何一个报警，需要发给至少两个相关人员，且有一个主要负责人员
-发给至少两个人，是为了确保报警不会被遗漏；而发给相关人员，是为了防止非相关人员因为经常收到与自己无关的报警短信而忽略了发给自己的重要报警短信。
-服务监控程序的上线流程
-服务监控程序也需要执行完整的从开发到测试到部署上线的流程。尽管服务监控程序只是一个外部程序，然而我们通常会在内网部署让它可以将请求直接发送到后端各个子节点，因此也存在一定的风险，顾需要严格按照上线流程执行。
 
-```
+发给至少两个人，是为了确保报警不会被遗漏；而发给相关人员，是为了防止非相关人员因为经常收到与自己无关的报警短信而忽略了发给自己的重要报警短信。
+
+服务监控程序的上线流程
+
+服务监控程序也需要执行完整的从开发到测试到部署上线的流程。尽管服务监控程序只是一个外部程序，然而我们通常会在内网部署让它可以将请求直接发送到后端各个子节点，因此也存在一定的风险，顾需要严格按照上线流程执行。 ```
 
 ### MySQL、Redis、Memcached Proxy 、Cluster 目的、原理
-```
 https://www.cnblogs.com/hnlmy/p/9997515.html
+
 数据库
+
 数据库设计
- a. 单表
- b. FK（单表；一张表存储时，如果有重复出现的字段为了防止硬盘的浪费，所以做一个FK；去掉FK变成单表（这样子访问速度快了））
- c. M2M（多对多关系）
-    
- 到底是什么关系？
-        单选的下拉框/radio FK；多选下拉框/checkbox M2M    
+
+a. 单表
+
+b. FK（单表；一张表存储时，如果有重复出现的字段为了防止硬盘的浪费，所以做一个FK；去掉FK变成单表（这样子访问速度快了））
+
+c. M2M（多对多关系）
+
+到底是什么关系？
+
+单选的下拉框/radio FK；多选下拉框/checkbox M2M    
+
 举个小例子：
 
-复制代码
 问题：员工信息表员工当前薪资；保留员工的所有的调薪记录。
+
 思路一：两张表
+```
             员工表：
                 id  name salary 
                 
             调薪：
                 id  price  time  员工ID 
-                  
+```
+
 思路二：三张表
+```
              员工表：
                 id  name salary 
                 
@@ -15031,22 +15276,25 @@ https://www.cnblogs.com/hnlmy/p/9997515.html
                 
             员工调薪表：
                 id   uid   sid
-复制代码
+```
 基本SQL
+
 分组(group by)
+```
 select depart_id,count(1),max(salary),min(age),sum(age) from user group by depart_id
 select depart_id,count(1),max(salary),min(age),sum(age) from user group by depart_id having count(1)>5
+```
 注意事项：
 
 通过聚合条件group by然后进行筛选的用having不能用where
+
 连表
+```
 inner join / left join / right join
 inner join是保留两个共有的，如果一个没有就不保留。
 left join 是以左表为主表，如果右表没数据，则为null
 right join 是以右表为主表，如果左表没数据，则为null
 举个小例子：
-
-复制代码
 数据：
             部门表：
                 id   title 
@@ -15061,8 +15309,6 @@ right join 是以右表为主表，如果左表没数据，则为null
                 3           x3          1
                 4           x4          1
                 5           x5          1
-复制代码
-复制代码
      请问查到多少条数据？
             select * from userinfo left join depart on userinfo.did = depart.id    5
         
@@ -15071,9 +15317,7 @@ right join 是以右表为主表，如果左表没数据，则为null
             select * from userinfo inner join depart on userinfo.did = depart.id   5
         
             select * from depart inner join userinfo on userinfo.did = depart.id   5
-复制代码
 MySQL数据库引擎以及区别？
-复制代码
 a. 常见innodb、mysiam
 b. 区别：
             - innodb：
@@ -15086,8 +15330,6 @@ b. 区别：
                 - 表锁
                 - 全文索引
                 - 速度快                
-复制代码
-复制代码
 补充：
             原生SQL
                 begin;
@@ -15102,10 +15344,8 @@ b. 区别：
                     
                 with trancation.automic:
                     User.objects.filter().select_for_update()
-复制代码
 应用场景：商品数据计数。
 索引
-复制代码
 作用：
         - 加速查找
         - 约束
@@ -15120,20 +15360,18 @@ b. 区别：
                 name  email  pwd 
                 
          命中索引遵循最左前缀的原则： name、name  email、name pwd、name  email  pw
-复制代码
-复制代码
 补充：
         - 覆盖索引，当查找数据时候在索引表中就可以获取数据，无需去数据表中查找。
                     select name from user where name='xxx'
         - 索引合并, 使用多个单列索引进行查找。
                     select * from user where name='xx' email='xx'
-                    
+```                    
     
-    为什么索引快？
-        因为在索引结构中讲述按照B+来进行存放的数据。
-复制代码
+为什么索引快？
+
+因为在索引结构中讲述按照B+来进行存放的数据。
+```
 优化数据库方案
-复制代码
     a. 索引。
     b. 固定长度的字段写在前面。
             id  name  age < id  age name
@@ -15155,21 +15393,30 @@ b. 区别：
         
     h. 缓存
         将常用数据读取到redis中（缓存），读取速度快。
-        
-复制代码
+```
 char和varchar的区别。
+
 char是定长，不变的。
+
 varchar是变长，可变的。
+
 char 速度快，但是占空间。
+
 varchar速度慢，但是省内存
+
 视图、触发器、存储过程、函数
+
 视图：视图是一个虚拟表（非真实存在），其本质是【根据SQL语句获取动态的数据集，并为其命名】，用户使用时只需使用【名称】即可获取结果集，并可以将其当作表来使用。
+
 存储过程是一个SQL语句集合，当主动去调用存储过程时，其中内部的SQL语句会按照逻辑执行。
+
 mysql自定义函数就是实现程序员需要sql逻辑处理，参数是IN参数,含有RETURNS字句用来指定函数的返回类型，而且函数体必须包含一个RETURN value语句。
+
 触发器：对某个表进行【增/删/改】操作的前后如果希望触发某个特定的行为时，可以使用触发器，触发器用于定制用户对表的行进行【增/删/改】前后的行为。
+
 事务用于将某些操作的多个SQL作为原子性操作，一旦有某一个出现错误，即可回滚到原来的状态，从而保证数据库数据完整性。
+```
 创建了引之后一定要命中索引
-复制代码
     - like '%xx'
         select * from tb1 where name like '%cn';
     - 使用函数
@@ -15202,18 +15449,27 @@ mysql自定义函数就是实现程序员需要sql逻辑处理，参数是IN参�
         name and email       -- 使用索引
         name                 -- 使用索引
         email                -- 不使用索引
-复制代码
+```
 数据库对比
+
 关系型数据库和非关系型数据库：
+
 关系型数据库：MySQL、SQLite、SQLServer、access、oracle、db2 
+
 非关系型数据库：redis、memcached、mongodb
+
 持久化存到文件中：
+
 MySQL、SQLite、mongodb、SQLServer、access、oracle、db2 
+
 持久化存到内存中的是：
+
 redis、memcached
+
 redis和memcached的区别？
+
 相同点：都是将数据保存到内存，存取速度都比较快。 自己想：在内存中存在一个大字典，你对字典进行操作。
-复制代码
+```
 不同点：
     - 数据类型：
                 - redis，5大数据类型
@@ -15252,48 +15508,58 @@ redis和memcached的区别？
                     
                     no-enviction（驱逐）：禁止驱逐数据
                 - memcached，不支持。
-复制代码
+```
 redis持久化的两种方式
+
 - AOF,记录下用户所有执行的命令。然后如果宕机了，或者出故障了，直接按照记录下的用户的命令就可以保持数据完整了。（恢复时间慢，但是数据能够保持完整）
+
 - RDB,定时持久化。就是过一段时间保存一次（恢复时间快，但是数据不一定完整）
+
 redis默认支持主从复制
+
 主ip只用在配置文件中写上slaveof就行
+
 redis的高可用（sentinel）哨兵
+
 自动检测主服务器是否正常
+
 哨兵的作用简单来说就是（主redis和复redis，主redis挂掉之后，哨兵会自动检测到，然后都连上哨兵，哨兵会自动检测谁死谁活，这就是哨兵的作用，另外哨兵尽量设置三个，如果因为网络原因或者遇到特殊情况的话，三个哨兵会以半数以上的方式决定这个redis是否宕机）
+
 redis分布式（cluster）
+
  - redis cluster
+
  - codis 
+
  - Twemproxy
+
 redis中默认有16834个哈希槽
+
 redis分布式锁
+
 连接所有的redis服务器，在服务器上设置 k1 = 随机字符串； 成功一半以上，表示获得锁。
+
 其他人来，也会设置，但是设置时会成功 < 一半； 表示未获取锁，等待。
+
 超时，锁自动释放。
+
 释放锁；连接所有服务器删除 k1=原来设置的随机字符串 ；而且删除的时候不是执行命令，而是删除的是lua脚本，（因为脚本效率高）
 
-```
-
 ### 分片
-```
+
 https://www.cnblogs.com/qcloud1001/p/10405281.html
+
 Introduction 导言
+
 任何看到显著增长的应用程序或网站，最终都需要进行扩展，以适应流量的增加。以确保数据安全性和完整性的方式进行扩展，对于数据驱动的应用程序和网站来说十分重要。人们可能很难预测某个网站或应用程序的流行程度，也很难预测这种流行程度会持续多久，这就是为什么有些机构选择“可动态扩展的”数据库架构的原因。
 
 在这篇概念性文章中，我们将讨论一种“可动态扩展的”数据库架构：分片数据库。近年来，分片（Sharding）一直受到很多关注，但许多人并没有清楚地了解它是什么，或者对数据库进行分片可能有意义的场景。我们将讨论分片是什么，它的一些主要优点和缺点，以及一些常见的分片方法。
 
-下方是本文目录，帮助您接下来的阅读
-
-img
-
 What is Sharding? 什么是分片？
+
 分片（Sharding）是一种与水平切分（horizontal partitioning）相关的数据库架构模式——将一个表里面的行，分成多个不同的表的做法（称为分区）。每个区都具有相同的模式和列，但每个表有完全不同的行。同样，每个分区中保存的数据都是唯一的，并且与其他分区中保存的数据无关。
 
 从水平切分（horizontal partitioning）与垂直切分（vertical partitioning）的关系，可能会有所帮助。在垂直切分表中，所有的列被分离出来，并放入新的不同的表中。每个垂直切分内的数据，独立于所有其他分区中的数据，并且每个分区都包含不同的行和列。下图说明了如何在水平和垂直方向上对表进行分区：
-
-img
-
-添加描述
 
 分片（Sharding）将一个数据分成两个或多个较小的块，称为逻辑分片（logical shards）。然后，逻辑分片（logical shards）分布在单独的数据库节点上，称为物理分片（physical shards）。物理分片（physical shards）可以容纳多个逻辑分片（logical shards）。尽管如此，所有分片中保存的数据，共同代表整个逻辑数据集。
 
@@ -15304,6 +15570,7 @@ img
 以上是分片（Sharding）的概述，接下来让我们来看一下，这种数据库架构的优点和缺点。
 
 Benefits of Sharding 分片的好处
+
 数据库分片的主要吸引力在于，它可以帮助促进水平扩展（horizontal scaling），也称为向外扩展（scaling out）。水平扩展是将更多的机器添加到现有堆栈中，以分散负载，允许更多的流量和更快的处理。这通常与垂直扩展（vertical scaling）形成对比，垂直扩展也称为向上扩展（scaling up），是指升级现有服务器的硬件，通常是添加更多内存或CPU。
 
 让一个关系数据库在单个机器上运行，并按需升级其服务器资源进行向上扩展是相对简单的。但最终，任何非分布式数据库在存储和计算能力方面都会受到限制，因此可以自由地水平扩展数据库，会使您的架构更加灵活且适应性强。
@@ -15313,6 +15580,7 @@ Benefits of Sharding 分片的好处
 分片还可以通过减少宕机（outage）的影响，使应用程序更稳定可靠。如果您的应用程序或网站依赖于未分片的数据库，则宕机可能会导致整个应用程序不可用。但是，对于分片数据库，宕机可能只会影响单个分片。即使这可能使某些用户无法使用应用程序或网站部分功能，但仍会低于整个数据库崩溃带来的影响。
 
 Drawbacks of Sharding 分片的缺点
+
 虽然对数据库进行分片可以使扩展更容易并提高性能，但它也可能会带来某些限制。在这里，我们将讨论其中的一些限制，以及为什么这些限制会让我们避免对数据库全部分片。
 
 正确实现分片数据库架构，是十分复杂的，所以这是分片遇到的第一个困难。如果操作不正确，则分片过程可能会导致数据丢失或表损坏，这是一个很大的风险。但是，即使正确地进行了分片，也可能对团队的工作流程产生重大影响。与从单个入口点访问和管理数据不同，用户必须跨多个分片位置管理数据，这可能会让某些团队存在工作混乱。
@@ -15328,9 +15596,6 @@ Drawbacks of Sharding 分片的缺点
 一旦你决定对数据库进行分片，接下来你需要弄清楚的是如何进行分片。在运行查询或将传入的数据分发到分片表或数据库时，关键是要将其分配到正确的分片。否则，它可能导致数据丢失或查询速度缓慢。在本节中，我们将介绍一些常见的分片架构，每个架构使用稍微不同的流程来跨分片分发数据。
 
 Key Based Sharding 基于键的分片
-img
-
-添加描述
 
 为了确保数据记录以正确的方式被放置在正确的分片中，哈希函数中输入的值都应该来自同一列。此列称为分片键。简单来说，分片键与主键类似，因为它们都是列，用于为各个行建立唯一标识符。一般来说，分片键应该是静态的，这意味着它不应包含可能随时间变化的值。否则，它会增加更新操作的工作量，并可能降低性能。
 
@@ -15339,22 +15604,16 @@ img
 这种策略的主要吸引力在于，它可以用于均匀分布数据，从而防止热点。此外，由于它以算法方式分配数据，因此无需维护所有数据所在位置的映射，而其他策略（如范围或基于目录的分片）必须维护数据位置的映射。
 
 Range Based Sharding 基于范围的分片
+
 基于范围的分片（Range based sharding），基于给定值的范围进行数据分片。为了说明，假设您有一个数据库，用于存储零售商目录中所有产品的信息。您可以创建一些不同的分片，并根据每个产品的价格范围分配每个产品的信息，如下所示：
-
-img
-
-添加描述
 
 基于范围的分片的主要好处是，它实现起来相对简单。每个分片都包含一组不同的数据，但它们都具有相同的模式，以及原始数据库。应用程序代码只读取数据所属的范围，并将其写入相应的分片。
 
 另一方面，基于范围的分片并不能预防数据不均匀分布的现象，而有可能会出现前面提到的数据热点现象。查看示例图，即使每个分片拥有相同数量的数据，特定产品比其他产品获得更多关注的可能性也会很大。相应的，各个的分片将接收不成比例的读取操作。
 
 Directory Based Sharding 基于目录的分片
+
 要实现基于目录的分片，必须创建并维护一个查找表，该查找表使用分片键来跟踪哪个分片包含哪些数据。简而言之，查找表是一个表，其中包含有关可以找到特定数据的静态信息集。下图显示了基于目录的分片的简单示例：
-
-img
-
-添加描述
 
 此处，Delivery Zone列被定义为分片键。将来自分片键的数据，连同每一行应该写入的分片写入查找表。这与基于范围的分片类似，但不是确定分片键的数据落入哪个范围，而是将每个键绑定到其自己的特定分片。如果分片键的基数很低，并且分片键存储键的范围没有意义，那么基于目录的分片比基于范围的分片要更好。请注意，它也不同于基于密钥的分片，因为它不通过散列函数处理分片键; 它只是根据查找表检查键值，以查看数据需要写入的位置。
 
@@ -15363,6 +15622,7 @@ img
 虽然基于目录的分片是这里讨论的最灵活的分片方法，但是在每次查询或写入之前连接到查找表，可能会对应用程序的性能产生不利影响。此外，查找表可能出现单点故障：如果查询表损坏或出现其他故障，它可能会影响数据库写入新数据或访问现有数据的能力。
 
 Should I Shard? 我应该分片吗？
+
 是否应该实现分片数据库架构，几乎总是一个争论的问题。有些人认为分片对于达到一定规模的数据库来说，是不可避免的结果。而另一些人则认为这是一个令人头疼的问题，除非绝对必要，否则应该避免，因为分片增加了操作的复杂性。
 
 由于这种增加的复杂性，通常仅在处理非常大量的数据时才执行分片。以下是一些常见方案，可能对数据库分片的操作有所帮助：
@@ -15386,22 +15646,26 @@ Should I Shard? 我应该分片吗？
 请记住，如果您的应用程序或网站增长超过某个点，这些策略本身都不足以提高性能。在这种情况下，分片可能确实是您的最佳选择。
 
 Conclusion 结语
+
 对于那些希望横向扩展数据库的人来说，分片是一个很好的解决方案。但是，它还会增加很多复杂性，并为您的应用程序创建更多潜在的故障点。分片对于某些人来说可能是必要的，但是创建和维护分片架构所需的时间和资源可能会超过对其他人的好处。
 
 通过阅读这篇概念性文章，您应该更清楚地了解分片的优缺点。接下来，您可以使用这些见解来对分片数据库架构是否适合您，做出更明智的决定。
-```
 
 ### 高可用集群
-```
 https://www.cnblogs.com/rouqinglangzi/p/10921982.html
+
 一、Mysql高可用解决方案
+
 方案一：共享存储
+
 一般共享存储采用比较多的是 SAN/NAS 方案。
 
 方案二：操作系统实时数据块复制
+
 这个方案的典型场景是 DRBD，DRBD架构(MySQL+DRBD+Heartbeat)
 
 方案三：主从复制架构
+
 主从复制(一主多从)
 
 MMM架构(双主多从)
@@ -15409,6 +15673,7 @@ MMM架构(双主多从)
 MHA架构(多主多从)
 
 方案四：数据库高可用架构
+
 这种方式比较经典的案例包括 MGR(MySQL Group Replication)和 Galera 等，最近业内也有一些类似的尝试，如使用一致性协议算法，自研高可用数据库的架构等。
 
 1.MGR(MySQL Group Replication，MySQL官方开发的一个实现MySQL高可用集群的一个工具。第一个GA版本正式发布于MySQL5.7.17中)
@@ -15416,25 +15681,25 @@ MHA架构(多主多从)
 2.Galera
 
 其它方案：MySQL Cluster和PXC
+
 MySQL Cluster(ndb存储引擎，比较复杂，业界并没有大规模使用)
 
 PXC(Percona XtraDB Cluster)
 
 如何选择合适的Mysql集群架构？
+
 MHA看业务规模和需求选择
 
 mysql官方的Mysql Cluster。比较复杂，团队有人、资源充足，可以考虑尝试，貌似用的人不多。
 
 小团队或资源不足或小项目直接建议阿里云、腾讯云
 
- 
-
-回到顶部
 二、部分常见方案的简介
+
 1.Mysql主从架构
 
-
 2.MHA 架构(Master High Availability Manager and Toolsfor MySQL)
+
 参考：生产环境MySQL数据库集群MHA上线实施方案
 
 MHA(Master High Availability Manager and Toolsfor MySQL)目前在Mysql高可用方面是一个相对成熟的解决方案。它是日本的一位MySQL专家采用Perl语言编写的一个脚本管理工具，该工具仅适用于MySQLReplication 环境，目的在于维持Master主库的高可用性。
@@ -15445,8 +15710,6 @@ MHA是由管理节点(MHA Manager)和数据节点(MHA Node)两部分组成。
 
 MHA Manager可以单独部署在一台独立机器,也可以部署在一台slave上。
 
-
-
 3.MMM 架构(Master-Master replication manager for Mysql)
 可参考：MySQL-MMM实现MySQL高可用
 
@@ -15454,64 +15717,57 @@ MMM，全称为Master-Master replication manager for Mysql，是一套支持双�
 
 (MMM好像不靠谱，据说不稳定，但还是有人在用)
 
-
-
 MMM优缺点
-　　优点：高可用性，扩展性好，出现故障自动切换，对于主主同步，在同一时间只提供一台数据库写操作，保证的数据的一致性。
-　　缺点：Monitor节点是单点，可以结合Keepalived实现高可用。
+
+优点：高可用性，扩展性好，出现故障自动切换，对于主主同步，在同一时间只提供一台数据库写操作，保证的数据的一致性。
+
+缺点：Monitor节点是单点，可以结合Keepalived实现高可用。
 
 4.DRBD 架构(MySQL+DRBD+Heartbeat)
- 官网：https://www.linbit.com/en/drbd-community/drbd-download/
 
- 
+官网：https://www.linbit.com/en/drbd-community/drbd-download/
 
-回到顶部
 三、读写分离解决方案
+
 客户端解决方案（应用层）：TDDL、 Sharding-Jdbc (常用shardding-jdbc)
+
 中间件解决方案（代理层）：mysql proxy、mycat、altas  (常用mycat)
            
-
- 
-
 客户端解决方案的特点：
 
 优点：
 
-　　1、程序自动完成，数据源方便管理
+1、程序自动完成，数据源方便管理
 
-　　2、不需要维护，因为没用中间件
+2、不需要维护，因为没用中间件
 
-　　3、理论支持任何数据库 （sql标准）
+3、理论支持任何数据库 （sql标准）
 
 缺点：
 
-　　1、增加了开发成本、代码有入侵
+1、增加了开发成本、代码有入侵
 
-　　2、不能做到动态增加数据源
+2、不能做到动态增加数据源
 
-　　3、程序员开发完成，运维参与不了。
-
- 
+3、程序员开发完成，运维参与不了。
 
 中间件解决方案的特点：
 
 优点：
 
-　　1、数据增加了都程序没用任何影响
+1、数据增加了都程序没用任何影响
 
-　　2、应用层（程序）不需要管数据库方面的事情
+2、应用层（程序）不需要管数据库方面的事情
 
-　　3、增加数据源不需要重启程序
+3、增加数据源不需要重启程序
 
 缺点：
 
-　　1、程序依赖中间件，导致切换数据库变的困难
+1、程序依赖中间件，导致切换数据库变的困难
 
-　　2、增加了proxy 性能下降
+2、增加了proxy 性能下降
 
-　　3、增加了维护工作、高可用问题。
-
-```
+3、增加了维护工作、高可用问题。
 
 ### RAID
 ```
