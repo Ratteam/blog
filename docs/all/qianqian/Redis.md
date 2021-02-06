@@ -1,15 +1,5 @@
 <TOC />
 
-## 常用命令
-```
-# 启动
-/usr/local/redis/bin/redis-server /usr/local/redis/etc/redis.conf
-# 查看
-/usr/local/redis/bin/redis-cli
-# 关闭
-SHUTDOWN
-```
-
 ## Redis 简介
 > Redis 是完全开源免费的，遵守BSD协议，是一个高性能的key-value数据库。
 

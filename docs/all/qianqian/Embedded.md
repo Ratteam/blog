@@ -254,3 +254,80 @@ int            wwww;
 
 ## C-51的包含的头文件
 通常有：reg
+
+## Linux嵌入式ARM开发
+### C语言编译过程
+$ vi hello.c // 编辑示例
+```
+// hello.c
+#include <stdio.h>
+
+int main()
+{
+    printf("hello world\n");
+}
+```
+$ gcc hello.c // 编译
+
+$ ./a.out // 执行 
+```
+hello world
+```
+四步操作：
+
+1.gcc -E 预处理(Preprocessing)
+
+$ gcc -E hello.c -o hello.i
+
+预处理用于将所有的#include头文件以及宏定义替换成其真正的内容
+
+2.gcc -S 编译(Compilation)
+
+$ gcc -S hello.i -o hello.s
+
+将经过预处理之后的程序转换成特定汇编代码(assembly code)的过程
+
+3.gcc -c 汇编(Assemble)
+
+$ gcc -c hello.s -o hello.o
+
+汇编过程将上一步的汇编代码转换成机器码(machine code)
+
+4.gcc -o 链接(Linking)
+
+$ gcc -o build hello.o
+$ ./build // 执行
+
+链接过程将多个目标文以及所需的库文件(.so等)链接成最终的可执行文件
+
+### 预处理的使用
+```
+6.c
+#include <stdio.h>
+
+#define ABC (a+b);
+int main()
+{
+   int a = 1;
+   int b = 2;
+   int c;
+   c = ABC(a,b);
+   printf("a+b=%d\n",c);
+   printf("the %s,%s,%d\n",__FUNCTION__,__FILE__,__LINE__);
+   return 0;
+}
+```
+$ gcc 6.c
+
+$ ./a.out
+```
+a+b=3
+the main,6.c,11
+```
+1.#include 文件包含
+
+2.#define 宏定义
+
+3.ifdef #else #endif... 条件编译
+
+4.__FILE__... 预定义宏

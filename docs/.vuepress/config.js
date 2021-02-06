@@ -14,13 +14,13 @@ module.exports = {
       {
         text: '分类',
         items: [ 
-          { text: '钱钱', link: '/all/qianqian/' },
-          { text: '写写', link: '/all/xiexie/' },
-          { text: '星星', link: '/all/xingxing/' },
-          { text: '拍拍', link: '/all/paipai/' },
-          { text: '翻翻', link: '/all/fanfan/' },
-          { text: '画画', link: '/all/huahua/' },
-          { text: '其其', link: '/all/qiqi/' },
+          { text: '钱钱', link: '/all/qianqian/' },// 赚钱
+          { text: '写写', link: '/all/xiexie/' },// 写作
+          { text: '星星', link: '/all/xingxing/' },// 榜样 
+          { text: '拍拍', link: '/all/paipai/' },// 摄影
+          { text: '翻翻', link: '/all/fanfan/' },// 翻译
+          { text: '画画', link: '/all/huahua/' },// 艺术
+          { text: '其其', link: '/all/qiqi/' },// 弈棋
         ]
       },
       { text: '网站', link: '/web/' },
